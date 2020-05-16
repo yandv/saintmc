@@ -1,0 +1,6 @@
+name: yGameAPI
+version: 1.0
+main: br.com.battlebits.game.GameMain
+author: yAllanDev_
+depend: [yCommons]
+description: API de Minigames do Battlebits

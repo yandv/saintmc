@@ -1,0 +1,6 @@
+name: yLobby
+author: yAllanDev_
+main: tk.yallandev.saintmc.lobby.LobbyMain
+version: 1
+softdepend: [BukkitCommon]
+load: POSTWORLD
