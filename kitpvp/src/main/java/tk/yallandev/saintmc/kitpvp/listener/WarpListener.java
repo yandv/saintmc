@@ -80,7 +80,7 @@ public class WarpListener implements Listener {
 		respawn(entity, warp);
 	}
 
-	@EventHandler
+	@EventHandler(priority = EventPriority.LOWEST)
 	public void respawn(PlayerWarpRespawnEvent event) {
 		Gamer gamer = GameMain.getInstance().getGamerManager().getGamer(event.getPlayer().getUniqueId());
 

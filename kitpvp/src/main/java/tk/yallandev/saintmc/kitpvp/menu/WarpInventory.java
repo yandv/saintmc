@@ -22,7 +22,7 @@ public class WarpInventory {
 				continue;
 
 			if (warp.getItem() == null)
-				return;
+				continue;
 
 			menuInventory.setItem(11 + i, new MenuItem(warp.getItem(), new MenuClickHandler() {
 

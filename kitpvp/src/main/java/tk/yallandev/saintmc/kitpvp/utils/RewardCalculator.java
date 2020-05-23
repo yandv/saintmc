@@ -33,9 +33,11 @@ public class RewardCalculator {
 		} else if (xpDifference > 0)
 			xp += CommonConst.RANDOM.nextInt(3) + 1;
 		
-		if (xp < 3) {
-			xp = 3;
+		if (xp < 1) {
+			xp = 1;
 		}
+		
+		xp += playerStatus.getKillstreak() / 10;
 		
 		return xp;
 	}

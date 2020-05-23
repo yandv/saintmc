@@ -19,9 +19,9 @@ public enum Tag {
 	ADMIN("§c§lADMIN§c", Group.ADMIN, false), GERENTE("§c§lGERENTE§c", Group.GERENTE, false),
 	MODPLUS("§5§LMOD+§5", Group.MODPLUS, false), MODGC("§5§lMODGC§5", Group.MODGC, true),
 	MOD("§5§lMOD§5", Group.MOD, false), TRIAL("§d§lTRIAL§d", Group.TRIAL, false),
-	YOUTUBERPLUS("§3§lYOUTUBER+§3", Group.YOUTUBERPLUS, true), DEV("§3§lDEV§3", Group.DEV, true),
+	YOUTUBERPLUS("§3§lYT+§3", Group.YOUTUBERPLUS, true), DEV("§3§lDEV§3", Group.DEV, true),
 	BUILDER("§e§lBUILDER§e", Group.BUILDER, true), DESIGNER("§2§lDESIGNER§2", Group.DESIGNER, true),
-	YOUTUBER("§b§lYOUTUBER§b", Group.YOUTUBER, true), BETA("§1§lBETA§1", Group.BETA, false),
+	YOUTUBER("§b§lYT§b", Group.YOUTUBER, true), BETA("§1§lBETA§1", Group.BETA, false),
 	SAINT("§d§lSAINT§d", Group.SAINT, false), BLIZZARD("§1§lBLIZZARD§1", Group.BLIZZARD, false),
 	LIGHT("§a§lLIGHT§a", Group.LIGHT, false), DONATOR("§d§lDONATOR§d", Group.DONATOR, true),
 	MEMBRO("§7", Group.MEMBRO, false), LOGANDO("§8§lLOGANDO§8", null, true), RDM("§6§lRDM§6", null, true);

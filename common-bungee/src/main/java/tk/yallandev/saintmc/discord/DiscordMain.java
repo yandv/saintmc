@@ -53,10 +53,10 @@ public class DiscordMain {
 			e.printStackTrace();
 		}
 
-		this.commandFramework = new DiscordCommandFramework(getInstance());
-		this.commandFramework.registerCommands(new DiscordCommand());
+		commandFramework = new DiscordCommandFramework(getInstance());
+		commandFramework.registerCommands(new DiscordCommand());
 		
-		this.guildManager = new GuildManager();
+		guildManager = new GuildManager();
 		
 		jda.addEventListener(new BoosterListener());
 		jda.addEventListener(new ReactionListener(getInstance()));

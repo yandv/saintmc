@@ -10,6 +10,7 @@ import org.bukkit.potion.PotionEffectType;
 
 import tk.yallandev.saintmc.bukkit.BukkitMain;
 import tk.yallandev.saintmc.bukkit.api.item.ItemBuilder;
+import tk.yallandev.saintmc.kitpvp.GameMain;
 import tk.yallandev.saintmc.kitpvp.event.warp.PlayerWarpJoinEvent;
 import tk.yallandev.saintmc.kitpvp.event.warp.PlayerWarpRespawnEvent;
 import tk.yallandev.saintmc.kitpvp.warp.Warp;
@@ -73,7 +74,7 @@ public class MainWarp extends Warp {
 	@Override
 	public ItemStack getItem() {
 		return new ItemBuilder().name("§aMain")
-				.lore("eae")
-				.type(Material.GLASS).build();
+				.lore("\n§7Treine seu refil e recraft complentando\nos desafios de lava propostos.\n\n§a" + GameMain.getInstance().getGamerManager().filter(gamer -> gamer.getWarp() == this).size() + " jogadores")
+				.type(Material.POTION).build();
 	}
 }

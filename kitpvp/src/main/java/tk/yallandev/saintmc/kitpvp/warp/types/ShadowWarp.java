@@ -28,6 +28,7 @@ import tk.yallandev.saintmc.bukkit.event.player.PlayerDamagePlayerEvent;
 import tk.yallandev.saintmc.bukkit.event.update.UpdateEvent;
 import tk.yallandev.saintmc.common.utils.DateUtils;
 import tk.yallandev.saintmc.common.utils.string.StringUtils;
+import tk.yallandev.saintmc.kitpvp.GameMain;
 import tk.yallandev.saintmc.kitpvp.event.challenge.shadow.ShadowSearchingStartEvent;
 import tk.yallandev.saintmc.kitpvp.event.challenge.shadow.ShadowSearchingStopEvent;
 import tk.yallandev.saintmc.kitpvp.event.warp.PlayerWarpDeathEvent;
@@ -35,12 +36,13 @@ import tk.yallandev.saintmc.kitpvp.event.warp.PlayerWarpJoinEvent;
 import tk.yallandev.saintmc.kitpvp.event.warp.PlayerWarpQuitEvent;
 import tk.yallandev.saintmc.kitpvp.event.warp.PlayerWarpRespawnEvent;
 import tk.yallandev.saintmc.kitpvp.listener.ScoreboardListener;
+import tk.yallandev.saintmc.kitpvp.warp.DuelWarp;
 import tk.yallandev.saintmc.kitpvp.warp.Warp;
 import tk.yallandev.saintmc.kitpvp.warp.challenge.Challenge;
 import tk.yallandev.saintmc.kitpvp.warp.challenge.ChallengeType;
 import tk.yallandev.saintmc.kitpvp.warp.challenge.shadow.ShadowChallenge;
 
-public class ShadowWarp extends Warp {
+public class ShadowWarp extends Warp implements DuelWarp {
 
 	private ActionItemStack normalChallenge;
 	private ActionItemStack fastChallenge;
@@ -61,7 +63,7 @@ public class ShadowWarp extends Warp {
 		fastQueue = new HashMap<>();
 
 		customChallenge = new ActionItemStack(
-				new ItemBuilder().name("§aShadow Custom").type(Material.IRON_FENCE).build(),
+				new ItemBuilder().name("§a1v1 Custom").type(Material.IRON_FENCE).build(),
 				new Interact(InteractType.PLAYER) {
 
 					@Override
@@ -76,7 +78,7 @@ public class ShadowWarp extends Warp {
 				});
 
 		normalChallenge = new ActionItemStack(
-				new ItemBuilder().type(Material.BLAZE_ROD).name("§aShadow Normal").build(),
+				new ItemBuilder().type(Material.BLAZE_ROD).name("§a1v1 Normal").build(),
 				new Interact(InteractType.PLAYER) {
 
 					@Override
@@ -118,7 +120,7 @@ public class ShadowWarp extends Warp {
 							}
 						}
 	
-						newChallenge(player, target, new ShadowChallenge(player, target) {
+						newChallenge(player, target, new ShadowChallenge(player, target, ChallengeType.SHADOW_NORMAL) {
 
 							@Override
 							public void start(Location firstLocation, Location secondLocation) {
@@ -156,7 +158,7 @@ public class ShadowWarp extends Warp {
 					}
 				});
 
-		ActionItemStack itemStack = new ActionItemStack(new ItemBuilder().name("§aShadow Fast")
+		ActionItemStack itemStack = new ActionItemStack(new ItemBuilder().name("§a1v1 Fast")
 				.type(Material.INK_SACK).durability(10).build(), new Interact() {
 
 					@Override
@@ -181,7 +183,7 @@ public class ShadowWarp extends Warp {
 
 				});
 
-		fastChallenge = new ActionItemStack(new ItemBuilder().name("§cShadow Fast")
+		fastChallenge = new ActionItemStack(new ItemBuilder().name("§c1v1 Fast")
 				.type(Material.INK_SACK).durability(8).build(), new Interact() {
 
 					@Override
@@ -206,7 +208,7 @@ public class ShadowWarp extends Warp {
 							player.sendMessage("§a§l> §fVocê §aentrou§f na fila do §a1v1 rápido§f!");
 						} else {
 							Player target = fastQueue.keySet().stream().findFirst().orElse(null);
-							Challenge challenge = new ShadowChallenge(target, player) {
+							Challenge challenge = new ShadowChallenge(target, player, ChallengeType.SHADOW_FAST) {
 
 								@Override
 								public void start(Location firstLocation, Location secondLocation) {
@@ -383,7 +385,7 @@ public class ShadowWarp extends Warp {
 	@Override
 	public ItemStack getItem() {
 		return new ItemBuilder().name("§a1v1")
-				.lore("§aClique para entrar!")
+				.lore("\n§7Arena 1v1 sem interrupções.\n\n§a" + GameMain.getInstance().getGamerManager().filter(gamer -> gamer.getWarp() == this).size() + " jogadores")
 				.type(Material.BLAZE_ROD).build();
 	}
 	
@@ -401,6 +403,16 @@ public class ShadowWarp extends Warp {
 	private boolean hasChallenge(Player player, Player target, ChallengeType type) {
 		return challengeMap.containsKey(target) && challengeMap.get(target).containsKey(player)
 				&& challengeMap.get(target).get(player).containsKey(type);
+	}
+
+	@Override
+	public void setFirstLocation(Location location) {
+		firstLocation = location;
+	}
+
+	@Override
+	public void setSecondLocation(Location location) {
+		secondLocation = location;	
 	}
 
 }

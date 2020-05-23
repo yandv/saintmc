@@ -3,6 +3,7 @@ package tk.yallandev.saintmc.kitpvp.warp.types;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.inventory.ItemStack;
@@ -10,6 +11,7 @@ import org.bukkit.potion.PotionEffect;
 
 import tk.yallandev.saintmc.bukkit.BukkitMain;
 import tk.yallandev.saintmc.bukkit.api.item.ItemBuilder;
+import tk.yallandev.saintmc.kitpvp.GameMain;
 import tk.yallandev.saintmc.kitpvp.event.warp.PlayerWarpJoinEvent;
 import tk.yallandev.saintmc.kitpvp.event.warp.PlayerWarpRespawnEvent;
 import tk.yallandev.saintmc.kitpvp.warp.Warp;
@@ -20,7 +22,7 @@ public class LavaWarp extends Warp {
 		super("Lava", BukkitMain.getInstance().getLocationFromConfig("lava"));
 	}
 
-	@EventHandler
+	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onEntityDamage(EntityDamageEvent event) {
 		if (!(event.getEntity() instanceof Player)) {
 			Player player = (Player) event.getEntity();
@@ -79,8 +81,9 @@ public class LavaWarp extends Warp {
 
 	@Override
 	public ItemStack getItem() {
-		return new ItemBuilder().name("§aLava Challenge").lore("§aClique para entrar!").type(Material.LAVA_BUCKET)
-				.build();
+		return new ItemBuilder().name("§aLava Challenge")
+				.lore("\n§7Treine seu refil e recraft complentando\nos desafios de lava propostos.\n\n§a" + GameMain.getInstance().getGamerManager().filter(gamer -> gamer.getWarp() == this).size() + " jogadores")
+				.type(Material.LAVA_BUCKET).build();
 	}
 
 }

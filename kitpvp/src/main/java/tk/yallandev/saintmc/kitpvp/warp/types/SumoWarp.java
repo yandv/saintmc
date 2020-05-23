@@ -25,18 +25,20 @@ import tk.yallandev.saintmc.bukkit.api.item.ActionItemStack.InteractType;
 import tk.yallandev.saintmc.bukkit.api.item.ItemBuilder;
 import tk.yallandev.saintmc.bukkit.api.scoreboard.Scoreboard;
 import tk.yallandev.saintmc.bukkit.event.player.PlayerDamagePlayerEvent;
+import tk.yallandev.saintmc.kitpvp.GameMain;
 import tk.yallandev.saintmc.kitpvp.event.warp.PlayerWarpDeathEvent;
 import tk.yallandev.saintmc.kitpvp.event.warp.PlayerWarpJoinEvent;
 import tk.yallandev.saintmc.kitpvp.event.warp.PlayerWarpQuitEvent;
 import tk.yallandev.saintmc.kitpvp.event.warp.PlayerWarpRespawnEvent;
 import tk.yallandev.saintmc.kitpvp.listener.ScoreboardListener;
+import tk.yallandev.saintmc.kitpvp.warp.DuelWarp;
 import tk.yallandev.saintmc.kitpvp.warp.Warp;
 import tk.yallandev.saintmc.kitpvp.warp.challenge.Challenge;
 import tk.yallandev.saintmc.kitpvp.warp.challenge.ChallengeType;
 import tk.yallandev.saintmc.kitpvp.warp.challenge.shadow.ShadowChallenge;
 import tk.yallandev.saintmc.kitpvp.warp.challenge.sumo.SumoChallenge;
 
-public class SumoWarp extends Warp {
+public class SumoWarp extends Warp implements DuelWarp {
 	
 	private ActionItemStack normalChallenge;
 	private ActionItemStack fastChallenge;
@@ -346,8 +348,8 @@ public class SumoWarp extends Warp {
 	@Override
 	public ItemStack getItem() {
 		return new ItemBuilder().name("§aSumo")
-				.lore("")
-				.type(Material.LEASH).build();
+				.lore("\n§7Derrube o seu oponente na agua.\n\n§a" + GameMain.getInstance().getGamerManager().filter(gamer -> gamer.getWarp() == this).size() + " jogadores")
+				.type(Material.POTION).build();
 	}
 	
 	public void newChallenge(Player player, Player target, Challenge challenge) {
@@ -364,6 +366,16 @@ public class SumoWarp extends Warp {
 	private boolean hasChallenge(Player player, Player target, ChallengeType type) {
 		return challengeMap.containsKey(target) && challengeMap.get(target).containsKey(player)
 				&& challengeMap.get(target).get(player).containsKey(type);
+	}
+
+	@Override
+	public void setFirstLocation(Location location) {
+		firstLocation = location;
+	}
+
+	@Override
+	public void setSecondLocation(Location location) {
+		secondLocation = location;
 	}
 
 }

@@ -74,7 +74,7 @@ public class FpsWarp extends Warp {
 	@Override
 	public ItemStack getItem() {
 		return new ItemBuilder().name("§aFps")
-				.lore("")
+				.lore("\n§7Arena leve para o seu computador\n\n§a" + GameMain.getInstance().getGamerManager().filter(gamer -> gamer.getWarp() == this).size() + " jogadores")
 				.type(Material.GLASS).build();
 	}
 

@@ -47,7 +47,7 @@ public class SimpleTitle implements Title {
 				.writeInteger(2, fadeOutTime).build());
 		sendPacket(player, new PacketBuilder(PacketType.Play.Server.TITLE).writeTitleAction(0, TitleAction.TITLE)
 				.writeChatComponents(0, WrappedChatComponent.fromText(title)).build());
-		sendPacket(player, new PacketBuilder(PacketType.Play.Server.TITLE).writeTitleAction(0, TitleAction.TITLE)
+		sendPacket(player, new PacketBuilder(PacketType.Play.Server.TITLE).writeTitleAction(0, TitleAction.SUBTITLE)
 				.writeChatComponents(0, WrappedChatComponent.fromText(subtitle)).build());
 	}
 

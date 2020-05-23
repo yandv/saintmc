@@ -338,9 +338,10 @@ public class BukkitMain extends JavaPlugin {
 			f2.setAccessible(true);
 			HashMap<String, Command> knownCommands = (HashMap<String, Command>) f2.get(commandMap);
 
-			for (String command : commands) {
-				if (knownCommands.containsKey(command)) {
-					knownCommands.remove(command);
+			for (String cmdLabel : knownCommands.keySet()) {
+				
+				if (knownCommands.containsKey(cmdLabel)) {
+					knownCommands.remove(cmdLabel);
 
 					List<String> aliases = new ArrayList<>();
 
@@ -350,7 +351,7 @@ public class BukkitMain extends JavaPlugin {
 
 						String substr = key.substring(key.indexOf(":") + 1);
 
-						if (substr.equalsIgnoreCase(command)) {
+						if (substr.equalsIgnoreCase(cmdLabel)) {
 							aliases.add(key);
 						}
 					}

@@ -74,7 +74,7 @@ public class ScoreboardListener implements Listener {
 		League league = member.getLeague();
 
 		DEFAULT_SCOREBOARD.updateScore(player, new Score(
-				"§fCargo: " + (group == Group.MEMBRO ? "§7§lMEMBRO" : Tag.valueOf(group.name()).getPrefix()), "group"));
+				"§fGrupo: §f§l" + (group == Group.MEMBRO ? "§7§lMEMBRO" : Tag.valueOf(group.name()).getPrefix()), "group"));
 		DEFAULT_SCOREBOARD.updateScore(player,
 				new Score("§fRanking: §7(" + league.getColor() + league.getSymbol() + "§7)", "ranking"));
 		DEFAULT_SCOREBOARD.updateScore(player,
@@ -113,7 +113,7 @@ public class ScoreboardListener implements Listener {
 				Group group = event.getGroup();
 
 				DEFAULT_SCOREBOARD.updateScore(new Score(
-						"§fCargo: " + (group == Group.MEMBRO ? "§7Membro" : Tag.valueOf(group.name()).getPrefix()),
+						"§fGrupo: §f§l" + (group == Group.MEMBRO ? "§7§lMEMBRO" : Tag.valueOf(group.name()).getPrefix()),
 						"group"));
 			}
 		}.runTaskLater(LobbyMain.getInstance(), 10l);

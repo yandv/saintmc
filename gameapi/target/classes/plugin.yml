@@ -1,6 +1,6 @@
 name: yGameAPI
 version: 1.0
-main: br.com.battlebits.game.GameMain
+main: tk.yallandev.saintmc.game.GameMain
 author: yAllanDev_
-depend: [yCommons]
+depend: [BukkitCommon]
 description: API de Minigames do Battlebits

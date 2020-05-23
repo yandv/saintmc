@@ -25,7 +25,7 @@ public class StringLoreUtils {
 				if (text.endsWith(".") || text.endsWith("!"))
 					lore.add("");
 				text = color;
-			}	
+			}
 			
 			String toAdd = split[i];
 			

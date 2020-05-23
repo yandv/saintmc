@@ -16,6 +16,7 @@
 		<module>lobby</module>
 		<module>updater</module>
 		<module>gameapi-old</module>
+		<module>hungergames</module>
 	</modules>
 
 	<build>

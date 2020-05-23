@@ -362,7 +362,18 @@ public abstract class Member {
 		this.totalXp = xp;
 		CommonGeneral.getInstance().getPlayerData().updateMember(this, "totalXp");
 	}
+	
+	public boolean hasPermission(String string) {
+		return false;
+	}
 
+	public void addPermission(String string) {
+		
+	}
+
+	public void addMoney(int nextInt) {
+		
+	}
 
 	/*
 	 * Server Info

@@ -52,6 +52,7 @@ tk\yallandev\saintmc\common\utils\string\StringURLUtils.class
 tk\yallandev\saintmc\common\data\payload\DataServerMessage$JoinPayload.class
 tk\yallandev\saintmc\common\backend\database\mongodb\MongoDatabase.class
 tk\yallandev\saintmc\common\data\payload\DataServerMessage$Action.class
+tk\yallandev\saintmc\common\controller\StoreController.class
 tk\yallandev\saintmc\common\data\payload\DataServerMessage$StartPayload.class
 tk\yallandev\saintmc\common\utils\reflection\Reflection$FieldAccessor.class
 tk\yallandev\saintmc\common\utils\string\StringCenter$DefaultFontInfo.class
@@ -62,6 +63,7 @@ tk\yallandev\saintmc\common\utils\reflection\Reflection$2.class
 tk\yallandev\saintmc\common\server\ServerType$1.class
 tk\yallandev\saintmc\common\utils\mojang\UUIDFetcher$1.class
 tk\yallandev\saintmc\common\data\payload\DataServerMessage$UpdatePayload.class
+tk\yallandev\saintmc\common\server\loadbalancer\server\MinigameState$1.class
 tk\yallandev\saintmc\common\server\loadbalancer\type\MostConnection.class
 tk\yallandev\saintmc\common\ban\constructor\Ban.class
 tk\yallandev\saintmc\common\controller\MemberManager.class

@@ -23,6 +23,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.spigotmc.CustomTimingsHandler;
 
 import net.md_5.bungee.api.ChatColor;
+import net.minecraft.server.v1_8_R3.MinecraftServer;
 import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.bukkit.BukkitMain;
 import tk.yallandev.saintmc.bukkit.command.BukkitCommandArgs;
@@ -275,8 +276,8 @@ public class ServerCommand implements CommandClass {
 		CommandSender sender = cmdArgs.getSender();
 
 		if (cmdArgs.getArgs().length == 0) {
-			double tps = 21.0D;
-			double[] ticks = { 21, 21, 21 };
+			double tps = MinecraftServer.getServer().recentTps[0];
+			double[] ticks = MinecraftServer.getServer().recentTps;
 
 			String[] tpsAvg = new String[ticks.length];
 

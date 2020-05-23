@@ -4,6 +4,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import tk.yallandev.saintmc.kitpvp.gamer.Gamer;
 
@@ -31,6 +33,10 @@ public class GamerManager {
 	
 	public Gamer getGamer(UUID uuid) {
 		return gamerMap.get(uuid);
+	}
+	
+	public Collection<Gamer> filter(Predicate<? super Gamer> predicate) {
+		return gamerMap.values().stream().filter(predicate).collect(Collectors.toList());
 	}
 	
 	public Collection<Gamer> getGamers() {

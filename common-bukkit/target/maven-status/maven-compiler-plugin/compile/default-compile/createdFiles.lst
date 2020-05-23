@@ -72,6 +72,7 @@ tk\yallandev\saintmc\bukkit\BukkitMain$1.class
 tk\yallandev\saintmc\bukkit\command\register\ServerCommand$2.class
 tk\yallandev\saintmc\bukkit\redis\BukkitPubSubHandler$2.class
 tk\yallandev\saintmc\bukkit\menu\account\AccountInventory$1.class
+tk\yallandev\saintmc\bukkit\api\packet\PacketBuilder.class
 tk\yallandev\saintmc\bukkit\api\cooldown\event\CooldownFinishEvent.class
 tk\yallandev\saintmc\bukkit\api\menu\MenuClickHandler.class
 tk\yallandev\saintmc\bukkit\permission\injector\CraftBukkitInterface.class
@@ -115,6 +116,7 @@ tk\yallandev\saintmc\bukkit\event\account\PlayerChangeLeagueEvent.class
 tk\yallandev\saintmc\bukkit\listener\MoveListener.class
 tk\yallandev\saintmc\bukkit\protocol\ProtocolVersion.class
 tk\yallandev\saintmc\bukkit\event\update\UpdateEvent.class
+tk\yallandev\saintmc\bukkit\listener\EnchantListener.class
 tk\yallandev\saintmc\bukkit\utils\string\StringTypewriter.class
 tk\yallandev\saintmc\bukkit\permission\injector\regexperm\RegexPermissions.class
 tk\yallandev\saintmc\bukkit\api\menu\MenuItem.class
@@ -150,6 +152,7 @@ tk\yallandev\saintmc\bukkit\command\register\YoutubeCommand$2.class
 tk\yallandev\saintmc\bukkit\event\PlayerOpenInventoryEvent.class
 tk\yallandev\saintmc\bukkit\permission\injector\regexperm\RegexPermissions$EventListener.class
 tk\yallandev\saintmc\bukkit\permission\injector\regexperm\PermissiblePEX.class
+tk\yallandev\saintmc\bukkit\api\title\types\SimpleTitle.class
 tk\yallandev\saintmc\bukkit\api\item\ActionItemListener.class
 tk\yallandev\saintmc\bukkit\utils\string\StringTypewriter$DisplayType.class
 tk\yallandev\saintmc\bukkit\event\account\PlayerChangeTagEvent.class
@@ -163,6 +166,7 @@ tk\yallandev\saintmc\bukkit\api\item\ItemBuilder.class
 tk\yallandev\saintmc\bukkit\api\vanish\VanishAPI.class
 tk\yallandev\saintmc\bukkit\api\hologram\Hologram.class
 tk\yallandev\saintmc\bukkit\permission\listener\PermissionListener.class
+tk\yallandev\saintmc\bukkit\api\title\Title.class
 tk\yallandev\saintmc\bukkit\command\register\CompleterCommand.class
 tk\yallandev\saintmc\bukkit\command\BukkitCommandFramework$1.class
 tk\yallandev\saintmc\bukkit\api\item\ActionItemStack.class
