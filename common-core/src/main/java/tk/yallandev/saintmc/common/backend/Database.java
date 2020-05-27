@@ -6,7 +6,7 @@ public interface Database {
 	 * Connection Manager
 	 */
 	
-	void connect();
+	void connect() throws Exception;
 	
 	boolean isConnected();
 	

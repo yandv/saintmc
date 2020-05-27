@@ -345,7 +345,9 @@ public class ModeratorCommand implements CommandClass {
 		Bukkit.getPluginManager().callEvent(event);
 
 		if (event.getResult() == TeleportResult.NO_PERMISSION || event.isCancelled()) {
-			p.sendMessage("\n§f\n §c* §fVocê não tem §cpermissão§f para executar esse comando!\n§f");
+			p.sendMessage(" ");
+			p.sendMessage("§c* §fVocê não tem §cpermissão§f para executar esse comando!");
+			p.sendMessage(" ");
 			return;
 		}
 

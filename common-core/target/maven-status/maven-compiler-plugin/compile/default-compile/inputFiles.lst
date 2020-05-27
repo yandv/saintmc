@@ -80,6 +80,7 @@ C:\Users\Allan\git\saintmc\common-core\src\main\java\tk\yallandev\saintmc\common
 C:\Users\Allan\git\saintmc\common-core\src\main\java\tk\yallandev\saintmc\common\controller\MemberManager.java
 C:\Users\Allan\git\saintmc\common-core\src\main\java\tk\yallandev\saintmc\common\data\StatusDataImpl.java
 C:\Users\Allan\git\saintmc\common-core\src\main\java\tk\yallandev\saintmc\common\utils\mojang\UUIDFetcher.java
+C:\Users\Allan\git\saintmc\common-core\src\main\java\tk\yallandev\saintmc\common\utils\json\JsonBuilder.java
 C:\Users\Allan\git\saintmc\common-core\src\main\java\tk\yallandev\saintmc\common\utils\string\StringCenter.java
 C:\Users\Allan\git\saintmc\common-core\src\main\java\tk\yallandev\saintmc\common\server\loadbalancer\type\RoundRobin.java
 C:\Users\Allan\git\saintmc\common-core\src\main\java\tk\yallandev\saintmc\common\account\status\StatusType.java

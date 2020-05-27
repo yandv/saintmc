@@ -1,5 +1,8 @@
 package br.com.saintmc.hungergames.kit;
 
+import java.util.Arrays;
+import java.util.Collection;
+
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -23,6 +26,11 @@ public class CustomKit implements Kit {
 		this.name = name;
 		this.description = description;
 		this.kitIcon = kitIcon;
+	}
+	
+	@Override
+	public Collection<Ability> getAbilities() {
+		return Arrays.asList(ability);
 	}
 
 	@Override

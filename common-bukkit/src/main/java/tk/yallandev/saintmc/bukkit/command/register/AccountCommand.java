@@ -1,6 +1,5 @@
 package tk.yallandev.saintmc.bukkit.command.register;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -11,20 +10,14 @@ import org.bukkit.entity.Player;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import tk.yallandev.saintmc.CommonGeneral;
-import tk.yallandev.saintmc.bukkit.account.BukkitMember;
 import tk.yallandev.saintmc.bukkit.command.BukkitCommandArgs;
 import tk.yallandev.saintmc.bukkit.menu.account.AccountInventory;
 import tk.yallandev.saintmc.common.account.League;
 import tk.yallandev.saintmc.common.account.Member;
 import tk.yallandev.saintmc.common.account.MemberModel;
 import tk.yallandev.saintmc.common.account.MemberVoid;
-import tk.yallandev.saintmc.common.command.CommandArgs;
 import tk.yallandev.saintmc.common.command.CommandClass;
 import tk.yallandev.saintmc.common.command.CommandFramework.Command;
-import tk.yallandev.saintmc.common.command.CommandFramework.Completer;
-import tk.yallandev.saintmc.common.command.CommandSender;
-import tk.yallandev.saintmc.common.music.MusicKit;
-import tk.yallandev.saintmc.common.permission.Group;
 
 public class AccountCommand implements CommandClass {
 
@@ -121,92 +114,6 @@ public class AccountCommand implements CommandClass {
 			p.sendMessage(
 					"§a§l> §fXP necessário para o próximo rank §e" + (player.getLeague().getMaxXp() - player.getXp()));
 		}
-	}
-
-	@Command(name = "addxp", groupToUse = Group.DONO)
-	public void liga(BukkitCommandArgs cmdArgs) {
-		CommandSender sender = cmdArgs.getSender();
-		String[] args = cmdArgs.getArgs();
-
-		if (args.length < 2) {
-			sender.sendMessage(" §e* §fUse §a/addxp <player> <group>§f para setar um grupo.");
-			return;
-		}
-
-		UUID uuid = CommonGeneral.getInstance().getUuid(args[0]);
-
-		if (uuid == null) {
-			sender.sendMessage(" §c* §fO jogador §a" + args[0] + "§f não existe!");
-			return;
-		}
-
-		BukkitMember player = (BukkitMember) CommonGeneral.getInstance().getMemberManager().getMember(uuid);
-
-		if (player == null) {
-			try {
-				MemberModel loaded = CommonGeneral.getInstance().getPlayerData().loadMember(uuid);
-
-				if (loaded == null) {
-					sender.sendMessage(" §c* §fO jogador §a" + args[0] + "§f nunca entrou no servidor!");
-					return;
-				}
-
-				player = new BukkitMember(loaded);
-			} catch (Exception e) {
-				e.printStackTrace();
-				sender.sendMessage(" §c* §fNão foi possível pegar as informações do jogador §a" + args[0] + "§f!");
-				return;
-			}
-		}
-
-		Integer value = null;
-
-		try {
-			value = Integer.valueOf(args[1]);
-		} catch (Exception ex) {
-			sender.sendMessage(" §c* §fFormato de numero inválido§f!");
-			return;
-		}
-
-		player.addXp(value);
-		sender.sendMessage(" §a* §fVocê deu §a" + value + "§f ao §a" + player.getPlayerName() + "§f.");
-	}
-
-	@Command(name = "music", aliases = { "setmusic", "setmusickit" }, groupToUse = Group.ADMIN)
-	public void musicCommand(BukkitCommandArgs cmdArgs) {
-		if (!cmdArgs.isPlayer())
-			return;
-
-		Member member = CommonGeneral.getInstance().getMemberManager().getMember(cmdArgs.getPlayer().getUniqueId());
-		String[] args = cmdArgs.getArgs();
-
-		if (args.length == 0) {
-			member.sendMessage(" §e* §fUse §a/" + cmdArgs.getLabel() + " <music>§f para mudar de music kit.");
-			return;
-		}
-
-		MusicKit musicKit = MusicKit.valueOf(args[0].toUpperCase());
-
-		if (member.getMusicKit() != musicKit)
-			cmdArgs.getPlayer().setResourcePack(musicKit.getDownloadLink());
-
-		member.setMusicKit(musicKit);
-		member.sendMessage(" §a* §fO seu kit musical foi alterado para §a§l" + member.getMusicKit().name() + "§f!");
-	}
-
-	@Completer(name = "music", aliases = { "setmusic", "setmusickit" })
-	public List<String> tagCompleter(CommandArgs cmdArgs) {
-		if (cmdArgs.getArgs().length == 1) {
-			List<String> list = new ArrayList<>();
-
-			for (MusicKit musicKit : MusicKit.values())
-				if (musicKit.toString().toLowerCase().startsWith(cmdArgs.getArgs()[0].toLowerCase()))
-					list.add(musicKit.toString());
-
-			return list;
-		}
-
-		return new ArrayList<>();
 	}
 
 }

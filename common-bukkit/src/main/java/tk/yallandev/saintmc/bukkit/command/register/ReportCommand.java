@@ -13,12 +13,11 @@ import tk.yallandev.saintmc.common.account.MemberModel;
 import tk.yallandev.saintmc.common.account.MemberVoid;
 import tk.yallandev.saintmc.common.command.CommandClass;
 import tk.yallandev.saintmc.common.command.CommandFramework.Command;
-import tk.yallandev.saintmc.common.permission.Group;
 import tk.yallandev.saintmc.common.report.Report;
 
 public class ReportCommand implements CommandClass {
 	
-	@Command(name = "report", aliases = { "reports", "reportar" }, groupToUse = Group.TRIAL)
+	@Command(name = "report", aliases = { "reports", "reportar" })
 	public void reports(BukkitCommandArgs cmdArgs) {
 		if (!cmdArgs.isPlayer())
 			return;

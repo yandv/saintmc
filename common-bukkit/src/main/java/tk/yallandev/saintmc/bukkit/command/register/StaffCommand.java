@@ -119,7 +119,7 @@ public class StaffCommand implements CommandClass {
 
 		Player p = args.getPlayer();
 		VanishAPI.getInstance().showPlayer(p);
-		p.sendMessage("\n §a* §fVocê está visível para todos os jogadores!\\n§f");
+		p.sendMessage("\n §a* §fVocê está visível para todos os jogadores!\n§f");
 	}
 
 	@Command(name = "invisible", aliases = { "invis", "invisivel" }, groupToUse = Group.TRIAL)

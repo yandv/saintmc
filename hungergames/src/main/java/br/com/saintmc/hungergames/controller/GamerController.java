@@ -1,13 +1,19 @@
 package br.com.saintmc.hungergames.controller;
 
+import java.util.Collection;
 import java.util.UUID;
 
 import org.bukkit.entity.Player;
 
-import br.com.saintmc.hungergames.gamer.Gamer;
+import br.com.saintmc.hungergames.constructor.Gamer;
 import tk.yallandev.saintmc.common.controller.StoreController;
 
 public class GamerController extends StoreController<UUID, Gamer> {
+	
+	public GamerController() {
+		super();
+		getStoreConfig().setReplace(false);
+	}
 	
 	public Gamer getGamer(UUID key) {
 		return super.getValue(key);
@@ -23,6 +29,10 @@ public class GamerController extends StoreController<UUID, Gamer> {
 	
 	public void unloadGamer(UUID key) {
 		super.unload(key);
+	}
+
+	public Collection<Gamer> getGamers() {
+		return getStoreMap().values();
 	}
 
 }

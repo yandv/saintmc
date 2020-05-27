@@ -43,8 +43,8 @@ import tk.yallandev.saintmc.game.constructor.CustomKit;
 import tk.yallandev.saintmc.game.constructor.Gamer;
 import tk.yallandev.saintmc.game.constructor.Kit;
 import tk.yallandev.saintmc.game.games.hungergames.HungerGamesMode;
-import tk.yallandev.saintmc.game.games.hungergames.util.ItemUtils;
 import tk.yallandev.saintmc.game.stage.GameStage;
+import tk.yallandev.saintmc.game.util.ItemUtils;
 
 public class DeathListener extends tk.yallandev.saintmc.game.listener.GameListener {
 
@@ -232,7 +232,7 @@ public class DeathListener extends tk.yallandev.saintmc.game.listener.GameListen
 			replaces.put("%killed_By%", killer.getName());
 			replaces.put("%killed_By_Kit%", (killerGamer.getKit() != null ? ((killerGamer.getKit() instanceof CustomKit) ? ChatColor.DARK_GRAY : "") : "") + NameUtils.formatString(killerGamer.getKitName())); // TODO
 			// KITS
-//			replaces.put("%item_Killed%", NameUtils.getItemName(killer.getItemInHand()));
+			replaces.put("%item_Killed%", NameUtils.getItemName(killer.getItemInHand()));
 			
 			Member battleKiller = CommonGeneral.getInstance().getMemberManager().getMember(killerGamer.getUniqueId());
 			

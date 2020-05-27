@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.function.Function;
 
 import lombok.Getter;
+import lombok.Setter;
 
 public class StoreController<K, V> {
 
@@ -12,23 +13,40 @@ public class StoreController<K, V> {
 	private Map<K, V> storeMap;
 	private Function<K, V> defaultFunction;
 
+	@Getter
+	private StoreConfig storeConfig;
+
 	public StoreController() {
 		this.storeMap = new HashMap<>();
+		this.storeConfig = new StoreConfig();
 	}
 
 	public StoreController(Function<K, V> defaultFunction) {
 		this.storeMap = new HashMap<>();
 		this.defaultFunction = defaultFunction;
+		this.storeConfig = new StoreConfig();
 	}
 
 	public void load(K key, V value) {
-		if (!storeMap.containsKey(key))
+		if (storeConfig.replace) {
+			if (!storeMap.containsKey(key))
+				storeMap.put(key, value);
+		} else {
 			storeMap.put(key, value);
+		}
 	}
 
-	public void unload(K key) {
-		if (storeMap.containsKey(key))
+	public boolean unload(K key) {
+		if (storeMap.containsKey(key)) {
 			storeMap.remove(key);
+			return true;
+		}
+		
+		return false;
+	}
+
+	public boolean containsKey(K key) {
+		return storeMap.containsKey(key);
 	}
 
 	public V getValue(K key) {
@@ -41,6 +59,14 @@ public class StoreController<K, V> {
 	public StoreController<K, V> setDefaultFunction(Function<K, V> defaultFunction) {
 		this.defaultFunction = defaultFunction;
 		return this;
+	}
+
+	@Getter
+	@Setter
+	public class StoreConfig {
+
+		private boolean replace;
+
 	}
 
 }

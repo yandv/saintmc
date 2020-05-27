@@ -145,6 +145,7 @@ public class BungeeCommandFramework implements CommandFramework {
 	}
 
 	private void defaultCommand(CommandArgs args) {
+		args.getSender().sendMessage("§cComando do bungeecord inacessível!");
 	}
 
 	class BungeeCommand extends net.md_5.bungee.api.plugin.Command {
@@ -161,7 +162,7 @@ public class BungeeCommandFramework implements CommandFramework {
 		public void execute(net.md_5.bungee.api.CommandSender sender, String[] args) {
 			handleCommand(sender, getName(), args);
 		}
-
+		
 	}
 
 	public class BungeeCompleter implements Listener {
@@ -197,8 +198,6 @@ public class BungeeCommandFramework implements CommandFramework {
 						event.getSuggestions().clear();
 						
 						List<String> list = (List<String>) entry.getKey().invoke(entry.getValue(), new BungeeCommandArgs(player, label, args, cmdLabel.split("\\.").length - 1));
-						
-						list.forEach(string -> System.out.println("Completer: " + string));
 						
 						event.getSuggestions().addAll(list);
 					} catch (IllegalArgumentException | IllegalAccessException | InvocationTargetException e) {

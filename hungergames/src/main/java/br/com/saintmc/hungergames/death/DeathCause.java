@@ -7,7 +7,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum DeathCause {
 	
-	FALL("");
+	FALL(""), NONE("§cVocê morreu!");
 	
 	private String deathCause;
 

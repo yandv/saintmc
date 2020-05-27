@@ -1,5 +1,7 @@
 package br.com.saintmc.hungergames;
 
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -8,22 +10,30 @@ import org.bukkit.Bukkit;
 import org.bukkit.Difficulty;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import br.com.saintmc.hungergames.listener.BorderListener;
-import br.com.saintmc.hungergames.listener.GamerListener;
-import br.com.saintmc.hungergames.listener.KitListener;
-import br.com.saintmc.hungergames.listener.ScoreboardListener;
+import br.com.saintmc.hungergames.game.Game;
+import br.com.saintmc.hungergames.listener.register.BorderListener;
+import br.com.saintmc.hungergames.listener.register.GamerListener;
+import br.com.saintmc.hungergames.listener.register.KitListener;
+import br.com.saintmc.hungergames.listener.register.ScoreboardListener;
 import br.com.saintmc.hungergames.scheduler.SchedulerListener;
+import br.com.saintmc.hungergames.utils.MapUtils;
 import lombok.Getter;
 import tk.yallandev.saintmc.CommonGeneral;
+import tk.yallandev.saintmc.bukkit.BukkitMain;
 import tk.yallandev.saintmc.bukkit.command.BukkitCommandFramework;
 import tk.yallandev.saintmc.common.command.CommandLoader;
 import tk.yallandev.saintmc.common.permission.Group;
 
 @Getter
 public class GameMain extends JavaPlugin {
+	
+	public static final boolean SPECTATOR = true;
+	
+	public static final Game GAME = new Game(0, 30);
 	
 	public static boolean canJoin = false;
 	
@@ -52,19 +62,22 @@ public class GameMain extends JavaPlugin {
 	public void onLoad() {
 
 		instance = this;
+		
+		MapUtils.deleteWorld("world");
 
 		general = new GameGeneral();
 		general.onLoad();
-
+		
 		super.onLoad();
 	}
 
 	@Override
 	public void onEnable() {
 
-		loadListener();
 		new CommandLoader(new BukkitCommandFramework(getInstance())).loadCommandsFromPackage("br.com.saintmc.hungergames.command");
+		BukkitMain.getInstance().setRemovePlayerDat(false);
 		
+		loadListener();
 		general.onEnable();
 		
 		if (roomId == null) {
@@ -127,6 +140,19 @@ public class GameMain extends JavaPlugin {
 	
 	public void registerListener(Listener listener) {
 		Bukkit.getPluginManager().registerEvents(listener, getInstance());
+	}
+
+	public void sendPlayerToLobby(Player p)  {
+		ByteArrayOutputStream b = new ByteArrayOutputStream();
+	    DataOutputStream out = new DataOutputStream(b);
+	    
+	    try {
+	      out.writeUTF("Lobby");
+	    } catch (Exception e)  {
+	      e.printStackTrace(System.out);
+	    }
+	    
+	    p.sendPluginMessage(this, "BungeeCord", b.toByteArray());
 	}
 
 }

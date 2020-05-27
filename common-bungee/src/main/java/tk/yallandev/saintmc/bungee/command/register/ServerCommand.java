@@ -1,11 +1,16 @@
 package tk.yallandev.saintmc.bungee.command.register;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import tk.yallandev.saintmc.bungee.BungeeMain;
 import tk.yallandev.saintmc.bungee.command.BungeeCommandArgs;
+import tk.yallandev.saintmc.common.command.CommandArgs;
 import tk.yallandev.saintmc.common.command.CommandClass;
 import tk.yallandev.saintmc.common.command.CommandFramework.Command;
+import tk.yallandev.saintmc.common.command.CommandFramework.Completer;
 import tk.yallandev.saintmc.common.command.CommandSender;
 import tk.yallandev.saintmc.common.permission.Group;
 import tk.yallandev.saintmc.common.server.ServerType;
@@ -23,17 +28,18 @@ public class ServerCommand implements CommandClass {
 			}
 			return;
 		}
-		
+
 		ProxiedPlayer proxiedPlayer = ProxyServer.getInstance().getPlayer(cmdArgs.getArgs()[0]);
-		
+
 		if (proxiedPlayer == null) {
 			sender.sendMessage(" §c* §fO jogador §c" + cmdArgs.getArgs()[0] + "§f está offline!");
 			return;
 		}
-		
-		sender.sendMessage(" §e* §fO ping de §a" + proxiedPlayer.getName() + "§f é de §a" + proxiedPlayer.getPing() + "ms§f.");
+
+		sender.sendMessage(
+				" §e* §fO ping de §a" + proxiedPlayer.getName() + "§f é de §a" + proxiedPlayer.getPing() + "ms§f.");
 	}
-	
+
 	@Command(name = "send", groupToUse = Group.ADMIN, usage = "/<command> <player> <server>")
 	public void sendCommand(BungeeCommandArgs cmdArgs) {
 		CommandSender sender = cmdArgs.getSender();
@@ -107,13 +113,13 @@ public class ServerCommand implements CommandClass {
 			return;
 
 		cmdArgs.getSender().sendMessage("");
-		cmdArgs.getSender().sendMessage("§a§l> §fConectando-se ao servidor §a" + server.getServerId().toLowerCase() + "§f!");
+		cmdArgs.getSender()
+				.sendMessage("§a§l> §fConectando-se ao servidor §a" + server.getServerId().toLowerCase() + "§f!");
 		cmdArgs.getSender().sendMessage("");
 		cmdArgs.getPlayer().connect(server.getServerInfo());
 	}
 
-	@Command(name = "server", usage = "/<command> <player> <server>", aliases = { "go",
-			"connect", "ir" })
+	@Command(name = "server", usage = "/<command> <player> <server>", aliases = { "go", "connect", "ir" })
 	public void serverCommand(BungeeCommandArgs cmdArgs) {
 		CommandSender sender = cmdArgs.getSender();
 		String[] args = cmdArgs.getArgs();
@@ -142,4 +148,23 @@ public class ServerCommand implements CommandClass {
 		cmdArgs.getPlayer().connect(server.getServerInfo());
 	}
 
+	@Completer(name = "server", aliases = { "go", "connect", "ir" })
+	public List<String> serverCompleter(CommandArgs cmdArgs) {
+		if (cmdArgs.getArgs().length == 1) {
+			List<String> tagList = new ArrayList<>();
+
+			if (cmdArgs.getArgs()[0].isEmpty()) {
+				for (BattleServer server : BungeeMain.getInstance().getServerManager().getServers())
+					tagList.add(server.getServerId());
+			} else {
+				for (BattleServer server : BungeeMain.getInstance().getServerManager().getServers())
+					if (server.toString().toLowerCase().startsWith(cmdArgs.getArgs()[0].toLowerCase()))
+						tagList.add(server.getServerId());
+			}
+
+			return tagList;
+		}
+
+		return new ArrayList<>();
+	}
 }

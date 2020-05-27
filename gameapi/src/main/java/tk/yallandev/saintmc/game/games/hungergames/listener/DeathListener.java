@@ -395,6 +395,7 @@ public class DeathListener extends tk.yallandev.saintmc.game.listener.GameListen
 			deathMessage(p, "death-message-leave", replaces);
 			deathPlayer(p);
 			gamer.addDeath();
+			gamer.setGamemaker(gamemaker);
 
 			if (Member.hasGroupPermission(p.getUniqueId(), Group.TRIAL)) {
 				AdminMode.getInstance().setAdmin(p, Member.getMember(p.getUniqueId()));

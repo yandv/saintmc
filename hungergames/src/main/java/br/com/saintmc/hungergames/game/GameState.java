@@ -43,4 +43,8 @@ public enum GameState {
 		return gameState.isPregame();
 	}
 
+	public static boolean isInvincibility(GameState gameState) {
+		return gameState == INVINCIBILITY;
+	}
+
 }

@@ -36,7 +36,7 @@ public class CollectableInventory {
 						}
 					});
 
-			inv.setItem(13, new ItemBuilder().type(Material.POTION).name("§ePartículas §7(Clique aqui)")
+			inv.setItem(12, new ItemBuilder().type(Material.POTION).name("§ePartículas §7(Clique aqui)")
 					.lore("\n§7Você precisa ser " + Tag.BLIZZARD.getPrefix() + "§7 ou superior para usar as partículas!").build(), new MenuClickHandler() {
 						@Override
 						public void onClick(Player player, Inventory inv, ClickType type, ItemStack stack, int slot) {
@@ -48,7 +48,7 @@ public class CollectableInventory {
 							new ParticleInventory(player);
 						}
 					});
-			inv.setItem(15, new ItemBuilder().type(Material.EMERALD).name("§eCapas §7(Clique aqui)")
+			inv.setItem(14, new ItemBuilder().type(Material.EMERALD).name("§eCapas §7(Clique aqui)")
 					.lore("\n§7Você precisa ser " + Tag.SAINT.getPrefix() + "§7 ou superior para usar as capas!").build(), new MenuClickHandler() {
 
 						@Override
@@ -59,6 +59,15 @@ public class CollectableInventory {
 							}
 							
 							new WingInventory(player);
+						}
+					});
+			
+			inv.setItem(15, new ItemBuilder().type(Material.JUKEBOX).name("§eKit de Música §7(Clique aqui)")
+					.lore("\n§7Os kits musicais ainda estão em §3desenvolvimento§7!").build(), new MenuClickHandler() {
+
+						@Override
+						public void onClick(Player p, Inventory inventory, ClickType type, ItemStack stack, int slot) {
+							
 						}
 					});
 
@@ -81,15 +90,6 @@ public class CollectableInventory {
 							new CollectableInventory(p, Page.FIRST);
 						}
 
-					});
-
-			inv.setItem(13, new ItemBuilder().type(Material.JUKEBOX).name("§eKit de Música §7(Clique aqui)")
-					.lore("\n§7Os kits musicais ainda estão em §3desenvolvimento§7!").build(), new MenuClickHandler() {
-
-						@Override
-						public void onClick(Player p, Inventory inventory, ClickType type, ItemStack stack, int slot) {
-							
-						}
 					});
 			break;
 		}

@@ -6,6 +6,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -53,7 +54,7 @@ import tk.yallandev.saintmc.common.backend.data.PlayerData;
 import tk.yallandev.saintmc.common.backend.data.ReportData;
 import tk.yallandev.saintmc.common.backend.data.ServerData;
 import tk.yallandev.saintmc.common.backend.data.StatusData;
-import tk.yallandev.saintmc.common.backend.database.mongodb.MongoDatabase;
+import tk.yallandev.saintmc.common.backend.database.mongodb.MongoConnection;
 import tk.yallandev.saintmc.common.backend.database.redis.RedisDatabase;
 import tk.yallandev.saintmc.common.backend.database.redis.RedisDatabase.PubSubListener;
 import tk.yallandev.saintmc.common.command.CommandLoader;
@@ -102,7 +103,7 @@ public class BukkitMain extends JavaPlugin {
 
 		try {
 
-			MongoDatabase mongo = new MongoDatabase(CommonConst.MONGO_URL);
+			MongoConnection mongo = new MongoConnection(CommonConst.MONGO_URL);
 			RedisDatabase redis = new RedisDatabase("127.0.0.1", "", 6379);
 
 			mongo.connect();
@@ -207,8 +208,8 @@ public class BukkitMain extends JavaPlugin {
 					"testfor", "testforblocks", "tp", "weather", "xp", "reload", "rl", "worldborder", "achievement",
 					"blockdata", "clone", "debug", "defaultgamemode", "entitydata", "execute", "fill", "gamemode",
 					"pardon", "pardon-ip", "particle", "replaceitem", "setidletimeout", "stats", "testforblock",
-					"title", "trigger", "viaversion", "viaver", "vvbukkit", "protocolsupport", "ps", "holograms", "hd",
-					"holo", "hologram", "restart", "protocol", "stop", "filter", "packet_filter", "packetlog", "pl",
+					"title", "trigger", "viaver", "protocolsupport", "ps", "holograms", "hd",
+					"holo", "hologram", "restart", "stop", "filter", "packetlog", "pl",
 					"plugins", "timings");
 
 			try {
@@ -336,12 +337,11 @@ public class BukkitMain extends JavaPlugin {
 			Field f2 = commandMap.getClass().getDeclaredField("knownCommands");
 
 			f2.setAccessible(true);
-			HashMap<String, Command> knownCommands = (HashMap<String, Command>) f2.get(commandMap);
+			Map<String, Command> knownCommands = (HashMap<String, Command>) f2.get(commandMap);
 
-			for (String cmdLabel : knownCommands.keySet()) {
-				
-				if (knownCommands.containsKey(cmdLabel)) {
-					knownCommands.remove(cmdLabel);
+			for (String command : commands) {
+				if (knownCommands.containsKey(command)) {
+					knownCommands.remove(command);
 
 					List<String> aliases = new ArrayList<>();
 
@@ -351,7 +351,7 @@ public class BukkitMain extends JavaPlugin {
 
 						String substr = key.substring(key.indexOf(":") + 1);
 
-						if (substr.equalsIgnoreCase(cmdLabel)) {
+						if (substr.equalsIgnoreCase(command)) {
 							aliases.add(key);
 						}
 					}
@@ -361,11 +361,16 @@ public class BukkitMain extends JavaPlugin {
 					}
 				}
 			}
-
-			for (Entry<String, Command> entry : knownCommands.entrySet()) {
-				entry.getValue().unregister(commandMap);
-				if (!entry.getKey().contains(":"))
-					knownCommands.put(entry.getKey(), entry.getValue());
+			
+			Iterator<Entry<String, Command>> iterator = knownCommands.entrySet().iterator();
+			
+			while (iterator.hasNext()) {
+				Entry<String, Command> entry = iterator.next();
+				
+				if (entry.getKey().contains(":") || entry.getValue().getLabel().contains(":")) {
+					entry.getValue().unregister(commandMap);
+					iterator.remove();
+				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

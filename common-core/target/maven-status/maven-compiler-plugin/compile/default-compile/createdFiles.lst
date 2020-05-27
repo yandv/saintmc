@@ -15,6 +15,7 @@ tk\yallandev\saintmc\common\permission\Group.class
 tk\yallandev\saintmc\common\permission\Tag.class
 tk\yallandev\saintmc\common\server\loadbalancer\element\LoadBalancerObject.class
 tk\yallandev\saintmc\common\server\ServerManager.class
+tk\yallandev\saintmc\common\utils\json\JsonBuilder.class
 tk\yallandev\saintmc\common\utils\string\StringUtils.class
 tk\yallandev\saintmc\common\account\status\types\game\GameStatus.class
 tk\yallandev\saintmc\common\utils\ClassGetter.class
@@ -26,6 +27,7 @@ tk\yallandev\saintmc\common\utils\reflection\Reflection$1.class
 tk\yallandev\saintmc\common\permission\group\OwnerGroup.class
 tk\yallandev\saintmc\common\utils\mojang\MojangFetcher$1.class
 tk\yallandev\saintmc\common\music\MusicKit.class
+tk\yallandev\saintmc\common\utils\web\http\ApacheWebImpl$3.class
 tk\yallandev\saintmc\common\server\loadbalancer\server\MinigameState.class
 tk\yallandev\saintmc\common\utils\reflection\Reflection$ConstructorInvoker.class
 tk\yallandev\saintmc\common\server\loadbalancer\server\BattleServer.class
@@ -44,6 +46,7 @@ tk\yallandev\saintmc\common\account\Member.class
 tk\yallandev\saintmc\common\server\loadbalancer\element\Server.class
 tk\yallandev\saintmc\common\account\status\StatusType.class
 tk\yallandev\saintmc\common\data\payload\DataServerMessage.class
+tk\yallandev\saintmc\common\utils\web\http\ApacheWebImpl$1.class
 tk\yallandev\saintmc\common\utils\reflection\Reflection$3.class
 tk\yallandev\saintmc\common\utils\json\JsonUtils.class
 tk\yallandev\saintmc\common\account\configuration\LoginConfiguration.class
@@ -57,8 +60,11 @@ tk\yallandev\saintmc\common\data\payload\DataServerMessage$StartPayload.class
 tk\yallandev\saintmc\common\utils\reflection\Reflection$FieldAccessor.class
 tk\yallandev\saintmc\common\utils\string\StringCenter$DefaultFontInfo.class
 tk\yallandev\saintmc\common\backend\database\redis\RedisDatabase$PubSubListener.class
+tk\yallandev\saintmc\common\utils\web\WebHelper$Method.class
+tk\yallandev\saintmc\common\controller\StoreController$StoreConfig.class
 tk\yallandev\saintmc\CommonConst.class
 tk\yallandev\saintmc\common\account\MemberModel.class
+tk\yallandev\saintmc\common\utils\web\http\ApacheWebImpl$2.class
 tk\yallandev\saintmc\common\utils\reflection\Reflection$2.class
 tk\yallandev\saintmc\common\server\ServerType$1.class
 tk\yallandev\saintmc\common\utils\mojang\UUIDFetcher$1.class
@@ -102,9 +108,11 @@ tk\yallandev\saintmc\common\command\CommandFramework$Completer.class
 tk\yallandev\saintmc\common\utils\mojang\UUIDFetcher.class
 tk\yallandev\saintmc\common\account\DiscordType.class
 tk\yallandev\saintmc\common\command\CommandClass.class
+tk\yallandev\saintmc\common\utils\mojang\MojangFetcher$3.class
 tk\yallandev\saintmc\common\command\CommandFramework$Command.class
 tk\yallandev\saintmc\common\account\League.class
 tk\yallandev\saintmc\common\permission\group\GroupInterface.class
+tk\yallandev\saintmc\common\utils\web\WebHelper$FutureCallback.class
 tk\yallandev\saintmc\CommonGeneral.class
 tk\yallandev\saintmc\common\account\configuration\AccountConfiguration.class
 tk\yallandev\saintmc\common\utils\string\NameUtils.class

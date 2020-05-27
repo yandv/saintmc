@@ -13,62 +13,71 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 import tk.yallandev.saintmc.CommonConst;
 import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.common.account.Member;
+import tk.yallandev.saintmc.common.permission.Group;
 import tk.yallandev.saintmc.common.utils.web.WebHelper;
+import tk.yallandev.saintmc.common.utils.web.WebHelper.FutureCallback;
+import tk.yallandev.saintmc.common.utils.web.WebHelper.Method;
 import tk.yallandev.saintmc.common.utils.web.http.ApacheWebImpl;
 
 public class StoreManager {
 	
 	private WebHelper web = new ApacheWebImpl();
 
-	public boolean check() {
-		JsonElement json = getPendingOrders();
-		
-		if (!json.isJsonObject())
-			return false;
-		
-		JsonObject jsonObject = (JsonObject) json;
+	public void check() {
+		CommonConst.DEFAULT_WEB.doAsyncRequest(CommonConst.STORE_URL, Method.GET, new FutureCallback<JsonElement>() {
+			
+			@Override
+			public void result(JsonElement result, Throwable error) {
+				if (error == null) {
+					if (!result.isJsonObject())
+						return;
+					
+					JsonObject jsonObject = (JsonObject) result;
 
-		if (!jsonObject.has("orders"))
-			return false;
+					if (!jsonObject.has("orders"))
+						return;
+					
+					List<Order> orderList = new ArrayList<>();
 
-		List<Order> orderList = new ArrayList<>();
+					for (int x = 0; x < jsonObject.get("orders").getAsJsonArray().size(); x++) {
+						orderList.add(CommonConst.GSON.fromJson(jsonObject.get("orders").getAsJsonArray().get(x), Order.class));
+					}
 
-		for (int x = 0; x < jsonObject.get("orders").getAsJsonArray().size(); x++) {
-			orderList.add(CommonConst.GSON.fromJson(jsonObject.get("orders").getAsJsonArray().get(x), Order.class));
-		}
+					List<Integer> processedOrders = new ArrayList<>();
 
-		List<Integer> processedOrders = new ArrayList<>();
+					for (Order order : orderList) {
+						ProxiedPlayer proxiedPlayer = ProxyServer.getInstance().getPlayer(order.player);
 
-		for (Order order : orderList) {
-			ProxiedPlayer proxiedPlayer = ProxyServer.getInstance().getPlayer(order.player);
+						if (proxiedPlayer == null)
+							continue;
 
-			if (proxiedPlayer == null)
-				continue;
+						Member member = CommonGeneral.getInstance().getMemberManager().getMember(proxiedPlayer.getUniqueId());
 
-			Member member = CommonGeneral.getInstance().getMemberManager().getMember(proxiedPlayer.getUniqueId());
+						for (String command : order.commands) {
+							ProxyServer.getInstance().getPluginManager().dispatchCommand(ProxyServer.getInstance().getConsole(),
+									command);
+						}
 
-			for (String command : order.commands) {
-				ProxyServer.getInstance().getPluginManager().dispatchCommand(ProxyServer.getInstance().getConsole(),
-						command);
+						member.sendMessage(" ");
+						member.sendMessage("§a§l> §fO seu pedido de numero §a" + order.order_id + "§f acabou de ser executado!");
+						member.sendMessage(" ");
+						processedOrders.add(order.order_id);
+						CommonGeneral.getInstance().getMemberManager().broadcast("§a[DEBUG]WOOCommerce -> O pedido " + order.order_id + " acaba de ser executado!", Group.GERENTE);
+					}
+
+					if (processedOrders.isEmpty())
+						return;
+
+					sendProcessedOrders(processedOrders);
+				}
 			}
-
-			member.sendMessage(" ");
-			member.sendMessage("§a§l> §fO seu pedido de numero §a" + order.order_id + "§f acabou de ser executado!");
-			member.sendMessage(" ");
-			processedOrders.add(order.order_id);
-			CommonGeneral.getInstance().debug("WOOCommerce -> The order " + order.order_id + " has been sent!");
-		}
-
-		if (processedOrders.isEmpty())
-			return false;
-
-		return sendProcessedOrders(processedOrders);
+		});
 	}
 
 	private boolean sendProcessedOrders(List<Integer> processedOrders) {
 		try {
-			JsonElement json = web.post(CommonConst.STORE_URL, "{\"processedOrders\":["
-					+ processedOrders.stream().map(Object::toString).collect(Collectors.joining(",")) + "]}");
+			JsonElement json = web.doRequest(CommonConst.STORE_URL, Method.POST, "{\"processedOrders\":["
+							+ processedOrders.stream().map(Object::toString).collect(Collectors.joining(",")) + "]}");
 			
 			if (!json.isJsonObject())
 				return false;
@@ -94,7 +103,7 @@ public class StoreManager {
 	public JsonElement getPendingOrders() {
 		
 		try {
-			return web.get(CommonConst.STORE_URL);
+			return web.doRequest(CommonConst.STORE_URL, Method.GET);
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}

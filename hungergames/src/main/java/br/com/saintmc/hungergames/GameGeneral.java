@@ -8,6 +8,7 @@ import br.com.saintmc.hungergames.controller.AbilityController;
 import br.com.saintmc.hungergames.controller.GamerController;
 import br.com.saintmc.hungergames.controller.KitController;
 import br.com.saintmc.hungergames.controller.SchedulerController;
+import br.com.saintmc.hungergames.controller.TimeoutController;
 import br.com.saintmc.hungergames.event.game.GameStateChangeEvent;
 import br.com.saintmc.hungergames.event.game.GameTimeEvent;
 import br.com.saintmc.hungergames.game.GameState;
@@ -28,6 +29,8 @@ public class GameGeneral {
 
 	private GamerController gamerController;
 
+	private TimeoutController timeoutController;
+	
 	private AbilityController abilityController;
 	private KitController kitController;
 	private SchedulerController schedulerController;
@@ -39,6 +42,9 @@ public class GameGeneral {
 		time = gameState.getDefaultTime();
 
 		gamerController = new GamerController();
+		
+		timeoutController = new TimeoutController();
+		
 		abilityController = new AbilityController();
 		kitController = new KitController();
 		schedulerController = new SchedulerController();

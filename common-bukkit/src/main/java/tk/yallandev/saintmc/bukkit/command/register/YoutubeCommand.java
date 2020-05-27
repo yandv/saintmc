@@ -6,7 +6,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import com.comphenix.protocol.wrappers.WrappedSignedProperty;
-import com.google.gson.JsonObject;
 
 import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.bukkit.BukkitMain;
@@ -30,18 +29,20 @@ public class YoutubeCommand implements CommandClass {
 		Member member = CommonGeneral.getInstance().getMemberManager().getMember(player.getUniqueId());
 
 		if (args.getArgs().length != 1) {
-			player.sendMessage(" §e* §fUse §a/fake <player>§f para trocar de nick! §7(Cooldown de 1 minuto para trocar de fake)");
+			player.sendMessage(
+					" §e* §fUse §a/fake <player>§f para trocar de nick! §7(Cooldown de 1 minuto para trocar de fake)");
 			return;
 		}
-		
+
 		String playerName = args.getArgs()[0].equals("#") ? member.getPlayerName() : args.getArgs()[0];
 
 		if (!FakePlayerAPI.validateName(playerName)) {
 			player.sendMessage(" §c* §fO nickname que você colocou está inválido!");
 			return;
 		}
-		
-		if (member.isOnCooldown("fakeCommand") && !playerName.equals("#") && !playerName.equals(member.getPlayerName())) {
+
+		if (member.isOnCooldown("fakeCommand") && !playerName.equals("#")
+				&& !playerName.equals(member.getPlayerName())) {
 			member.sendMessage(" §c* §fVocê precisa esperar §e" + DateUtils.getTime(member.getCooldown("fakeCommand"))
 					+ "§f para trocar de fake novamente!");
 			return;
@@ -63,15 +64,12 @@ public class YoutubeCommand implements CommandClass {
 				if (member.getPlayerName().equals(playerName)) {
 					ScoreboardAPI.leaveCurrentTeamForOnlinePlayers(player);
 
-					JsonObject jsonObject = BukkitMain.getInstance().getSkinManager().getSkin(playerName);
+					WrappedSignedProperty property = BukkitMain.getInstance().getSkinManager().getSkin(playerName);
 
-					if (jsonObject == null) {
+					if (property == null)
 						FakePlayerAPI.changePlayerSkin(player, playerName, member.getUniqueId(), false);
-					} else {
-						WrappedSignedProperty property = new WrappedSignedProperty(jsonObject.get("name").getAsString(),
-								jsonObject.get("value").getAsString(), jsonObject.get("signature").getAsString());
+					else
 						FakePlayerAPI.changePlayerSkin(player, property, false);
-					}
 
 					FakePlayerAPI.changePlayerName(player, playerName);
 					member.setTag(member.getTag());
@@ -104,8 +102,8 @@ public class YoutubeCommand implements CommandClass {
 		Member member = CommonGeneral.getInstance().getMemberManager().getMember(p.getUniqueId());
 
 		if (member.isOnCooldown("changeskinCommand")) {
-			member.sendMessage(" §c* §fVocê precisa esperar §e" + DateUtils.getTime(member.getCooldown("changeskinCommand"))
-					+ "§f para trocar de skin novamente!");
+			member.sendMessage(" §c* §fVocê precisa esperar §e"
+					+ DateUtils.getTime(member.getCooldown("changeskinCommand")) + "§f para trocar de skin novamente!");
 			return;
 		}
 
@@ -136,9 +134,9 @@ public class YoutubeCommand implements CommandClass {
 				p.sendMessage(" §a* §fSua skin foi alterada para a do §a" + playerName + "§f!");
 
 				if (playerName.equals("#") || member.getPlayerName().equals(playerName))
-					System.out.println(BukkitMain.getInstance().getSkinManager().deleteSkin(member));
+					BukkitMain.getInstance().getSkinManager().deleteSkin(member);
 				else
-					System.out.println(BukkitMain.getInstance().getSkinManager().saveSkin(member, property));
+					BukkitMain.getInstance().getSkinManager().saveSkin(member, property);
 
 				member.setCooldown("changeskinCommand",
 						member.hasGroupPermission(Group.TRIAL) ? System.currentTimeMillis() + (1000 * 60 * 2)

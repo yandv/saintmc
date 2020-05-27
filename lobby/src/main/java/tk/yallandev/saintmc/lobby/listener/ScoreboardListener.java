@@ -16,8 +16,6 @@ import tk.yallandev.saintmc.bukkit.api.scoreboard.Scoreboard;
 import tk.yallandev.saintmc.bukkit.api.scoreboard.impl.SimpleScoreboard;
 import tk.yallandev.saintmc.bukkit.event.account.PlayerChangeGroupEvent;
 import tk.yallandev.saintmc.bukkit.event.account.PlayerChangeLeagueEvent;
-import tk.yallandev.saintmc.bukkit.event.update.UpdateEvent;
-import tk.yallandev.saintmc.bukkit.utils.string.StringTypewriter;
 import tk.yallandev.saintmc.common.account.League;
 import tk.yallandev.saintmc.common.account.Member;
 import tk.yallandev.saintmc.common.permission.Group;
@@ -27,11 +25,10 @@ import tk.yallandev.saintmc.lobby.LobbyMain;
 public class ScoreboardListener implements Listener {
 
 	public static final Scoreboard DEFAULT_SCOREBOARD;
-	public static final StringTypewriter STRING_TYPEWRITER;
 
 	static {
 
-		DEFAULT_SCOREBOARD = new SimpleScoreboard("§e§lLOBBY");
+		DEFAULT_SCOREBOARD = new SimpleScoreboard("§b§lLOBBY");
 
 		DEFAULT_SCOREBOARD.blankLine(10);
 		DEFAULT_SCOREBOARD.setScore(9, new Score("§fGrupo: §7§lMEMBRO", "group"));
@@ -44,23 +41,6 @@ public class ScoreboardListener implements Listener {
 				new Score("§fJogadores: §e" + BukkitMain.getInstance().getServerManager().getTotalNumber(), "online"));
 		DEFAULT_SCOREBOARD.blankLine(2);
 		DEFAULT_SCOREBOARD.setScore(1, new Score("§a" + CommonConst.STORE, "site"));
-
-		STRING_TYPEWRITER = new StringTypewriter("SAINTMC", "LOBBY " + LobbyMain.getLobbyAddress());
-
-//		new BukkitRunnable() {
-//
-//			@Override
-//			public void run() {
-//				DEFAULT_SCOREBOARD.setDisplayName(stringTypewriter.displayEffect());
-//			}
-//		}.runTaskTimerAsynchronously(LobbyMain.getInstance(), 0, 3);
-	}
-
-	@EventHandler
-	public void asijd(UpdateEvent event) {
-		if (event.getCurrentTick() % 3 == 0) {
-			DEFAULT_SCOREBOARD.setDisplayName(STRING_TYPEWRITER.displayEffect());
-		}
 	}
 
 	@EventHandler(priority = EventPriority.MONITOR)

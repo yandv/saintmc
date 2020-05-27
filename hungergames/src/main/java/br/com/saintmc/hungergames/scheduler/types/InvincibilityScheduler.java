@@ -13,7 +13,7 @@ import br.com.saintmc.hungergames.GameGeneral;
 import br.com.saintmc.hungergames.GameMain;
 import br.com.saintmc.hungergames.event.game.GameInvincibilityEndEvent;
 import br.com.saintmc.hungergames.game.GameState;
-import br.com.saintmc.hungergames.listener.invincibility.InvincibilityListener;
+import br.com.saintmc.hungergames.listener.register.invincibility.InvincibilityListener;
 import tk.yallandev.saintmc.common.utils.string.StringUtils;
 
 public class InvincibilityScheduler implements GameSchedule {

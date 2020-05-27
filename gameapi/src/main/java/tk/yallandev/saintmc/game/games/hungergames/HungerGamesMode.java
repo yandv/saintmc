@@ -73,7 +73,7 @@ public class HungerGamesMode extends GameMode {
 
 	@Override
 	public void onLoad() {
-//		MapUtils.deleteWorld("world");
+		MapUtils.deleteWorld("world");
 		getGameMain().setGameStage(GameStage.WAITING);
 		getGameMain().setMinimumPlayers(MINIMUM_PLAYERS);
 	}

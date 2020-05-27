@@ -29,7 +29,7 @@ import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.common.account.Member;
 import tk.yallandev.saintmc.common.account.MemberModel;
 import tk.yallandev.saintmc.common.backend.data.PlayerData;
-import tk.yallandev.saintmc.common.backend.database.mongodb.MongoDatabase;
+import tk.yallandev.saintmc.common.backend.database.mongodb.MongoConnection;
 import tk.yallandev.saintmc.common.backend.database.redis.RedisDatabase;
 import tk.yallandev.saintmc.common.utils.json.JsonUtils;
 
@@ -38,7 +38,7 @@ public class PlayerDataImpl implements PlayerData {
 	private RedisDatabase redisDatabase;
 	private MongoCollection<Document> memberCollection;
 
-	public PlayerDataImpl(MongoDatabase mongoDatabase, RedisDatabase redisDatabase) {
+	public PlayerDataImpl(MongoConnection mongoDatabase, RedisDatabase redisDatabase) {
 		com.mongodb.client.MongoDatabase database = mongoDatabase.getDb();
 		memberCollection = database.getCollection("account");
 		this.redisDatabase = redisDatabase;

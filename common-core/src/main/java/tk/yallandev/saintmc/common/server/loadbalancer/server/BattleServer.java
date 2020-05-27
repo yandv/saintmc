@@ -39,6 +39,10 @@ public class BattleServer implements LoadBalancerObject, NumberConnection {
 	public void leavePlayer(UUID uuid) {
 		players.remove(uuid);
 	}
+	
+	public boolean containsPlayer(UUID uuid) {
+		return players.contains(uuid);
+	}
 
 	public String getServerId() {
 		return serverId;

@@ -1,15 +1,8 @@
 package tk.yallandev.saintmc.bungee.listener;
 
-import java.io.UnsupportedEncodingException;
-import java.lang.reflect.Field;
 import java.net.InetSocketAddress;
-import java.net.URLEncoder;
 import java.util.UUID;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-
-import net.md_5.bungee.api.Callback;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.PendingConnection;
@@ -19,11 +12,8 @@ import net.md_5.bungee.api.event.PlayerDisconnectEvent;
 import net.md_5.bungee.api.event.PostLoginEvent;
 import net.md_5.bungee.api.event.PreLoginEvent;
 import net.md_5.bungee.api.plugin.Listener;
-import net.md_5.bungee.connection.InitialHandler;
 import net.md_5.bungee.event.EventHandler;
 import net.md_5.bungee.event.EventPriority;
-import net.md_5.bungee.http.HttpClient;
-import net.md_5.bungee.netty.ChannelWrapper;
 import tk.yallandev.saintmc.CommonConst;
 import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.bungee.BungeeMain;
@@ -37,28 +27,14 @@ import tk.yallandev.saintmc.common.report.Report;
 import tk.yallandev.saintmc.common.server.ServerType;
 
 public class AccountListener implements Listener {
-
-	@EventHandler(priority = EventPriority.LOWEST)
+	
+	/*
+	 * Change the onlineMode status 
+	 */
+	
+	@EventHandler(priority = EventPriority.NORMAL)
 	public void onLogin(PreLoginEvent event) {
 		String playerName = event.getConnection().getName();
-
-		if (playerName == null || playerName.isEmpty()) {
-			event.setCancelled(true);
-			event.setCancelReason(
-					"§4§lCONTA\n§f\n§fNão foi possível encontrar o seu nickname/id!\n§6Mais informação em: §b"
-							+ CommonConst.WEBSITE);
-			return;
-		}
-
-		if (playerName.toLowerCase().startsWith("mcdrop")) {
-			event.setCancelled(true);
-			event.setCancelReason("§4§l" + CommonConst.KICK_PREFIX
-					+ "\n§f\n§fPara evitar §cataques de bot§f, bloqueamos todos os nicks que possuam §c\"mcdrop\"§f\n§6Mais informação em: §b"
-					+ CommonConst.DISCORD);
-			return;
-		}
-
-		String ipAddress = event.getConnection().getAddress().getHostString();
 
 		PendingConnection connection = event.getConnection();
 
@@ -66,120 +42,44 @@ public class AccountListener implements Listener {
 		ProxyServer.getInstance().getScheduler().runAsync(BungeeMain.getPlugin(), new Runnable() {
 			@Override
 			public void run() {
-
+				/*
+				 * Verify if the player is cracked or premium
+				 */
+				
 				try {
 					boolean cracked = CommonGeneral.getInstance().getMojangFetcher().isCracked(playerName);
-
+					
+					/*
+					 * Change the login status
+					 * If the onlineMode equals false the cracked player will able to join
+					 * or if equals true the cracked player wont able to join
+					 */
+					
 					connection.setOnlineMode(!cracked);
 				} catch (Exception ex) {
 					event.setCancelled(true);
 					event.setCancelReason("§4§l" + CommonConst.KICK_PREFIX
 							+ "\n§f\n§fNão foi possível checar o seu nome!§f\n§6Mais informação em: §b"
 							+ CommonConst.DISCORD);
-					event.completeIntent(BungeeMain.getPlugin());
-					return;
 				}
-
-				InitialHandler initialHandler = (InitialHandler) event.getConnection();
-
-				ChannelWrapper channelWrapper = null;
-
-				try {
-					Field field = initialHandler.getClass().getDeclaredField("ch");
-					field.setAccessible(true);
-					channelWrapper = (ChannelWrapper) field.get(initialHandler);
-				} catch (NoSuchFieldException | SecurityException | IllegalArgumentException
-						| IllegalAccessException e) {
-					e.printStackTrace();
-				}
-
-				try {
-					HttpClient.get(CommonConst.MOJANG_FETCHER + "session/?ip=" + URLEncoder.encode(ipAddress, "UTF-8"),
-							channelWrapper.getHandle().eventLoop(), new Callback<String>() {
-								@Override
-								public void done(String result, Throwable error) {
-									if (error == null) {
-										JsonObject jsonObject = (JsonObject) JsonParser.parseString(result);
-
-										if (!jsonObject.get("allow").getAsBoolean()) {
-											event.setCancelled(true);
-											event.setCancelReason("§4§l" + CommonConst.KICK_PREFIX
-													+ "\n§f\n§cSeu endereço de ip foi bloqueado!" + "\n\n§fMotivo: §7"
-													+ jsonObject.get("message").getAsString()
-													+ "\n§f\n§6Mais informação em: §b" + CommonConst.DISCORD);
-											event.completeIntent(BungeeMain.getPlugin());
-
-											CommonGeneral.getInstance().debug("Blocked  " + ipAddress + " address!");
-											return;
-										}
-
-										event.completeIntent(BungeeMain.getPlugin());
-									} else {
-										event.setCancelled(true);
-										event.setCancelReason("§4§l" + CommonConst.KICK_PREFIX
-												+ "\n§f\n§fNão foi possível verificar o seu ip!§f\n§6Mais informação em: §b"
-												+ CommonConst.DISCORD);
-										event.completeIntent(BungeeMain.getPlugin());
-									}
-								}
-							});
-				} catch (UnsupportedEncodingException e) {
-					event.setCancelled(true);
-					event.setCancelReason("§4§l" + CommonConst.KICK_PREFIX
-							+ "\n§f\n§fNão foi possível verificar o seu ip!§f\n§6Mais informação em: §b"
-							+ CommonConst.DISCORD);
-					event.completeIntent(BungeeMain.getPlugin());
-
-					e.printStackTrace();
-				}
-
-//				try {
-//					String url = CommonConst.MOJANG_FETCHER + "session/?ip=" + URLEncoder.encode(ipAddress, "UTF-8");
-//					
-//					System.out.println(url);
-//					
-//					HttpGet httpGet = new HttpGet(url);
-//					
-//					httpGet.addHeader("Content-type", "application/json");
-//					
-//					CloseableHttpResponse response = CommonConst.HTTPCLIENT.execute(httpGet);
-//					
-//					String json = EntityUtils.toString(response.getEntity());
-//					JsonObject jsonObject = (JsonObject) JsonParser.parseString(json);
-//					
-//					if (!jsonObject.get("allow").getAsBoolean()) {
-//						event.setCancelled(true);
-//						event.setCancelReason("§4§l" + CommonConst.KICK_PREFIX
-//								+ "\n§f\n§cSeu endereço de ip foi bloqueado!"
-//								+ "\n\n§fMotivo: §7" + jsonObject.get("message").getAsString()
-//								+ "\n§f\n§6Mais informação em: §b"
-//								+ CommonConst.DISCORD);
-//						event.completeIntent(BungeeMain.getPlugin());
-//						
-//						CommonGeneral.getInstance().debug("Blocked  " + ipAddress + " address!");
-//						return;
-//					}
-//					
-//				} catch (Exception ex) {
-//					event.setCancelled(true);
-//					event.setCancelReason("§4§l" + CommonConst.KICK_PREFIX
-//							+ "\n§f\n§fNão foi possível verificar o seu ip!§f\n§6Mais informação em: §b"
-//							+ CommonConst.DISCORD);
-//					event.completeIntent(BungeeMain.getPlugin());
-//					
-//					ex.printStackTrace();
-//					return;
-//				}
-//
-//				event.completeIntent(BungeeMain.getPlugin());
+				
+				event.completeIntent(BungeeMain.getPlugin());
 			}
 		});
 	}
-
+	
+	/*
+	 * Load Member
+	 */
+	
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onLogin(LoginEvent event) {
 		UUID uniqueId = event.getConnection().getUniqueId();
 		String playerName = event.getConnection().getName();
+		
+		/*
+		 * Check if the uniqueId is true
+		 */
 
 		if (uniqueId == null) {
 			event.setCancelled(true);
@@ -187,18 +87,21 @@ public class AccountListener implements Listener {
 					+ CommonConst.WEBSITE);
 			return;
 		}
-
+		
 		InetSocketAddress ipAddress = event.getConnection().getAddress();
 
 		event.registerIntent(BungeeMain.getPlugin());
 		ProxyServer.getInstance().getScheduler().runAsync(BungeeMain.getPlugin(), new Runnable() {
 			@Override
 			public void run() {
+				
 				CommonGeneral.getInstance().debug("Loading " + uniqueId + " (" + playerName + ") account!");
+				
+				/*
+				 * Check if the playerName is equals the database storage playerName
+				 */
 
 				String memberName = CommonGeneral.getInstance().getPlayerData().checkNickname(playerName);
-
-				System.out.println(memberName);
 
 				if (memberName != null && !memberName.equals(playerName)) {
 					event.setCancelled(true);
@@ -208,23 +111,46 @@ public class AccountListener implements Listener {
 					event.completeIntent(BungeeMain.getPlugin());
 					return;
 				}
-
+				
 				try {
+					
+					/*
+					 * Load MemberModel from backend
+					 */
+					
 					MemberModel memberModel = CommonGeneral.getInstance().getPlayerData().loadMember(uniqueId);
 					Member member = null;
-
+					
+					/*
+					 * Create instance of Member using MemberModel from backend
+					 */
+					
 					if (memberModel == null) {
 						member = new BungeeMember(playerName, uniqueId);
 						CommonGeneral.getInstance().getPlayerData().saveMember(member);
 					} else {
 						member = new BungeeMember(memberModel);
 					}
+					
+					/*
+					 * Cache the member in redis
+					 */
 
 					CommonGeneral.getInstance().getPlayerData().checkCache(uniqueId);
+					
+					/*
+					 * Start Member 
+					 */
+					
 					member.setJoinData(playerName, ipAddress.getHostString());
 					member.updateTime();
 					member.setFakeName(member.getPlayerName());
 					member.setServerType(ServerType.NONE);
+					
+					/*
+					 * Save in local storage
+					 */
+					
 					CommonGeneral.getInstance().getMemberManager().loadMember(member);
 				} catch (Exception ex) {
 					event.setCancelled(true);
@@ -233,11 +159,15 @@ public class AccountListener implements Listener {
 					ex.printStackTrace();
 					return;
 				}
-
+				
 				CommonGeneral.getInstance()
 						.debug("The account of " + uniqueId + " (" + playerName + ") has been loaded!");
-
+				
 				Member member = CommonGeneral.getInstance().getMemberManager().getMember(uniqueId);
+				
+				/*
+				 * Check ban of player
+				 */
 
 				if (BungeeMain.getInstance().getPunishManager().isIpBanned(ipAddress.getHostString())) {
 					Ban ban = new Ban(member.getUniqueId(), "CONSOLE", UUID.randomUUID(), "Conta alternativa", -1l);
@@ -263,18 +193,59 @@ public class AccountListener implements Listener {
 					event.completeIntent(BungeeMain.getPlugin());
 					return;
 				}
+				
+				/*
+				 * Start LoginConfiguration of player
+				 */
 
 				boolean cracked = CommonGeneral.getInstance().getMojangFetcher().isCracked(playerName);
 
 				if (cracked) {
+					
+					/*
+					 * Check if player is storage like original and if
+					 * to dont allow the member join
+					 */
+					
+					if (member.getLoginConfiguration().getAccountType() == AccountType.ORIGINAL) {
+						event.setCancelled(true);
+						event.setCancelReason("§4§lMOJANG\n\n§fA conta original logada no servidor é original!\nVocê precisa logar nela como original!\n§f\nCaso esteja no minecraft original, isso pode está acontecendo por causa da nossa conexão com a mojang!\nEntre em contato pelo discord §b" + CommonConst.DISCORD);
+						event.completeIntent(BungeeMain.getPlugin());
+						return;
+					}
+					
+					/*
+					 * Logout the Member
+					 */
+					
 					member.getLoginConfiguration().logOut();
-					CommonGeneral.getInstance().getMojangFetcher().registerUuid(playerName, uniqueId);
+					
+					/*
+					 * Register the cracked uniqueId in javascript-coded backend
+					 */
+					
+					try {
+						CommonGeneral.getInstance().getMojangFetcher().registerUuid(playerName, uniqueId);
+					} catch (Exception ex) {
+						event.setCancelled(true);
+						event.setCancelReason("§4§lMOJANG\n\n§fNão foi possível salvar seu id pirata!");
+						event.completeIntent(BungeeMain.getPlugin());
+						return;
+					}
 				}
+				
+				/*
+				 * Save the account status from Member
+				 */	
 
 				if (member.getLoginConfiguration().getAccountType() == AccountType.NONE)
 					member.getLoginConfiguration().setAccountType(cracked ? AccountType.CRACKED : AccountType.ORIGINAL);
 
 				Report report = CommonGeneral.getInstance().getReportManager().getReport(uniqueId);
+				
+				/*
+				 * Start report
+				 */	
 
 				if (report != null) {
 					report.setOnline(true);
@@ -288,15 +259,27 @@ public class AccountListener implements Listener {
 
 	@EventHandler(priority = -127)
 	public void onPostLoginCheck(PostLoginEvent event) {
+		/*
+		 * Check if the account has been stored locally
+		 */	
+		
 		if (CommonGeneral.getInstance().getMemberManager().getMember(event.getPlayer().getUniqueId()) == null) {
 			event.getPlayer().disconnect(new TextComponent(
 					"§4§lCONTA\n\n§fSua conta não foi carregada!\n§6Mais informação em: §b" + CommonConst.WEBSITE));
 		}
 
+		/*
+		 * Start BungeeMember
+		 */	
+		
 		BungeeMember member = (BungeeMember) CommonGeneral.getInstance().getMemberManager()
 				.getMember(event.getPlayer().getUniqueId());
 		member.setProxiedPlayer(event.getPlayer());
 	}
+	
+	/*
+	 * Remove Member account
+	 */	
 
 	@EventHandler
 	public void onQuit(PlayerDisconnectEvent event) {

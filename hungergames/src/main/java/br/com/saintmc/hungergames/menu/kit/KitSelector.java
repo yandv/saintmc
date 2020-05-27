@@ -11,7 +11,8 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import br.com.saintmc.hungergames.GameGeneral;
-import br.com.saintmc.hungergames.gamer.Gamer;
+import br.com.saintmc.hungergames.GameMain;
+import br.com.saintmc.hungergames.constructor.Gamer;
 import br.com.saintmc.hungergames.kit.Kit;
 import br.com.saintmc.hungergames.kit.KitType;
 import lombok.AllArgsConstructor;
@@ -32,21 +33,24 @@ public class KitSelector {
 		Gamer gamer = GameGeneral.getInstance().getGamerController().getGamer(player);
 		MenuInventory menu = new MenuInventory("§7Kit Selector", 6, true);
 		List<Kit> kits = new ArrayList<>(GameGeneral.getInstance().getKitController().getAllKits());
-		
+
 		Comparator<Kit> comparator = Comparator.comparing(kit -> kit.getName());
-		
-		if (orderType == OrderType.MINE)
-			comparator.thenComparing(kit -> gamer.hasKit(kit.getName()));
-		
+
+		if (orderType == OrderType.MINE) {
+			comparator.thenComparing(kit -> (GameMain.DOUBLEKIT ? kitType == KitType.PRIMARY ? true : gamer.hasKit(kit.getName()) : gamer.hasKit(kit.getName())));
+		}
 		Collections.sort(kits, comparator);
 //		Collections.sort(kits, orderType == OrderType.ALPHABET ? (o1,o2) -> o1.getName().compareTo(o2.getName()) : (o1,o2) -> Boolean.compare(gamer.hasKit(o1.getName()), gamer.hasKit(o2.getName())) | o1.getName().compareTo(o2.getName()));
-		
+
 		List<MenuItem> items = new ArrayList<>();
-		
+
 		for (int i = 0; i < kits.size(); i++) {
 			Kit kit = kits.get(i);
+			System.out.println(GameMain.DOUBLEKIT ? kitType == KitType.PRIMARY ? true : gamer.hasKit(kit.getName()) : gamer.hasKit(kit.getName()));
+			
+			boolean hasKit = GameMain.DOUBLEKIT ? kitType == KitType.PRIMARY ? true : gamer.hasKit(kit.getName()) : gamer.hasKit(kit.getName());
 
-			if (gamer.hasKit(kit.getName())) {
+			if (hasKit) {
 				items.add(new MenuItem(
 						new ItemBuilder().lore("§7" + kit.getDescription() + "\n\n§eClique para selecionar!")
 								.type(kit.getKitIcon().getType()).durability(kit.getKitIcon().getDurability())
@@ -54,8 +58,9 @@ public class KitSelector {
 						new OpenKitMenu(kit, kitType)));
 			} else {
 				ItemStack item = new ItemBuilder().type(Material.STAINED_GLASS_PANE).durability(14)
-						.name("§c" + NameUtils.formatString(kit.getName())).lore("\n§cVocê não possui este kit!\n§cCompre em: §e"
-								+ CommonConst.STORE + "\n\n§7" + kit.getDescription() + "\n\n§eClique para selecionar!")
+						.name("§c" + NameUtils.formatString(kit.getName()))
+						.lore("\n§cVocê não possui este kit!\n§cCompre em: §e" + CommonConst.STORE + "\n\n§7"
+								+ kit.getDescription() + "\n\n§eClique para selecionar!")
 						.build();
 				items.add(new MenuItem(item, new StoreKitMenu(kit)));
 			}
@@ -143,15 +148,12 @@ public class KitSelector {
 		}
 
 		if (Math.ceil(items.size() / itemsPerPage) + 1 > page) {
-			menu.setItem(new MenuItem(new ItemBuilder().type(Material.ARROW).name("§aPágina " + (page + 1)).build(),
-					new MenuClickHandler() {
-						@Override
-						public void onClick(Player arg0, Inventory arg1, ClickType arg2, ItemStack arg3, int arg4) {
-							new KitSelector(arg0, page + 1, kitType, orderType);
-						}
-					}), 53);
+			menu.setItem(
+					new MenuItem(new ItemBuilder().type(Material.ARROW).name("§aPágina " + (page + 1)).build(),
+							(p, inventory, clickType, item, slot) -> new KitSelector(p, page + 1, kitType, orderType)),
+					53);
 		}
-		
+
 		menu.open(player);
 	}
 
@@ -167,7 +169,7 @@ public class KitSelector {
 				new KitInfo(p, kit, kitType);
 				return;
 			}
-			
+
 			GameGeneral.getInstance().getKitController().selectKit(p, kit, kitType);
 			p.closeInventory();
 		}

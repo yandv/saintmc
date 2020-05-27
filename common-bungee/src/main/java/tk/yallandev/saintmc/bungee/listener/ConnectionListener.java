@@ -40,49 +40,73 @@ public class ConnectionListener implements Listener {
 	@SuppressWarnings("deprecation")
 	@EventHandler
 	public void onServerKick(ServerKickEvent event) {
-		if (event.getKickReason().toLowerCase().contains("banido"))
-			return;
+		ProxiedPlayer player = event.getPlayer();
 
-		if (event.getKickReason().toLowerCase().contains("kickado")) {
-			event.getPlayer().disconnect(event.getKickReasonComponent());
-			return;
-		}
+		/*
+		 * Servidor que ele foi desconectado
+		 */
 
-		ProxiedPlayer proxiedPlayer = event.getPlayer();
 		BattleServer kickedFrom = manager.getServer(event.getKickedFrom().getName());
 
+		/*
+		 * Verifica se o servidor é nulo, caso seja, wtf / kicka o player
+		 */
+
 		if (kickedFrom == null) {
-			proxiedPlayer.disconnect(event.getKickReasonComponent());
+			player.disconnect(event.getKickReasonComponent());
 			return;
 		}
 
+		/*
+		 * Se o servidor for lobby, desconectar o player do servidor!
+		 */
+
 		if (kickedFrom.getServerType().toString().contains("LOBBY")) {
-			proxiedPlayer.disconnect(event.getKickReasonComponent());
+			player.disconnect(event.getKickReasonComponent());
 			return;
 		}
+
+		/*
+		 * Servidor de redirecionamento (fallback server), que serão os lobbies
+		 */
 
 		BattleServer fallbackServer = manager.getBalancer(kickedFrom.getServerType().getServerLobby()).next();
 
 		if (kickedFrom.getServerType() == ServerType.HUNGERGAMES) {
-			BattleServer hungerGames = manager.getBalancer(ServerType.HUNGERGAMES).next();
 
-			if (hungerGames != null && hungerGames.getServerInfo() != null && hungerGames.isFull())
-				fallbackServer = hungerGames;
+			/*
+			 * Mas caso o servidor seja um HG, será redirecionado para outro!
+			 */
+
+			/*
+			 * BattleServer hungerGames =
+			 * manager.getBalancer(ServerType.HUNGERGAMES).next();
+			 * 
+			 * if (hungerGames != null && hungerGames.getServerInfo() != null &&
+			 * hungerGames.isFull()) fallbackServer = hungerGames;
+			 */
 		}
 
-		if (fallbackServer == null || fallbackServer.getServerInfo() == null || fallbackServer.isFull()) {
+		/*
+		 * Caso o fallback seja nulo, desconectar o player, pois não haverá servidor
+		 * para ele entrar
+		 */
+
+		if (fallbackServer == null || fallbackServer.getServerInfo() == null) {
 			event.getPlayer().disconnect(event.getKickReasonComponent());
-		} else {
-			event.setCancelled(true);
-			event.setCancelServer(fallbackServer.getServerInfo());
-
-			String message = "§4§l> §fVocê foi desconectado do servidor §a" + kickedFrom.getServerId().toLowerCase()
-					+ "§f por " + event.getKickReason();
-
-			for (String m : message.split("\n")) {
-				proxiedPlayer.sendMessage(TextComponent.fromLegacyText(m.replace("\n", "")));
-			}
+			return;
 		}
+
+		String message = event.getKickReason();
+
+		for (String m : message.split("\n")) {
+			player.sendMessage(TextComponent.fromLegacyText(m.replace("\n", "")));
+		}
+
+		event.setCancelled(true);
+
+		if (!fallbackServer.containsPlayer(player.getUniqueId()))
+			event.setCancelServer(fallbackServer.getServerInfo());
 	}
 
 	@EventHandler
@@ -251,7 +275,7 @@ public class ConnectionListener implements Listener {
 						serverPing.setDescription(
 								"    §f﹄ §6§lSaint§f§lMC §f| §eMinecraft Network §7(1.7-.12) §f﹃\n    §4§nServidor não encontrado!");
 					}
-					
+
 					event.setResponse(serverPing);
 					event.completeIntent(BungeeMain.getPlugin());
 				}

@@ -1,17 +1,14 @@
 package tk.yallandev.saintmc.discord.guild;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.util.EntityUtils;
-
+import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
-import com.google.gson.JsonParser;
 
 import lombok.Getter;
 import tk.yallandev.saintmc.CommonConst;
+import tk.yallandev.saintmc.common.utils.web.WebHelper.Method;
 
 @Getter
 public class GuildConfiguration {
@@ -24,12 +21,9 @@ public class GuildConfiguration {
 	
 	public GuildConfiguration(long guildId) {
 		try {
-			HttpGet httpGet = new HttpGet(CommonConst.DISCORD_URL + "?discordId=" + guildId);
+			JsonElement json = CommonConst.DEFAULT_WEB.doRequest(CommonConst.DISCORD_URL + "?discordId=" + guildId, Method.GET);
 			
-			httpGet.addHeader("Content-type", "application/json");
-			String json = EntityUtils.toString(CommonConst.HTTPCLIENT.execute(httpGet).getEntity());
-			
-			if (JsonParser.parseString(json) instanceof JsonNull) {
+			if (json instanceof JsonNull) {
 				this.guildId = guildId;
 				this.staffChat = false;
 				this.chatMap = new HashMap<>();
@@ -46,7 +40,7 @@ public class GuildConfiguration {
 			this.guildId = guild.getGuildId();
 			this.chatMap = guild.getChatMap();
 			this.roleMap = guild.getRoleMap();
-		} catch (IOException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}

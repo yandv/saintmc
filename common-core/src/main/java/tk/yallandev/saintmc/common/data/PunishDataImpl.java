@@ -13,7 +13,7 @@ import com.mongodb.client.model.Filters;
 import tk.yallandev.saintmc.CommonConst;
 import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.common.backend.data.PunishData;
-import tk.yallandev.saintmc.common.backend.database.mongodb.MongoDatabase;
+import tk.yallandev.saintmc.common.backend.database.mongodb.MongoConnection;
 import tk.yallandev.saintmc.common.ban.constructor.Ban;
 import tk.yallandev.saintmc.common.ban.constructor.Mute;
 import tk.yallandev.saintmc.common.ban.constructor.Warn;
@@ -22,7 +22,7 @@ public class PunishDataImpl implements PunishData {
 
 	private com.mongodb.client.MongoDatabase database;
 
-	public PunishDataImpl(MongoDatabase mongoDatabase) {
+	public PunishDataImpl(MongoConnection mongoDatabase) {
 		database = mongoDatabase.getDb();
 	}
 

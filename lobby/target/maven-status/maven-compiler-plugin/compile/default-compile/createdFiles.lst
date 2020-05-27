@@ -18,7 +18,6 @@ tk\yallandev\saintmc\lobby\listener\ScoreboardListener$4.class
 tk\yallandev\saintmc\lobby\command\SpawnCommand.class
 tk\yallandev\saintmc\lobby\menu\collectable\WingInventory$1.class
 tk\yallandev\saintmc\lobby\menu\server\LobbyInventory.class
-tk\yallandev\saintmc\lobby\listener\ParticleListener$1.class
 tk\yallandev\saintmc\lobby\menu\server\KitpvpInventory.class
 tk\yallandev\saintmc\lobby\collectable\Collectables$CollectableType.class
 tk\yallandev\saintmc\lobby\menu\collectable\CollectableInventory$4.class

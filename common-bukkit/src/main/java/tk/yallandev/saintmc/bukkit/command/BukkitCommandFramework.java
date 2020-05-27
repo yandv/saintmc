@@ -34,6 +34,7 @@ import tk.yallandev.saintmc.common.account.Member;
 import tk.yallandev.saintmc.common.command.CommandArgs;
 import tk.yallandev.saintmc.common.command.CommandClass;
 import tk.yallandev.saintmc.common.command.CommandFramework;
+import tk.yallandev.saintmc.common.permission.Group;
 
 public class BukkitCommandFramework implements CommandFramework {
 
@@ -44,7 +45,7 @@ public class BukkitCommandFramework implements CommandFramework {
 
 	public BukkitCommandFramework(JavaPlugin plugin) {
 		this.plugin = plugin;
-		
+
 		if (plugin.getServer().getPluginManager() instanceof SimplePluginManager) {
 			SimplePluginManager manager = (SimplePluginManager) plugin.getServer().getPluginManager();
 			try {
@@ -80,23 +81,6 @@ public class BukkitCommandFramework implements CommandFramework {
 			if (commandMap.containsKey(cmdLabel)) {
 				Entry<Method, Object> entry = commandMap.get(cmdLabel);
 				Command command = entry.getKey().getAnnotation(Command.class);
-
-				if (sender instanceof Player) {
-					Player p = (Player) sender;
-					Member member = CommonGeneral.getInstance().getMemberManager().getMember(p.getUniqueId());
-					
-					if (member == null) {
-						p.kickPlayer("ERRO");
-						return true;
-					}
-
-					if (!member.hasGroupPermission(command.groupToUse())) {
-						member.sendMessage("");
-						member.sendMessage("§c* §fVocê não tem §cpermissão§f para executar esse comando!");
-						member.sendMessage("");
-						return true;
-					}
-				}
 
 				if (command.runAsync() && Bukkit.isPrimaryThread()) {
 					new BukkitRunnable() {
@@ -148,7 +132,11 @@ public class BukkitCommandFramework implements CommandFramework {
 				for (String alias : command.aliases()) {
 					registerCommand(command, alias, m, commandClass);
 				}
-			} else if (m.getAnnotation(Completer.class) != null) {
+			}
+		}
+
+		for (Method m : commandClass.getClass().getMethods()) {
+			if (m.getAnnotation(Completer.class) != null) {
 				Completer comp = m.getAnnotation(Completer.class);
 				if (m.getParameterTypes().length > 1 || m.getParameterTypes().length == 0
 						|| m.getParameterTypes()[0] != CommandArgs.class) {
@@ -156,11 +144,14 @@ public class BukkitCommandFramework implements CommandFramework {
 							"Unable to register tab completer " + m.getName() + ". Unexpected method arguments");
 					continue;
 				}
+				
 				if (m.getReturnType() != List.class) {
 					System.out.println("Unable to register tab completer " + m.getName() + ". Unexpected return type");
 					continue;
 				}
+				
 				registerCompleter(comp.name(), m, commandClass);
+				
 				for (String alias : comp.aliases()) {
 					registerCompleter(alias, m, commandClass);
 				}
@@ -191,8 +182,19 @@ public class BukkitCommandFramework implements CommandFramework {
 		String cmdLabel = label.replace(".", ",").split(",")[0].toLowerCase();
 
 		if (map.getCommand(cmdLabel) == null) {
-			org.bukkit.command.Command cmd = new BukkitCommand(cmdLabel, plugin);
+			org.bukkit.command.Command cmd = new BukkitCommand(cmdLabel, plugin, command.groupToUse());
 			knownCommands.put(cmdLabel, cmd);
+		} else {
+			
+			/*
+			 * Já que alguns comandos não carregam primeiramente aqui e
+			 * eles ficam sem o grupo do servidor isso é necessário!
+			 */
+			
+			if (map.getCommand(cmdLabel) instanceof BukkitCommand) {
+				BukkitCommand bukkitCommand = (BukkitCommand) map.getCommand(cmdLabel);
+				bukkitCommand.group = command.groupToUse();
+			}
 		}
 
 		if (!command.description().equalsIgnoreCase("") && cmdLabel == label) {
@@ -208,7 +210,7 @@ public class BukkitCommandFramework implements CommandFramework {
 		String cmdLabel = label.replace(".", ",").split(",")[0].toLowerCase();
 
 		if (map.getCommand(cmdLabel) == null) {
-			org.bukkit.command.Command command = new BukkitCommand(cmdLabel, plugin);
+			org.bukkit.command.Command command = new BukkitCommand(cmdLabel, plugin, Group.MEMBRO);
 			knownCommands.put(cmdLabel, command);
 		}
 
@@ -241,37 +243,24 @@ public class BukkitCommandFramework implements CommandFramework {
 	}
 
 	private void defaultCommand(CommandArgs args) {
-		if (args.isPlayer()) {
-			args.getSender().sendMessage("\n§f\n §c* §fO comando está inacessível no momento!\n§f");
-		} else {
-			args.getSender().sendMessage("\n§f\n §c* §fO comando está inacessível no momento!\n§f");
-		}
+		args.getSender().sendMessage(" ");
+		args.getSender().sendMessage(" §c* §fO comando está inacessível no momento!");
+		args.getSender().sendMessage(" ");
 	}
 
-	/**
-	 * Command Framework - BukkitCommand <br>
-	 * An implementation of Bukkit's Command class allowing for registering of
-	 * commands without plugin.yml
-	 * 
-	 * @author minnymin3
-	 */
-	class BukkitCommand extends org.bukkit.command.Command {
+	public class BukkitCommand extends org.bukkit.command.Command {
 
-		private final Plugin owningPlugin;
-		protected BukkitCompleter completer;
-		private final CommandExecutor executor;
+		private Plugin owningPlugin;
+		private BukkitCompleter completer;
+		private CommandExecutor executor;
+		private Group group;
 
-		/**
-		 * A slimmed down PluginCommand
-		 * 
-		 * @param label
-		 * @param owner
-		 */
-		protected BukkitCommand(String label, Plugin owner) {
+		private BukkitCommand(String label, Plugin owner, Group group) {
 			super(label);
 			this.executor = owner;
 			this.owningPlugin = owner;
 			this.usageMessage = "";
+			this.group = group;
 		}
 
 		@Override
@@ -320,9 +309,11 @@ public class BukkitCommandFramework implements CommandFramework {
 			} catch (Throwable ex) {
 				StringBuilder message = new StringBuilder();
 				message.append("Unhandled exception during tab completion for command '/").append(alias).append(' ');
+
 				for (String arg : args) {
 					message.append(arg).append(' ');
 				}
+
 				message.deleteCharAt(message.length() - 1).append("' in plugin ")
 						.append(owningPlugin.getDescription().getFullName());
 				throw new CommandException(message.toString(), ex);
@@ -334,6 +325,34 @@ public class BukkitCommandFramework implements CommandFramework {
 			return completions;
 		}
 
+		@Override
+		public boolean testPermission(CommandSender target) {
+			if (testPermissionSilent(target)) {
+				return true;
+			}
+
+			target.sendMessage("");
+			target.sendMessage("§c* §fVocê não tem §cpermissão§f para executar esse comando!");
+			target.sendMessage("");
+			return false;
+		}
+
+		@Override
+		public boolean testPermissionSilent(CommandSender target) {
+			if (target instanceof Player) {
+				Player p = (Player) target;
+				Member member = CommonGeneral.getInstance().getMemberManager().getMember(p.getUniqueId());
+
+				if (member == null) {
+					p.kickPlayer("ERRO");
+					return false;
+				}
+
+				return member.hasGroupPermission(group);
+			}
+
+			return true;
+		}
 	}
 
 	/**
@@ -343,7 +362,7 @@ public class BukkitCommandFramework implements CommandFramework {
 	 * 
 	 * @author minnymin3
 	 */
-	class BukkitCompleter implements TabCompleter {
+	public class BukkitCompleter implements TabCompleter {
 
 		private final Map<String, Entry<Method, Object>> completers = new HashMap<String, Entry<Method, Object>>();
 

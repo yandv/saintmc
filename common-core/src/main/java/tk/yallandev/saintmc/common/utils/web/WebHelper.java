@@ -1,37 +1,42 @@
 package tk.yallandev.saintmc.common.utils.web;
 
-import org.apache.http.client.methods.HttpRequestBase;
-
 import com.google.gson.JsonElement;
 
+import tk.yallandev.saintmc.common.utils.supertype.FutureCallback;
+
+/**
+ * 
+ * TODO Tenho que documentar!
+ * 
+ * @author yandv
+ */
+
 public interface WebHelper {
-	
-	/**
-	 * used to do generic request using apache http client api
+
+	/*
 	 * 
-	 * @param request
-	 * @return jsonObject not null
-	 * @throws Exception 
+	 */
+
+	JsonElement doRequest(String url, Method method) throws Exception;
+	
+	JsonElement doRequest(String url, Method method, String jsonEntity) throws Exception;
+
+	/*
+	 * Callback
 	 */
 	
-	JsonElement doRequest(HttpRequestBase requestBase) throws Exception;
+	void doAsyncRequest(String url, Method method, FutureCallback<JsonElement> callback);
+
+	void doAsyncRequest(String url, Method method, String jsonEntity, FutureCallback<JsonElement> callback);
 	
-	/**
-	 * used to make get request using apache http client api
-	 * 
-	 * @param url and body json
-	 * @return jsonObject not null
+	/*
+	 * Create
 	 */
 	
-	JsonElement get(String url) throws Exception;
-	
-	/**
-	 * used to make post request using apache http client api
-	 * 
-	 * @param url and body json
-	 * @return jsonObject not null
-	 */
-	
-	JsonElement post(String url, String jsonEntity) throws Exception;
+	public enum Method {
+		
+		POST, DELETE, GET, PUT
+		
+	}
 
 }

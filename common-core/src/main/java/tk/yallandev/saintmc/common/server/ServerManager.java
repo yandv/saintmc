@@ -1,5 +1,6 @@
 package tk.yallandev.saintmc.common.server;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -74,6 +75,10 @@ public class ServerManager {
 
     public BattleServer getServer(String str) {
         return activeServers.get(str.toLowerCase());
+    }
+    
+    public Collection<BattleServer> getServers() {
+        return activeServers.values();
     }
 
     public void removeActiveServer(String str) {

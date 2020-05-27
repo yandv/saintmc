@@ -1,111 +1,102 @@
 package tk.yallandev.saintmc.bukkit.controller;
 
-import java.io.IOException;
-
-import org.apache.http.HttpHeaders;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpDelete;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.util.EntityUtils;
-
 import com.comphenix.protocol.wrappers.WrappedSignedProperty;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 
 import tk.yallandev.saintmc.CommonConst;
+import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.common.account.Member;
+import tk.yallandev.saintmc.common.utils.web.WebHelper.FutureCallback;
+import tk.yallandev.saintmc.common.utils.web.WebHelper.Method;
 
 public class SkinController {
 
-	public JsonElement saveSkin(Member member, WrappedSignedProperty property) {
-		try {
-			HttpPost post = new HttpPost(CommonConst.SKIN_URL + "?name=" + member.getPlayerName());
+	public void saveSkin(Member member, WrappedSignedProperty property) {
 
-			JsonObject jsonObject = new JsonObject();
+		JsonObject jsonObject = new JsonObject();
 
-			jsonObject.addProperty("name", member.getPlayerName());
+		jsonObject.addProperty("name", member.getPlayerName());
 
-			JsonArray jsonArray = new JsonArray();
-			JsonObject properties = new JsonObject();
+		JsonArray jsonArray = new JsonArray();
+		JsonObject properties = new JsonObject();
 
-			properties.addProperty("name", property.getName());
-			properties.addProperty("value", property.getValue());
-			properties.addProperty("signature", property.getSignature());
-			jsonArray.add(properties);
+		properties.addProperty("name", property.getName());
+		properties.addProperty("value", property.getValue());
+		properties.addProperty("signature", property.getSignature());
+		jsonArray.add(properties);
 
-			jsonObject.add("properties", jsonArray);
+		jsonObject.add("properties", jsonArray);
 
-			StringEntity postingString = new StringEntity(jsonObject.toString());
-			post.setEntity(postingString);
-			post.setHeader("Content-type", "application/json");
+		CommonConst.DEFAULT_WEB.doAsyncRequest(CommonConst.SKIN_URL + "?name=" + member.getPlayerName(), Method.POST,
+				jsonObject.toString(), new FutureCallback<JsonElement>() {
 
-			CloseableHttpResponse response = CommonConst.HTTPCLIENT.execute(post);
-			String json = EntityUtils.toString(response.getEntity());
-			response.close();
-			return JsonParser.parseString(json);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		
-		return JsonNull.INSTANCE;
+					@Override
+					public void result(JsonElement result, Throwable error) {
+						if (error == null) {
+							CommonGeneral.getInstance()
+									.debug("The skin of " + member.getPlayerName() + " has been saved!");
+						}
+					}
+				});
+
+//		try {
+//			HttpPost post = new HttpPost(CommonConst.SKIN_URL + "?name=" + member.getPlayerName());
+//
+//			post.setEntity(postingString);
+//			post.setHeader("Content-type", "application/json");
+//
+//			CloseableHttpResponse response = CommonConst.HTTPCLIENT.execute(post);
+//			String json = EntityUtils.toString(response.getEntity());
+//			response.close();
+//			return JsonParser.parseString(json);
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
+
 	}
 
-	public JsonElement deleteSkin(Member member) {
-		try {
-			HttpDelete delete = new HttpDelete(CommonConst.SKIN_URL + "" + member.getPlayerName());
+	public void deleteSkin(Member member) {
+		CommonConst.DEFAULT_WEB.doAsyncRequest(CommonConst.SKIN_URL + "?name=" + member.getPlayerName(), Method.DELETE,
+				null, new FutureCallback<JsonElement>() {
 
-			delete.setHeader("Content-type", "application/json");
-
-			CloseableHttpResponse response = CommonConst.HTTPCLIENT.execute(delete);
-			String json = EntityUtils.toString(response.getEntity());
-			response.close();
-			return JsonParser.parseString(json);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		
-		return JsonNull.INSTANCE;
+					@Override
+					public void result(JsonElement result, Throwable error) {
+						if (error == null) {
+							CommonGeneral.getInstance()
+									.debug("The skin of " + member.getPlayerName() + " has been saved!");
+						}
+					}
+				});
 	}
 
-	public JsonObject getSkin(String playerName) {
-		HttpGet request = new HttpGet(CommonConst.SKIN_URL + "?name=" + playerName);
+	public WrappedSignedProperty getSkin(String playerName) {
 
-		request.addHeader("custom-key", "mkyong");
-		request.addHeader(HttpHeaders.USER_AGENT, "Googlebot");
+		try {
+			JsonObject json = (JsonObject) CommonConst.DEFAULT_WEB.doRequest(CommonConst.SKIN_URL + "?name=" + playerName,
+					Method.GET);
+			
+			if (json != null) {
+				if (json.has("properties")) {
+					JsonArray jsonArray = json.get("properties").getAsJsonArray();
 
-		try (CloseableHttpResponse response = CommonConst.HTTPCLIENT.execute(request)) {
-			String jsonString = EntityUtils.toString(response.getEntity());
-			response.close();
+					for (int x = 0; x < jsonArray.size(); x++) {
+						JsonObject jsonObject = (JsonObject) jsonArray.get(x);
 
-			if (jsonString != null) {
-				JsonObject json = (JsonObject) JsonParser.parseString(jsonString);
-
-				if (json != null) {
-					if (json.has("properties")) {
-						JsonArray jsonArray = json.get("properties").getAsJsonArray();
-
-						for (int x = 0; x < jsonArray.size(); x++) {
-							JsonObject jsonObject = (JsonObject) jsonArray.get(x);
-
-							if (jsonObject.get("name").getAsString().equalsIgnoreCase("textures")) {
-//								WrappedSignedProperty property = new WrappedSignedProperty(
-//										jsonObject.get("name").getAsString(), jsonObject.get("value").getAsString(),
-//										jsonObject.get("signature").getAsString());
-								return jsonObject;
-							}
+						if (jsonObject.get("name").getAsString().equalsIgnoreCase("textures")) {
+							return new WrappedSignedProperty(
+									jsonObject.get("name").getAsString(), jsonObject.get("value").getAsString(),
+									jsonObject.get("signature").getAsString());
 						}
 					}
 				}
 			}
-		} catch (Exception ex) {
-			ex.printStackTrace();
+			
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
-		
+
 		return null;
 	}
 }

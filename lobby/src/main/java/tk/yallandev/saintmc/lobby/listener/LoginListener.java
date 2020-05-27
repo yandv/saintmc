@@ -18,7 +18,8 @@ import tk.yallandev.saintmc.CommonConst;
 import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.bukkit.BukkitMain;
 import tk.yallandev.saintmc.bukkit.account.BukkitMember;
-import tk.yallandev.saintmc.bukkit.api.title.TitleAPI;
+import tk.yallandev.saintmc.bukkit.api.title.Title;
+import tk.yallandev.saintmc.bukkit.api.title.types.SimpleTitle;
 import tk.yallandev.saintmc.bukkit.event.PlayerMoveUpdateEvent;
 import tk.yallandev.saintmc.bukkit.event.login.PlayerChangeLoginStatusEvent;
 import tk.yallandev.saintmc.bukkit.event.update.UpdateEvent;
@@ -29,7 +30,7 @@ import tk.yallandev.saintmc.common.permission.Group;
 import tk.yallandev.saintmc.common.permission.Tag;
 
 public class LoginListener implements Listener {
-	
+
 	private static final int MAX_PLAYERS = 8;
 
 	private Map<BukkitMember, Long> playerList;
@@ -42,17 +43,18 @@ public class LoginListener implements Listener {
 	public void onPlayerLogin(PlayerLoginEvent event) {
 		BukkitMember member = (BukkitMember) CommonGeneral.getInstance().getMemberManager()
 				.getMember(event.getPlayer().getUniqueId());
-		
+
 		if (member == null)
 			return;
-		
+
 		if (member.getLoginConfiguration().isLogged())
 			if (playerList.size() >= MAX_PLAYERS)
 				if (!member.hasGroupPermission(Group.LIGHT)) {
-					event.disallow(Result.KICK_OTHER, "§4§l" + CommonConst.KICK_PREFIX + "\n§f\n§fO servidor de §alogin§f está cheio!");
+					event.disallow(Result.KICK_OTHER,
+							"§4§l" + CommonConst.KICK_PREFIX + "\n§f\n§fO servidor de §alogin§f está cheio!");
 				}
 	}
-	
+
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		event.setJoinMessage(null);
@@ -71,20 +73,21 @@ public class LoginListener implements Listener {
 						member.getLoginConfiguration().isRegistred() ? "§a§l> §aUse /login <senha> para se logar!"
 								: "§a§l> §aUse /register <senha> para se registrar!");
 
-				TitleAPI.setTitle(player, member.getLoginConfiguration().isRegistred() ? "§a§lLOGIN" : "§a§lREGISTER",
+				Title.send(player, member.getLoginConfiguration().isRegistred() ? "§a§lLOGIN" : "§a§lREGISTER",
 						member.getLoginConfiguration().isRegistred() ? "§aUse /login <senha> para se logar!"
-								: "§aUse /register <senha> para se registrar!");
+								: "§aUse /register <senha> para se registrar!",
+						SimpleTitle.class);
 
 				playerList.put(member, System.currentTimeMillis() + 15000);
 			}
 		} else
 			player.teleport(BukkitMain.getInstance().getLocationFromConfig("spawn"));
 	}
-	
+
 	@EventHandler
 	public void onPlayerMove(PlayerMoveUpdateEvent event) {
 		Member member = CommonGeneral.getInstance().getMemberManager().getMember(event.getPlayer().getUniqueId());
-		
+
 		if (playerList.containsKey(member))
 			event.setCancelled(true);
 	}
@@ -105,18 +108,18 @@ public class LoginListener implements Listener {
 			event.getMember().setTag(((BukkitMember) event.getMember()).getDefaultTag());
 		}
 	}
-	
+
 	@EventHandler
 	public void onUpdate(UpdateEvent event) {
 		if (event.getType() != UpdateType.SECOND)
 			return;
-		
+
 		Iterator<Entry<BukkitMember, Long>> iterator = playerList.entrySet().iterator();
-		
+
 		while (iterator.hasNext()) {
 			Entry<BukkitMember, Long> entry = iterator.next();
 			BukkitMember member = entry.getKey();
-			
+
 			if (entry.getValue() > System.currentTimeMillis()) {
 				if (member.getLoginConfiguration().isLogged()) {
 					playerList.remove(member);
@@ -124,14 +127,15 @@ public class LoginListener implements Listener {
 				}
 
 				if (((entry.getValue() - System.currentTimeMillis()) / 1000) % 10 == 0) {
-					member.sendMessage(
-							member.getLoginConfiguration().isRegistred() ? "§a§l> §fUse §a/login <senha>§f para se logar!"
-									: "§a§l> §fUse §a/register <senha> <repita a senha>§f para se registrar!");
+					member.sendMessage(member.getLoginConfiguration().isRegistred()
+							? "§a§l> §fUse §a/login <senha>§f para se logar!"
+							: "§a§l> §fUse §a/register <senha> <repita a senha>§f para se registrar!");
 				}
 
 				member = null;
 			} else {
-				member.getPlayer().kickPlayer("§4§l" + CommonConst.KICK_PREFIX + "\n§f\n§fVocê demorou muito para se §alogar§f!");
+				member.getPlayer()
+						.kickPlayer("§4§l" + CommonConst.KICK_PREFIX + "\n§f\n§fVocê demorou muito para se §alogar§f!");
 				playerList.remove(member);
 			}
 		}

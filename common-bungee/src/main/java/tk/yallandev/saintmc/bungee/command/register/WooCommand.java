@@ -21,13 +21,7 @@ public class WooCommand implements CommandClass {
     		try {
     			cmdArgs.getSender().sendMessage(" §a* §fEstamos verificando...");
     			
-    			boolean check = BungeeMain.getInstance().getStoreManager().check();
-    			
-    			if (check) {
-    				cmdArgs.getSender().sendMessage(" §a* §fO(s) pedido(s) foram processado(s)");
-    			} else {
-    				cmdArgs.getSender().sendMessage(" §e* §fNenhum pedido foi encontrado!");
-    			} 
+    			BungeeMain.getInstance().getStoreManager().check();
     		} catch (Exception ex) {
     			cmdArgs.getSender().sendMessage(" §c* §fOcorreu um erro durante verificavamos!");
     			ex.printStackTrace();

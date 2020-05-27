@@ -34,8 +34,9 @@ public class ActionItemListener implements Listener {
 		ItemStack stack = event.getItem();
 		
 		try {
-			if (stack == null || stack.getType() == Material.AIR)
+			if (stack.getType() == Material.AIR)
 				throw new Exception();
+			
 			Constructor<?> caller = MinecraftReflection.getCraftItemStackClass()
 					.getDeclaredConstructor(ItemStack.class);
 			caller.setAccessible(true);
@@ -71,9 +72,6 @@ public class ActionItemListener implements Listener {
 		ItemStack stack = event.getPlayer().getItemInHand();
 		
 		try {
-			if (stack == null || stack.getType() == Material.AIR)
-				throw new Exception();
-			
 			Constructor<?> caller = MinecraftReflection.getCraftItemStackClass()
 					.getDeclaredConstructor(ItemStack.class);
 			caller.setAccessible(true);
@@ -109,8 +107,9 @@ public class ActionItemListener implements Listener {
 		ItemStack stack = event.getItemInHand();
 		
 		try {
-			if (stack == null || stack.getType() == Material.AIR)
+			if (stack.getType() == Material.AIR)
 				throw new Exception();
+			
 			Constructor<?> caller = MinecraftReflection.getCraftItemStackClass().getDeclaredConstructor(ItemStack.class);
 			caller.setAccessible(true);
 			ItemStack item = (ItemStack) caller.newInstance(stack);

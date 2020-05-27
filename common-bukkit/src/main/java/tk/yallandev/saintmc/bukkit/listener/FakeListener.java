@@ -8,7 +8,6 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import com.comphenix.protocol.wrappers.WrappedSignedProperty;
-import com.google.gson.JsonObject;
 
 import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.bukkit.BukkitMain;
@@ -27,27 +26,24 @@ public class FakeListener implements Listener {
 			member.sendMessage("§a§l> §fVocê está usando o fake §a" + member.getFakeName() + "§f!");
 		}
 
-		
 		new BukkitRunnable() {
 
 			@Override
 			public void run() {
-				JsonObject jsonObject = BukkitMain.getInstance().getSkinManager().getSkin(member.getPlayerName());
-				
-				if (jsonObject != null) {
-					WrappedSignedProperty property = new WrappedSignedProperty(jsonObject.get("name").getAsString(),
-							jsonObject.get("value").getAsString(), jsonObject.get("signature").getAsString());
+				WrappedSignedProperty property = BukkitMain.getInstance().getSkinManager()
+						.getSkin(member.getPlayerName());
 
+				if (property != null) {
 					new BukkitRunnable() {
 
 						@Override
 						public void run() {
 							FakePlayerAPI.changePlayerSkin(player, property, true);
-							
+
 							if (member.getSessionTime() <= 5000)
 								member.sendMessage("§a§l> §fSkin alterada com sucesso!");
 						}
-						
+
 					}.runTask(BukkitMain.getInstance());
 				}
 			}

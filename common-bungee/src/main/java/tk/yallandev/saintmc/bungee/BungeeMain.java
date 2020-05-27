@@ -16,6 +16,7 @@ import tk.yallandev.saintmc.bungee.command.BungeeCommandFramework;
 import tk.yallandev.saintmc.bungee.listener.AccountListener;
 import tk.yallandev.saintmc.bungee.listener.ChatListener;
 import tk.yallandev.saintmc.bungee.listener.ConnectionListener;
+import tk.yallandev.saintmc.bungee.listener.LoginListener;
 import tk.yallandev.saintmc.bungee.listener.MessageListener;
 import tk.yallandev.saintmc.bungee.listener.MultiserverTeleport;
 import tk.yallandev.saintmc.bungee.manager.BungeePunishManager;
@@ -25,7 +26,7 @@ import tk.yallandev.saintmc.bungee.redis.BungeePubSubHandler;
 import tk.yallandev.saintmc.common.backend.data.PlayerData;
 import tk.yallandev.saintmc.common.backend.data.ReportData;
 import tk.yallandev.saintmc.common.backend.data.ServerData;
-import tk.yallandev.saintmc.common.backend.database.mongodb.MongoDatabase;
+import tk.yallandev.saintmc.common.backend.database.mongodb.MongoConnection;
 import tk.yallandev.saintmc.common.backend.database.redis.RedisDatabase;
 import tk.yallandev.saintmc.common.backend.database.redis.RedisDatabase.PubSubListener;
 import tk.yallandev.saintmc.common.command.CommandLoader;
@@ -74,7 +75,7 @@ public class BungeeMain extends Plugin {
 			 * Backend Initialize
 			 */
 
-			MongoDatabase mongo = new MongoDatabase(CommonConst.MONGO_URL);
+			MongoConnection mongo = new MongoConnection(CommonConst.MONGO_URL);
 			RedisDatabase redis = new RedisDatabase("127.0.0.1", "", 6379);
 
 			mongo.connect();
@@ -180,12 +181,7 @@ public class BungeeMain extends Plugin {
 						if (ProxyServer.getInstance().getPlayers().size() > 0) {
 							CommonGeneral.getInstance().debug("Estamos verificando os pedidos!");
 
-							boolean check = BungeeMain.getInstance().getStoreManager().check();
-
-							if (check)
-								CommonGeneral.getInstance().debug("O(s) pedido(s) foram processado(s)");
-							else
-								CommonGeneral.getInstance().debug("Nenhum pedido foi encontrado!");
+							BungeeMain.getInstance().getStoreManager().check();
 						}
 
 						String message = BungeeConst.BROADCAST_MESSAGES[CommonConst.RANDOM.nextInt(BungeeConst.BROADCAST_MESSAGES.length)];
@@ -215,12 +211,13 @@ public class BungeeMain extends Plugin {
 
 	private void registerListener() {
 		ProxyServer.getInstance().getPluginManager().registerListener(getInstance(), new AccountListener());
+		ProxyServer.getInstance().getPluginManager().registerListener(getInstance(), new ChatListener());
+		ProxyServer.getInstance().getPluginManager().registerListener(getInstance(), new MultiserverTeleport());
+		ProxyServer.getInstance().getPluginManager().registerListener(getInstance(), new LoginListener());
 		ProxyServer.getInstance().getPluginManager().registerListener(getInstance(),
 				new ConnectionListener(serverManager));
 		ProxyServer.getInstance().getPluginManager().registerListener(getInstance(),
 				new MessageListener(serverManager));
-		ProxyServer.getInstance().getPluginManager().registerListener(getInstance(), new ChatListener());
-		ProxyServer.getInstance().getPluginManager().registerListener(getInstance(), new MultiserverTeleport());
 	}
 
 	public static BungeeMain getPlugin() {

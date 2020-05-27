@@ -49,7 +49,6 @@ public class AccountListener implements Listener {
                 member.setCacheOnQuit(true);
             }
             
-            member.connect(CommonGeneral.getInstance().getServerId(), CommonGeneral.getInstance().getServerType());
             member.setJoinData(playerName, event.getAddress().getHostAddress());
             CommonGeneral.getInstance().getMemberManager().loadMember(member);
         } catch (Exception ex) {
@@ -79,6 +78,7 @@ public class AccountListener implements Listener {
     	BukkitMember member = (BukkitMember) CommonGeneral.getInstance().getMemberManager().getMember(event.getPlayer().getUniqueId());
     	
     	member.setPlayer(event.getPlayer());
+        member.connect(CommonGeneral.getInstance().getServerId(), CommonGeneral.getInstance().getServerType());
         
         new BukkitRunnable() {
 			

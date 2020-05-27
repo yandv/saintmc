@@ -1,15 +1,26 @@
 package br.com.saintmc.hungergames.scheduler;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.Sound;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 import br.com.saintmc.hungergames.GameGeneral;
 import br.com.saintmc.hungergames.GameMain;
+import br.com.saintmc.hungergames.abilities.Ability;
+import br.com.saintmc.hungergames.constructor.Gamer;
 import br.com.saintmc.hungergames.event.game.GameInvincibilityEndEvent;
 import br.com.saintmc.hungergames.event.game.GameStartEvent;
 import br.com.saintmc.hungergames.event.game.GameStateChangeEvent;
-import br.com.saintmc.hungergames.listener.SpectatorListener;
+import br.com.saintmc.hungergames.kit.Kit;
+import br.com.saintmc.hungergames.listener.register.BlockListener;
+import br.com.saintmc.hungergames.listener.register.DeathListener;
+import br.com.saintmc.hungergames.listener.register.SpectatorListener;
 import br.com.saintmc.hungergames.scheduler.types.GameScheduler;
 import br.com.saintmc.hungergames.scheduler.types.InvincibilityScheduler;
 import tk.yallandev.saintmc.CommonGeneral;
@@ -42,7 +53,42 @@ public class SchedulerListener implements Listener {
 	public void onGameStart(GameStartEvent event) {
 		gameGeneral.getSchedulerController().addSchedule(new InvincibilityScheduler());
 		
+		for (Gamer gamer : GameGeneral.getInstance().getGamerController().getGamers()) {
+			Player player = gamer.getPlayer();
+			
+			if (gamer.isNotPlaying())
+				continue;
+			
+			player.playSound(player.getLocation(), Sound.AMBIENCE_THUNDER, 1f, 1f);
+			player.playSound(player.getLocation(), Sound.ENDERDRAGON_GROWL, 1f, 1f);
+			player.closeInventory();
+			player.getInventory().clear();
+			player.getInventory().setArmorContents(new ItemStack[4]);
+			player.setGameMode(org.bukkit.GameMode.SURVIVAL);
+			player.setAllowFlight(false);
+			
+			player.getInventory().addItem(new ItemStack(Material.COMPASS));
+			
+			for (Kit kit : gamer.getKitMap().values()) {
+				for (Ability ability : kit.getAbilities()) {
+					for (ItemStack item : ability.getItemList()) {
+						player.getInventory().addItem(item);
+					}
+				}
+			}
+			
+			player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 20*30, 1));
+		}
+		
 		GameMain.getInstance().registerListener(new SpectatorListener());
+		GameMain.getInstance().registerListener(new DeathListener());
+		GameMain.getInstance().registerListener(new BlockListener());
+		
+		GameGeneral.getInstance().getAbilityController().registerAbilityListeners();
+		
+		GameMain.GAME.setStartPlayers(GameGeneral.getInstance().getPlayersInGame());
+		GameMain.GAME.setStartTime(System.currentTimeMillis());
+		
 		Bukkit.broadcastMessage("§cA partida iniciou!");
 	}
 	

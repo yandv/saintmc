@@ -1,17 +1,13 @@
 package tk.yallandev.saintmc.discord.manager;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.util.EntityUtils;
-
 import com.google.gson.JsonArray;
-import com.google.gson.JsonParser;
 
 import tk.yallandev.saintmc.CommonConst;
+import tk.yallandev.saintmc.common.utils.web.WebHelper.Method;
 import tk.yallandev.saintmc.discord.guild.GuildConfiguration;
 
 public class GuildManager {
@@ -22,12 +18,7 @@ public class GuildManager {
 		guildMap = new HashMap<>();
 		
 		try {
-			HttpGet httpGet = new HttpGet(CommonConst.DISCORD_URL);
-			
-			httpGet.addHeader("Content-type", "application/json");
-			String json = EntityUtils.toString(CommonConst.HTTPCLIENT.execute(httpGet).getEntity());
-			
-			JsonArray jsonArray = (JsonArray) JsonParser.parseString(json);
+			JsonArray jsonArray = (JsonArray) CommonConst.DEFAULT_WEB.doRequest(CommonConst.DISCORD_URL, Method.GET);
 			
 			for (int x = 0; x < jsonArray.size(); x++) {
 				GuildConfiguration guild = CommonConst.GSON.fromJson(jsonArray.get(x), GuildConfiguration.class);
@@ -39,7 +30,7 @@ public class GuildManager {
 					System.out.println(entry.getKey());
 				}
 			}
-		} catch (IOException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}

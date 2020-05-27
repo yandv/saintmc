@@ -49,6 +49,8 @@ import tk.yallandev.saintmc.common.permission.Group;
 import tk.yallandev.saintmc.common.permission.Tag;
 import tk.yallandev.saintmc.lobby.LobbyMain;
 import tk.yallandev.saintmc.lobby.gamer.Gamer;
+import tk.yallandev.saintmc.lobby.menu.collectable.CollectableInventory;
+import tk.yallandev.saintmc.lobby.menu.collectable.CollectableInventory.Page;
 import tk.yallandev.saintmc.lobby.menu.profile.ProfileInventory;
 import tk.yallandev.saintmc.lobby.menu.server.LobbyInventory;
 import tk.yallandev.saintmc.lobby.menu.server.ServerInventory;
@@ -116,12 +118,12 @@ public class PlayerListener implements Listener {
 					@Override
 					public boolean onInteract(Player player, Entity entity, Block block, ItemStack item,
 							ActionType action) {
-						new LobbyInventory(player);
+						new CollectableInventory(player, Page.FIRST);
 						return false;
 					}
 
 				});
-
+	
 		playerListener = this;
 	}
 

@@ -16,7 +16,7 @@ import redis.clients.jedis.Pipeline;
 import tk.yallandev.saintmc.CommonConst;
 import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.common.backend.data.ServerData;
-import tk.yallandev.saintmc.common.backend.database.mongodb.MongoDatabase;
+import tk.yallandev.saintmc.common.backend.database.mongodb.MongoConnection;
 import tk.yallandev.saintmc.common.backend.database.redis.RedisDatabase;
 import tk.yallandev.saintmc.common.data.payload.DataServerMessage;
 import tk.yallandev.saintmc.common.data.payload.DataServerMessage.Action;
@@ -35,7 +35,7 @@ public class ServerDataImpl implements ServerData {
 	private RedisDatabase redisDatabase;
 	private MongoCollection<Document> serverCollection;
 
-	public ServerDataImpl(MongoDatabase mongoDatabase, RedisDatabase redisDatabase) {
+	public ServerDataImpl(MongoConnection mongoDatabase, RedisDatabase redisDatabase) {
 		com.mongodb.client.MongoDatabase database = mongoDatabase.getDb();
 		serverCollection = database.getCollection("serverId");
 		this.redisDatabase = redisDatabase;

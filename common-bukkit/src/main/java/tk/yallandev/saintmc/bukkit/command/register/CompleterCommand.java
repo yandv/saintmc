@@ -6,7 +6,10 @@ import java.util.List;
 import org.bukkit.Bukkit;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffectType;
 
+import tk.yallandev.saintmc.CommonGeneral;
+import tk.yallandev.saintmc.bukkit.account.BukkitMember;
 import tk.yallandev.saintmc.common.command.CommandArgs;
 import tk.yallandev.saintmc.common.command.CommandClass;
 import tk.yallandev.saintmc.common.command.CommandFramework.Command;
@@ -17,10 +20,36 @@ import tk.yallandev.saintmc.common.permission.Tag;
 
 public class CompleterCommand implements CommandClass {
 
-	@Command(name = "ban", aliases = { "mute", "tempgroup", "givevip", "removervip", "banir", "unban", "desbanir",
-			"tempban", "tempmute", "ping", "screenshare", "discord", "", "ss", "server", "connect", "find", "go", "ir",
-			"lobby", "send" })
-	public void completerCommand(CommandArgs cmdArgs) {
+	/**
+	 * Different because permission check
+	 * 
+	 * @since 1.2
+	 */
+
+	@Command(name = "send", aliases = { "groupset", "setargrupo" }, groupToUse = Group.ADMIN)
+	public void adminCommand(CommandArgs cmdArgs) {
+
+	}
+
+	@Command(name = "groupset", aliases = { "removevip", "tempgroup", "givevip", "removervip", "unban", "unmute",
+			"glist", "broadcast" }, groupToUse = Group.GERENTE)
+	public void managerCommand(CommandArgs cmdArgs) {
+
+	}
+
+	@Command(name = "screenshare", aliases = { "ss", "fakelist", "find" }, groupToUse = Group.MODGC)
+	public void modgcCommand(CommandArgs cmdArgs) {
+
+	}
+
+	@Command(name = "ban", aliases = { "mute", "banir", "unban", "desbanir", "tempban", "tempmute", "send", "staffchat",
+			"sc" }, groupToUse = Group.TRIAL)
+	public void trialCommand(CommandArgs cmdArgs) {
+
+	}
+
+	@Command(name = "lobby", aliases = { "server", "connect", "ir", "go", "discord" })
+	public void memberCommand(CommandArgs cmdArgs) {
 
 	}
 
@@ -47,7 +76,7 @@ public class CompleterCommand implements CommandClass {
 	@Completer(name = "removevip", aliases = { "removervip" })
 	public List<String> removervipCompleter(CommandArgs cmdArgs) {
 		if (cmdArgs.getArgs().length == 2) {
-			ArrayList<String> rankList = new ArrayList<>();
+			List<String> rankList = new ArrayList<>();
 
 			if (cmdArgs.getArgs()[1].isEmpty()) {
 				for (RankType rankType : RankType.values())
@@ -67,7 +96,7 @@ public class CompleterCommand implements CommandClass {
 	@Completer(name = "groupset", aliases = { "setargrupo" })
 	public List<String> groupsetCompleter(CommandArgs cmdArgs) {
 		if (cmdArgs.getArgs().length == 2) {
-			ArrayList<String> groupList = new ArrayList<>();
+			List<String> groupList = new ArrayList<>();
 
 			if (cmdArgs.getArgs()[1].isEmpty()) {
 				for (Group group : Group.values())
@@ -87,15 +116,19 @@ public class CompleterCommand implements CommandClass {
 	@Completer(name = "tag")
 	public List<String> tagCompleter(CommandArgs cmdArgs) {
 		if (cmdArgs.getArgs().length == 1) {
-			ArrayList<String> tagList = new ArrayList<>();
+			List<String> tagList = new ArrayList<>();
+			BukkitMember member = (BukkitMember) CommonGeneral.getInstance().getMemberManager()
+					.getMember(cmdArgs.getSender().getUniqueId());
 
 			if (cmdArgs.getArgs()[0].isEmpty()) {
 				for (Tag tag : Tag.values())
-					tagList.add(tag.toString());
+					if (member.getTags().contains(tag))
+						tagList.add(tag.toString());
 			} else {
 				for (Tag tag : Tag.values())
-					if (tag.toString().toLowerCase().startsWith(cmdArgs.getArgs()[0].toLowerCase()))
-						tagList.add(tag.toString());
+					if (member.getTags().contains(tag))
+						if (tag.toString().toLowerCase().startsWith(cmdArgs.getArgs()[0].toLowerCase()))
+							tagList.add(tag.toString());
 			}
 
 			return tagList;
@@ -111,11 +144,11 @@ public class CompleterCommand implements CommandClass {
 
 			if (cmdArgs.getArgs()[0].isEmpty()) {
 				for (Enchantment enchantment : Enchantment.values())
-					enchantmentList.add(enchantment.toString());
+					enchantmentList.add(enchantment.getName());
 			} else {
 				for (Enchantment enchantment : Enchantment.values())
-					if (enchantment.toString().toLowerCase().startsWith(cmdArgs.getArgs()[0].toLowerCase()))
-						enchantmentList.add(enchantment.toString());
+					if (enchantment.getName().toLowerCase().startsWith(cmdArgs.getArgs()[0].toLowerCase()))
+						enchantmentList.add(enchantment.getName());
 			}
 
 			return enchantmentList;
@@ -127,18 +160,18 @@ public class CompleterCommand implements CommandClass {
 	@Completer(name = "effect")
 	public List<String> effectCompleter(CommandArgs cmdArgs) {
 		if (cmdArgs.getArgs().length == 2) {
-			ArrayList<String> enchantmentList = new ArrayList<>();
+			List<String> effectList = new ArrayList<>();
 
 			if (cmdArgs.getArgs()[1].isEmpty()) {
-				for (Enchantment enchantment : Enchantment.values())
-					enchantmentList.add(enchantment.toString());
+				for (PotionEffectType effect : PotionEffectType.values())
+					effectList.add(effect.toString());
 			} else {
-				for (Enchantment enchantment : Enchantment.values())
-					if (enchantment.toString().toLowerCase().startsWith(cmdArgs.getArgs()[1].toLowerCase()))
-						enchantmentList.add(enchantment.toString());
+				for (PotionEffectType effect : PotionEffectType.values())
+					if (effect.toString().toLowerCase().startsWith(cmdArgs.getArgs()[1].toLowerCase()))
+						effectList.add(effect.toString());
 			}
 
-			return enchantmentList;
+			return effectList;
 		}
 
 		return getPlayerList(cmdArgs.getArgs());
@@ -149,10 +182,10 @@ public class CompleterCommand implements CommandClass {
 
 		for (Player player : Bukkit.getOnlinePlayers()) {
 			if (args[args.length - 1].isEmpty()) {
-				if (playerList.toString().toLowerCase().startsWith(player.getName().toLowerCase()))
+				if (player.getName().toLowerCase().startsWith(args[args.length - 1].toLowerCase()))
 					playerList.add(player.getName());
 			} else {
-				if (playerList.toString().toLowerCase().startsWith(player.getName().toLowerCase()))
+				if (player.getName().toLowerCase().startsWith(args[args.length - 1].toLowerCase()))
 					playerList.add(player.getName());
 			}
 		}

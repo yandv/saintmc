@@ -4,23 +4,18 @@ import java.lang.reflect.Modifier;
 import java.util.Random;
 import java.util.regex.Pattern;
 
-import org.apache.http.client.config.RequestConfig;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+
+import tk.yallandev.saintmc.common.utils.web.WebHelper;
+import tk.yallandev.saintmc.common.utils.web.http.ApacheWebImpl;
 
 public class CommonConst {
 
 	public static final Gson GSON = new GsonBuilder().excludeFieldsWithModifiers(Modifier.TRANSIENT, Modifier.STATIC, Modifier.PROTECTED).setPrettyPrinting().create();
 	public static final Random RANDOM = new Random();
-
-	public static final CloseableHttpClient HTTPCLIENT = HttpClientBuilder.create()
-			.setMaxConnTotal(9999)
-			.setDefaultRequestConfig(RequestConfig.custom().setConnectTimeout(3000).setConnectionRequestTimeout(3000)
-					.setSocketTimeout(3000).setMaxRedirects(3).build())
-			.build();
+	
+	public static final WebHelper DEFAULT_WEB = new ApacheWebImpl();
 
 	public static final Pattern NICKNAME_PATTERN = Pattern.compile("[a-zA-Z0-9_]{1,16}");
 	

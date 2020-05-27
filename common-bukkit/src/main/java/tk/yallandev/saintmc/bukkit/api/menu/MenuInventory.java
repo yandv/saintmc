@@ -152,10 +152,6 @@ public class MenuInventory {
 			packet.getIntegers().write(0, id);
 			packet.getIntegers().write(1, rows * 9);
 			
-			
-			System.out.println(BukkitMain.getInstance() == null);
-			System.out.println(BukkitMain.getInstance().getProcotolManager() == null);
-			
 			BukkitMain.getInstance().getProcotolManager().sendServerPacket(p, packet);
 			int i = 0;
 			for (ItemStack item : p.getInventory().getContents()) {

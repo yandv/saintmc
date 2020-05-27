@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.event.HandlerList;
+import org.bukkit.event.Listener;
 
 import br.com.saintmc.hungergames.GameGeneral;
 import br.com.saintmc.hungergames.GameMain;
@@ -21,14 +22,21 @@ public class SchedulerController {
 	public void addSchedule(Schedule schedule) {
 		if (!scheduleList.contains(schedule)) {
 			scheduleList.add(schedule);
-			Bukkit.getPluginManager().registerEvents(schedule, GameMain.getInstance());
+			
+			if (Listener.class.isAssignableFrom(schedule.getClass())) {
+				Bukkit.getPluginManager().registerEvents((Listener) schedule, GameMain.getInstance());
+			}
+			
 		}
 	}
 
 	public void removeSchedule(Schedule schedule) {
 		if (scheduleList.contains(schedule)) {
 			scheduleList.remove(schedule);
-			HandlerList.unregisterAll(schedule);
+			
+			if (Listener.class.isAssignableFrom(schedule.getClass())) {
+				HandlerList.unregisterAll((Listener) schedule);
+			}
 		}
 	}
 	

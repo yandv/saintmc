@@ -20,7 +20,7 @@ public class CustomOption {
 	private transient int multiplier;
 
 	public CustomOption() {
-
+		
 	}
 
 	public CustomOption(String name, ItemStack changeIcon, String itemName) {

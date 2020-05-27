@@ -26,13 +26,13 @@ import tk.yallandev.saintmc.common.account.status.types.game.GameStatus;
 import tk.yallandev.saintmc.common.account.status.types.normal.NormalModel;
 import tk.yallandev.saintmc.common.account.status.types.normal.NormalStatus;
 import tk.yallandev.saintmc.common.backend.data.StatusData;
-import tk.yallandev.saintmc.common.backend.database.mongodb.MongoDatabase;
+import tk.yallandev.saintmc.common.backend.database.mongodb.MongoConnection;
 
 public class StatusDataImpl implements StatusData {
 
 	private com.mongodb.client.MongoDatabase database;
 
-	public StatusDataImpl(MongoDatabase mongoDatabase) {
+	public StatusDataImpl(MongoConnection mongoDatabase) {
 		database = mongoDatabase.getDb();
 	}
 

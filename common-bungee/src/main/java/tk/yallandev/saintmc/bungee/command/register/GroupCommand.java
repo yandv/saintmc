@@ -117,7 +117,7 @@ public class GroupCommand implements CommandClass {
 				return;
 			}
 		}
-		
+
 		if (cmdArgs.isPlayer())
 			if (playerGroup.ordinal() < player.getGroup().ordinal()) {
 				sender.sendMessage(" §c* §fVocê não pode majenar o grupo desse jogador!");
@@ -138,26 +138,23 @@ public class GroupCommand implements CommandClass {
 
 	@Completer(name = "groupset", aliases = { "setargrupo", "removevip", "removervip" })
 	public List<String> groupsetCompleter(CommandArgs args) {
-		if (args.isPlayer()) {
-			if (args.getArgs().length == 1) {
-				ArrayList<String> players = new ArrayList<>();
-				for (ProxiedPlayer p : BungeeMain.getPlugin().getProxy().getPlayers()) {
-					if (p.getName().toLowerCase().startsWith(args.getArgs()[0].toLowerCase())) {
-						players.add(p.getName());
-					}
+		if (args.getArgs().length == 2) {
+			List<String> groupList = new ArrayList<>();
+			for (Group group : Group.values()) {
+				if (group.toString().toLowerCase().startsWith(args.getArgs()[1].toLowerCase())) {
+					groupList.add(group.toString());
 				}
-				return players;
-			} else if (args.getArgs().length == 2) {
-				ArrayList<String> grupos = new ArrayList<>();
-				for (Group group : Group.values()) {
-					if (group.toString().toLowerCase().startsWith(args.getArgs()[1].toLowerCase())) {
-						grupos.add(group.toString());
-					}
-				}
-				return grupos;
+			}
+			return groupList;
+		}
+
+		List<String> players = new ArrayList<>();
+		for (ProxiedPlayer p : BungeeMain.getPlugin().getProxy().getPlayers()) {
+			if (p.getName().toLowerCase().startsWith(args.getArgs()[0].toLowerCase())) {
+				players.add(p.getName());
 			}
 		}
-		return new ArrayList<>();
+		return players;
 	}
 
 }

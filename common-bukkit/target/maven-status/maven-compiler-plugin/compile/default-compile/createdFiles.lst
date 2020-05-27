@@ -7,8 +7,8 @@ tk\yallandev\saintmc\bukkit\permission\injector\regexperm\PermissiblePEX$2.class
 tk\yallandev\saintmc\bukkit\BukkitMain$2.class
 tk\yallandev\saintmc\bukkit\listener\PlayerListener$1.class
 tk\yallandev\saintmc\bukkit\api\vanish\AdminMode$AdminListener.class
-tk\yallandev\saintmc\bukkit\api\title\TitleAPI.class
 tk\yallandev\saintmc\bukkit\listener\AccountListener$1.class
+tk\yallandev\saintmc\bukkit\utils\item\ItemUtils.class
 tk\yallandev\saintmc\bukkit\api\scoreboard\Scoreboard.class
 tk\yallandev\saintmc\bukkit\account\BukkitMember.class
 tk\yallandev\saintmc\bukkit\permission\injector\regexperm\PermissibleInjector$ClassNameRegexPermissibleInjector.class
@@ -26,6 +26,7 @@ tk\yallandev\saintmc\bukkit\redis\BukkitPubSubHandler$7.class
 tk\yallandev\saintmc\bukkit\api\hologram\HologramListener$2.class
 tk\yallandev\saintmc\bukkit\api\menu\ConfirmInventory$1.class
 tk\yallandev\saintmc\bukkit\api\menu\MenuListener.class
+tk\yallandev\saintmc\bukkit\controller\SkinController$2.class
 tk\yallandev\saintmc\bukkit\redis\BukkitPubSubHandler.class
 tk\yallandev\saintmc\bukkit\api\player\TextureAPI$1.class
 tk\yallandev\saintmc\bukkit\redis\BukkitPubSubHandler$4.class
@@ -101,6 +102,7 @@ tk\yallandev\saintmc\bukkit\api\scoreboard\ScoreboardAPI.class
 tk\yallandev\saintmc\bukkit\menu\account\AccountInventory.class
 tk\yallandev\saintmc\bukkit\redis\BukkitPubSubHandler$6.class
 tk\yallandev\saintmc\bukkit\api\cooldown\event\CooldownStartEvent.class
+tk\yallandev\saintmc\bukkit\controller\SkinController$1.class
 tk\yallandev\saintmc\bukkit\menu\report\ReportInformationListInventory$1.class
 tk\yallandev\saintmc\bukkit\listener\FakeListener.class
 tk\yallandev\saintmc\bukkit\event\vanish\PlayerShowToPlayerEvent.class

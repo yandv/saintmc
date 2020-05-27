@@ -22,7 +22,7 @@ import redis.clients.jedis.Pipeline;
 import tk.yallandev.saintmc.CommonConst;
 import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.common.backend.data.ReportData;
-import tk.yallandev.saintmc.common.backend.database.mongodb.MongoDatabase;
+import tk.yallandev.saintmc.common.backend.database.mongodb.MongoConnection;
 import tk.yallandev.saintmc.common.backend.database.redis.RedisDatabase;
 import tk.yallandev.saintmc.common.report.Report;
 import tk.yallandev.saintmc.common.utils.supertype.Callback;
@@ -32,7 +32,7 @@ public class ReportDataImpl implements ReportData {
 	private RedisDatabase redisDatabase;
 	private MongoCollection<Document> reportCollection;
 
-	public ReportDataImpl(MongoDatabase mongoDatabase, RedisDatabase redisDatabase) {
+	public ReportDataImpl(MongoConnection mongoDatabase, RedisDatabase redisDatabase) {
 		com.mongodb.client.MongoDatabase database = mongoDatabase.getDb();
 		reportCollection = database.getCollection("report");
 		this.redisDatabase = redisDatabase;

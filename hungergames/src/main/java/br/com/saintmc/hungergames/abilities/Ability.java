@@ -21,15 +21,14 @@ public abstract class Ability implements Listener {
 	private List<UUID> myPlayers;
 	
 	private String name;
-	private String description;
-	private ItemStack icon;
 	
-	public Ability(String name, String description, ItemStack icon) {
+	private List<ItemStack> itemList;
+	
+	public Ability(String name, List<ItemStack> itemList) {
 		this.myPlayers = new ArrayList<>();
 		
 		this.name = name;
-		this.description = description;
-		this.icon = icon;
+		this.itemList = itemList;
 	}
 	
 	public boolean hasAbility(UUID uuid) {
@@ -54,6 +53,25 @@ public abstract class Ability implements Listener {
 		if (!GameState.isPregame(GameGeneral.getInstance().getGameState()) && myPlayers.size() == 0) {
 			HandlerList.unregisterAll(this);
 		}
+	}
+
+	public boolean isAbilityItem(ItemStack item) {
+		for (ItemStack kitItem : itemList) {
+			if (kitItem.getType() == item.getType()) {
+				if (kitItem.hasItemMeta() && item.hasItemMeta()) {
+					if (kitItem.getItemMeta().hasDisplayName() && item.getItemMeta().hasDisplayName()) {
+						if (item.getItemMeta().getDisplayName().equals(kitItem.getItemMeta().getDisplayName()))
+							return true;
+					} else if (!kitItem.getItemMeta().hasDisplayName() && !item.getItemMeta().hasDisplayName())
+						return true;
+				} else if (!kitItem.hasItemMeta() && !item.hasItemMeta())
+					return true;
+			}
+			
+			return false;
+		}
+		
+		return false;
 	}
 
 }

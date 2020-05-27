@@ -1,9 +1,10 @@
 package br.com.saintmc.hungergames.abilities.register;
 
+import java.util.ArrayList;
+
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.inventory.ItemStack;
 
 import br.com.saintmc.hungergames.abilities.Ability;
 import tk.yallandev.saintmc.bukkit.event.player.PlayerDamagePlayerEvent;
@@ -11,7 +12,7 @@ import tk.yallandev.saintmc.bukkit.event.player.PlayerDamagePlayerEvent;
 public class BoxerAbility extends Ability {
 
 	public BoxerAbility() {
-		super("Boxer", "Leve menos dano e dê mais dano", new ItemStack(Material.STONE_SWORD));
+		super("Boxer", new ArrayList<>());
 	}
 
 	@EventHandler

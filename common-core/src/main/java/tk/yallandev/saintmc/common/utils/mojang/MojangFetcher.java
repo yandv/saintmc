@@ -3,24 +3,18 @@ package tk.yallandev.saintmc.common.utils.mojang;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.util.EntityUtils;
-
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 
 import tk.yallandev.saintmc.CommonConst;
 import tk.yallandev.saintmc.CommonGeneral;
+import tk.yallandev.saintmc.common.utils.supertype.FutureCallback;
+import tk.yallandev.saintmc.common.utils.web.WebHelper.Method;
 
 public class MojangFetcher {
-
-//	private static final ExecutorService THREAD = Executors.newCachedThreadPool();
 
 	private LoadingCache<String, Boolean> cache;
 	private LoadingCache<String, UUID> cacheUuid;
@@ -68,53 +62,34 @@ public class MojangFetcher {
 	}
 
 	public static void main(String[] args) {
-		MojangFetcher fetcher = new MojangFetcher();
-
-		System.out.println(fetcher.getUuid("yAllanDev_"));
-		System.out.println(fetcher.getUuid("yandv"));
-		System.out.println(fetcher.getUuid("leoctotti"));
-
-		UUID uuid = UUID.randomUUID();
-
-		fetcher.registerUuid("DSOLAKOASKD", uuid);
-
-		System.out.println("eae");
+		new MojangFetcher().registerUuid("rektayviadosupremo1231239182391", UUID.randomUUID());
 	}
 
 	public void registerUuid(String playerName, UUID uniqueId) {
-		try {
-			HttpPost httpPost = new HttpPost(CommonConst.MOJANG_FETCHER);
+		JsonObject jsonObject = new JsonObject();
 
-			JsonObject jsonObject = new JsonObject();
+		jsonObject.addProperty("name", playerName);
+		jsonObject.addProperty("uniqueId", uniqueId.toString().replace("-", ""));
+		jsonObject.addProperty("cracked", true);
+		jsonObject.addProperty("time", System.currentTimeMillis() + (1000 * 60 * 60 * 24 * 30));
+		cacheUuid.put(playerName, uniqueId);
 
-			jsonObject.addProperty("name", playerName);
-			jsonObject.addProperty("uniqueId", uniqueId.toString().replace("-", ""));
-			jsonObject.addProperty("cracked", true);
-			jsonObject.addProperty("time", System.currentTimeMillis() + (1000 * 60 * 60 * 24 * 30));
+		CommonConst.DEFAULT_WEB.doAsyncRequest(CommonConst.MOJANG_FETCHER, Method.POST, jsonObject.toString(),
+				new FutureCallback<JsonElement>() {
 
-			httpPost.setEntity(new StringEntity(jsonObject.toString()));
-			httpPost.setHeader("Content-type", "application/json");
-			
-			CommonConst.HTTPCLIENT.execute(httpPost);
-
-			CommonGeneral.getInstance()
-					.debug("The " + playerName + " (" + uniqueId.toString() + ") has been registred in MojangFetcher!");
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
+					@Override
+					public void result(JsonElement result, Throwable error) {
+						System.out.println("The " + playerName + " (" + uniqueId.toString()
+								+ ") has been registred in MojangFetcher!");
+					}
+				});
 	}
 
 	public UUID requestUuid(String playerName) {
 		try {
 
-			HttpGet httpGet = new HttpGet(CommonConst.MOJANG_FETCHER + "?name=" + playerName);
-
-			httpGet.addHeader("Content-type", "application/json");
-
-			CloseableHttpResponse response = CommonConst.HTTPCLIENT.execute(httpGet);
-			String json = EntityUtils.toString(response.getEntity());
-
-			JsonObject jsonObject = (JsonObject) JsonParser.parseString(json);
+			JsonObject jsonObject = (JsonObject) CommonConst.DEFAULT_WEB
+					.doRequest(CommonConst.MOJANG_FETCHER + "?name=" + playerName, Method.GET);
 
 			return UUIDParser.parse(jsonObject.get("uuid").getAsString());
 		} catch (Exception ex) {
@@ -126,14 +101,8 @@ public class MojangFetcher {
 
 	public boolean requestCracked(String playerName) {
 		try {
-			HttpGet httpGet = new HttpGet(CommonConst.MOJANG_FETCHER + "?name=" + playerName);
-
-			httpGet.addHeader("Content-type", "application/json");
-
-			CloseableHttpResponse response = CommonConst.HTTPCLIENT.execute(httpGet);
-			String json = EntityUtils.toString(response.getEntity());
-
-			JsonObject jsonObject = (JsonObject) JsonParser.parseString(json);
+			JsonObject jsonObject = (JsonObject) CommonConst.DEFAULT_WEB
+					.doRequest(CommonConst.MOJANG_FETCHER + "?name=" + playerName, Method.GET);
 
 			return jsonObject.get("cracked").getAsBoolean();
 		} catch (Exception ex) {

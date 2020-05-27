@@ -14,9 +14,10 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
 import br.com.saintmc.hungergames.GameGeneral;
 import br.com.saintmc.hungergames.GameMain;
+import br.com.saintmc.hungergames.constructor.Gamer;
 import br.com.saintmc.hungergames.game.GameState;
-import br.com.saintmc.hungergames.gamer.Gamer;
-import br.com.saintmc.hungergames.listener.game.CombatlogListener;
+import br.com.saintmc.hungergames.listener.register.game.CombatlogListener;
+import br.com.saintmc.hungergames.listener.register.game.WinnerListener;
 import tk.yallandev.saintmc.bukkit.event.admin.PlayerAdminModeEvent;
 
 public class GameScheduler implements GameSchedule {
@@ -26,7 +27,7 @@ public class GameScheduler implements GameSchedule {
 
 	public GameScheduler() {
 		this.gameGeneral = GameGeneral.getInstance();
-		this.listenerList = Arrays.asList(new CombatlogListener());
+		this.listenerList = Arrays.asList(new CombatlogListener(), new WinnerListener());
 		
 		registerListener();
 		checkWin();

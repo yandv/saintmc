@@ -256,7 +256,6 @@ public class DiscordCommand implements CommandClass {
 							+ entryRank.getKey().name().toLowerCase() + " in discord");
 				} else {
 					guild.addRoleToMember(discordMember, role).complete();
-
 					addedList.add(Group.valueOf(entryRank.getKey().name()).name());
 				}
 
