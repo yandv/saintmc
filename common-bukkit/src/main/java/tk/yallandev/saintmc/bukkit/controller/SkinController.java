@@ -8,7 +8,7 @@ import com.google.gson.JsonObject;
 import tk.yallandev.saintmc.CommonConst;
 import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.common.account.Member;
-import tk.yallandev.saintmc.common.utils.web.WebHelper.FutureCallback;
+import tk.yallandev.saintmc.common.utils.supertype.FutureCallback;
 import tk.yallandev.saintmc.common.utils.web.WebHelper.Method;
 
 public class SkinController {
@@ -41,20 +41,6 @@ public class SkinController {
 					}
 				});
 
-//		try {
-//			HttpPost post = new HttpPost(CommonConst.SKIN_URL + "?name=" + member.getPlayerName());
-//
-//			post.setEntity(postingString);
-//			post.setHeader("Content-type", "application/json");
-//
-//			CloseableHttpResponse response = CommonConst.HTTPCLIENT.execute(post);
-//			String json = EntityUtils.toString(response.getEntity());
-//			response.close();
-//			return JsonParser.parseString(json);
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
-
 	}
 
 	public void deleteSkin(Member member) {
@@ -65,7 +51,7 @@ public class SkinController {
 					public void result(JsonElement result, Throwable error) {
 						if (error == null) {
 							CommonGeneral.getInstance()
-									.debug("The skin of " + member.getPlayerName() + " has been saved!");
+									.debug("The skin of " + member.getPlayerName() + " has been deleted!");
 						}
 					}
 				});
@@ -74,9 +60,9 @@ public class SkinController {
 	public WrappedSignedProperty getSkin(String playerName) {
 
 		try {
-			JsonObject json = (JsonObject) CommonConst.DEFAULT_WEB.doRequest(CommonConst.SKIN_URL + "?name=" + playerName,
-					Method.GET);
-			
+			JsonObject json = (JsonObject) CommonConst.DEFAULT_WEB
+					.doRequest(CommonConst.SKIN_URL + "?name=" + playerName, Method.GET);
+
 			if (json != null) {
 				if (json.has("properties")) {
 					JsonArray jsonArray = json.get("properties").getAsJsonArray();
@@ -85,14 +71,13 @@ public class SkinController {
 						JsonObject jsonObject = (JsonObject) jsonArray.get(x);
 
 						if (jsonObject.get("name").getAsString().equalsIgnoreCase("textures")) {
-							return new WrappedSignedProperty(
-									jsonObject.get("name").getAsString(), jsonObject.get("value").getAsString(),
-									jsonObject.get("signature").getAsString());
+							return new WrappedSignedProperty(jsonObject.get("name").getAsString(),
+									jsonObject.get("value").getAsString(), jsonObject.get("signature").getAsString());
 						}
 					}
 				}
 			}
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

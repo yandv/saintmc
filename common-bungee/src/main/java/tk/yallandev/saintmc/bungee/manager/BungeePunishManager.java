@@ -1,6 +1,5 @@
 package tk.yallandev.saintmc.bungee.manager;
 
-import java.util.AbstractMap;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.UUID;
@@ -72,10 +71,10 @@ public class BungeePunishManager implements PunishManager {
 			}
 		});
 
-		if (ban.isPermanent())
-			if (member.getLastIpAddress() != null)
-				banCache.put(member.getLastIpAddress(),
-						new AbstractMap.SimpleEntry<UUID, Ban>(member.getUniqueId(), ban));
+//		if (ban.isPermanent())
+//			if (member.getLastIpAddress() != null)
+//				banCache.put(member.getLastIpAddress(),
+//						new AbstractMap.SimpleEntry<UUID, Ban>(member.getUniqueId(), ban));
 
 		ProxiedPlayer proxiedPlayer = ProxyServer.getInstance().getPlayer(member.getUniqueId());
 
@@ -139,7 +138,7 @@ public class BungeePunishManager implements PunishManager {
 				.collect(Collectors.toList());
 
 		if (list.size() >= 3) {
-			Ban ban = new Ban(member.getUniqueId(), warn.getWarnedBy(), warn.getWarnedByUuid(), "",
+			Ban ban = new Ban(member.getUniqueId(), warn.getWarnedBy(), warn.getWarnedByUuid(), "AUTOBAN: Excesso de avisos (3/3)",
 					System.currentTimeMillis() + (1000 * 60 * 60 * 6));
 
 			member.getPunishmentHistory().warn(warn);
@@ -177,8 +176,8 @@ public class BungeePunishManager implements PunishManager {
 		if (activeBan == null)
 			return false;
 		
-		if (banCache.asMap().containsKey(member.getLastIpAddress()))
-			banCache.invalidate(member.getLastIpAddress());
+//		if (banCache.asMap().containsKey(member.getLastIpAddress()))
+//			banCache.asMap().remove(member.getLastIpAddress());
 		
 		activeBan.unban(uniqueId, userName, unbanReason);
 		CommonGeneral.getInstance().getMemberManager().getMembers().stream()

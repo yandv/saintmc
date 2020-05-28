@@ -6,17 +6,17 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-import org.bson.Document;
-
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.model.Filters;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.Pipeline;
 import tk.yallandev.saintmc.CommonConst;
 import tk.yallandev.saintmc.CommonGeneral;
+import tk.yallandev.saintmc.common.backend.Query;
 import tk.yallandev.saintmc.common.backend.data.ServerData;
 import tk.yallandev.saintmc.common.backend.database.mongodb.MongoConnection;
+import tk.yallandev.saintmc.common.backend.database.mongodb.MongoQuery;
 import tk.yallandev.saintmc.common.backend.database.redis.RedisDatabase;
 import tk.yallandev.saintmc.common.data.payload.DataServerMessage;
 import tk.yallandev.saintmc.common.data.payload.DataServerMessage.Action;
@@ -33,40 +33,46 @@ import tk.yallandev.saintmc.common.server.loadbalancer.server.MinigameState;
 public class ServerDataImpl implements ServerData {
 	
 	private RedisDatabase redisDatabase;
-	private MongoCollection<Document> serverCollection;
+	private Query<JsonElement> query;
+	
+	public ServerDataImpl(MongoConnection mongoConnection, RedisDatabase redisDatabase) {
+		this.query = createDefault(mongoConnection);
+		this.redisDatabase = redisDatabase;
+	}
 
-	public ServerDataImpl(MongoConnection mongoDatabase, RedisDatabase redisDatabase) {
-		com.mongodb.client.MongoDatabase database = mongoDatabase.getDb();
-		serverCollection = database.getCollection("serverId");
+	public ServerDataImpl(Query<JsonElement> query, RedisDatabase redisDatabase) {
+		this.query = query;
 		this.redisDatabase = redisDatabase;
 	}
 	
 	@Override
     public String getServerId(String ipAddress) {
         try {
-            Document found = serverCollection.find(Filters.eq("address", ipAddress)).first();
-            
+			JsonObject found = (JsonObject) query.findOne("address", ipAddress);
+
             if (found != null) {
-                return found.getString("hostname");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return ipAddress;
-    }
-	
-	@Override
-    public ServerType getServerType(String ipAddress) {
-        try {
-            Document found = serverCollection.find(Filters.eq("address", ipAddress)).first();
-            
-            if (found != null) {
-                return ServerType.valueOf(found.getString("serverType"));
+                return found.get("hostname").getAsString();
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
         
+        return ipAddress;
+    }
+	
+	@Override
+    public ServerType getServerType(String ipAddress) {
+		
+        try {
+			JsonObject found = (JsonObject) query.findOne("address", ipAddress);
+
+            if (found != null) {
+                return ServerType.valueOf(found.get("serverType").getAsString());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+		
         return ServerType.NONE;
     }
 
@@ -208,5 +214,9 @@ public class ServerDataImpl implements ServerData {
 	public void closeConnection() {
 		redisDatabase.close();
 	}
-
+	
+	public static Query<JsonElement> createDefault(MongoConnection mongoConnection) {
+		return new MongoQuery(mongoConnection, "serverId");
+	}
+	
 }

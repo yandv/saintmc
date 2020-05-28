@@ -104,7 +104,7 @@ public class ModeratorCommand implements CommandClass {
 			t.setGameMode(gm);
 			p.sendMessage(" §a* §fVocê alterou gamemode de §a" + t.getName() + "§f para §a" + gamemodeName + "§f!");
 		} else {
-			p.sendMessage(" §d* §fO §a" + t.getName() + " já está nesse gamemode§f!");
+			p.sendMessage(" §d* §fO §a" + t.getName() + "§f já está nesse gamemode§f!");
 		}
 	}
 

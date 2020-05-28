@@ -17,7 +17,7 @@ import br.com.saintmc.hungergames.GameMain;
 import br.com.saintmc.hungergames.constructor.Gamer;
 import br.com.saintmc.hungergames.game.GameState;
 import br.com.saintmc.hungergames.listener.register.game.CombatlogListener;
-import br.com.saintmc.hungergames.listener.register.game.WinnerListener;
+import br.com.saintmc.hungergames.listener.register.winner.WinnerListener;
 import tk.yallandev.saintmc.bukkit.event.admin.PlayerAdminModeEvent;
 
 public class GameScheduler implements GameSchedule {
@@ -27,7 +27,7 @@ public class GameScheduler implements GameSchedule {
 
 	public GameScheduler() {
 		this.gameGeneral = GameGeneral.getInstance();
-		this.listenerList = Arrays.asList(new CombatlogListener(), new WinnerListener());
+		this.listenerList = Arrays.asList(new CombatlogListener());
 		
 		registerListener();
 		checkWin();
@@ -81,12 +81,9 @@ public class GameScheduler implements GameSchedule {
 			break;
 		}
 
-		if (pWin == null) {
-			Bukkit.broadcastMessage("§aNenhum jogador ganhou!");
-			Bukkit.shutdown();
-			return;
-		}
-		
+		unregisterListener();
+		GameGeneral.getInstance().getSchedulerController().removeSchedule(this);
+		GameMain.getInstance().registerListener(new WinnerListener(pWin));
 	}
 
 	@Override

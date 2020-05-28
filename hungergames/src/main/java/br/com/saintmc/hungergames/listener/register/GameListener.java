@@ -50,6 +50,7 @@ import br.com.saintmc.hungergames.constructor.Gamer;
 import br.com.saintmc.hungergames.constructor.Timeout;
 import br.com.saintmc.hungergames.event.game.GameStartEvent;
 import br.com.saintmc.hungergames.event.kit.PlayerSelectedKitEvent;
+import br.com.saintmc.hungergames.event.player.PlayerItemReceiveEvent;
 import br.com.saintmc.hungergames.game.GameState;
 import br.com.saintmc.hungergames.kit.Kit;
 import tk.yallandev.saintmc.CommonConst;
@@ -62,7 +63,7 @@ import tk.yallandev.saintmc.common.permission.Group;
 
 @SuppressWarnings("deprecation")
 public class GameListener extends br.com.saintmc.hungergames.listener.GameListener {
-
+	
 	private Map<UUID, Long> compassMap;
 	private Set<UUID> joined;
 
@@ -113,7 +114,7 @@ public class GameListener extends br.com.saintmc.hungergames.listener.GameListen
 		if (player.hasGroupPermission(GameMain.SPECTATOR_GROUP) && GameMain.SPECTATOR)
 			return;
 
-		if (player.hasGroupPermission(Group.LIGHT) && !joined.contains(event.getPlayer().getUniqueId())
+		if (player.hasGroupPermission(GameMain.RESPAWN_GROUP) && !joined.contains(event.getPlayer().getUniqueId())
 				&& getGameGeneral().getTime() < 300)
 			return;
 
@@ -193,9 +194,40 @@ public class GameListener extends br.com.saintmc.hungergames.listener.GameListen
 			gamer.setSpectator(true);
 		}
 	}
+	
+	@EventHandler
+	public void onPlayerItemReceive(PlayerItemReceiveEvent event) {
+		Player player = event.getPlayer();
+		Gamer gamer = GameGeneral.getInstance().getGamerController().getGamer(player);
+		
+		player.getInventory().addItem(new ItemStack(Material.COMPASS));
+		
+		if (GameState.isInvincibility(GameGeneral.getInstance().getGameState())) {
+			
+			for (Kit kit : gamer.getKitMap().values()) {
+				for (Ability ability : kit.getAbilities()) {
+					for (ItemStack item : ability.getItemList()) {
+						player.getInventory().addItem(item);
+					}
+				}
+			}
+			
+		} else {
+			Member member = CommonGeneral.getInstance().getMemberManager().getMember(player.getUniqueId());
+			
+			if (member.hasGroupPermission(GameMain.KIT_SPAWN_GROUP))
+				for (Kit kit : gamer.getKitMap().values()) {
+					for (Ability ability : kit.getAbilities()) {
+						for (ItemStack item : ability.getItemList()) {
+							player.getInventory().addItem(item);
+						}
+					}
+				}
+		}
+	}
 
 	@EventHandler
-	public void onDamage(EntityDamageEvent event) {
+	public void onEntityDamage(EntityDamageEvent event) {
 		if (!(event.getEntity() instanceof Player))
 			return;
 
@@ -439,8 +471,6 @@ public class GameListener extends br.com.saintmc.hungergames.listener.GameListen
 			Entry<UUID, Timeout> entry = iterator.next();
 
 			Timeout timeout = entry.getValue();
-			
-			System.out.println(entry.getKey().toString() + " - " + (timeout.getExpireTime() < System.currentTimeMillis()));
 
 			if (timeout.getExpireTime() < System.currentTimeMillis()) {
 				Gamer gamer = GameGeneral.getInstance().getGamerController().getGamer(entry.getKey());

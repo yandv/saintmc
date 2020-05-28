@@ -14,75 +14,107 @@ import tk.yallandev.saintmc.common.utils.supertype.Callback;
  */
 
 public interface Query<T> {
-	
-	/*
-	 * Find
+
+	/**
+	 * 
+	 * Returns all elements in MongoCollection
+	 * 
+	 * @return T
 	 */
-	
+
 	Collection<T> find();
-	
+
+	/**
+	 * 
+	 * Returns all elements in MongoCollection collection
+	 * 
+	 * @return T
+	 */
+
 	Collection<T> find(String collection);
+
+	/**
+	 * 
+	 * Returns all elements in MongoCollection filtering the key with
+	 * value
+	 * 
+	 * @return T
+	 */
+
+	<GenericType> Collection<T> find(String key, GenericType value);
 	
-	Collection<T> find(String key, String value);
-	
-	Collection<T> find(String collection, String key, String value);
-	
-	T findOne(String key, String value);
-	
-	T findOne(String collection, String key, String value);
-	
+	/**
+	 * 
+	 * Returns all elements in MongoCollection collection filtering the key with
+	 * value
+	 * 
+	 * @return T
+	 */
+
+	<GenericType> Collection<T> find(String collection, String key, GenericType value);
+
+	<GenericType> T findOne(String key, GenericType value);
+
+	<GenericType> T findOne(String collection, String key, GenericType value);
+
 	/*
 	 * Find
 	 */
-	
+
 	void find(QueryResponse<Collection<T>> response);
-	
-	void find(String collection, QueryResponse<Collection<T>> response);
-	
-	void find(String key, String value, QueryResponse<Collection<T>> response);
-	
-	void find(String collection,String key, String value, QueryResponse<Collection<T>> response);
-	
-	void findOne(String key, String value, QueryResponse<T> response);
-	
-	void findOne(String collection, String key, String value, QueryResponse<T> response);
-	
+
+	<GenericType> void find(String collection, QueryResponse<Collection<T>> response);
+
+	<GenericType> void find(String key, GenericType value, QueryResponse<Collection<T>> response);
+
+	<GenericType> void find(String collection, String key, GenericType value, QueryResponse<Collection<T>> response);
+
+	<GenericType> void findOne(String key, GenericType value, QueryResponse<T> response);
+
+	<GenericType> void findOne(String collection, String key, GenericType value, QueryResponse<T> response);
+
 	/*
 	 * Create
 	 */
-	
+
 	void create(String[] jsons);
-	
+
 	void create(String collection, String[] jsons);
-	
+
 	/*
 	 * Delete
 	 */
-	
-	void deleteOne(String key, String value);
-	
-	void deleteOne(String collection,String key, String value);
-	
+
+	<GenericType> void deleteOne(String key, GenericType value);
+
+	<GenericType> void deleteOne(String collection, String key, GenericType value);
+
 	/*
 	 * Update
 	 */
+
+	<GenericType> void updateOne(String key, GenericType value, T t);
+
+	<GenericType> void updateOne(String collection, String key, GenericType value, T t);
+
+	/*
+	 * Ranking
+	 */
 	
-	void updateOne(String key, String value, T t);
-	
-	void updateOne(String collection,String key, String value, T t);
+	<GenericType> Collection<T> ranking(String key, GenericType value, int limit);
 	
 	/*
 	 * Response
 	 */
-	
+
 	@Getter
 	public class QueryResponse<T> {
-		
+
 		private long startTime;
 		private long durationTime;
-		
+
 		private Callback<T> callback;
-		
+
 		public QueryResponse(Callback<T> callback) {
 			this.startTime = System.currentTimeMillis();
 			this.callback = callback;
@@ -91,7 +123,7 @@ public interface Query<T> {
 		public void callback(T t) {
 			callback.callback(t);
 		}
-		
+
 	}
 
 }

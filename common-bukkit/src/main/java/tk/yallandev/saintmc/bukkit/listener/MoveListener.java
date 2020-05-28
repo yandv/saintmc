@@ -30,7 +30,7 @@ public class MoveListener implements Listener {
 				if (locationMap.containsKey(player.getUniqueId())) {
 					Location location = locationMap.get(player.getUniqueId());
 
-					if (location.getX() != player.getLocation().getX() || location.getZ() != player.getLocation().getX()
+					if (location.getX() != player.getLocation().getX() || location.getZ() != player.getLocation().getZ()
 							|| location.getY() != player.getLocation().getY()) {
 						PlayerMoveUpdateEvent realMoveEvent = new PlayerMoveUpdateEvent(player, location,
 								player.getLocation());

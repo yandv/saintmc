@@ -35,7 +35,7 @@ public class ScoreboardListener implements Listener {
 		DEFAULT_SCOREBOARD.setScore(8, new Score("§fRanking: §7(§f-§7)", "ranking"));
 		DEFAULT_SCOREBOARD.blankLine(7);
 		DEFAULT_SCOREBOARD.setScore(6, new Score("§fXp: §70", "xp"));
-		DEFAULT_SCOREBOARD.setScore(5, new Score("§fMoney: §70", "money"));
+		DEFAULT_SCOREBOARD.setScore(5, new Score("§fCoins: §70", "money"));
 		DEFAULT_SCOREBOARD.blankLine(4);
 		DEFAULT_SCOREBOARD.setScore(3,
 				new Score("§fJogadores: §e" + BukkitMain.getInstance().getServerManager().getTotalNumber(), "online"));
@@ -60,7 +60,7 @@ public class ScoreboardListener implements Listener {
 		DEFAULT_SCOREBOARD.updateScore(player,
 				new Score("§fXp: §7" + member.getXp(), "xp"));
 		DEFAULT_SCOREBOARD.updateScore(player,
-				new Score("§fMoney: §7" + member.getMoney(), "money"));
+				new Score("§fCoins: §7" + member.getMoney(), "money"));
 
 		new BukkitRunnable() {
 
@@ -92,7 +92,7 @@ public class ScoreboardListener implements Listener {
 			public void run() {
 				Group group = event.getGroup();
 
-				DEFAULT_SCOREBOARD.updateScore(new Score(
+				DEFAULT_SCOREBOARD.updateScore(event.getPlayer(), new Score(
 						"§fGrupo: §f§l" + (group == Group.MEMBRO ? "§7§lMEMBRO" : Tag.valueOf(group.name()).getPrefix()),
 						"group"));
 			}
@@ -107,7 +107,7 @@ public class ScoreboardListener implements Listener {
 			public void run() {
 				League league = event.getNewLeague();
 
-				DEFAULT_SCOREBOARD.updateScore(
+				DEFAULT_SCOREBOARD.updateScore(event.getPlayer(), 
 						new Score("§fRanking: §7(" + league.getColor() + league.getSymbol() + "§7)", "ranking"));
 			}
 		}.runTaskLater(LobbyMain.getInstance(), 10l);

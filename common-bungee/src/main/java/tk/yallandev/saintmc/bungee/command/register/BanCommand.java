@@ -408,8 +408,10 @@ public class BanCommand implements CommandClass {
 
 		for (int i = 1; i < args.length; i++)
 			sb.append(args[i]).append(" ");
+		
+		int id = CommonGeneral.getInstance().getPunishData().getTotalWarn() + 1;
 
-		Warn warn = new Warn(uuid, CommonGeneral.getInstance().getPunishData().countWarn() + 1, cmdArgs.isPlayer() ? cmdArgs.getPlayer().getName() : "CONSOLE", sender.getUniqueId(), sb.toString().trim(), System.currentTimeMillis() + (1000 * 60 * 60 * 12));
+		Warn warn = new Warn(uuid, id, cmdArgs.isPlayer() ? cmdArgs.getPlayer().getName() : "CONSOLE", sender.getUniqueId(), sb.toString().trim(), System.currentTimeMillis() + (1000 * 60 * 60 * 12));
 
 		if (BungeeMain.getInstance().getPunishManager().warn(player, warn)) {
 			sender.sendMessage(

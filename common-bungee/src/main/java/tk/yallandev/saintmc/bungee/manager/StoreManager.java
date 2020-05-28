@@ -14,8 +14,8 @@ import tk.yallandev.saintmc.CommonConst;
 import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.common.account.Member;
 import tk.yallandev.saintmc.common.permission.Group;
+import tk.yallandev.saintmc.common.utils.supertype.FutureCallback;
 import tk.yallandev.saintmc.common.utils.web.WebHelper;
-import tk.yallandev.saintmc.common.utils.web.WebHelper.FutureCallback;
 import tk.yallandev.saintmc.common.utils.web.WebHelper.Method;
 import tk.yallandev.saintmc.common.utils.web.http.ApacheWebImpl;
 

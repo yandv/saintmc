@@ -24,6 +24,7 @@ import tk.yallandev.saintmc.bungee.manager.BungeeServerManager;
 import tk.yallandev.saintmc.bungee.manager.StoreManager;
 import tk.yallandev.saintmc.bungee.redis.BungeePubSubHandler;
 import tk.yallandev.saintmc.common.backend.data.PlayerData;
+import tk.yallandev.saintmc.common.backend.data.PunishData;
 import tk.yallandev.saintmc.common.backend.data.ReportData;
 import tk.yallandev.saintmc.common.backend.data.ServerData;
 import tk.yallandev.saintmc.common.backend.database.mongodb.MongoConnection;
@@ -32,6 +33,7 @@ import tk.yallandev.saintmc.common.backend.database.redis.RedisDatabase.PubSubLi
 import tk.yallandev.saintmc.common.command.CommandLoader;
 import tk.yallandev.saintmc.common.controller.PunishManager;
 import tk.yallandev.saintmc.common.data.PlayerDataImpl;
+import tk.yallandev.saintmc.common.data.PunishDataImpl;
 import tk.yallandev.saintmc.common.data.ReportDataImpl;
 import tk.yallandev.saintmc.common.data.ServerDataImpl;
 import tk.yallandev.saintmc.common.report.Report;
@@ -84,10 +86,12 @@ public class BungeeMain extends Plugin {
 			PlayerData playerData = new PlayerDataImpl(mongo, redis);
 			ServerData serverData = new ServerDataImpl(mongo, redis);
 			ReportData reportData = new ReportDataImpl(mongo, redis);
+			PunishData punishData = new PunishDataImpl(mongo);
 
 			general.setPlayerData(playerData);
 			general.setServerData(serverData);
 			general.setReportData(reportData);
+			general.setPunishData(punishData);
 
 			/*
 			 * Server Network Info

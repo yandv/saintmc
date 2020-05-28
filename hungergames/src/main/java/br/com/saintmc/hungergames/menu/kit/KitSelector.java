@@ -34,21 +34,16 @@ public class KitSelector {
 		MenuInventory menu = new MenuInventory("§7Kit Selector", 6, true);
 		List<Kit> kits = new ArrayList<>(GameGeneral.getInstance().getKitController().getAllKits());
 
-		Comparator<Kit> comparator = Comparator.comparing(kit -> kit.getName());
+		Comparator<Kit> comparator = orderType.getComparator(gamer, kitType);
 
-		if (orderType == OrderType.MINE) {
-			comparator.thenComparing(kit -> (GameMain.DOUBLEKIT ? kitType == KitType.PRIMARY ? true : gamer.hasKit(kit.getName()) : gamer.hasKit(kit.getName())));
-		}
 		Collections.sort(kits, comparator);
-//		Collections.sort(kits, orderType == OrderType.ALPHABET ? (o1,o2) -> o1.getName().compareTo(o2.getName()) : (o1,o2) -> Boolean.compare(gamer.hasKit(o1.getName()), gamer.hasKit(o2.getName())) | o1.getName().compareTo(o2.getName()));
 
 		List<MenuItem> items = new ArrayList<>();
 
 		for (int i = 0; i < kits.size(); i++) {
 			Kit kit = kits.get(i);
-			System.out.println(GameMain.DOUBLEKIT ? kitType == KitType.PRIMARY ? true : gamer.hasKit(kit.getName()) : gamer.hasKit(kit.getName()));
-			
-			boolean hasKit = GameMain.DOUBLEKIT ? kitType == KitType.PRIMARY ? true : gamer.hasKit(kit.getName()) : gamer.hasKit(kit.getName());
+			boolean hasKit = GameMain.DOUBLEKIT ? kitType == KitType.PRIMARY ? true : gamer.hasKit(kit.getName())
+					: gamer.hasKit(kit.getName());
 
 			if (hasKit) {
 				items.add(new MenuItem(
@@ -64,49 +59,6 @@ public class KitSelector {
 						.build();
 				items.add(new MenuItem(item, new StoreKitMenu(kit)));
 			}
-		}
-
-		if (orderType == OrderType.ALPHABET) {
-//			for (int i = 0; i < kits.size(); i++) {
-//				Kit kit = kits.get(i);
-//
-//				if (gamer.hasKit(kit.getName())) {
-//					items.add(new MenuItem(
-//							new ItemBuilder().lore("§7" + kit.getDescription() + "\n\n§eClique para selecionar!")
-//									.type(kit.getKitIcon().getType()).durability(kit.getKitIcon().getDurability())
-//									.name("§a" + NameUtils.formatString(kit.getName())).build(),
-//							new OpenKitMenu(kit, kitType)));
-//				} else {
-//					ItemStack item = new ItemBuilder().type(Material.STAINED_GLASS_PANE).durability(14)
-//							.name("§c" + NameUtils.formatString(kit.getName())).lore("\n§cVocê não possui este kit!\n§cCompre em: §e"
-//									+ CommonConst.STORE + "\n\n§7" + kit.getDescription() + "\n\n§eClique para selecionar!")
-//							.build();
-//					items.add(new MenuItem(item, new StoreKitMenu(kit)));
-//				}
-//			}
-		} else {
-//			for (int i = 0; i < kits.size(); i++) {
-//				Kit kit = kits.get(i);
-//
-//				if (gamer.hasKit(kit.getName())) {
-//					items.add(new MenuItem(
-//							new ItemBuilder().lore("§7" + kit.getDescription() + "\n\n§eClique para selecionar!")
-//									.type(kit.getKitIcon().getType()).durability(kit.getKitIcon().getDurability())
-//									.name("§e§l" + NameUtils.formatString(kit.getName())).build(),
-//							new OpenKitMenu(kit, kitType)));
-//				}
-//			}
-//
-//			for (int i = 0; i < kits.size(); i++) {
-//				Kit kit = kits.get(i);
-//
-//				if (!gamer.hasKit(kit.getName())) {
-//					ItemStack item = new ItemBuilder().type(Material.STAINED_GLASS_PANE).durability(14)
-//							.name("§c" + NameUtils.formatString(kit.getName())).lore("\n§cVocê não possui este kit!\n§cCompre em: §e"
-//									+ CommonConst.STORE + "\n\n§7" + kit.getDescription() + "\n\n§eClique para selecionar!").build();
-//					items.add(new MenuItem(item, new StoreKitMenu(kit)));
-//				}
-//			}
 		}
 
 		int pageStart = 0;
@@ -154,6 +106,35 @@ public class KitSelector {
 					53);
 		}
 
+		if (gamer.hasKit(kitType)) {
+			Kit kit = gamer.getKit(kitType);
+
+			menu.setItem(48, new ItemBuilder().name("§a" + NameUtils.formatString(kit.getName())).type(kit.getKitIcon().getType())
+					.lore("\n§7" + kit.getDescription()).durability(kit.getKitIcon().getDurability()).build(), new MenuClickHandler() {
+
+						@Override
+						public void onClick(Player p, Inventory inv, ClickType type, ItemStack stack, int slot) {
+							new KitInfo(player, kit, kitType);
+						}
+					});
+		} else {
+			menu.setItem(48,
+					new ItemBuilder().name("§eNenhum").type(Material.ITEM_FRAME).build());
+		}
+
+		menu.setItem(50,
+				new ItemBuilder()
+						.name("§fOrdenar por: §7" + (orderType == OrderType.MINE ? "Meus kits"
+								: orderType == OrderType.ALPHABET ? "Alfabeto" : "Alfabeto ao contrário"))
+						.type(Material.ITEM_FRAME).build(), new MenuClickHandler() {
+							
+							@Override
+							public void onClick(Player p, Inventory inv, ClickType type, ItemStack stack, int slot) {
+								new KitSelector(player, page, kitType, orderType.ordinal() == OrderType.values().length - 1 ? OrderType.values()[0]
+										: OrderType.values()[orderType.ordinal() + 1]);
+							}
+						});
+
 		menu.open(player);
 	}
 
@@ -191,7 +172,40 @@ public class KitSelector {
 
 	public enum OrderType {
 
-		MINE, ALPHABET;
+		MINE, ALPHABET, DE_ALPHABET;
+
+		Comparator<Kit> getComparator(Gamer gamer, KitType kitType) {
+			switch (this) {
+			case MINE: {
+				return new Comparator<Kit>() {
+
+					@Override
+					public int compare(Kit o1, Kit o2) {
+						boolean hasKitO1 = GameMain.DOUBLEKIT
+								? kitType == KitType.PRIMARY ? true : gamer.hasKit(o1.getName())
+								: gamer.hasKit(o1.getName());
+						boolean hasKitO2 = GameMain.DOUBLEKIT
+								? kitType == KitType.PRIMARY ? true : gamer.hasKit(o2.getName())
+								: gamer.hasKit(o2.getName());
+
+						int value1 = Boolean.valueOf(hasKitO2).compareTo(hasKitO1);
+
+						if (value1 == 0) {
+							return o1.getName().compareTo(o2.getName());
+						}
+
+						return value1;
+					}
+				};
+			}
+			case DE_ALPHABET: {
+				return (kit1, kit2) -> kit2.getName().compareTo(kit1.getName());
+			}
+			default: {
+				return Comparator.comparing(kit -> kit.getName());
+			}
+			}
+		}
 
 	}
 

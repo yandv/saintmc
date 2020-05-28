@@ -51,7 +51,7 @@ public class PunishDataImpl implements PunishData {
 	}
 
 	@Override
-	public int countBan() {
+	public int getTotalBan() {
 		return (int) database.getCollection("banList").countDocuments();
 	}
 
@@ -80,7 +80,7 @@ public class PunishDataImpl implements PunishData {
 	}
 
 	@Override
-	public int countMute() {
+	public int getTotalMute() {
 		return (int) database.getCollection("muteList").countDocuments();
 	}
 
@@ -97,13 +97,12 @@ public class PunishDataImpl implements PunishData {
 	@Override
 	public void addWarn(Warn warn) {
 		CommonGeneral.getInstance().getCommonPlatform().runAsync(() -> {
-			warn.setId(countWarn() + 1);
 			database.getCollection("warnList").insertOne(Document.parse(CommonConst.GSON.toJson(warn)));
 		});
 	}
 
 	@Override
-	public int countWarn() {
+	public int getTotalWarn() {
 		return (int) database.getCollection("warnList").countDocuments();
 	}
 

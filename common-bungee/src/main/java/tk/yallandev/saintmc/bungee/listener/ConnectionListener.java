@@ -12,8 +12,9 @@ import net.md_5.bungee.api.ServerPing.Protocol;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.PendingConnection;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
-import net.md_5.bungee.api.event.PostLoginEvent;
+import net.md_5.bungee.api.connection.ProxiedPlayer.AccountType;
 import net.md_5.bungee.api.event.ProxyPingEvent;
+import net.md_5.bungee.api.event.SearchServerEvent;
 import net.md_5.bungee.api.event.ServerConnectEvent;
 import net.md_5.bungee.api.event.ServerKickEvent;
 import net.md_5.bungee.api.plugin.Listener;
@@ -22,7 +23,6 @@ import tk.yallandev.saintmc.CommonConst;
 import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.bungee.BungeeMain;
 import tk.yallandev.saintmc.common.account.Member;
-import tk.yallandev.saintmc.common.account.configuration.LoginConfiguration.AccountType;
 import tk.yallandev.saintmc.common.server.ServerManager;
 import tk.yallandev.saintmc.common.server.ServerType;
 import tk.yallandev.saintmc.common.server.loadbalancer.server.BattleServer;
@@ -107,6 +107,34 @@ public class ConnectionListener implements Listener {
 
 		if (!fallbackServer.containsPlayer(player.getUniqueId()))
 			event.setCancelServer(fallbackServer.getServerInfo());
+	}
+
+	@EventHandler
+	public void onSearchServer(SearchServerEvent event) {
+		BattleServer server = manager.getServer(getServerIp(event.getPlayer().getPendingConnection()));
+
+		AccountType accountType = event.getPlayer().getAccountType();
+
+		if (server == null || server.getServerInfo() == null) {
+			server = manager
+					.getBalancer(accountType == AccountType.CRACKED
+							&& CommonGeneral.getInstance().isLoginServer() ? ServerType.LOGIN : ServerType.LOBBY)
+					.next();
+
+			if (server == null || server.getServerInfo() == null) {
+				event.setCancelled(true);
+				event.setCancelMessage(accountType == AccountType.CRACKED
+						? "§4§l" + CommonConst.KICK_PREFIX
+								+ "\n§f\n§fO servidor de §alogin§f está cheio no momento!\n§f\n§6Acesse nosso discord para mais informações:\n§b"
+								+ CommonConst.DISCORD
+						: "§4§l" + CommonConst.KICK_PREFIX
+								+ "\n\n§fNenhum servidor de §alobby§f está disponível no momento!\n§f\n§6Acesse nosso discord para mais informações:\n§b"
+								+ CommonConst.DISCORD);
+				return;
+			}
+		}
+		
+		event.setServer(server.getServerInfo());
 	}
 
 	@EventHandler
@@ -212,37 +240,6 @@ public class ConnectionListener implements Listener {
 		}
 
 		event.setTarget(server.getServerInfo());
-	}
-
-	@EventHandler
-	public void onServerConnectRequest(PostLoginEvent event) {
-		Member player = CommonGeneral.getInstance().getMemberManager().getMember(event.getPlayer().getUniqueId());
-
-		if (player == null)
-			return;
-
-		AccountType accountType = player.getLoginConfiguration().getAccountType();
-		BattleServer server = manager.getServer(getServerIp(event.getPlayer().getPendingConnection()));
-
-		if (server == null) {
-			server = manager.getBalancer(
-					accountType == AccountType.CRACKED && CommonGeneral.getInstance().isLoginServer() ? ServerType.LOGIN
-							: ServerType.LOBBY)
-					.next();
-
-			if (server == null || server.getServerInfo() == null) {
-				event.getPlayer().disconnect(TextComponent.fromLegacyText(accountType == AccountType.CRACKED ? "§4§l"
-						+ CommonConst.KICK_PREFIX
-						+ "\n§f\n§fO servidor de §alogin§f está cheio no momento!\n§f\n§6Acesse nosso discord para mais informações:\n§b"
-						+ CommonConst.DISCORD
-						: "§4§l" + CommonConst.KICK_PREFIX
-								+ "\n\n§fNenhum servidor de §alobby§f está disponível no momento!\n§f\n§6Acesse nosso discord para mais informações:\n§b"
-								+ CommonConst.DISCORD));
-				return;
-			}
-		}
-
-		event.getPlayer().connect(server.getServerInfo());
 	}
 
 	@EventHandler(priority = 127)

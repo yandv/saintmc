@@ -19,7 +19,7 @@ public interface PunishData {
 	
 	void addBan(Ban ban);
 	
-	int countBan();
+	int getTotalBan();
 	
 	/*
 	 * Mute
@@ -31,7 +31,7 @@ public interface PunishData {
 	
 	void addMute(Mute mute);
 	
-	int countMute();
+	int getTotalMute();
 	
 	/*
 	 * Warn
@@ -43,6 +43,6 @@ public interface PunishData {
 	
 	void addWarn(Warn warn);
 	
-	int countWarn();
+	int getTotalWarn();
 	
 }

@@ -13,6 +13,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import br.com.saintmc.hungergames.game.Game;
 import br.com.saintmc.hungergames.listener.register.BorderListener;
@@ -20,13 +21,13 @@ import br.com.saintmc.hungergames.listener.register.GamerListener;
 import br.com.saintmc.hungergames.listener.register.KitListener;
 import br.com.saintmc.hungergames.listener.register.ScoreboardListener;
 import br.com.saintmc.hungergames.scheduler.SchedulerListener;
-import br.com.saintmc.hungergames.utils.MapUtils;
 import lombok.Getter;
 import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.bukkit.BukkitMain;
 import tk.yallandev.saintmc.bukkit.command.BukkitCommandFramework;
 import tk.yallandev.saintmc.common.command.CommandLoader;
 import tk.yallandev.saintmc.common.permission.Group;
+import tk.yallandev.saintmc.common.server.loadbalancer.server.MinigameState;
 
 @Getter
 public class GameMain extends JavaPlugin {
@@ -63,7 +64,7 @@ public class GameMain extends JavaPlugin {
 
 		instance = this;
 		
-		MapUtils.deleteWorld("world");
+//		MapUtils.deleteWorld("world");
 
 		general = new GameGeneral();
 		general.onLoad();
@@ -78,6 +79,7 @@ public class GameMain extends JavaPlugin {
 		BukkitMain.getInstance().setRemovePlayerDat(false);
 		
 		loadListener();
+		saveResource("saintmc.png", true);
 		general.onEnable();
 		
 		if (roomId == null) {
@@ -90,11 +92,12 @@ public class GameMain extends JavaPlugin {
 			}
 		}
 		
+		getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
 		getServer().getScheduler().scheduleSyncDelayedTask(getInstance(), new Runnable() {
 			public void run() {
 				World world = getServer().getWorld("world");
 				world.setSpawnLocation(0, getServer().getWorlds().get(0).getHighestBlockYAt(0, 0), 0);
-
+				
 				for (int x = -30; x <= 30; x++)
 					for (int z = -30; z <= 30; z++)
 						world.getSpawnLocation().clone().add(x * 16, 0, z * 16).getChunk().load();
@@ -118,6 +121,13 @@ public class GameMain extends JavaPlugin {
 				canJoin = true;
 			}
 		});
+		
+		new BukkitRunnable() {
+			@Override
+			public void run() {
+				CommonGeneral.getInstance().getServerData().updateStatus(MinigameState.WAITING, GameGeneral.getInstance().getTime());
+			}
+		}.runTaskLaterAsynchronously(getInstance(), 1);
 
 		super.onEnable();
 	}

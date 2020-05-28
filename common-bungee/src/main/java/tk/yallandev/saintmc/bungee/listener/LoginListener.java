@@ -19,7 +19,7 @@ import net.md_5.bungee.event.EventPriority;
 import tk.yallandev.saintmc.CommonConst;
 import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.bungee.BungeeMain;
-import tk.yallandev.saintmc.common.utils.web.WebHelper.FutureCallback;
+import tk.yallandev.saintmc.common.utils.supertype.FutureCallback;
 import tk.yallandev.saintmc.common.utils.web.WebHelper.Method;
 
 /**

@@ -31,6 +31,7 @@ import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.inventory.ItemStack;
 
+import br.com.saintmc.hungergames.GameMain;
 import br.com.saintmc.hungergames.kit.KitType;
 import br.com.saintmc.hungergames.listener.GameListener;
 import br.com.saintmc.hungergames.menu.kit.KitSelector;
@@ -44,13 +45,25 @@ import tk.yallandev.saintmc.bukkit.api.title.types.SimpleTitle;
 public class PregameListener extends GameListener {
 
 	private ActionItemStack kitSelector = new ActionItemStack(
-			new ItemBuilder().type(Material.CHEST).name("§fKit Selector §7(Clique").build(),
+			new ItemBuilder().type(Material.CHEST).name("§fKit Selector §7(Clique)").build(),
 			new ActionItemStack.Interact() {
 
 				@Override
 				public boolean onInteract(Player player, Entity entity, Block block, ItemStack item,
 						ActionType action) {
-					new KitSelector(player, 1, KitType.PRIMARY, OrderType.ALPHABET);
+					new KitSelector(player, 1, KitType.PRIMARY, OrderType.MINE);
+					return false;
+				}
+			});
+
+	private ActionItemStack kitSecondarySelector = new ActionItemStack(
+			new ItemBuilder().type(Material.CHEST).name("§fKit 2 Selector §7(Clique)").build(),
+			new ActionItemStack.Interact() {
+
+				@Override
+				public boolean onInteract(Player player, Entity entity, Block block, ItemStack item,
+						ActionType action) {
+					new KitSelector(player, 1, KitType.SECONDARY, OrderType.MINE);
 					return false;
 				}
 			});
@@ -59,8 +72,11 @@ public class PregameListener extends GameListener {
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		Player player = event.getPlayer();
 
-		player.getInventory().setItem(4, kitSelector.getItemStack());
+		player.getInventory().setItem(0, kitSelector.getItemStack());
 		
+		if (GameMain.DOUBLEKIT)
+			player.getInventory().setItem(1, kitSecondarySelector.getItemStack());
+
 		player.setHealth(20.0);
 		player.setGameMode(GameMode.ADVENTURE);
 		player.setAllowFlight(false);
@@ -68,10 +84,10 @@ public class PregameListener extends GameListener {
 		player.setFoodLevel(20);
 		player.setExp(0);
 		Title.send(player, "§a§lHungerGames", "§fVocê está na sala §a#1§f!", SimpleTitle.class);
-		
+
 		event.setJoinMessage(null);
 	}
-	
+
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onPlayerQuit(PlayerQuitEvent event) {
 		event.setQuitMessage(null);

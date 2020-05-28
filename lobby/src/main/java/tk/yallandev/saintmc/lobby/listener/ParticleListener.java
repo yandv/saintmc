@@ -2,6 +2,7 @@ package tk.yallandev.saintmc.lobby.listener;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
@@ -62,7 +63,7 @@ public class ParticleListener implements Listener {
 
 			new Point3D(1.0f, -0.2f, -0.5f), new Point3D(1.2f, -0.1f, -0.5f), };
 
-	private Map<Player, Long> map;
+	private Map<UUID, Long> map;
 
 	public ParticleListener() {
 		map = new HashMap<>();
@@ -73,36 +74,12 @@ public class ParticleListener implements Listener {
 		for (Gamer gamer : LobbyMain.getInstance().getPlayerManager().getGamers().stream().filter(
 				gamer -> !LobbyMain.getInstance().getPlayerManager().getPlayersInCombat().contains(gamer.getPlayer()))
 				.collect(Collectors.toList())) {
-			if (!gamer.isUsingWing() && gamer.isUsingParticle()) {
-				Player player = gamer.getPlayer();
-				gamer.setAlpha(gamer.getAlpha() + Math.PI / 16);
 
-				double alpha = gamer.getAlpha();
-
-				Location loc = player.getLocation();
-				Location firstLocation = loc.clone().add(Math.cos(alpha), Math.sin(alpha) + 1, Math.sin(alpha));
-				Location secondLocation = loc.clone().add(Math.cos(alpha + Math.PI), Math.sin(alpha) + 1,
-						Math.sin(alpha + Math.PI));
-
-				PacketPlayOutWorldParticles packet = new PacketPlayOutWorldParticles(gamer.getParticle(), true,
-						(float) firstLocation.getX(), (float) firstLocation.getY(), (float) firstLocation.getZ(), 0, 0,
-						0, 0, 1);
-				PacketPlayOutWorldParticles packet2 = new PacketPlayOutWorldParticles(gamer.getParticle(), true,
-						(float) secondLocation.getX(), (float) secondLocation.getY(), (float) secondLocation.getZ(), 0,
-						0, 0, 0, 1);
-
-				for (Player online : Bukkit.getOnlinePlayers()) {
-					if (online.canSee(player)) {
-						((CraftPlayer) online).getHandle().playerConnection.sendPacket(packet);
-						((CraftPlayer) online).getHandle().playerConnection.sendPacket(packet2);
-					}
-				}
-			}
-
-			if (event.getCurrentTick() % 5 == 0)
-				if (gamer.isUsingWing())
-					if (map.containsKey(gamer.getPlayer()) && map.get(gamer.getPlayer()) < System.currentTimeMillis()
-							|| !map.containsKey(gamer.getPlayer())) {
+			if (gamer.isUsingWing()) {
+				
+				if (event.getCurrentTick() % 5 == 0)
+					if (map.containsKey(gamer.getPlayer().getUniqueId()) && map.get(gamer.getPlayer().getUniqueId()) < System.currentTimeMillis()
+							|| !map.containsKey(gamer.getPlayer().getUniqueId())) {
 
 						Player player = gamer.getPlayer();
 						EnumParticle particle = gamer.getWingParticle();
@@ -154,6 +131,37 @@ public class ParticleListener implements Listener {
 							}
 						}
 					}
+				
+				continue;
+			}
+
+			if (gamer.isUsingParticle()) {
+				Player player = gamer.getPlayer();
+				gamer.setAlpha(gamer.getAlpha() + Math.PI / 16);
+
+				double alpha = gamer.getAlpha();
+
+				Location loc = player.getLocation();
+				Location firstLocation = loc.clone().add(Math.cos(alpha), Math.sin(alpha) + 1, Math.sin(alpha));
+				Location secondLocation = loc.clone().add(Math.cos(alpha + Math.PI), Math.sin(alpha) + 1,
+						Math.sin(alpha + Math.PI));
+
+				PacketPlayOutWorldParticles packet = new PacketPlayOutWorldParticles(gamer.getParticle(), true,
+						(float) firstLocation.getX(), (float) firstLocation.getY(), (float) firstLocation.getZ(), 0, 0,
+						0, 0, 1);
+				PacketPlayOutWorldParticles packet2 = new PacketPlayOutWorldParticles(gamer.getParticle(), true,
+						(float) secondLocation.getX(), (float) secondLocation.getY(), (float) secondLocation.getZ(), 0,
+						0, 0, 0, 1);
+
+				for (Player online : Bukkit.getOnlinePlayers()) {
+					if (online.canSee(player)) {
+						((CraftPlayer) online).getHandle().playerConnection.sendPacket(packet);
+						((CraftPlayer) online).getHandle().playerConnection.sendPacket(packet2);
+					}
+				}
+
+				continue;
+			}
 		}
 	}
 
@@ -163,12 +171,12 @@ public class ParticleListener implements Listener {
 		Gamer gamer = LobbyMain.getInstance().getPlayerManager().getGamer(player);
 
 		if (gamer.isUsingWing())
-			map.put(player, System.currentTimeMillis() + 250);
+			map.put(player.getUniqueId(), System.currentTimeMillis() + 250);
 	}
 
 	@EventHandler
 	public void onPlayerQuit(PlayerQuitEvent event) {
-		map.remove(event.getPlayer());
+		map.remove(event.getPlayer().getUniqueId());
 	}
 
 }

@@ -41,8 +41,8 @@ public class KitCommand implements CommandClass {
 			List<String> list = new ArrayList<>();
 
 			for (Kit kit : GameGeneral.getInstance().getKitController().getAllKits())
-				if (kit.toString().toLowerCase().startsWith(cmdArgs.getArgs()[0].toLowerCase()))
-					list.add(kit.toString());
+				if (kit.getName().toLowerCase().startsWith(cmdArgs.getArgs()[0].toLowerCase()))
+					list.add(kit.getName());
 
 			return list;
 		}

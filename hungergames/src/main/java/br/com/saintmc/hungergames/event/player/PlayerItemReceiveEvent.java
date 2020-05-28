@@ -4,9 +4,9 @@ import org.bukkit.entity.Player;
 
 import tk.yallandev.saintmc.bukkit.event.PlayerCancellableEvent;
 
-public class PlayerRespawnInGameEvent extends PlayerCancellableEvent {
+public class PlayerItemReceiveEvent extends PlayerCancellableEvent {
 
-	public PlayerRespawnInGameEvent(Player player) {
+	public PlayerItemReceiveEvent(Player player) {
 		super(player);
 	}
 

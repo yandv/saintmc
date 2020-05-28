@@ -1,7 +1,6 @@
 package br.com.saintmc.hungergames.scheduler;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -12,12 +11,11 @@ import org.bukkit.potion.PotionEffectType;
 
 import br.com.saintmc.hungergames.GameGeneral;
 import br.com.saintmc.hungergames.GameMain;
-import br.com.saintmc.hungergames.abilities.Ability;
 import br.com.saintmc.hungergames.constructor.Gamer;
 import br.com.saintmc.hungergames.event.game.GameInvincibilityEndEvent;
 import br.com.saintmc.hungergames.event.game.GameStartEvent;
 import br.com.saintmc.hungergames.event.game.GameStateChangeEvent;
-import br.com.saintmc.hungergames.kit.Kit;
+import br.com.saintmc.hungergames.event.player.PlayerItemReceiveEvent;
 import br.com.saintmc.hungergames.listener.register.BlockListener;
 import br.com.saintmc.hungergames.listener.register.DeathListener;
 import br.com.saintmc.hungergames.listener.register.SpectatorListener;
@@ -67,16 +65,7 @@ public class SchedulerListener implements Listener {
 			player.setGameMode(org.bukkit.GameMode.SURVIVAL);
 			player.setAllowFlight(false);
 			
-			player.getInventory().addItem(new ItemStack(Material.COMPASS));
-			
-			for (Kit kit : gamer.getKitMap().values()) {
-				for (Ability ability : kit.getAbilities()) {
-					for (ItemStack item : ability.getItemList()) {
-						player.getInventory().addItem(item);
-					}
-				}
-			}
-			
+			Bukkit.getPluginManager().callEvent(new PlayerItemReceiveEvent(player));
 			player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 20*30, 1));
 		}
 		

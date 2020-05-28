@@ -42,6 +42,10 @@ public class KitListener implements Listener {
 					event.setCancelled(true);
 					return;
 				}
+			} else {
+				player.sendMessage("§c§l> §fVocê não pode mais selecionar kit!");
+				event.setCancelled(true);
+				return;
 			}
 		}
 

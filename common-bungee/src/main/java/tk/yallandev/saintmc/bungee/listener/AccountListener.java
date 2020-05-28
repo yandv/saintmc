@@ -56,6 +56,7 @@ public class AccountListener implements Listener {
 					 */
 					
 					connection.setOnlineMode(!cracked);
+					CommonGeneral.getInstance().debug("The connection of " + event.getConnection().getName() + " is " + (cracked ? "Cracked" : "Premium"));
 				} catch (Exception ex) {
 					event.setCancelled(true);
 					event.setCancelReason("§4§l" + CommonConst.KICK_PREFIX
@@ -198,7 +199,7 @@ public class AccountListener implements Listener {
 				 * Start LoginConfiguration of player
 				 */
 
-				boolean cracked = CommonGeneral.getInstance().getMojangFetcher().isCracked(playerName);
+				boolean cracked = !event.getConnection().isOnlineMode();
 
 				if (cracked) {
 					

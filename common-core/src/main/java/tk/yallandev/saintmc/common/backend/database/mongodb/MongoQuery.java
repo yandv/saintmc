@@ -20,12 +20,11 @@ import tk.yallandev.saintmc.common.backend.Query;
 import tk.yallandev.saintmc.common.utils.json.JsonUtils;
 
 public class MongoQuery implements Query<JsonElement> {
-	
+
 	private static final JsonWriterSettings SETTINGS = JsonWriterSettings.builder()
 			.int64Converter((value, writer) -> writer.writeNumber(value.toString())).build();
 
 	private MongoDatabase database;
-
 	private MongoCollection<Document> collection;
 
 	public MongoQuery(MongoConnection mongoConnection, String collectionName) {
@@ -60,14 +59,8 @@ public class MongoQuery implements Query<JsonElement> {
 		return documentList;
 	}
 
-	/**
-	 * 
-	 * @param key, value
-	 * @return Collection<String> with all elements in this databse
-	 */
-
 	@Override
-	public Collection<JsonElement> find(String key, String value) {
+	public <GenericType> Collection<JsonElement> find(String key, GenericType value) {
 		MongoCursor<Document> mongoCursor = collection.find(Filters.eq(key, value)).iterator();
 		List<JsonElement> documentList = new ArrayList<>();
 
@@ -78,7 +71,7 @@ public class MongoQuery implements Query<JsonElement> {
 	}
 
 	@Override
-	public Collection<JsonElement> find(String collection, String key, String value) {
+	public <GenericType> Collection<JsonElement> find(String collection, String key, GenericType value) {
 		MongoCursor<Document> mongoCursor = database.getCollection(collection).find(Filters.eq(key, value)).iterator();
 		List<JsonElement> documentList = new ArrayList<>();
 
@@ -89,7 +82,7 @@ public class MongoQuery implements Query<JsonElement> {
 	}
 
 	@Override
-	public JsonElement findOne(String key, String value) {
+	public <GenericType> JsonElement findOne(String key, GenericType value) {
 		JsonElement json = null;
 		Document document = collection.find(Filters.eq(key, value)).first();
 
@@ -100,7 +93,7 @@ public class MongoQuery implements Query<JsonElement> {
 	}
 
 	@Override
-	public JsonElement findOne(String collection, String key, String value) {
+	public <GenericType> JsonElement findOne(String collection, String key, GenericType value) {
 		JsonElement json = null;
 		Document document = database.getCollection(collection).find(Filters.eq(key, value)).first();
 
@@ -112,155 +105,240 @@ public class MongoQuery implements Query<JsonElement> {
 
 	@Override
 	public void find(QueryResponse<Collection<JsonElement>> response) {
-		try {
-			MongoCursor<Document> mongoCursor = collection.find().iterator();
-			List<JsonElement> documentList = new ArrayList<>();
+		CommonGeneral.getInstance().getCommonPlatform().runAsync(new Runnable() {
 
-			while (mongoCursor.hasNext())
-				documentList.add(JsonParser.parseString(mongoCursor.next().toJson(SETTINGS)));
+			@Override
+			public void run() {
+				try {
+					MongoCursor<Document> mongoCursor = collection.find().iterator();
+					List<JsonElement> documentList = new ArrayList<>();
 
-			response.callback(documentList);
+					while (mongoCursor.hasNext())
+						documentList.add(JsonParser.parseString(mongoCursor.next().toJson(SETTINGS)));
 
-		} catch (Exception ex) {
-			response.callback(new ArrayList<>());
-			CommonGeneral.getInstance().getLogger().warning(ex.getMessage());
-		}
-	}
+					response.callback(documentList);
 
-	@Override
-	public void find(String collection, QueryResponse<Collection<JsonElement>> response) {
-		try {
-			MongoCursor<Document> mongoCursor = database.getCollection(collection).find().iterator();
-			List<JsonElement> documentList = new ArrayList<>();
-
-			while (mongoCursor.hasNext())
-				documentList.add(JsonParser.parseString(mongoCursor.next().toJson(SETTINGS)));
-
-			response.callback(documentList);
-
-		} catch (Exception ex) {
-			response.callback(new ArrayList<>());
-			CommonGeneral.getInstance().getLogger().warning(ex.getMessage());
-		}
-	}
-
-	@Override
-	public void find(String key, String value, QueryResponse<Collection<JsonElement>> response) {
-		try {
-			MongoCursor<Document> mongoCursor = collection.find(Filters.eq(key, value)).iterator();
-			List<JsonElement> documentList = new ArrayList<>();
-
-			while (mongoCursor.hasNext())
-				documentList.add(JsonParser.parseString(mongoCursor.next().toJson(SETTINGS)));
-
-			response.callback(documentList);
-		} catch (Exception ex) {
-			response.callback(new ArrayList<>());
-			CommonGeneral.getInstance().getLogger().warning(ex.getMessage());
-		}
-	}
-
-	@Override
-	public void find(String collection, String key, String value, QueryResponse<Collection<JsonElement>> response) {
-		try {
-			MongoCursor<Document> mongoCursor = database.getCollection(collection).find(Filters.eq(key, value))
-					.iterator();
-			List<JsonElement> documentList = new ArrayList<>();
-
-			while (mongoCursor.hasNext())
-				documentList.add(JsonParser.parseString(mongoCursor.next().toJson(SETTINGS)));
-
-			response.callback(documentList);
-		} catch (Exception ex) {
-			response.callback(new ArrayList<>());
-			CommonGeneral.getInstance().getLogger().warning(ex.getMessage());
-		}
-	}
-
-	@Override
-	public void findOne(String key, String value, QueryResponse<JsonElement> response) {
-		try {
-			Document document = collection.find(Filters.eq(key, value)).first();
-
-			if (document == null) {
-				response.callback(null);
-			} else {
-				response.callback(JsonParser.parseString(document.toJson(SETTINGS)));
+				} catch (Exception ex) {
+					response.callback(new ArrayList<>());
+					CommonGeneral.getInstance().getLogger().warning(ex.getMessage());
+				}
 			}
-		} catch (Exception ex) {
-			response.callback(null);
-			CommonGeneral.getInstance().getLogger().warning(ex.getMessage());
-		}
+		});
 	}
 
 	@Override
-	public void findOne(String collection, String key, String value, QueryResponse<JsonElement> response) {
-		try {
-			Document document = database.getCollection(collection).find(Filters.eq(key, value)).first();
+	public <GenericType> void find(String collection, QueryResponse<Collection<JsonElement>> response) {
+		CommonGeneral.getInstance().getCommonPlatform().runAsync(new Runnable() {
 
-			if (document == null) {
-				response.callback(null);
-			} else {
-				response.callback(JsonParser.parseString(document.toJson(SETTINGS)));
+			@Override
+			public void run() {
+				try {
+					MongoCursor<Document> mongoCursor = database.getCollection(collection).find().iterator();
+					List<JsonElement> documentList = new ArrayList<>();
+
+					while (mongoCursor.hasNext())
+						documentList.add(JsonParser.parseString(mongoCursor.next().toJson(SETTINGS)));
+
+					response.callback(documentList);
+
+				} catch (Exception ex) {
+					response.callback(new ArrayList<>());
+					CommonGeneral.getInstance().getLogger().warning(ex.getMessage());
+				}
 			}
-		} catch (Exception ex) {
-			response.callback(null);
-			CommonGeneral.getInstance().getLogger().warning(ex.getMessage());
-		}
+		});
+	}
+
+	@Override
+	public <GenericType> void find(String key, GenericType value, QueryResponse<Collection<JsonElement>> response) {
+		CommonGeneral.getInstance().getCommonPlatform().runAsync(new Runnable() {
+
+			@Override
+			public void run() {
+				try {
+					MongoCursor<Document> mongoCursor = collection.find(Filters.eq(key, value)).iterator();
+					List<JsonElement> documentList = new ArrayList<>();
+
+					while (mongoCursor.hasNext())
+						documentList.add(JsonParser.parseString(mongoCursor.next().toJson(SETTINGS)));
+
+					response.callback(documentList);
+				} catch (Exception ex) {
+					response.callback(new ArrayList<>());
+					CommonGeneral.getInstance().getLogger().warning(ex.getMessage());
+				}
+			}
+		});
+	}
+
+	@Override
+	public <GenericType> void find(String collection, String key, GenericType value, QueryResponse<Collection<JsonElement>> response) {
+		CommonGeneral.getInstance().getCommonPlatform().runAsync(new Runnable() {
+
+			@Override
+			public void run() {
+				try {
+					MongoCursor<Document> mongoCursor = database.getCollection(collection).find(Filters.eq(key, value))
+							.iterator();
+					List<JsonElement> documentList = new ArrayList<>();
+
+					while (mongoCursor.hasNext())
+						documentList.add(JsonParser.parseString(mongoCursor.next().toJson(SETTINGS)));
+
+					response.callback(documentList);
+				} catch (Exception ex) {
+					response.callback(new ArrayList<>());
+					CommonGeneral.getInstance().getLogger().warning(ex.getMessage());
+				}
+			}
+		});
+	}
+
+	@Override
+	public <GenericType> void findOne(String key, GenericType value, QueryResponse<JsonElement> response) {
+		CommonGeneral.getInstance().getCommonPlatform().runAsync(new Runnable() {
+
+			@Override
+			public void run() {
+				try {
+					Document document = collection.find(Filters.eq(key, value)).first();
+
+					if (document == null) {
+						response.callback(null);
+					} else {
+						response.callback(JsonParser.parseString(document.toJson(SETTINGS)));
+					}
+				} catch (Exception ex) {
+					response.callback(null);
+					CommonGeneral.getInstance().getLogger().warning(ex.getMessage());
+				}
+			}
+		});
+	}
+
+	@Override
+	public <GenericType> void findOne(String collection, String key, GenericType value, QueryResponse<JsonElement> response) {
+		CommonGeneral.getInstance().getCommonPlatform().runAsync(new Runnable() {
+
+			@Override
+			public void run() {
+				try {
+					Document document = database.getCollection(collection).find(Filters.eq(key, value)).first();
+
+					if (document == null) {
+						response.callback(null);
+					} else {
+						response.callback(JsonParser.parseString(document.toJson(SETTINGS)));
+					}
+				} catch (Exception ex) {
+					response.callback(null);
+					CommonGeneral.getInstance().getLogger().warning(ex.getMessage());
+				}
+			}
+		});
 	}
 
 	@Override
 	public void create(String[] jsons) {
-		for (String json : jsons) {
-			collection.insertOne(Document.parse(json));
-		}
+		CommonGeneral.getInstance().getCommonPlatform().runAsync(new Runnable() {
+
+			@Override
+			public void run() {
+				for (String json : jsons) {
+					collection.insertOne(Document.parse(json));
+				}
+			}
+		});
 	}
 
 	@Override
 	public void create(String collection, String[] jsons) {
-		for (String json : jsons) {
-			database.getCollection(collection).insertOne(Document.parse(json));
-		}
+		CommonGeneral.getInstance().getCommonPlatform().runAsync(new Runnable() {
+
+			@Override
+			public void run() {
+				for (String json : jsons) {
+					database.getCollection(collection).insertOne(Document.parse(json));
+				}
+			}
+		});
 	}
 
 	@Override
-	public void deleteOne(String key, String value) {
-		collection.deleteOne(Filters.eq(key, value));
+	public <GenericType> void deleteOne(String key, GenericType value) {
+		CommonGeneral.getInstance().getCommonPlatform().runAsync(new Runnable() {
+
+			@Override
+			public void run() {
+				collection.deleteOne(Filters.eq(key, value));
+			}
+		});
 	}
 
 	@Override
-	public void deleteOne(String collection, String key, String value) {
-		database.getCollection(collection).deleteOne(Filters.eq(key, value));
+	public <GenericType> void deleteOne(String collection, String key, GenericType value) {
+		CommonGeneral.getInstance().getCommonPlatform().runAsync(new Runnable() {
+
+			@Override
+			public void run() {
+				database.getCollection(collection).deleteOne(Filters.eq(key, value));
+			}
+		});
 	}
 
 	@Override
-	public void updateOne(String key, String value, JsonElement t) {
-		JsonObject jsonObject = (JsonObject) t;
+	public <GenericType> void updateOne(String key, GenericType value, JsonElement t) {
+		CommonGeneral.getInstance().getCommonPlatform().runAsync(new Runnable() {
 
-		if (jsonObject.has("fieldName") && jsonObject.has("value")) {
-			Object object = JsonUtils.elementToBson(jsonObject.get("value"));
+			@Override
+			public void run() {
+				JsonObject jsonObject = (JsonObject) t;
 
-			collection.updateOne(Filters.eq(key, value),
-					new Document("$set", new Document(jsonObject.get("fieldName").getAsString(), object)));
-			return;
-		}
+				if (jsonObject.has("fieldName") && jsonObject.has("value")) {
+					Object object = JsonUtils.elementToBson(jsonObject.get("value"));
 
-		collection.updateOne(Filters.eq(key, value), Document.parse(t.toString()));
+					collection.updateOne(Filters.eq(key, value),
+							new Document("$set", new Document(jsonObject.get("fieldName").getAsString(), object)));
+					return;
+				}
+
+				collection.updateOne(Filters.eq(key, value), Document.parse(t.toString()));
+			}
+		});
 	}
 
 	@Override
-	public void updateOne(String collection, String key, String value, JsonElement t) {
-		JsonObject jsonObject = (JsonObject) t;
+	public <GenericType> void updateOne(String collection, String key, GenericType value, JsonElement t) {
+		CommonGeneral.getInstance().getCommonPlatform().runAsync(new Runnable() {
 
-		if (jsonObject.has("fieldName") && jsonObject.has("value")) {
-			Object object = JsonUtils.elementToBson(jsonObject.get("value"));
+			@Override
+			public void run() {
+				JsonObject jsonObject = (JsonObject) t;
 
-			database.getCollection(collection).updateOne(Filters.eq(key, value),
-					new Document("$set", new Document(jsonObject.get("fieldName").getAsString(), object)));
-			return;
-		}
+				if (jsonObject.has("fieldName") && jsonObject.has("value")) {
+					Object object = JsonUtils.elementToBson(jsonObject.get("value"));
 
-		database.getCollection(collection).updateOne(Filters.eq(key, value), Document.parse(t.toString()));
+					database.getCollection(collection).updateOne(Filters.eq(key, value),
+							new Document("$set", new Document(jsonObject.get("fieldName").getAsString(), object)));
+					return;
+				}
+
+				database.getCollection(collection).updateOne(Filters.eq(key, value), Document.parse(t.toString()));
+			}
+		});
 	}
 
+	@Override
+	public <GenericType> Collection<JsonElement> ranking(String key, GenericType value, int limit) {
+		
+		MongoCursor<Document> mongoCursor = collection.find().sort(Filters.eq(key, value)).limit(limit)
+				.iterator();
+		List<JsonElement> documentList = new ArrayList<>();
+
+		while (mongoCursor.hasNext())
+			documentList.add(JsonParser.parseString(mongoCursor.next().toJson(SETTINGS)));
+		
+		return documentList;
+	}
+	
 }
