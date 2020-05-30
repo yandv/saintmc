@@ -15,6 +15,7 @@ import br.com.saintmc.hungergames.GameMain;
 import br.com.saintmc.hungergames.constructor.Gamer;
 import br.com.saintmc.hungergames.kit.Kit;
 import br.com.saintmc.hungergames.kit.KitType;
+import br.com.saintmc.hungergames.utils.ServerConfig;
 import lombok.AllArgsConstructor;
 import tk.yallandev.saintmc.CommonConst;
 import tk.yallandev.saintmc.bukkit.api.item.ItemBuilder;
@@ -46,11 +47,21 @@ public class KitSelector {
 					: gamer.hasKit(kit.getName());
 
 			if (hasKit) {
-				items.add(new MenuItem(
-						new ItemBuilder().lore("§7" + kit.getDescription() + "\n\n§eClique para selecionar!")
-								.type(kit.getKitIcon().getType()).durability(kit.getKitIcon().getDurability())
-								.name("§a" + NameUtils.formatString(kit.getName())).build(),
-						new OpenKitMenu(kit, kitType)));
+				if (ServerConfig.getInstance().isDisabled(kit, kitType)) {
+					items.add(new MenuItem(
+							new ItemBuilder()
+									.lore("\n§7" + kit.getDescription()
+											+ "\n\n§eO kit está desativado!")
+									.type(kit.getKitIcon().getType()).durability(kit.getKitIcon().getDurability())
+									.name("§e" + NameUtils.formatString(kit.getName())).build(),
+							new OpenKitMenu(kit, kitType)));
+				} else {
+					items.add(new MenuItem(
+							new ItemBuilder().lore("§7" + kit.getDescription() + "\n\n§eClique para selecionar!")
+									.type(kit.getKitIcon().getType()).durability(kit.getKitIcon().getDurability())
+									.name("§a" + NameUtils.formatString(kit.getName())).build(),
+							new OpenKitMenu(kit, kitType)));
+				}
 			} else {
 				ItemStack item = new ItemBuilder().type(Material.STAINED_GLASS_PANE).durability(14)
 						.name("§c" + NameUtils.formatString(kit.getName()))
@@ -109,8 +120,11 @@ public class KitSelector {
 		if (gamer.hasKit(kitType)) {
 			Kit kit = gamer.getKit(kitType);
 
-			menu.setItem(48, new ItemBuilder().name("§a" + NameUtils.formatString(kit.getName())).type(kit.getKitIcon().getType())
-					.lore("\n§7" + kit.getDescription()).durability(kit.getKitIcon().getDurability()).build(), new MenuClickHandler() {
+			menu.setItem(48,
+					new ItemBuilder().name("§a" + NameUtils.formatString(kit.getName()))
+							.type(kit.getKitIcon().getType()).lore("\n§7" + kit.getDescription())
+							.durability(kit.getKitIcon().getDurability()).build(),
+					new MenuClickHandler() {
 
 						@Override
 						public void onClick(Player p, Inventory inv, ClickType type, ItemStack stack, int slot) {
@@ -118,22 +132,23 @@ public class KitSelector {
 						}
 					});
 		} else {
-			menu.setItem(48,
-					new ItemBuilder().name("§eNenhum").type(Material.ITEM_FRAME).build());
+			menu.setItem(48, new ItemBuilder().name("§eNenhum").type(Material.ITEM_FRAME).build());
 		}
 
 		menu.setItem(50,
 				new ItemBuilder()
 						.name("§fOrdenar por: §7" + (orderType == OrderType.MINE ? "Meus kits"
 								: orderType == OrderType.ALPHABET ? "Alfabeto" : "Alfabeto ao contrário"))
-						.type(Material.ITEM_FRAME).build(), new MenuClickHandler() {
-							
-							@Override
-							public void onClick(Player p, Inventory inv, ClickType type, ItemStack stack, int slot) {
-								new KitSelector(player, page, kitType, orderType.ordinal() == OrderType.values().length - 1 ? OrderType.values()[0]
+						.type(Material.ITEM_FRAME).build(),
+				new MenuClickHandler() {
+
+					@Override
+					public void onClick(Player p, Inventory inv, ClickType type, ItemStack stack, int slot) {
+						new KitSelector(player, page, kitType,
+								orderType.ordinal() == OrderType.values().length - 1 ? OrderType.values()[0]
 										: OrderType.values()[orderType.ordinal() + 1]);
-							}
-						});
+					}
+				});
 
 		menu.open(player);
 	}

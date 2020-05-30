@@ -53,6 +53,8 @@ import br.com.saintmc.hungergames.event.kit.PlayerSelectedKitEvent;
 import br.com.saintmc.hungergames.event.player.PlayerItemReceiveEvent;
 import br.com.saintmc.hungergames.game.GameState;
 import br.com.saintmc.hungergames.kit.Kit;
+import br.com.saintmc.hungergames.kit.KitType;
+import br.com.saintmc.hungergames.utils.ServerConfig;
 import tk.yallandev.saintmc.CommonConst;
 import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.bukkit.api.vanish.AdminMode;
@@ -111,10 +113,10 @@ public class GameListener extends br.com.saintmc.hungergames.listener.GameListen
 		if (player.hasGroupPermission(Group.TRIAL))
 			return;
 
-		if (player.hasGroupPermission(GameMain.SPECTATOR_GROUP) && GameMain.SPECTATOR)
+		if (player.hasGroupPermission(ServerConfig.getInstance().getSpectatorGroup()) && GameMain.SPECTATOR)
 			return;
 
-		if (player.hasGroupPermission(GameMain.RESPAWN_GROUP) && !joined.contains(event.getPlayer().getUniqueId())
+		if (player.hasGroupPermission(ServerConfig.getInstance().getRespawnGroup()) && !joined.contains(event.getPlayer().getUniqueId())
 				&& getGameGeneral().getTime() < 300)
 			return;
 
@@ -152,6 +154,18 @@ public class GameListener extends br.com.saintmc.hungergames.listener.GameListen
 			joined.add(player.getUniqueId());
 			event.setJoinMessage(null);
 			player.sendMessage("§aVocê entrou na partida!");
+			
+			if (Member.hasGroupPermission(player.getUniqueId(), Group.LIGHT)) {
+				if (!gamer.hasKit(KitType.PRIMARY))
+					gamer.setNoKit(KitType.PRIMARY);
+				
+				if (!gamer.hasKit(KitType.SECONDARY))
+					gamer.setNoKit(KitType.SECONDARY);
+			}
+			
+			gamer.setGame(GameMain.GAME);
+			gamer.getStatus().addMatch();
+			Bukkit.getPluginManager().callEvent(new PlayerItemReceiveEvent(player));
 		} else {
 			event.setJoinMessage(null);
 
@@ -200,7 +214,23 @@ public class GameListener extends br.com.saintmc.hungergames.listener.GameListen
 		Player player = event.getPlayer();
 		Gamer gamer = GameGeneral.getInstance().getGamerController().getGamer(player);
 		
+		/*
+		 * Check if has default kit
+		 */
+		
+		if (ServerConfig.getInstance().hasDefaultSimpleKit()) {
+			ServerConfig.getInstance().getDefaultSimpleKit().applySilent(player);
+		}
+		
+		/*
+		 * Add compass
+		 */
+		
 		player.getInventory().addItem(new ItemStack(Material.COMPASS));
+		
+		/*
+		 * Add Kit item
+		 */
 		
 		if (GameState.isInvincibility(GameGeneral.getInstance().getGameState())) {
 			
@@ -215,7 +245,7 @@ public class GameListener extends br.com.saintmc.hungergames.listener.GameListen
 		} else {
 			Member member = CommonGeneral.getInstance().getMemberManager().getMember(player.getUniqueId());
 			
-			if (member.hasGroupPermission(GameMain.KIT_SPAWN_GROUP))
+			if (member.hasGroupPermission(ServerConfig.getInstance().getKitSpawnGroup()))
 				for (Kit kit : gamer.getKitMap().values()) {
 					for (Ability ability : kit.getAbilities()) {
 						for (ItemStack item : ability.getItemList()) {

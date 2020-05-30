@@ -1,7 +1,9 @@
 package br.com.saintmc.hungergames.constructor;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import org.bukkit.entity.Player;
@@ -10,6 +12,7 @@ import org.bukkit.inventory.ItemStack;
 import br.com.saintmc.hungergames.GameMain;
 import br.com.saintmc.hungergames.abilities.Ability;
 import br.com.saintmc.hungergames.death.DeathCause;
+import br.com.saintmc.hungergames.game.Game;
 import br.com.saintmc.hungergames.kit.Kit;
 import br.com.saintmc.hungergames.kit.KitType;
 import lombok.Getter;
@@ -19,6 +22,14 @@ import tk.yallandev.saintmc.common.account.Member;
 import tk.yallandev.saintmc.common.account.status.Status;
 import tk.yallandev.saintmc.common.account.status.StatusType;
 import tk.yallandev.saintmc.common.permission.Group;
+
+/**
+ * 
+ * Store player state in server
+ * 
+ * @author yandv
+ *
+ */
 
 @Getter
 public class Gamer {
@@ -33,6 +44,7 @@ public class Gamer {
 	private UUID uniqueId;
 
 	private Map<KitType, Kit> kitMap;
+	private Set<KitType> noKitList;
 
 	/*
 	 * State
@@ -53,7 +65,8 @@ public class Gamer {
 	 */
 
 	private Status status;
-	@Getter
+	@Setter
+	private Game game;
 	private int matchKills;
 
 	/*
@@ -69,16 +82,28 @@ public class Gamer {
 		this.playerName = player.getName();
 		this.uniqueId = player.getUniqueId();
 
+		this.noKitList = new HashSet<>();
 		this.kitMap = new HashMap<>();
 
 		this.status = CommonGeneral.getInstance().getStatusManager().loadStatus(getUniqueId(), StatusType.HG);
 	}
 
 	public void setKit(KitType kitType, Kit kit) {
+		
+		if (getKit(kitType) != null) {
+			for (Ability ability : getKit(kitType).getAbilities())
+				ability.unregisterPlayer(getPlayer());
+		}
+		
 		this.kitMap.put(kitType, kit);
 	}
 
 	public void removeKit(KitType kitType) {
+		if (getKit(kitType) != null) {
+			for (Ability ability : getKit(kitType).getAbilities())
+				ability.unregisterPlayer(getPlayer());
+		}
+		
 		this.kitMap.remove(kitType);
 	}
 
@@ -153,12 +178,20 @@ public class Gamer {
 	}
 
 	public boolean isNoKit(KitType kitType) {
-		return false;
+		return noKitList.contains(kitType);
+	}
+	
+	public void setNoKit(KitType kitType) {
+		noKitList.add(kitType);
+	}
+	
+	public void removeNoKit(KitType kitType) {
+		noKitList.remove(kitType);
 	}
 
 	public void addKill() {
 		matchKills++;
-		getStatus().addKills();
+		getStatus().addKill();
 	}
 
 }

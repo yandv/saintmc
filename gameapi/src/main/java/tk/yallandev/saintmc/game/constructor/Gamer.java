@@ -41,12 +41,12 @@ public class Gamer {
 	}
 
 	public void addKill() {
-		status.addKills();
+		status.addKill();
 		matchkills += 1;
 	}
 
 	public void addDeath() {
-		status.addDeaths();
+		status.addDeath();
 	}
 
 	public boolean isSpectator() {

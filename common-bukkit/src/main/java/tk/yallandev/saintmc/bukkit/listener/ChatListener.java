@@ -188,7 +188,7 @@ public class ChatListener implements Listener {
 				account.setClickEvent(
 						new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/account " + player.getPlayerName()));
 				account.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
-						TextComponent.fromLegacyText("§aInformações do player \n\n§fXp: §a" + player.getXp() + "\n\n§fReputação: §a" + player.getReputation())));
+						TextComponent.fromLegacyText("§aInformações do player \n\n§fXp: §a" + player.getXp() + "\n§fReputação: §a" + player.getReputation())));
 				int i = 0;
 
 				if (league != null) {

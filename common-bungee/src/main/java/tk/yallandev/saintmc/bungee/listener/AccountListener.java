@@ -34,6 +34,9 @@ public class AccountListener implements Listener {
 	
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onLogin(PreLoginEvent event) {
+		if (event.isCancelled())
+			return;
+		
 		String playerName = event.getConnection().getName();
 
 		PendingConnection connection = event.getConnection();

@@ -6,7 +6,6 @@ import org.bukkit.event.HandlerList;
 public class GameEvent extends Event {
 	
 	private static final HandlerList handlers = new HandlerList();
-	
 
 	@Override
 	public HandlerList getHandlers() {

@@ -316,7 +316,7 @@ public class ServerCommand implements CommandClass {
 	}
 
 	@Command(name = "memoryinfo", groupToUse = Group.DONO)
-	public void raminfo(BukkitCommandArgs cmdArgs) {
+	public void memoryinfoCommand(BukkitCommandArgs cmdArgs) {
 		double total = Runtime.getRuntime().maxMemory();
 		double free = Runtime.getRuntime().freeMemory();
 		double used = total - free;
@@ -333,7 +333,7 @@ public class ServerCommand implements CommandClass {
 		cmdArgs.getSender().sendMessage("§a" + format.format(usedPercentage) + "% da memoria RAM");
 	}
 
-	@Command(name = "plugins", aliases = { "pl" }, groupToUse = Group.LIGHT)
+	@Command(name = "plugins", aliases = { "pl", "plugin" }, groupToUse = Group.LIGHT)
 	public void pluginCommand(CommandArgs cmdArgs) {
 		StringBuilder pluginList = new StringBuilder();
 

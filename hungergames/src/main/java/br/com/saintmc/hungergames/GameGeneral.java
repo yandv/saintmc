@@ -8,6 +8,7 @@ import br.com.saintmc.hungergames.controller.AbilityController;
 import br.com.saintmc.hungergames.controller.GamerController;
 import br.com.saintmc.hungergames.controller.KitController;
 import br.com.saintmc.hungergames.controller.SchedulerController;
+import br.com.saintmc.hungergames.controller.SimplekitController;
 import br.com.saintmc.hungergames.controller.TimeoutController;
 import br.com.saintmc.hungergames.event.game.GameStateChangeEvent;
 import br.com.saintmc.hungergames.event.game.GameTimeEvent;
@@ -29,11 +30,12 @@ public class GameGeneral {
 
 	private GamerController gamerController;
 
-	private TimeoutController timeoutController;
-	
 	private AbilityController abilityController;
 	private KitController kitController;
 	private SchedulerController schedulerController;
+	
+	private SimplekitController simplekitController;
+	private TimeoutController timeoutController;
 
 	public GameGeneral() {
 		instance = this;
@@ -43,16 +45,17 @@ public class GameGeneral {
 
 		gamerController = new GamerController();
 		
-		timeoutController = new TimeoutController();
-		
 		abilityController = new AbilityController();
 		kitController = new KitController();
 		schedulerController = new SchedulerController();
+		
+		simplekitController = new SimplekitController();
+		timeoutController = new TimeoutController();
 	}
 
 	public void onLoad() {
 		
-		//TODO delete map
+//		MapUtils.deleteWorld("world");
 		
 	}
 
@@ -82,11 +85,12 @@ public class GameGeneral {
 	public void pulse() {
 		schedulerController.pulse();
 
-		if (isCountTime())
+		if (isCountTime()) {
 			if (gameState.isUpTime())
 				setTime(getTime() + 1);
 			else
 				setTime(getTime() - 1);
+		}
 	}
 
 	public int getPlayersInGame() {

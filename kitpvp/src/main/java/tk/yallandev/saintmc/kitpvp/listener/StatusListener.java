@@ -48,13 +48,13 @@ public class StatusListener implements Listener {
 		player.sendMessage("§c§l> §fVocê §cmorreu§f para o §c" + killer.getName() + "§f!");
 		player.sendMessage("§c§l> §fVocê perdeu §c0§f!");
 		
-		playerStatus.addDeaths();
+		playerStatus.addDeath();
 		playerStatus.resetKillstreak();
 		
 		killer.sendMessage("§a§l> §fVocê matou o §a" + player.getName() + "§f!");
 		killer.sendMessage("§a§l> §fVocê ganhou §a" + winnerXp + "§f" + (duels ? " §7(1.5x no duels)" : "") + "§f!");
 		
-		killerStatus.addKills();
+		killerStatus.addKill();
 		killerStatus.addKillstreak();
 		
 		CommonGeneral.getInstance().getMemberManager().getMember(killer.getUniqueId()).addXp(winnerXp);

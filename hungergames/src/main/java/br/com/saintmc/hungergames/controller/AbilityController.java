@@ -1,9 +1,7 @@
 package br.com.saintmc.hungergames.controller;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.bukkit.Bukkit;
@@ -73,31 +71,17 @@ public class AbilityController extends StoreController<String, Ability> {
 
 		if (ability != null)
 			ability.registerPlayer(player);
-
-		getPlayerAbilities(player).add(abilityName.toLowerCase());
 	}
 
 	public void unregisterPlayerAbility(Player player, String abilityName) {
 		Ability ability = getAbility(abilityName);
+		
 		if (ability != null)
 			ability.unregisterPlayer(player);
-		getPlayerAbilities(player).remove(abilityName.toLowerCase());
 	}
 
 	public Map<String, Ability> getAbilities() {
 		return abilities;
-	}
-
-	public void unregisterPlayer(Player player) {
-//		List<String> abilityCopy = new ArrayList<>();
-//
-//		if (playerAbilities.containsKey(player.getUniqueId()))
-//			abilityCopy.addAll(playerAbilities.get(player.getUniqueId()));
-//
-//		for (String abilityName : abilityCopy)
-//			unregisterPlayerAbility(player, abilityName);
-//
-//		playerAbilities.remove(player.getUniqueId());
 	}
 
 	public Ability getAbility(String ability) {
@@ -107,11 +91,6 @@ public class AbilityController extends StoreController<String, Ability> {
 			System.out.print("Tried to find ability '" + ability + "' but failed!");
 
 		return null;
-	}
-
-	public List<String> getPlayerAbilities(Player player) {
-		return new ArrayList<>();
-//		return playerAbilities.computeIfAbsent(player.getUniqueId(), v -> new ArrayList<>());
 	}
 
 }

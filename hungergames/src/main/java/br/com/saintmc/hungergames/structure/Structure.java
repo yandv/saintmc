@@ -4,7 +4,7 @@ import org.bukkit.Location;
 
 public interface Structure {
 	
-	Location findplace();
+	Location findPlace();
 	
 	void spawn(Location location);
 	

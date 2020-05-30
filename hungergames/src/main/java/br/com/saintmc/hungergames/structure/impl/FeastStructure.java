@@ -12,6 +12,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.block.Biome;
 import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
 import org.bukkit.inventory.Inventory;
@@ -37,7 +38,7 @@ public class FeastStructure implements Structure, Chestable {
 	}
 	
 	@Override
-	public Location findplace() {
+	public Location findPlace() {
 		World w = Bukkit.getWorld("world");
 		Random r = new Random();
 		int x = -maxSpawnDistance + r.nextInt(2 * maxSpawnDistance);
@@ -95,12 +96,19 @@ public class FeastStructure implements Structure, Chestable {
 		System.out.println("New Feast: " + central.getBlockX() + " " + central.getBlockY() + " " + central.getBlockZ());
 		central.getChunk().load(true);
 		
+		Material material = Material.GRASS;
+		Biome biome = central.getBlock().getBiome();
+		
+		if (biome == Biome.FOREST)
+			material = Material.STONE;
+		
 		for (int x = -radius; x <= radius; x++) {
 			for (int z = -radius; z <= radius; z++) {
 				Location feastBlock = central.clone().add(x, 0, z);
 				if (central.distance(feastBlock) < radius) {
-					feastBlock.getBlock().setType(Material.GRASS);
+					feastBlock.getBlock().setType(material);
 					feastBlocks.add(feastBlock.getBlock());
+					
 					for (int i = 1; i < 10; i++) {
 						Location airBlock = feastBlock.clone().add(0, i, 0);
 						airBlock.getBlock().setType(Material.AIR);

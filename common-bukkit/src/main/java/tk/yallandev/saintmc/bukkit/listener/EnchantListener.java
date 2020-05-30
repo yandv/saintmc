@@ -6,6 +6,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.enchantment.EnchantItemEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
+import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.inventory.EnchantingInventory;
 import org.bukkit.inventory.ItemStack;
 
@@ -27,6 +28,11 @@ public class EnchantListener implements Listener {
 		if (event.getInventory() instanceof EnchantingInventory)
 			if (event.getRawSlot() == 1)
 				event.setCancelled(true);
+	}
+	
+	@EventHandler
+	public void asodk(PlayerDropItemEvent event) {
+		
 	}
 
 }

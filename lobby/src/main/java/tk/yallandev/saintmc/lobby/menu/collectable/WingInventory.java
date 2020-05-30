@@ -45,13 +45,9 @@ public class WingInventory {
 						public void onClick(Player player, Inventory inv, ClickType type, ItemStack stack, int slot) {
 							player.closeInventory();
 							
-							if (gamer.isUsingWing()) {
-								player.sendMessage(" §c* §fVocê já está com alguma §acapa §fativada!");
-								return;
-							}
-							
 							player.sendMessage(" §a* §fCapa §a" + wing.getWingName() + " §fadicionada a você!");
 							gamer.display(CollectableType.WING, wing.getParticleType());
+							gamer.setUsingParticle(false);
 						}
 					});
 			

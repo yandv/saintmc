@@ -4,6 +4,6 @@ import org.bukkit.Location;
 
 public interface Chestable {
 	
-	void spawnChest(Location location);
+	void spawnChest(Location spawnLocation);
 
 }

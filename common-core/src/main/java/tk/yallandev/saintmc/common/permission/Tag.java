@@ -15,11 +15,11 @@ import net.md_5.bungee.api.ChatColor;
 
 public enum Tag {
 
-	DONO("§4§LDONO§4", Group.DONO, false), DIRETOR("§4§LDIRETOR§4", Group.DIRETOR, false),
-	ADMIN("§c§lADMIN§c", Group.ADMIN, false), GERENTE("§c§lGERENTE§c", Group.GERENTE, false),
-	MODPLUS("§5§LMOD+§5", Group.MODPLUS, false), MODGC("§5§lMODGC§5", Group.MODGC, true),
-	MOD("§5§lMOD§5", Group.MOD, false), TRIAL("§d§lTRIAL§d", Group.TRIAL, false),
-	YOUTUBERPLUS("§3§lYT+§3", Group.YOUTUBERPLUS, true), DEV("§3§lDEV§3", Group.DEV, true),
+	DONO("§4§LDONO§4", Group.DONO, false), DEV("§3§lDEV§3", Group.DEV, true),
+	DIRETOR("§4§LDIRETOR§4", Group.DIRETOR, false), ADMIN("§c§lADMIN§c", Group.ADMIN, false),
+	GERENTE("§c§lGERENTE§c", Group.GERENTE, false), MODPLUS("§5§LMOD+§5", Group.MODPLUS, false),
+	MODGC("§5§lMODGC§5", Group.MODGC, true), MOD("§5§lMOD§5", Group.MOD, false),
+	TRIAL("§d§lTRIAL§d", Group.TRIAL, false), YOUTUBERPLUS("§3§lYT+§3", Group.YOUTUBERPLUS, true),
 	BUILDER("§e§lBUILDER§e", Group.BUILDER, true), DESIGNER("§2§lDESIGNER§2", Group.DESIGNER, true),
 	YOUTUBER("§b§lYT§b", Group.YOUTUBER, true), BETA("§1§lBETA§1", Group.BETA, false),
 	SAINT("§d§lSAINT§d", Group.SAINT, false), BLIZZARD("§1§lBLIZZARD§1", Group.BLIZZARD, false),

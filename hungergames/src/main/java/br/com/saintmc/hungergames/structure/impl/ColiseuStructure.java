@@ -7,7 +7,7 @@ import br.com.saintmc.hungergames.structure.Structure;
 public class ColiseuStructure implements Structure {
 
 	@Override
-	public Location findplace() {
+	public Location findPlace() {
 		return null;
 	}
 

@@ -10,9 +10,12 @@ import br.com.saintmc.hungergames.constructor.Gamer;
 import br.com.saintmc.hungergames.event.kit.PlayerSelectKitEvent;
 import br.com.saintmc.hungergames.game.GameState;
 import br.com.saintmc.hungergames.kit.KitType;
+import br.com.saintmc.hungergames.utils.ServerConfig;
 import tk.yallandev.saintmc.CommonConst;
+import tk.yallandev.saintmc.bukkit.api.actionbar.ActionBarAPI;
 import tk.yallandev.saintmc.bukkit.api.title.Title;
 import tk.yallandev.saintmc.bukkit.api.title.types.SimpleTitle;
+import tk.yallandev.saintmc.bukkit.event.player.PlayerDamagePlayerEvent;
 import tk.yallandev.saintmc.common.account.Member;
 import tk.yallandev.saintmc.common.permission.Group;
 import tk.yallandev.saintmc.common.utils.string.NameUtils;
@@ -25,6 +28,12 @@ public class KitListener implements Listener {
 			return;
 
 		Player player = event.getPlayer();
+		
+		if (ServerConfig.getInstance().isDisabled(event.getKit(), event.getKitType())) {
+			player.sendMessage("§c§l> §fO kit §c" + NameUtils.formatString(event.getKit().getName()) + "§f está §cdesativado§f!");
+			return;
+		}
+		
 		Gamer gamer = GameGeneral.getInstance().getGamerController().getGamer(player);
 
 		if (!GameGeneral.getInstance().getGameState().isPregame()) {
@@ -87,7 +96,23 @@ public class KitListener implements Listener {
 				SimpleTitle.class);
 		player.sendMessage(
 				" §a* §fVocê selecionou o kit §a" + NameUtils.formatString(event.getKit().getName()) + "§f!");
+		gamer.removeNoKit(event.getKitType());
+	}
 
+	@EventHandler
+	public void onPlayerDamagePlayer(PlayerDamagePlayerEvent event) {
+		Player entity = event.getPlayer();
+		Gamer gamer = GameGeneral.getInstance().getGamerController().getGamer(entity);
+
+		ActionBarAPI
+				.send(event.getDamager(),
+						"§7" + entity.getName() + " §8- §a"
+								+ (GameMain.DOUBLEKIT
+										? gamer.hasKit(KitType.SECONDARY)
+												? gamer.getKitName(KitType.PRIMARY) + "/"
+														+ gamer.getKitName(KitType.SECONDARY)
+												: gamer.getKitName(KitType.PRIMARY)
+										: gamer.getKitName(KitType.PRIMARY)));
 	}
 
 }

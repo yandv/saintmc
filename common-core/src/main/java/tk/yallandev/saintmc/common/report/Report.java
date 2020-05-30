@@ -119,7 +119,7 @@ public class Report {
 					}
 					
 					member.sendMessage("§a§l> §fO jogador §a" + getPlayerName() + "§f foi banido do servidor!");
-					member.sendMessage("§a§l> §fVocê ganhou §a20 xp§f, §a50 money§f e §d2 ponto de reputação§f por ter reportado ele!");
+					member.sendMessage("§a§l> §fVocê ganhou §a20 xp§f, §650 coins§f e §d2 pontos de reputação§f por ter reportado ele!");
 					member.sendMessage("§a§l> §fObrigado por ajudar a comunidade do §aSaintMC§f!");
 					member.setReputation(member.getReputation() + 2);
 					member = null;

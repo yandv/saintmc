@@ -16,9 +16,9 @@ import tk.yallandev.saintmc.common.permission.group.StreamerGroup;
 
 public enum Group {
 
-	MEMBRO, DONATOR, LIGHT, BLIZZARD, SAINT, BETA, YOUTUBER, DESIGNER, BUILDER, DEV, YOUTUBERPLUS(new StreamerGroup()),
+	MEMBRO, DONATOR, LIGHT, BLIZZARD, SAINT, BETA, YOUTUBER, DESIGNER, BUILDER, YOUTUBERPLUS(new StreamerGroup()),
 	TRIAL(new ModeratorGroup()), MOD(new ModeratorGroup()), MODGC(new ModeratorGroup()), MODPLUS(new ModeratorGroup()),
-	GERENTE(new ModeratorGroup()), ADMIN(new OwnerGroup()), DIRETOR(new OwnerGroup()), DONO(new OwnerGroup());
+	GERENTE(new ModeratorGroup()), ADMIN(new OwnerGroup()), DIRETOR(new OwnerGroup()), DEV(new OwnerGroup()), DONO(new OwnerGroup());
 
 	private GroupInterface group;
 

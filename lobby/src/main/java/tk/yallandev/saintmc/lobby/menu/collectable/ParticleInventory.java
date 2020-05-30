@@ -43,12 +43,8 @@ public class ParticleInventory {
 						public void onClick(Player player, Inventory inv, ClickType type, ItemStack stack, int slot) {
 							player.closeInventory();
 							
-							if (gamer.isUsingParticle()) {
-								player.sendMessage(" §c* §fVocê já está com alguma §apartícula §fativada!");
-								return;
-							}
-
 							gamer.setUsingParticle(true);
+							gamer.setUsingWing(false);
 							player.sendMessage(
 									" §a* §fPartícula §a" + particles.getParticleName() + " §fadicionada a você!");
 							gamer.display(CollectableType.PARTICLE, particles.getParticleType());

@@ -55,7 +55,6 @@ public class KitController extends StoreController<String, Kit> {
 	}
 	
 	public void setKit(Player player, Kit kit, KitType kitType) {
-		GameGeneral.getInstance().getAbilityController().unregisterPlayer(player);
 		kit.registerAbilities(player);
 		
 		GameGeneral.getInstance().getGamerController().getGamer(player).setKit(kitType, kit);
@@ -63,7 +62,6 @@ public class KitController extends StoreController<String, Kit> {
 	}
 
 	public void unregisterPlayer(Player player, KitType kitType) {
-		GameGeneral.getInstance().getAbilityController().unregisterPlayer(player);
 		GameGeneral.getInstance().getGamerController().getGamer(player).removeKit(kitType);
 		Bukkit.getPluginManager().callEvent(new PlayerSelectedKitEvent(player, null, kitType));
 	}

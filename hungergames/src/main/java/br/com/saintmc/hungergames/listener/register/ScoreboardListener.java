@@ -82,6 +82,7 @@ public class ScoreboardListener extends GameListener {
 				else
 					GAME_SCOREBOARD.updateScore(new Score("Jogadores: §7" + players, "players"));				
 			}
+			
 		}.runTaskLater(GameMain.getInstance(), 7l);
 	}
 	
@@ -90,6 +91,10 @@ public class ScoreboardListener extends GameListener {
 		String str = "Iniciando em: §7";
 
 		switch (getGameGeneral().getGameState()) {
+		case WAITING: {
+			str = "Aguardando: §7";
+			break;
+		}
 		case WINNING:
 		case GAMETIME:
 			str = "Tempo: §7";

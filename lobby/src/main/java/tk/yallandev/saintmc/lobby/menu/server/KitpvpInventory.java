@@ -50,7 +50,7 @@ public class KitpvpInventory {
 		});
 		
 		for (BattleServer server : battleServer) {
-			if (!server.isJoinEnabled() && !member.hasGroupPermission(Group.DEV))
+			if (!server.isJoinEnabled() && !member.hasGroupPermission(Group.TRIAL))
 				continue;
 			
 			ItemBuilder builder = new ItemBuilder();

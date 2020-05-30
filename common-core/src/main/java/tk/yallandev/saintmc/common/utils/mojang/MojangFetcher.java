@@ -3,6 +3,8 @@ package tk.yallandev.saintmc.common.utils.mojang;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.http.conn.ConnectionPoolTimeoutException;
+
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
@@ -92,6 +94,7 @@ public class MojangFetcher {
 					.doRequest(CommonConst.MOJANG_FETCHER + "?name=" + playerName, Method.GET);
 
 			return UUIDParser.parse(jsonObject.get("uuid").getAsString());
+		} catch (ConnectionPoolTimeoutException ex) {
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
@@ -105,6 +108,7 @@ public class MojangFetcher {
 					.doRequest(CommonConst.MOJANG_FETCHER + "?name=" + playerName, Method.GET);
 
 			return jsonObject.get("cracked").getAsBoolean();
+		} catch (ConnectionPoolTimeoutException ex) {
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}

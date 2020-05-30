@@ -2,6 +2,7 @@ package br.com.saintmc.hungergames.abilities.register;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -26,11 +27,11 @@ import tk.yallandev.saintmc.bukkit.api.item.ItemBuilder;
 @SuppressWarnings("deprecation")
 public class KangarooAbility extends Ability {
 
-	private ArrayList<Player> kangaroodj;
+	private List<Player> jumpList;
 
 	public KangarooAbility() {
 		super("Kangaroo", Arrays.asList(new ItemBuilder().name("§aKangaroo").type(Material.FIREWORK).build()));
-		kangaroodj = new ArrayList<>();
+		jumpList = new ArrayList<>();
 	}
 
 	@EventHandler
@@ -69,32 +70,32 @@ public class KangarooAbility extends Ability {
 				vector.multiply(0.6F);
 				vector.setY(1.0F);
 				p.setVelocity(vector);
-				if (kangaroodj.contains(p)) {
-					kangaroodj.remove(p);
+				if (jumpList.contains(p)) {
+					jumpList.remove(p);
 				}
 			} else {
 				Vector vector = p.getEyeLocation().getDirection();
 				vector.multiply(1.5D);
 				vector.setY(0.55F);
 				p.setVelocity(vector);
-				if (kangaroodj.contains(p)) {
-					kangaroodj.remove(p);
+				if (jumpList.contains(p)) {
+					jumpList.remove(p);
 				}
 			}
 		} else {
-			if (!kangaroodj.contains(p)) {
+			if (!jumpList.contains(p)) {
 				if (!p.isSneaking()) {
 					Vector vector = p.getEyeLocation().getDirection();
 					vector.multiply(0.6F);
 					vector.setY(1.0F);
 					p.setVelocity(vector);
-					kangaroodj.add(p);
+					jumpList.add(p);
 				} else {
 					Vector vector = p.getEyeLocation().getDirection();
 					vector.multiply(1.5D);
 					vector.setY(0.55F);
 					p.setVelocity(vector);
-					kangaroodj.add(p);
+					jumpList.add(p);
 				}
 			}
 		}
@@ -102,8 +103,8 @@ public class KangarooAbility extends Ability {
 
 	@EventHandler
 	public void onQuit(PlayerQuitEvent event) {
-		if (kangaroodj.contains(event.getPlayer()))
-			kangaroodj.remove(event.getPlayer());
+		if (jumpList.contains(event.getPlayer()))
+			jumpList.remove(event.getPlayer());
 	}
 
 	@EventHandler
@@ -113,13 +114,13 @@ public class KangarooAbility extends Ability {
 		if (!hasAbility(p))
 			return;
 		
-		if (!kangaroodj.contains(p))
+		if (!jumpList.contains(p))
 			return;
 		
 		if (!p.isOnGround())
 			return;
 		
-		kangaroodj.remove(p);
+		jumpList.remove(p);
 	}
 
 	@EventHandler

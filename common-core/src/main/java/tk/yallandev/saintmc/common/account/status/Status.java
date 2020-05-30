@@ -14,7 +14,7 @@ public interface Status {
 
 	void setKills(int kills);
 
-	void addKills();
+	void addKill();
 
 	int getKills();
 	
@@ -24,7 +24,7 @@ public interface Status {
 
 	void setDeaths(int deaths);
 
-	void addDeaths();
+	void addDeath();
 
 	int getDeaths();
 	

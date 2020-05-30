@@ -22,6 +22,7 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.projectiles.ProjectileSource;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import br.com.saintmc.hungergames.GameGeneral;
 import br.com.saintmc.hungergames.GameMain;
@@ -29,6 +30,7 @@ import br.com.saintmc.hungergames.constructor.Gamer;
 import br.com.saintmc.hungergames.event.player.PlayerItemReceiveEvent;
 import br.com.saintmc.hungergames.kit.KitType;
 import br.com.saintmc.hungergames.listener.GameListener;
+import br.com.saintmc.hungergames.utils.ServerConfig;
 import tk.yallandev.saintmc.CommonConst;
 import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.bukkit.api.vanish.AdminMode;
@@ -93,7 +95,7 @@ public class DeathListener extends GameListener {
 	}
 
 	@EventHandler
-	public void das(PlayerDeathEvent event) {
+	public void onDeath(PlayerDeathEvent event) {
 
 		/*
 		 * Variables
@@ -167,12 +169,18 @@ public class DeathListener extends GameListener {
 		 * Respawn player if have GameMain.RESPAWN_GROUP group permission and the game time is less than 300
 		 */
 
-		if (member.hasGroupPermission(GameMain.RESPAWN_GROUP) && GameGeneral.getInstance().getTime() <= 300) {
+		if (member.hasGroupPermission(ServerConfig.getInstance().getRespawnGroup()) && GameGeneral.getInstance().getTime() <= 300) {
 			/*
 			 * Fire PlayerItemReceiveEvent
 			 */
 			
-			Bukkit.getPluginManager().callEvent(new PlayerItemReceiveEvent(player));
+			new BukkitRunnable() {
+				
+				@Override
+				public void run() {
+					Bukkit.getPluginManager().callEvent(new PlayerItemReceiveEvent(player));
+				}
+			}.runTaskLater(GameMain.getInstance(), 10l);
 			return;
 		}
 		
@@ -247,7 +255,7 @@ public class DeathListener extends GameListener {
 						: gamer.hasKit(KitType.PRIMARY) ? NameUtils.formatString(gamer.getKitName(KitType.PRIMARY))
 								: NameUtils.formatString(gamer.getKitName(KitType.SECONDARY))
 				: NameUtils.formatString(gamer.getKitName(KitType.PRIMARY)));
-		gamer.getStatus().addDeaths();
+		gamer.getStatus().addDeath();
 
 		if (killer != null) {
 			Gamer killerGamer = getGameGeneral().getGamerController().getGamer(killer.getUniqueId());
@@ -277,7 +285,7 @@ public class DeathListener extends GameListener {
 		}
 
 		if (!member.hasGroupPermission(Group.TRIAL))
-			if (!member.hasGroupPermission(GameMain.SPECTATOR_GROUP) && !player.hasPermission("tag.winner")) {
+			if (!member.hasGroupPermission(ServerConfig.getInstance().getSpectatorGroup()) && !player.hasPermission("tag.winner")) {
 				int number = GameGeneral.getInstance().getPlayersInGame() + 1;
 
 				if (number <= 10) {

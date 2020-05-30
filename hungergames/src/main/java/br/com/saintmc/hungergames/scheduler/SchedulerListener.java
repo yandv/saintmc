@@ -16,6 +16,7 @@ import br.com.saintmc.hungergames.event.game.GameInvincibilityEndEvent;
 import br.com.saintmc.hungergames.event.game.GameStartEvent;
 import br.com.saintmc.hungergames.event.game.GameStateChangeEvent;
 import br.com.saintmc.hungergames.event.player.PlayerItemReceiveEvent;
+import br.com.saintmc.hungergames.kit.KitType;
 import br.com.saintmc.hungergames.listener.register.BlockListener;
 import br.com.saintmc.hungergames.listener.register.DeathListener;
 import br.com.saintmc.hungergames.listener.register.SpectatorListener;
@@ -24,6 +25,8 @@ import br.com.saintmc.hungergames.scheduler.types.InvincibilityScheduler;
 import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.bukkit.event.update.UpdateEvent;
 import tk.yallandev.saintmc.bukkit.event.update.UpdateEvent.UpdateType;
+import tk.yallandev.saintmc.common.account.Member;
+import tk.yallandev.saintmc.common.permission.Group;
 
 public class SchedulerListener implements Listener {
 	
@@ -67,6 +70,17 @@ public class SchedulerListener implements Listener {
 			
 			Bukkit.getPluginManager().callEvent(new PlayerItemReceiveEvent(player));
 			player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 20*30, 1));
+			
+			if (Member.hasGroupPermission(player.getUniqueId(), Group.LIGHT)) {
+				if (!gamer.hasKit(KitType.PRIMARY))
+					gamer.setNoKit(KitType.PRIMARY);
+				
+				if (!gamer.hasKit(KitType.SECONDARY))
+					gamer.setNoKit(KitType.SECONDARY);
+			}
+			
+			gamer.setGame(GameMain.GAME);
+			gamer.getStatus().addMatch();
 		}
 		
 		GameMain.getInstance().registerListener(new SpectatorListener());
@@ -84,7 +98,6 @@ public class SchedulerListener implements Listener {
 	@EventHandler
 	public void onGameStart(GameInvincibilityEndEvent event) {
 		gameGeneral.getSchedulerController().addSchedule(new GameScheduler());
-		Bukkit.broadcastMessage("§eA invencibilidade acabou!");
 	}
 	
 }

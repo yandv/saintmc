@@ -92,7 +92,7 @@ public class YoutubeCommand implements CommandClass {
 		}.runTask(BukkitMain.getInstance());
 	}
 
-	@Command(name = "changeskin", groupToUse = Group.LIGHT, runAsync = true)
+	@Command(name = "changeskin", aliases = { "skin" }, groupToUse = Group.LIGHT, runAsync = true)
 	public void changeskinCommand(BukkitCommandArgs args) {
 		if (!args.isPlayer()) {
 			return;

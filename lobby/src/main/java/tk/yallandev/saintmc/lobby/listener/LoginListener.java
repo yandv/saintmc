@@ -103,7 +103,7 @@ public class LoginListener implements Listener {
 
 	@EventHandler
 	public void onLoginListener(PlayerChangeLoginStatusEvent event) {
-		if (event.isLogged()) {
+		if (event.isLogged() || event.getMember().getLoginConfiguration().getAccountType() == AccountType.ORIGINAL) {
 			playerList.remove(event.getMember());
 			event.getMember().setTag(((BukkitMember) event.getMember()).getDefaultTag());
 		}

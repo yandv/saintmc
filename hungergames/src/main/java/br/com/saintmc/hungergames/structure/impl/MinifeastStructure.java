@@ -41,7 +41,7 @@ public class MinifeastStructure implements Structure, Chestable {
 	}
 
 	@Override
-	public Location findplace() {
+	public Location findPlace() {
 		World w = Bukkit.getWorld("world");
 		Random r = new Random();
 
@@ -55,7 +55,6 @@ public class MinifeastStructure implements Structure, Chestable {
 			z = -z;
 		
 		int y = w.getHighestBlockYAt(x, z) + 1;
-		System.out.print("MinifeastLocation: " + x + " " + y + " " + z);
 		return new Location(w, x, y, z);
 	}
 
@@ -85,10 +84,13 @@ public class MinifeastStructure implements Structure, Chestable {
 					}
 				}
 			}
+		
+		spawnChest(location);
+		System.out.print("MinifeastLocation: " + location.getX() + " " + location.getY() + " " + location.getZ());
 	}
 	
 	@Override
-	public void spawnChest(Location location) {
+	public void spawnChest(Location locaion) {
 		if (chests.size() <= 0)
 			return;
 		

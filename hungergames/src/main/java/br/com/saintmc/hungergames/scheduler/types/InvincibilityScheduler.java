@@ -37,13 +37,17 @@ public class InvincibilityScheduler implements GameSchedule {
 			}
 		}
 		if ((time % 60 == 0 || (time < 60 && (time % 15 == 0 || time == 10 || time <= 5)))) {
-			for (Player p : Bukkit.getOnlinePlayers()) {
-				p.sendMessage("§9Invencibilidade> §fA proteção acabará em " + StringUtils.formatTime(time) + "§f!");
-			}
+//			for (Player p : Bukkit.getOnlinePlayers()) {
+//				p.sendMessage("§eA invencibilidade acaba em §b" + StringUtils.formatTime(time) + "§f!");
+//			}
+			
+			Bukkit.getOnlinePlayers().forEach(
+					p -> p.sendMessage(" §e* §fA invencibilidade acaba em §a" + StringUtils.formatTime(time) + "§f!"));
 		}
 		
 		if (time <= 0) {
 			
+			Bukkit.broadcastMessage("§eA invencibilidade acabou!");
 			Bukkit.getPluginManager().callEvent(new GameInvincibilityEndEvent());
 			gameGeneral.setGameState(GameState.GAMETIME);
 			

@@ -52,7 +52,7 @@ public class GameStatus implements Status {
 	}
 	
 	@Override
-	public void addKills() {
+	public void addKill() {
 		this.kills++;
 		CommonGeneral.getInstance().getStatusData().updateStatus(this, "kills");
 	}
@@ -64,7 +64,7 @@ public class GameStatus implements Status {
 	}
 	
 	@Override
-	public void addDeaths() {
+	public void addDeath() {
 		this.deaths++;
 		CommonGeneral.getInstance().getStatusData().updateStatus(this, "deaths");
 	}

@@ -16,16 +16,17 @@ import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerLoginEvent.Result;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.event.player.PlayerResourcePackStatusEvent;
-import org.bukkit.event.player.PlayerResourcePackStatusEvent.Status;
 import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import tk.yallandev.saintmc.CommonConst;
 import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.bukkit.BukkitMain;
+import tk.yallandev.saintmc.bukkit.api.title.Title;
+import tk.yallandev.saintmc.bukkit.api.title.types.SimpleTitle;
 import tk.yallandev.saintmc.bukkit.api.vanish.AdminMode;
 import tk.yallandev.saintmc.bukkit.api.vanish.VanishAPI;
+import tk.yallandev.saintmc.bukkit.event.account.PlayerChangeGroupEvent;
 import tk.yallandev.saintmc.bukkit.event.account.PlayerChangeLeagueEvent;
 import tk.yallandev.saintmc.bukkit.event.vanish.PlayerShowToPlayerEvent;
 import tk.yallandev.saintmc.common.account.League;
@@ -105,13 +106,6 @@ public class PlayerListener implements Listener {
 		}.runTaskLater(BukkitMain.getInstance(), 10);
 	}
 
-	@EventHandler
-	public void onQuit(PlayerResourcePackStatusEvent event) {
-		if (event.getStatus() == Status.SUCCESSFULLY_LOADED) {
-			event.getPlayer().sendMessage("§a§l> §fTextura carregada com sucesso!");
-		}
-	}
-	
     @EventHandler
     public void onPlayerChangeLeague(PlayerChangeLeagueEvent event) {
         if (event.getPlayer() != null && event.getNewLeague().ordinal() > event.getOldLeague().ordinal()) {
@@ -129,7 +123,11 @@ public class PlayerListener implements Listener {
             event.getPlayer().sendMessage("§c§l> §fVocê desceu para o rank §c" + event.getNewLeague().getColor() + event.getNewLeague().getSymbol() + " " + event.getNewLeague().getName());
         }
     }
-
+    
+    @EventHandler
+    public void onPlayerChangeGroup(PlayerChangeGroupEvent event) {
+    	Title.send(event.getPlayer(), "§a§l" + event.getGroup().name(), "§fSeu grupo foi atualizado!", SimpleTitle.class);
+    }
 
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onQuit(PlayerQuitEvent event) {

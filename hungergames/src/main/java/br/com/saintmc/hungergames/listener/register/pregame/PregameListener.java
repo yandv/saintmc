@@ -1,6 +1,7 @@
 package br.com.saintmc.hungergames.listener.register.pregame;
 
 import org.bukkit.GameMode;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
@@ -44,6 +45,8 @@ import tk.yallandev.saintmc.bukkit.api.title.types.SimpleTitle;
 
 public class PregameListener extends GameListener {
 
+	private Location spawnLocation;
+
 	private ActionItemStack kitSelector = new ActionItemStack(
 			new ItemBuilder().type(Material.CHEST).name("§fKit Selector §7(Clique)").build(),
 			new ActionItemStack.Interact() {
@@ -72,17 +75,25 @@ public class PregameListener extends GameListener {
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		Player player = event.getPlayer();
 
-		player.getInventory().setItem(0, kitSelector.getItemStack());
-		
-		if (GameMain.DOUBLEKIT)
-			player.getInventory().setItem(1, kitSecondarySelector.getItemStack());
-
 		player.setHealth(20.0);
 		player.setGameMode(GameMode.ADVENTURE);
 		player.setAllowFlight(false);
 		player.setFlying(false);
 		player.setFoodLevel(20);
 		player.setExp(0);
+		player.getInventory().clear();
+		player.getInventory().setArmorContents(new ItemStack[4]);
+
+		player.getInventory().setItem(0, kitSelector.getItemStack());
+
+		if (GameMain.DOUBLEKIT)
+			player.getInventory().setItem(1, kitSecondarySelector.getItemStack());
+
+		if (spawnLocation == null) {
+			player.teleport(
+					new Location(player.getWorld(), 0, player.getLocation().getWorld().getHighestBlockYAt(0, 0), 0));
+		}
+
 		Title.send(player, "§a§lHungerGames", "§fVocê está na sala §a#1§f!", SimpleTitle.class);
 
 		event.setJoinMessage(null);

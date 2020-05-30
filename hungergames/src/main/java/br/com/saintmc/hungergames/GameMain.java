@@ -20,6 +20,7 @@ import br.com.saintmc.hungergames.listener.register.BorderListener;
 import br.com.saintmc.hungergames.listener.register.GamerListener;
 import br.com.saintmc.hungergames.listener.register.KitListener;
 import br.com.saintmc.hungergames.listener.register.ScoreboardListener;
+import br.com.saintmc.hungergames.listener.register.UpdateListener;
 import br.com.saintmc.hungergames.scheduler.SchedulerListener;
 import lombok.Getter;
 import tk.yallandev.saintmc.CommonGeneral;
@@ -33,24 +34,19 @@ import tk.yallandev.saintmc.common.server.loadbalancer.server.MinigameState;
 public class GameMain extends JavaPlugin {
 	
 	public static final boolean SPECTATOR = true;
+	public static final boolean DOUBLEKIT = true;
 	
-	public static final Game GAME = new Game(0, 30);
+	public static final Game GAME = new Game(0, 90);
 	
 	public static boolean canJoin = false;
 	
-	public static final Group SPECTATOR_GROUP = Group.LIGHT;
-	public static final Group RESPAWN_GROUP = Group.BLIZZARD;
-	public static final Group KIT_SPAWN_GROUP = Group.SAINT;
-	
-	public static final boolean DOUBLEKIT = true;
-	
 	public static final HashMap<Group, List<String>> KITROTATE;
-
+	
 	static {
 		KITROTATE = new HashMap<>();
-		KITROTATE.put(Group.MEMBRO, Arrays.asList("surprise", "snail", "thor", "timelord", "reaper", "worm"));
+		KITROTATE.put(Group.MEMBRO, Arrays.asList("surprise", "snail", "thor", "lumberjack", "reaper", "worm"));
 		KITROTATE.put(Group.LIGHT, Arrays.asList("kangaroo", "boxer", "ninja", "stomper", "endermage", "cannibal"));
-		KITROTATE.put(Group.BLIZZARD, Arrays.asList("viper", "grappler", "viking", "hotpotato", "", ""));
+		KITROTATE.put(Group.BLIZZARD, Arrays.asList("viper", "grappler", "viking", "hotpotato", "timelord", ""));
 	}
 
 	@Getter
@@ -64,8 +60,6 @@ public class GameMain extends JavaPlugin {
 
 		instance = this;
 		
-//		MapUtils.deleteWorld("world");
-
 		general = new GameGeneral();
 		general.onLoad();
 		
@@ -83,10 +77,10 @@ public class GameMain extends JavaPlugin {
 		general.onEnable();
 		
 		if (roomId == null) {
-			String[] split = CommonGeneral.getInstance().getServerId().split("//.");
+			String[] split = CommonGeneral.getInstance().getServerId().split("\\.");
 			
 			if (split.length > 1) {
-				roomId = split[0];
+				roomId = split[0].toUpperCase();
 			} else {
 				roomId = CommonGeneral.getInstance().getServerId();
 			}
@@ -141,6 +135,7 @@ public class GameMain extends JavaPlugin {
 	}
 
 	public void loadListener() {
+		Bukkit.getPluginManager().registerEvents(new UpdateListener(), this);
 		Bukkit.getPluginManager().registerEvents(new BorderListener(), this);
 		Bukkit.getPluginManager().registerEvents(new GamerListener(), this);
 		Bukkit.getPluginManager().registerEvents(new ScoreboardListener(), this);

@@ -145,17 +145,10 @@ public class BukkitPubSubHandler extends JedisPubSub {
 
 				Report report = CommonConst.GSON.fromJson(jsonObject.get("value"), Report.class);
 
-				System.out.println(CommonGeneral.getInstance().getReportManager().getReport(playerUuid));
-				System.out.println(report == null);
-				System.out.println(playerUuid == report.getUniqueId());
-				System.out.println(jsonObject.get("value"));
-
 				if (CommonGeneral.getInstance().getReportManager().getReport(playerUuid) == null) {
 					CommonGeneral.getInstance().getReportManager().loadReport(report);
 					CommonGeneral.getInstance().debug("The report of " + report.getPlayerName() + " has been loaded!");
 				}
-
-				System.out.println(CommonGeneral.getInstance().getReportManager().getReport(playerUuid));
 			}
 
 			break;

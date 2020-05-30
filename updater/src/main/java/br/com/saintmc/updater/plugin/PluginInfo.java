@@ -7,7 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 import tk.yallandev.saintmc.CommonConst;
 import tk.yallandev.saintmc.UpdateConst;
-import tk.yallandev.saintmc.common.utils.web.WebHelper.FutureCallback;
+import tk.yallandev.saintmc.common.utils.supertype.FutureCallback;
 import tk.yallandev.saintmc.common.utils.web.WebHelper.Method;
 import tk.yallandev.saintmc.updater.plugin.Plugin;
 
@@ -57,9 +57,7 @@ public class PluginInfo {
 			public void result(JsonElement result, Throwable error) {
 				if (error == null) {
 					JsonObject jsonObject = (JsonObject) result;
-
 					PluginInfo pluginInfo = CommonConst.GSON.fromJson(jsonObject, PluginInfo.class);
-					
 					callback.result(pluginInfo.needUpdate(), error);
 				} else {
 					callback.result(false, error);

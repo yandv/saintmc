@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Getter
 public enum MinigameState {
 
-	PREGAME(true), WAITING(true), PREPARING(true), STARTING(true), INVINCIBILITY(true), INGAME, GAMETIME, ENDING, NONE;
+	PREGAME(true), WAITING(true), PREPARING(true), STARTING(true), INVINCIBILITY(true), INGAME, GAMETIME, WINNING, NONE;
 
 	private boolean decrementTime;
 
@@ -39,7 +39,7 @@ public enum MinigameState {
 	}
 	
 	public boolean isEnding() {
-		if (this == ENDING)
+		if (this == WINNING)
 			return true;
 		
 		return false;

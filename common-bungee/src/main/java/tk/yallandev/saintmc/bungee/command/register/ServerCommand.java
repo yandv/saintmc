@@ -40,6 +40,14 @@ public class ServerCommand implements CommandClass {
 				" §e* §fO ping de §a" + proxiedPlayer.getName() + "§f é de §a" + proxiedPlayer.getPing() + "ms§f.");
 	}
 
+	@Command(name = "ip")
+	public void ipCommand(BungeeCommandArgs cmdArgs) {
+		if (cmdArgs.isPlayer()) {
+			cmdArgs.getSender().sendMessage(
+					"§aVocê está no servidor " + ((ProxiedPlayer) cmdArgs.getSender()).getServer().getInfo());
+		}
+	}
+
 	@Command(name = "send", groupToUse = Group.ADMIN, usage = "/<command> <player> <server>")
 	public void sendCommand(BungeeCommandArgs cmdArgs) {
 		CommandSender sender = cmdArgs.getSender();
