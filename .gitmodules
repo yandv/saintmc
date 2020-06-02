@@ -1,0 +1,6 @@
+[submodule "oi"]
+	path = oi
+	url = https://github.com/yandv/hungergames.git
+[submodule "hungergames"]
+	path = hungergames
+	url = https://github.com/yandv/hungergames.git
