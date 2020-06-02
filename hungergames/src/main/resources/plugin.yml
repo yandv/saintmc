@@ -1,5 +1,0 @@
-name: HungerGames
-version: 1.0
-main: br.com.saintmc.hungergames.GameMain
-author: yandv
-depend: [BukkitCommon]
