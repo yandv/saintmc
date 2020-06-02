@@ -22,8 +22,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
 import br.com.saintmc.hungergames.abilities.Ability;
-import br.com.saintmc.hungergames.abilities.register.constructor.GrapplingHook;
-import tk.yallandev.saintmc.bukkit.api.cooldown.CooldownAPI;
+import br.com.saintmc.hungergames.abilities.constructor.GrapplingHook;
 import tk.yallandev.saintmc.bukkit.api.item.ItemBuilder;
 
 public class GrapplerAbility extends Ability {
@@ -47,7 +46,7 @@ public class GrapplerAbility extends Ability {
 		Player p = event.getPlayer();
 		ItemStack item = p.getItemInHand();
 		
-		if (isAbilityItem(item))
+		if (!isAbilityItem(item))
 			return;
 		
 		if (a.name().contains("RIGHT")) {
@@ -57,10 +56,8 @@ public class GrapplerAbility extends Ability {
 		item.setDurability((short) 0);
 		p.updateInventory();
 		
-		if (CooldownAPI.hasCooldown(p, getName())) {
-			p.sendMessage(CooldownAPI.getCooldownFormated(p.getUniqueId(), getName()));
+		if (isCooldown(p))
 			return;
-		}
 		
 		if (event.getAction().name().contains("LEFT")) {
 			if (grapplerHooks.containsKey(p.getUniqueId())) {
@@ -70,7 +67,7 @@ public class GrapplerAbility extends Ability {
 			GrapplingHook hook = new GrapplingHook(p.getWorld(), ((CraftPlayer) p).getHandle());
 			Vector direction = p.getLocation().getDirection();
 			hook.spawn(p.getEyeLocation().add(direction.getX(), direction.getY(), direction.getZ()));
-			hook.move(direction.getX() * 5.0D, direction.getY() * 5.0D, direction.getZ() * 5.0D);
+			hook.move(direction.getX() * 7.0D, direction.getY() * 5.0D, direction.getZ() * 7.0D);
 			grapplerHooks.put(p.getUniqueId(), hook);
 		} else if (event.getAction().name().contains("RIGHT")) {
 			if (grapplerHooks.containsKey(p.getUniqueId())) {
@@ -82,9 +79,9 @@ public class GrapplerAbility extends Ability {
 				Location pLoc = p.getLocation();
 				double d = loc.distance(p.getLocation());
 				double t = d;
-				double v_x = (1.0D + 0.04000000000000001D * t) * ((isNear(loc, pLoc) ? 0 : loc.getX() - pLoc.getX()) / t);
+				double v_x = (1.0D + 0.06D * t) * ((isNear(loc, pLoc) ? 0 : loc.getX() - pLoc.getX()) / t);
 				double v_y = (0.9D + 0.03D * t) * ((isNear(loc, pLoc) ? 0.1 : loc.getY() - pLoc.getY()) / t);
-				double v_z = (1.0D + 0.04000000000000001D * t) * ((isNear(loc, pLoc) ? 0 : loc.getZ() - pLoc.getZ()) / t);
+				double v_z = (1.0D + 0.06D * t) * ((isNear(loc, pLoc) ? 0 : loc.getZ() - pLoc.getZ()) / t);
 				Vector v = p.getVelocity();
 				v.setX(v_x);
 				v.setY(v_y);
@@ -172,7 +169,7 @@ public class GrapplerAbility extends Ability {
 		if (!hasAbility(p))
 			return;
 		
-		CooldownAPI.addCooldown(p.getUniqueId(), getName(), 6l);
+		addCooldown(p.getUniqueId(), 6l);
 	}
 
 }

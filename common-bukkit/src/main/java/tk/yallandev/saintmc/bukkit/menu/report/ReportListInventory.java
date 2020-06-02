@@ -13,9 +13,9 @@ import org.bukkit.inventory.ItemStack;
 
 import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.bukkit.api.item.ItemBuilder;
-import tk.yallandev.saintmc.bukkit.api.menu.ClickType;
-import tk.yallandev.saintmc.bukkit.api.menu.MenuClickHandler;
 import tk.yallandev.saintmc.bukkit.api.menu.MenuInventory;
+import tk.yallandev.saintmc.bukkit.api.menu.click.ClickType;
+import tk.yallandev.saintmc.bukkit.api.menu.click.MenuClickHandler;
 import tk.yallandev.saintmc.common.report.Report;
 
 public class ReportListInventory {

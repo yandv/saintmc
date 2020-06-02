@@ -38,7 +38,7 @@ import lombok.Getter;
 import lombok.Setter;
 import tk.yallandev.saintmc.CommonConst;
 import tk.yallandev.saintmc.CommonGeneral;
-import tk.yallandev.saintmc.bukkit.api.cooldown.CooldownAPI;
+import tk.yallandev.saintmc.bukkit.api.cooldown.CooldownController;
 import tk.yallandev.saintmc.bukkit.api.hologram.HologramListener;
 import tk.yallandev.saintmc.bukkit.api.item.ActionItemListener;
 import tk.yallandev.saintmc.bukkit.api.menu.MenuListener;
@@ -207,7 +207,7 @@ public class BukkitMain extends JavaPlugin {
 					"me", "say", "scoreboard", "seed", "spawnpoint", "spreadplayers", "summon", "tell", "tellraw",
 					"testfor", "testforblocks", "tp", "weather", "xp", "reload", "rl", "worldborder", "achievement",
 					"blockdata", "clone", "debug", "defaultgamemode", "entitydata", "execute", "fill", "gamemode",
-					"pardon", "pardon-ip", "particle", "replaceitem", "setidletimeout", "stats", "testforblock",
+					"pardon", "pardon-ip", "replaceitem", "setidletimeout", "stats", "testforblock",
 					"title", "trigger", "viaver", "protocolsupport", "ps", "holograms", "hd",
 					"holo", "hologram", "restart", "stop", "filter", "packetlog", "pl",
 					"plugins", "timings");
@@ -255,7 +255,7 @@ public class BukkitMain extends JavaPlugin {
 		pm.registerEvents(new ActionItemListener(), getInstance());
 		pm.registerEvents(new HologramListener(), getInstance());
 		pm.registerEvents(new MenuListener(), getInstance());
-		pm.registerEvents(new CooldownAPI(), getInstance());
+		pm.registerEvents(new CooldownController(), getInstance());
 	}
 
 	public void sendPlayerToLobby(Player p) {

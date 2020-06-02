@@ -2,10 +2,10 @@ package br.com.saintmc.hungergames.abilities.register;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.bukkit.Effect;
 import org.bukkit.Material;
-import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
@@ -15,20 +15,21 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import br.com.saintmc.hungergames.abilities.Ability;
 import tk.yallandev.saintmc.bukkit.BukkitMain;
-import tk.yallandev.saintmc.bukkit.api.cooldown.CooldownAPI;
 import tk.yallandev.saintmc.bukkit.api.item.ItemBuilder;
 
 public class JackhammerAbility extends Ability {
+	
+	private Map<Player, Integer> useMap;
 
 	public JackhammerAbility() {
 		super("Jackhammer", Arrays.asList(new ItemBuilder().name("§aJackHammer").type(Material.STONE_AXE).build()));
+		useMap = new HashMap<>();
 	}
 	
-	private HashMap<Player, Integer> jackHammeruses = new HashMap<Player, Integer>();
-
 	@EventHandler
-	public void Jack(BlockBreakEvent e) {
+	public void onBlockBreak(BlockBreakEvent e) {
 		Player p = e.getPlayer();
+		
 		if (hasAbility(p) && p.getItemInHand() != null && p.getItemInHand().getType() == Material.STONE_AXE) {
 			int x = e.getBlock().getX();
 			int z = e.getBlock().getZ();
@@ -38,27 +39,25 @@ public class JackhammerAbility extends Ability {
 				return;
 			}
 			
-			if (CooldownAPI.hasCooldown(p.getUniqueId(), getName())) {
-				p.playSound(p.getLocation(), Sound.IRONGOLEM_HIT, 0.5F, 1.0F);
-				p.sendMessage(CooldownAPI.getCooldownFormated(p.getUniqueId(), getName()));
+			if (isCooldown(p)) {
 				return;
 			}
 			
-			if (jackHammeruses.containsKey(p)) {
-				jackHammeruses.put(p, jackHammeruses.get(p) + 1);
+			if (useMap.containsKey(p)) {
+				useMap.put(p, useMap.get(p) + 1);
 			} else {
-				jackHammeruses.put(p, 1);
+				useMap.put(p, 1);
 			}
 			
-			if (jackHammeruses.get(p) == 6) {
+			if (useMap.get(p) == 6) {
 				if (e.getBlock().getRelative(BlockFace.UP).getType() != Material.AIR) {
 					breakBlock(e.getBlock(), BlockFace.UP);
 				}
 				
 				breakBlock(e.getBlock(), BlockFace.DOWN);
 				
-				jackHammeruses.remove(p);
-				CooldownAPI.addCooldown(p.getUniqueId(), getName(), 28l);
+				useMap.remove(p);
+				addCooldown(p.getUniqueId(), 28l);
 			} else {
 				if (e.getBlock().getRelative(BlockFace.UP).getType() != Material.AIR) {
 					breakBlock(e.getBlock(), BlockFace.UP);
@@ -83,7 +82,7 @@ public class JackhammerAbility extends Ability {
 					cancel();
 				}
 			}
-		}.runTaskTimer(BukkitMain.getInstance(), 5L, 5L);
+		}.runTaskTimer(BukkitMain.getInstance(), 2L, 2L);
 	}
 
 }

@@ -60,7 +60,7 @@ public class GameGeneral {
 	}
 
 	public void onEnable() {
-
+		
 		abilityController.load("br.com.saintmc.hungergames.abilities.register");
 		kitController.load("br.com.saintmc.hungergames.kit.register");
 		schedulerController.addSchedule(new PregameScheduler());

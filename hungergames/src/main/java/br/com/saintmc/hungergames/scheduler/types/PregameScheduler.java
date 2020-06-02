@@ -70,6 +70,16 @@ public class PregameScheduler implements GameSchedule {
 		 * Teleport the player a only a time and change PREGAME to STARTING
 		 */
 
+		if (gameState == GameState.WAITING) {
+
+			if (time <= 0) {
+				gameGeneral.setGameState(GameState.PREGAME);
+				gameGeneral.setTime(60);
+			}
+
+			return;
+		}
+
 		if (time <= 15 && gameState == GameState.PREGAME) {
 
 			gameGeneral.setGameState(GameState.STARTING);
@@ -105,8 +115,8 @@ public class PregameScheduler implements GameSchedule {
 //			Bukkit.getOnlinePlayers()
 //					.forEach(p -> p.sendMessage("§eA partida inicia em §b" + StringUtils.formatTime(time) + "§f!"));
 
-			Bukkit.getOnlinePlayers().forEach(
-					p -> p.sendMessage(" §a* §fA partida inicia em §a" + StringUtils.formatTime(time) + "§f!"));
+			Bukkit.getOnlinePlayers()
+					.forEach(p -> p.sendMessage("§a§l❱  §fO jogo inicia em §a" + StringUtils.formatTime(time) + "§f!"));
 		}
 	}
 

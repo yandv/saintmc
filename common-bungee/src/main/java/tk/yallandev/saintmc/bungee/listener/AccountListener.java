@@ -25,18 +25,19 @@ import tk.yallandev.saintmc.common.ban.constructor.Ban;
 import tk.yallandev.saintmc.common.permission.Group;
 import tk.yallandev.saintmc.common.report.Report;
 import tk.yallandev.saintmc.common.server.ServerType;
+import tk.yallandev.saintmc.common.utils.string.NameUtils;
 
 public class AccountListener implements Listener {
-	
+
 	/*
-	 * Change the onlineMode status 
+	 * Change the onlineMode status
 	 */
-	
+
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onLogin(PreLoginEvent event) {
 		if (event.isCancelled())
 			return;
-		
+
 		String playerName = event.getConnection().getName();
 
 		PendingConnection connection = event.getConnection();
@@ -48,39 +49,39 @@ public class AccountListener implements Listener {
 				/*
 				 * Verify if the player is cracked or premium
 				 */
-				
+
 				try {
 					boolean cracked = CommonGeneral.getInstance().getMojangFetcher().isCracked(playerName);
-					
+
 					/*
-					 * Change the login status
-					 * If the onlineMode equals false the cracked player will able to join
-					 * or if equals true the cracked player wont able to join
+					 * Change the login status If the onlineMode equals false the cracked player
+					 * will able to join or if equals true the cracked player wont able to join
 					 */
-					
+
 					connection.setOnlineMode(!cracked);
-					CommonGeneral.getInstance().debug("The connection of " + event.getConnection().getName() + " is " + (cracked ? "Cracked" : "Premium"));
+					CommonGeneral.getInstance().debug("The connection of " + event.getConnection().getName() + " is "
+							+ (cracked ? "Cracked" : "Premium"));
 				} catch (Exception ex) {
 					event.setCancelled(true);
 					event.setCancelReason("§4§l" + CommonConst.KICK_PREFIX
 							+ "\n§f\n§fNão foi possível checar o seu nome!§f\n§6Mais informação em: §b"
 							+ CommonConst.DISCORD);
 				}
-				
+
 				event.completeIntent(BungeeMain.getPlugin());
 			}
 		});
 	}
-	
+
 	/*
 	 * Load Member
 	 */
-	
+
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onLogin(LoginEvent event) {
 		UUID uniqueId = event.getConnection().getUniqueId();
 		String playerName = event.getConnection().getName();
-		
+
 		/*
 		 * Check if the uniqueId is true
 		 */
@@ -91,70 +92,87 @@ public class AccountListener implements Listener {
 					+ CommonConst.WEBSITE);
 			return;
 		}
-		
+
 		InetSocketAddress ipAddress = event.getConnection().getAddress();
 
 		event.registerIntent(BungeeMain.getPlugin());
 		ProxyServer.getInstance().getScheduler().runAsync(BungeeMain.getPlugin(), new Runnable() {
 			@Override
 			public void run() {
-				
+
 				CommonGeneral.getInstance().debug("Loading " + uniqueId + " (" + playerName + ") account!");
-				
-				/*
-				 * Check if the playerName is equals the database storage playerName
-				 */
 
-				String memberName = CommonGeneral.getInstance().getPlayerData().checkNickname(playerName);
-
-				if (memberName != null && !memberName.equals(playerName)) {
-					event.setCancelled(true);
-					event.setCancelReason("§4§l" + CommonConst.KICK_PREFIX
-							+ "\n§f\n§fUma conta já está registrada no servidor com nickname \"" + memberName
-							+ "\"!\n§f\n§6Mais informação em: §b" + CommonConst.DISCORD);
-					event.completeIntent(BungeeMain.getPlugin());
-					return;
-				}
-				
 				try {
-					
+
 					/*
 					 * Load MemberModel from backend
 					 */
-					
+
+					/*
+					 * Load Member by uniqueId to prevent account collision
+					 */
+
+					MemberModel basedName = CommonGeneral.getInstance().getPlayerData().loadMember(playerName);
+
+					if (basedName != null && !basedName.getPlayerName().equals(playerName)) {
+						event.setCancelled(true);
+						event.setCancelReason("§4§l" + CommonConst.KICK_PREFIX
+								+ "\n§f\n§fUma conta já está registrada no servidor com nickname \""
+								+ basedName.getPlayerName() + "\"!\n§f\n§6Mais informação em: §b"
+								+ CommonConst.DISCORD);
+						event.completeIntent(BungeeMain.getPlugin());
+						return;
+					}
+
+					/*
+					 * Load Member by uniqueId
+					 */
+
 					MemberModel memberModel = CommonGeneral.getInstance().getPlayerData().loadMember(uniqueId);
+
+					if (basedName != null && basedName.getLoginConfiguration().getAccountType() != basedName
+							.getLoginConfiguration().getAccountType()) {
+						event.setCancelled(true);
+						event.setCancelReason("§4§l" + CommonConst.KICK_PREFIX + "\n§f\n§fUma conta "
+								+ NameUtils.formatString(memberModel.getLoginConfiguration().getAccountType().name())
+								+ " com o mesmo nick que a sua já está registrada no servidor!\n§f\n§6Mais informação em: §b"
+								+ CommonConst.DISCORD);
+						event.completeIntent(BungeeMain.getPlugin());
+						return;
+					}
+
 					Member member = null;
-					
+
 					/*
 					 * Create instance of Member using MemberModel from backend
 					 */
-					
+
 					if (memberModel == null) {
 						member = new BungeeMember(playerName, uniqueId);
-						CommonGeneral.getInstance().getPlayerData().saveMember(member);
+						CommonGeneral.getInstance().getPlayerData().createMember(member);
 					} else {
 						member = new BungeeMember(memberModel);
 					}
-					
+
 					/*
 					 * Cache the member in redis
 					 */
 
 					CommonGeneral.getInstance().getPlayerData().checkCache(uniqueId);
-					
+
 					/*
-					 * Start Member 
+					 * Start Member
 					 */
-					
+
 					member.setJoinData(playerName, ipAddress.getHostString());
 					member.updateTime();
 					member.setFakeName(member.getPlayerName());
 					member.setServerType(ServerType.NONE);
-					
+
 					/*
 					 * Save in local storage
 					 */
-					
+
 					CommonGeneral.getInstance().getMemberManager().loadMember(member);
 				} catch (Exception ex) {
 					event.setCancelled(true);
@@ -163,12 +181,12 @@ public class AccountListener implements Listener {
 					ex.printStackTrace();
 					return;
 				}
-				
+
 				CommonGeneral.getInstance()
 						.debug("The account of " + uniqueId + " (" + playerName + ") has been loaded!");
-				
+
 				Member member = CommonGeneral.getInstance().getMemberManager().getMember(uniqueId);
-				
+
 				/*
 				 * Check ban of player
 				 */
@@ -197,7 +215,7 @@ public class AccountListener implements Listener {
 					event.completeIntent(BungeeMain.getPlugin());
 					return;
 				}
-				
+
 				/*
 				 * Start LoginConfiguration of player
 				 */
@@ -205,29 +223,30 @@ public class AccountListener implements Listener {
 				boolean cracked = !event.getConnection().isOnlineMode();
 
 				if (cracked) {
-					
+
 					/*
-					 * Check if player is storage like original and if
-					 * to dont allow the member join
+					 * Check if player is storage like original and if to dont allow the member join
 					 */
-					
+
 					if (member.getLoginConfiguration().getAccountType() == AccountType.ORIGINAL) {
 						event.setCancelled(true);
-						event.setCancelReason("§4§lMOJANG\n\n§fA conta original logada no servidor é original!\nVocê precisa logar nela como original!\n§f\nCaso esteja no minecraft original, isso pode está acontecendo por causa da nossa conexão com a mojang!\nEntre em contato pelo discord §b" + CommonConst.DISCORD);
+						event.setCancelReason(
+								"§4§lMOJANG\n\n§fA conta original logada no servidor é original!\nVocê precisa logar nela como original!\n§f\nCaso esteja no minecraft original, isso pode está acontecendo por causa da nossa conexão com a mojang!\nEntre em contato pelo discord §b"
+										+ CommonConst.DISCORD);
 						event.completeIntent(BungeeMain.getPlugin());
 						return;
 					}
-					
+
 					/*
 					 * Logout the Member
 					 */
-					
+
 					member.getLoginConfiguration().logOut();
-					
+
 					/*
 					 * Register the cracked uniqueId in javascript-coded backend
 					 */
-					
+
 					try {
 						CommonGeneral.getInstance().getMojangFetcher().registerUuid(playerName, uniqueId);
 					} catch (Exception ex) {
@@ -237,19 +256,19 @@ public class AccountListener implements Listener {
 						return;
 					}
 				}
-				
+
 				/*
 				 * Save the account status from Member
-				 */	
+				 */
 
 				if (member.getLoginConfiguration().getAccountType() == AccountType.NONE)
 					member.getLoginConfiguration().setAccountType(cracked ? AccountType.CRACKED : AccountType.ORIGINAL);
 
 				Report report = CommonGeneral.getInstance().getReportManager().getReport(uniqueId);
-				
+
 				/*
 				 * Start report
-				 */	
+				 */
 
 				if (report != null) {
 					report.setOnline(true);
@@ -265,8 +284,8 @@ public class AccountListener implements Listener {
 	public void onPostLoginCheck(PostLoginEvent event) {
 		/*
 		 * Check if the account has been stored locally
-		 */	
-		
+		 */
+
 		if (CommonGeneral.getInstance().getMemberManager().getMember(event.getPlayer().getUniqueId()) == null) {
 			event.getPlayer().disconnect(new TextComponent(
 					"§4§lCONTA\n\n§fSua conta não foi carregada!\n§6Mais informação em: §b" + CommonConst.WEBSITE));
@@ -274,16 +293,16 @@ public class AccountListener implements Listener {
 
 		/*
 		 * Start BungeeMember
-		 */	
-		
+		 */
+
 		BungeeMember member = (BungeeMember) CommonGeneral.getInstance().getMemberManager()
 				.getMember(event.getPlayer().getUniqueId());
 		member.setProxiedPlayer(event.getPlayer());
 	}
-	
+
 	/*
 	 * Remove Member account
-	 */	
+	 */
 
 	@EventHandler
 	public void onQuit(PlayerDisconnectEvent event) {

@@ -1,0 +1,6 @@
+name: Gladiator
+version: 0.0.1
+main: tk.yallandev.saintmc.gladiator.GameMain
+author: yandv
+softdepend: [BukkitCommon]
+load: POSTWORLD

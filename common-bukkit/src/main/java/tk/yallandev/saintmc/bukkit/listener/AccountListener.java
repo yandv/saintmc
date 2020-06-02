@@ -42,7 +42,7 @@ public class AccountListener implements Listener {
             
             if (memberModel == null) {
                 member = new BukkitMember(playerName, uniqueId);
-                CommonGeneral.getInstance().getPlayerData().saveMember(member);
+                CommonGeneral.getInstance().getPlayerData().createMember(member);
                 member.setCacheOnQuit(true);
             } else {
                 member = new BukkitMember(memberModel);

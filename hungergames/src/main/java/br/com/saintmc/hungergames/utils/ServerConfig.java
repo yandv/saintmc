@@ -23,7 +23,10 @@ public class ServerConfig {
 	private Map<KitType, Kit> defaultKit;
 	private Map<KitType, List<Kit>> disabledKits;
 	
-	private boolean timeInWaiting;
+	private boolean timeInWaiting = true;
+	
+	private boolean spectatorEnabled = true;
+	private boolean joinEnabled;
 	
 	private boolean finalBattle = true;
 	private boolean forceWin = true;
@@ -34,6 +37,8 @@ public class ServerConfig {
 	private Group spectatorGroup;
 	private Group respawnGroup;
 	private Group kitSpawnGroup;
+	
+	private String title = "§b§lDOUBLE KIT";
 	
 	public ServerConfig() {
 		defaultKit = new HashMap<>();

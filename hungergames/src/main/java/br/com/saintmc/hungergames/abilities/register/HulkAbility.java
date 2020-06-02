@@ -3,7 +3,6 @@ package br.com.saintmc.hungergames.abilities.register;
 import java.util.ArrayList;
 
 import org.bukkit.Material;
-import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
@@ -12,7 +11,6 @@ import br.com.saintmc.hungergames.GameGeneral;
 import br.com.saintmc.hungergames.abilities.Ability;
 import br.com.saintmc.hungergames.constructor.Gamer;
 import br.com.saintmc.hungergames.game.GameState;
-import tk.yallandev.saintmc.bukkit.api.cooldown.CooldownAPI;
 
 public class HulkAbility extends Ability {
 	
@@ -33,14 +31,12 @@ public class HulkAbility extends Ability {
 			if (gamer.isNotPlaying())
 				return;
 			
-			if (CooldownAPI.hasCooldown(p.getUniqueId(), getName())) {
-				p.playSound(p.getLocation(), Sound.IRONGOLEM_HIT, 0.5F, 1.0F);
-				p.sendMessage(CooldownAPI.getCooldownFormated(p.getUniqueId(), getName()));
+			if (isCooldown(p)) {
 				return;
 			}
 			
 			p.setPassenger(event.getRightClicked());
-			CooldownAPI.addCooldown(p.getUniqueId(), getName(), 12l);
+			addCooldown(p.getUniqueId(), 12l);
 		}
 	}
 }

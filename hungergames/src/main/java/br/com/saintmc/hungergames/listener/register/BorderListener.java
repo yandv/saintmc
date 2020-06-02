@@ -30,7 +30,7 @@ public class BorderListener extends GameListener{
 			}
 		}
 		
-		if (isNotInBoard(player) || player.getLocation().getY() > 129) {
+		if (isNotInBoard(player) || player.getLocation().getY() > 155) {
 			if (isPregame()) {
 				event.setCancelled(true);
 			} else {

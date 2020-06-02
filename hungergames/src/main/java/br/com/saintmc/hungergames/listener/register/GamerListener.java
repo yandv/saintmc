@@ -10,9 +10,9 @@ import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import br.com.saintmc.hungergames.GameGeneral;
-import br.com.saintmc.hungergames.GameMain;
 import br.com.saintmc.hungergames.constructor.Gamer;
 import br.com.saintmc.hungergames.listener.GameListener;
+import br.com.saintmc.hungergames.utils.ServerConfig;
 
 public class GamerListener extends GameListener {
 	
@@ -21,7 +21,7 @@ public class GamerListener extends GameListener {
 		if (event.getLoginResult() != Result.ALLOWED)
 			return;
 		
-		if(!GameMain.canJoin)
+		if(!ServerConfig.getInstance().isJoinEnabled())
 			event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, "§cO servidor está carregando!");
 	}
 

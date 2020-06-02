@@ -16,10 +16,10 @@ import org.bukkit.inventory.Recipe;
 
 import net.minecraft.server.v1_8_R3.Item;
 import tk.yallandev.saintmc.bukkit.api.item.ItemBuilder;
-import tk.yallandev.saintmc.bukkit.api.menu.ClickType;
-import tk.yallandev.saintmc.bukkit.api.menu.MenuClickHandler;
 import tk.yallandev.saintmc.bukkit.api.menu.MenuInventory;
 import tk.yallandev.saintmc.bukkit.api.menu.MenuItem;
+import tk.yallandev.saintmc.bukkit.api.menu.click.ClickType;
+import tk.yallandev.saintmc.bukkit.api.menu.click.MenuClickHandler;
 import tk.yallandev.saintmc.game.games.hungergames.inventory.finder.ItemFinder;
 import tk.yallandev.saintmc.game.util.SearchUtils;
 

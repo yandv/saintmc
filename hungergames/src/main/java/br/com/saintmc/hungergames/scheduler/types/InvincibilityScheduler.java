@@ -42,12 +42,12 @@ public class InvincibilityScheduler implements GameSchedule {
 //			}
 			
 			Bukkit.getOnlinePlayers().forEach(
-					p -> p.sendMessage(" §e* §fA invencibilidade acaba em §a" + StringUtils.formatTime(time) + "§f!"));
+					p -> p.sendMessage("§a§l❱ §fA invencibilidade acaba em §a" + StringUtils.formatTime(time) + "§f!"));
 		}
 		
 		if (time <= 0) {
 			
-			Bukkit.broadcastMessage("§eA invencibilidade acabou!");
+			Bukkit.broadcastMessage("§a§l❱ §fA invencibilidade acabou!");
 			Bukkit.getPluginManager().callEvent(new GameInvincibilityEndEvent());
 			gameGeneral.setGameState(GameState.GAMETIME);
 			

@@ -3,12 +3,12 @@ package tk.yallandev.saintmc.bukkit.command.register;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.lang.management.ManagementFactory;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.text.DecimalFormat;
 import java.util.List;
 import java.util.logging.Level;
@@ -21,6 +21,9 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.SimplePluginManager;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.spigotmc.CustomTimingsHandler;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 
 import net.md_5.bungee.api.ChatColor;
 import net.minecraft.server.v1_8_R3.MinecraftServer;
@@ -40,23 +43,24 @@ import tk.yallandev.saintmc.common.utils.string.StringUtils;
 public class ServerCommand implements CommandClass {
 
 	public static long timingStart = 0L;
-	
+
 	@Command(name = "score", aliases = { "scoreboard" })
 	public void scoreboardCommand(BukkitCommandArgs args) {
 		if (!args.isPlayer())
 			return;
-		
+
 		Player player = args.getPlayer();
 		Member member = CommonGeneral.getInstance().getMemberManager().getMember(player.getUniqueId());
-		
+
 		member.getAccountConfiguration().setScoreboardEnabled(!member.getAccountConfiguration().isScoreboardEnabled());
 
 //		if (member.getAccountConfiguration().isScoreboardEnabled())
 //			BukkitMain.getInstance().getScoreboardManager().enableScoreboard(player);
 //		else 
 //			BukkitMain.getInstance().getScoreboardManager().disableScoreboard(player);
-		
-		player.sendMessage(" §a* §fSua scoreboard foi " + (member.getAccountConfiguration().isScoreboardEnabled() ? "§aativada" : "§cdesativada") + "§f!");
+
+		player.sendMessage(" §a* §fSua scoreboard foi "
+				+ (member.getAccountConfiguration().isScoreboardEnabled() ? "§aativada" : "§cdesativada") + "§f!");
 	}
 
 	@Command(name = "shutdown", aliases = { "stop" }, groupToUse = Group.ADMIN)
@@ -177,34 +181,50 @@ public class ServerCommand implements CommandClass {
 				fileTimings.println("</spigotConfig>");
 
 				if (args[0].equalsIgnoreCase("paste")) {
-					new BukkitRunnable() {
+					new Thread(new Runnable() {
 
 						@Override
 						public void run() {
 							try {
-								HttpURLConnection con = (HttpURLConnection) (new URL("http://paste.ubuntu.com/"))
-										.openConnection();
+								HttpURLConnection con = (HttpURLConnection) (new URL(
+										"https://timings.spigotmc.org/paste")).openConnection();
 								con.setDoOutput(true);
 								con.setRequestMethod("POST");
 								con.setInstanceFollowRedirects(false);
 								OutputStream out = con.getOutputStream();
-								out.write("poster=Spigot&syntax=text&content=".getBytes("UTF-8"));
-								out.write(URLEncoder.encode(bout.toString("UTF-8"), "UTF-8").getBytes("UTF-8"));
+								out.write(bout.toByteArray());
 								out.close();
+								JsonObject location = (JsonObject) (new Gson())
+										.fromJson(new InputStreamReader(con.getInputStream()), JsonObject.class);
 								con.getInputStream().close();
-								String location = con.getHeaderField("Location");
-								String pasteID = location.substring("http://paste.ubuntu.com/".length(),
-										location.length() - 1);
+								String pasteID = location.get("key").getAsString();
 								sender.sendMessage(ChatColor.GREEN
-										+ "Timings results can be viewed at http://www.spigotmc.org/go/timings?url="
+										+ "Timings results can be viewed at https://www.spigotmc.org/go/timings?url="
 										+ pasteID);
+
+//								HttpURLConnection con = (HttpURLConnection) (new URL("https://timings.spigotmc.org/paste"))
+//										.openConnection();
+//								con.setDoOutput(true);
+//								con.setRequestMethod("POST");
+//								con.setInstanceFollowRedirects(false);
+//								OutputStream out = con.getOutputStream();
+//								out.write("poster=Spigot&syntax=text&content=".getBytes("UTF-8"));
+//								out.write(URLEncoder.encode(bout.toString("UTF-8"), "UTF-8").getBytes("UTF-8"));
+//								out.close();
+//								con.getInputStream().close();
+//								String location = con.getHeaderField("Location");
+//								String pasteID = location.substring("http://paste.ubuntu.com/".length(),
+//										location.length() - 1);
+//								sender.sendMessage(ChatColor.GREEN
+//										+ "Timings results can be viewed at http://www.spigotmc.org/go/timings?url="
+//										+ pasteID);
 							} catch (IOException ex) {
 								sender.sendMessage(ChatColor.RED
 										+ "Error pasting timings, check your console for more information");
 								Bukkit.getServer().getLogger().log(Level.WARNING, "Could not paste timings", ex);
 							}
 						}
-					}.runTaskAsynchronously(BukkitMain.getInstance());
+					}).start();
 					return;
 				}
 
@@ -292,7 +312,7 @@ public class ServerCommand implements CommandClass {
 			World world = (sender instanceof Player) ? ((Player) sender).getWorld() : Bukkit.getWorlds().get(0);
 			Chunk[] loadedChunks = world.getLoadedChunks();
 			double lag = Math.round(((tps > 20 ? 20 : -tps) / 20.0D) * 100.0D);
-			
+
 			sender.sendMessage("         ");
 			sender.sendMessage("§7TPS from last 1m, 5m, 15m: " + ChatColor.GREEN + StringUtils.join(tpsAvg, ", "));
 			sender.sendMessage("§7Current TPS: " + format(tps) + ChatColor.GREEN + '/' + 20.0D);

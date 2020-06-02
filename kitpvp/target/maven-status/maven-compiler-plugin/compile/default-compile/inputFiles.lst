@@ -34,7 +34,6 @@ C:\Users\Allan\git\saintmc\kitpvp\src\main\java\tk\yallandev\saintmc\kitpvp\even
 C:\Users\Allan\git\saintmc\kitpvp\src\main\java\tk\yallandev\saintmc\kitpvp\kit\register\BoxerKit.java
 C:\Users\Allan\git\saintmc\kitpvp\src\main\java\tk\yallandev\saintmc\kitpvp\menu\KitInventory.java
 C:\Users\Allan\git\saintmc\kitpvp\src\main\java\tk\yallandev\saintmc\kitpvp\event\warp\PlayerWarpRespawnEvent.java
-C:\Users\Allan\git\saintmc\kitpvp\src\main\java\tk\yallandev\saintmc\kitpvp\warp\BattleWarp.java
 C:\Users\Allan\git\saintmc\kitpvp\src\main\java\tk\yallandev\saintmc\kitpvp\kit\register\TimelordKit.java
 C:\Users\Allan\git\saintmc\kitpvp\src\main\java\tk\yallandev\saintmc\kitpvp\GameMain.java
 C:\Users\Allan\git\saintmc\kitpvp\src\main\java\tk\yallandev\saintmc\kitpvp\hologram\RankingHologram.java
@@ -55,7 +54,6 @@ C:\Users\Allan\git\saintmc\kitpvp\src\main\java\tk\yallandev\saintmc\kitpvp\even
 C:\Users\Allan\git\saintmc\kitpvp\src\main\java\tk\yallandev\saintmc\kitpvp\listener\WarpListener.java
 C:\Users\Allan\git\saintmc\kitpvp\src\main\java\tk\yallandev\saintmc\kitpvp\listener\ProtectionListener.java
 C:\Users\Allan\git\saintmc\kitpvp\src\main\java\tk\yallandev\saintmc\kitpvp\event\challenge\SearchingStopEvent.java
-C:\Users\Allan\git\saintmc\kitpvp\src\main\java\tk\yallandev\saintmc\kitpvp\listener\DamagerFixer.java
 C:\Users\Allan\git\saintmc\kitpvp\src\main\java\tk\yallandev\saintmc\kitpvp\kit\register\NinjaKit.java
 C:\Users\Allan\git\saintmc\kitpvp\src\main\java\tk\yallandev\saintmc\kitpvp\kit\register\ViperKit.java
 C:\Users\Allan\git\saintmc\kitpvp\src\main\java\tk\yallandev\saintmc\kitpvp\listener\CombatlogListener.java

@@ -51,21 +51,24 @@ import br.com.saintmc.hungergames.constructor.Timeout;
 import br.com.saintmc.hungergames.event.game.GameStartEvent;
 import br.com.saintmc.hungergames.event.kit.PlayerSelectedKitEvent;
 import br.com.saintmc.hungergames.event.player.PlayerItemReceiveEvent;
+import br.com.saintmc.hungergames.event.player.PlayerTimeoutEvent;
 import br.com.saintmc.hungergames.game.GameState;
 import br.com.saintmc.hungergames.kit.Kit;
 import br.com.saintmc.hungergames.kit.KitType;
 import br.com.saintmc.hungergames.utils.ServerConfig;
 import tk.yallandev.saintmc.CommonConst;
 import tk.yallandev.saintmc.CommonGeneral;
+import tk.yallandev.saintmc.bukkit.api.cooldown.event.CooldownStartEvent;
 import tk.yallandev.saintmc.bukkit.api.vanish.AdminMode;
 import tk.yallandev.saintmc.bukkit.event.update.UpdateEvent;
 import tk.yallandev.saintmc.bukkit.event.update.UpdateEvent.UpdateType;
 import tk.yallandev.saintmc.common.account.Member;
 import tk.yallandev.saintmc.common.permission.Group;
+import tk.yallandev.saintmc.common.utils.string.NameUtils;
 
 @SuppressWarnings("deprecation")
 public class GameListener extends br.com.saintmc.hungergames.listener.GameListener {
-	
+
 	private Map<UUID, Long> compassMap;
 	private Set<UUID> joined;
 
@@ -113,11 +116,12 @@ public class GameListener extends br.com.saintmc.hungergames.listener.GameListen
 		if (player.hasGroupPermission(Group.TRIAL))
 			return;
 
-		if (player.hasGroupPermission(ServerConfig.getInstance().getSpectatorGroup()) && GameMain.SPECTATOR)
+		if (player.hasGroupPermission(ServerConfig.getInstance().getSpectatorGroup())
+				&& ServerConfig.getInstance().isSpectatorEnabled())
 			return;
 
-		if (player.hasGroupPermission(ServerConfig.getInstance().getRespawnGroup()) && !joined.contains(event.getPlayer().getUniqueId())
-				&& getGameGeneral().getTime() < 300)
+		if (player.hasGroupPermission(ServerConfig.getInstance().getRespawnGroup())
+				&& !joined.contains(event.getPlayer().getUniqueId()) && getGameGeneral().getTime() < 300)
 			return;
 
 		if (gamer.isTimeout()) {
@@ -154,15 +158,15 @@ public class GameListener extends br.com.saintmc.hungergames.listener.GameListen
 			joined.add(player.getUniqueId());
 			event.setJoinMessage(null);
 			player.sendMessage("§aVocê entrou na partida!");
-			
+
 			if (Member.hasGroupPermission(player.getUniqueId(), Group.LIGHT)) {
 				if (!gamer.hasKit(KitType.PRIMARY))
 					gamer.setNoKit(KitType.PRIMARY);
-				
+
 				if (!gamer.hasKit(KitType.SECONDARY))
 					gamer.setNoKit(KitType.SECONDARY);
 			}
-			
+
 			gamer.setGame(GameMain.GAME);
 			gamer.getStatus().addMatch();
 			Bukkit.getPluginManager().callEvent(new PlayerItemReceiveEvent(player));
@@ -208,32 +212,32 @@ public class GameListener extends br.com.saintmc.hungergames.listener.GameListen
 			gamer.setSpectator(true);
 		}
 	}
-	
+
 	@EventHandler
 	public void onPlayerItemReceive(PlayerItemReceiveEvent event) {
 		Player player = event.getPlayer();
 		Gamer gamer = GameGeneral.getInstance().getGamerController().getGamer(player);
-		
+
 		/*
 		 * Check if has default kit
 		 */
-		
+
 		if (ServerConfig.getInstance().hasDefaultSimpleKit()) {
 			ServerConfig.getInstance().getDefaultSimpleKit().applySilent(player);
 		}
-		
+
 		/*
 		 * Add compass
 		 */
-		
+
 		player.getInventory().addItem(new ItemStack(Material.COMPASS));
-		
+
 		/*
 		 * Add Kit item
 		 */
-		
+
 		if (GameState.isInvincibility(GameGeneral.getInstance().getGameState())) {
-			
+
 			for (Kit kit : gamer.getKitMap().values()) {
 				for (Ability ability : kit.getAbilities()) {
 					for (ItemStack item : ability.getItemList()) {
@@ -241,10 +245,10 @@ public class GameListener extends br.com.saintmc.hungergames.listener.GameListen
 					}
 				}
 			}
-			
+
 		} else {
 			Member member = CommonGeneral.getInstance().getMemberManager().getMember(player.getUniqueId());
-			
+
 			if (member.hasGroupPermission(ServerConfig.getInstance().getKitSpawnGroup()))
 				for (Kit kit : gamer.getKitMap().values()) {
 					for (Ability ability : kit.getAbilities()) {
@@ -289,7 +293,7 @@ public class GameListener extends br.com.saintmc.hungergames.listener.GameListen
 					game -> !GameGeneral.getInstance().getGamerController().getGamer(game.getUniqueId()).isNotPlaying()
 							&& !AdminMode.getInstance().isAdmin(game))
 					.collect(Collectors.toList())) {
-				
+
 				double distOfPlayerToVictim = p.getLocation().distance(game.getPlayer().getLocation());
 				if (distOfPlayerToVictim < distance && distOfPlayerToVictim > 25) {
 					distance = distOfPlayerToVictim;
@@ -298,14 +302,14 @@ public class GameListener extends br.com.saintmc.hungergames.listener.GameListen
 			}
 
 			if (target == null) {
-				p.sendMessage("§c§l> §fNinguém foi encontrado, bussola apontando para o spawn!");
+				p.sendMessage("§cNinguém foi encontrado, bussola apontando para o spawn!");
 				p.setCompassTarget(Bukkit.getWorlds().get(0).getSpawnLocation());
 			} else {
 				p.setCompassTarget(target.getLocation());
-				p.sendMessage("§a§l> §fBussola apontando para o §e" + target.getName() + "§f!");
+				p.sendMessage("§aBussola apontando para o " + target.getName() + "!");
 			}
 
-			compassMap.put(p.getUniqueId(), System.currentTimeMillis() + 3000l);
+			compassMap.put(p.getUniqueId(), System.currentTimeMillis() + 1000l);
 		} else if (item.getType() == Material.MUSHROOM_SOUP) {
 			if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
 				if (((Damageable) p).getHealth() < ((Damageable) p).getMaxHealth() || p.getFoodLevel() < 20) {
@@ -376,9 +380,8 @@ public class GameListener extends br.com.saintmc.hungergames.listener.GameListen
 
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onPlayerPickupItem(PlayerPickupItemEvent event) {
-		if (AdminMode.getInstance().isAdmin(event.getPlayer())) {
+		if (AdminMode.getInstance().isAdmin(event.getPlayer()))
 			event.setCancelled(true);
-		}
 	}
 
 	@EventHandler
@@ -451,16 +454,11 @@ public class GameListener extends br.com.saintmc.hungergames.listener.GameListen
 				Gamer gamer = GameGeneral.getInstance().getGamerController().getGamer(player);
 
 				for (Kit kit : gamer.getKitMap().values()) {
-					for (ItemStack item : event.getInventory().getContents()) {
-						if (item == null)
-							continue;
-
-						for (Ability ability : kit.getAbilities()) {
-							if (ability.isAbilityItem(item)) {
-								event.setCancelled(true);
-								player.updateInventory();
-								break;
-							}
+					for (Ability ability : kit.getAbilities()) {
+						if (ability.isAbilityItem(currentItem)) {
+							event.setCancelled(true);
+							player.updateInventory();
+							break;
 						}
 					}
 				}
@@ -469,7 +467,7 @@ public class GameListener extends br.com.saintmc.hungergames.listener.GameListen
 	}
 
 	@EventHandler
-	public void onDrop(PlayerDropItemEvent event) {
+	public void onPlayerDropItem(PlayerDropItemEvent event) {
 		ItemStack item = event.getItemDrop().getItemStack();
 		Player player = (Player) event.getPlayer();
 		Gamer gamer = GameGeneral.getInstance().getGamerController().getGamer(player);
@@ -483,6 +481,19 @@ public class GameListener extends br.com.saintmc.hungergames.listener.GameListen
 				}
 			}
 		}
+	}
+
+	@EventHandler
+	public void onCooldownStart(CooldownStartEvent event) {
+		System.out.println(event.getCooldown().getName());
+		Kit kit = GameGeneral.getInstance().getKitController().getKit(event.getCooldown().getName());
+
+		if (kit == null)
+			return;
+		
+		System.out.println(kit.getName());
+		
+		event.getCooldown().setName("Kit " + NameUtils.formatString(kit.getName()));
 	}
 
 	/*
@@ -510,13 +521,14 @@ public class GameListener extends br.com.saintmc.hungergames.listener.GameListen
 						.toArray(ItemStack[]::new)) {
 					if (itemStack == null || itemStack.getType() == Material.AIR)
 						continue;
-					
+
 					timeout.getLocation().getWorld().dropItemNaturally(timeout.getLocation(), itemStack);
 				}
 
 				gamer.setTimeout(true);
 				Bukkit.broadcastMessage(
 						"§b" + gamer.getPlayerName() + " demorou demais para relogar e foi desclassificado!");
+				Bukkit.getPluginManager().callEvent(new PlayerTimeoutEvent(gamer));
 
 				iterator.remove();
 			}

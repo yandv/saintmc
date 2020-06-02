@@ -52,7 +52,7 @@ public class MadmanAbility extends Ability {
 
 	public void removeEffect(Player player) {
 		double effect = madmanMap.get(player.getUniqueId()) - 0.0005;
-		
+
 		if (effect <= 0)
 			madmanMap.remove(player.getUniqueId());
 		else
@@ -85,7 +85,7 @@ public class MadmanAbility extends Ability {
 			}
 		}
 	}
-	
+
 	private void display(Player player, double percentage) {
 		StringBuilder bar = new StringBuilder();
 		double count = 20 - Math.max(percentage > 0D ? 1 : 0, percentage / 5);
@@ -95,51 +95,8 @@ public class MadmanAbility extends Ability {
 		for (int a = 0; a < 20 - count; a++)
 			bar.append("§c" + '|');
 
-		ActionBarAPI.send(player, "§eCooldown " + bar.toString());
+		ActionBarAPI.send(player, "§fMadman " + bar.toString());
 	}
-
-//	@EventHandler
-//	public void onUpdate(UpdateEvent e) {
-//		if (e.getType() != UpdateType.SECOND)
-//			return;
-//		
-//		for (Gamer gamer : GameMain.getPlugin().getGamerManager().getGamers()) {
-//			if (gamer.getPlayer() == null || gamer.isNotPlaying())
-//				continue;
-//			
-//			if (hasAbility(gamer.getPlayer())) {
-//				List<Player> lista = getNearbyPlayers(gamer, 15);
-//				
-//				if (lista.size() < 2) {
-//					continue;
-//				}
-//				
-//				for (Player perto : lista) {
-//					int efeito = lista.size() * 2;
-//					addEffect(perto.getUniqueId(), efeito);
-//				}
-//			}
-//			
-//			if (effect.containsKey(gamer.getPlayer().getUniqueId())) {
-//				removeEffect(gamer.getPlayer().getUniqueId());
-//			}
-//		}
-//	}
-//
-//	private void removeEffect(UUID u) {
-//		int effect = this.effect.get(u);
-//		effect = effect - 10;
-//		this.effect.put(u, effect);
-//		if (effect <= 0) {
-//			this.effect.remove(u);
-//		}
-//	}
-//
-//	private void addEffect(UUID u, int efeito) {
-//		int effect = (this.effect.containsKey(u) ? this.effect.get(u) : 0);
-//		effect = effect + (efeito + 10);
-//		this.effect.put(u, effect);
-//	}
 
 	private List<Player> getNearbyPlayers(Gamer p, int i) {
 		List<Player> players = new ArrayList<Player>();
@@ -150,7 +107,7 @@ public class MadmanAbility extends Ability {
 
 			if (GameGeneral.getInstance().getGamerController().getGamer((Player) e).isNotPlaying())
 				continue;
-			
+
 			if (hasAbility(p.getPlayer()))
 				continue;
 

@@ -18,6 +18,8 @@ public interface Scoreboard extends Cloneable {
 	
 	void blankLine(int scoreLine);
 	
+	void clear();
+	
 	/*
 	 * update
 	 */

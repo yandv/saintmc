@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 
 import br.com.saintmc.hungergames.GameGeneral;
 import br.com.saintmc.hungergames.constructor.SimpleKit;
+import br.com.saintmc.hungergames.event.scoreboard.ScoreboardTitleChangeEvent;
 import br.com.saintmc.hungergames.utils.ServerConfig;
 import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.bukkit.command.BukkitCommandArgs;
@@ -18,6 +19,7 @@ import tk.yallandev.saintmc.common.command.CommandArgs;
 import tk.yallandev.saintmc.common.command.CommandClass;
 import tk.yallandev.saintmc.common.command.CommandFramework.Command;
 import tk.yallandev.saintmc.common.command.CommandFramework.Completer;
+import tk.yallandev.saintmc.common.command.CommandSender;
 import tk.yallandev.saintmc.common.permission.Group;
 
 public class ModeratorCommand implements CommandClass {
@@ -157,6 +159,29 @@ public class ModeratorCommand implements CommandClass {
 		}
 		
 		Bukkit.broadcastMessage("§aO chão foi limpo!");
+	}
+	
+	@Command(name = "settitle", groupToUse = Group.MODPLUS)
+	public void settitleCommand(BukkitCommandArgs cmdArgs) {
+		CommandSender sender = cmdArgs.getSender();
+		String[] args = cmdArgs.getArgs();
+		
+		if (args.length == 0) {
+			sender.sendMessage(" §e* §fUse §a/" + cmdArgs.getLabel() + " <title> para mudar o titulo da scoreboard!");
+			return;
+		}
+		
+		StringBuilder stringBuilder = new StringBuilder();
+		
+		for (int x = 0; x < args.length; x++) {
+			stringBuilder.append(args[x]);
+			stringBuilder.append(" ");
+		}
+		
+		String title = stringBuilder.toString().trim().replace("&", "§");
+		
+		Bukkit.getPluginManager().callEvent(new ScoreboardTitleChangeEvent(title));
+		sender.sendMessage(" §a* §fVocê alterou o titulo da scoreboard!");
 	}
 
 	public void handleHelp(Player sender, String label) {

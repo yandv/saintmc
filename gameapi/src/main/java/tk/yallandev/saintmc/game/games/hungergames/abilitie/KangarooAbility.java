@@ -17,7 +17,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
-import tk.yallandev.saintmc.bukkit.api.cooldown.CooldownAPI;
+import tk.yallandev.saintmc.bukkit.api.cooldown.CooldownController;
 import tk.yallandev.saintmc.game.GameMain;
 import tk.yallandev.saintmc.game.ability.AbilityRarity;
 import tk.yallandev.saintmc.game.constructor.Ability;
@@ -66,8 +66,8 @@ public class KangarooAbility extends Ability implements Disableable {
 		item.setDurability(KANGAROO_ITEM.getDurability());
 		p.updateInventory();
 		
-		if (CooldownAPI.hasCooldown(p.getUniqueId(), getName())) {
-			p.sendMessage(CooldownAPI.getCooldownFormated(p.getUniqueId(), getName()));
+		if (CooldownController.hasCooldown(p.getUniqueId(), getName())) {
+			p.sendMessage(CooldownController.getCooldownFormated(p.getUniqueId(), getName()));
 			return;
 		}
 		
@@ -149,7 +149,7 @@ public class KangarooAbility extends Ability implements Disableable {
 		if (getOption(kangaroo, "COOLDOWN").getValue() <= 0)
 			return;
 		
-		CooldownAPI.addCooldown(kangaroo.getUniqueId(), getName(), getOption(kangaroo, "COOLDOWN").getValue());
+		CooldownController.addCooldown(kangaroo.getUniqueId(), getName(), getOption(kangaroo, "COOLDOWN").getValue());
 	}
 	
 	@EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)

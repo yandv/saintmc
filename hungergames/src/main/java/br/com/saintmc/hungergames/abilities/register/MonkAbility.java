@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.Random;
 
 import org.bukkit.Material;
-import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
@@ -13,7 +12,6 @@ import org.bukkit.inventory.ItemStack;
 import br.com.saintmc.hungergames.GameGeneral;
 import br.com.saintmc.hungergames.abilities.Ability;
 import br.com.saintmc.hungergames.game.GameState;
-import tk.yallandev.saintmc.bukkit.api.cooldown.CooldownAPI;
 import tk.yallandev.saintmc.bukkit.api.item.ItemBuilder;
 
 public class MonkAbility extends Ability {
@@ -42,13 +40,11 @@ public class MonkAbility extends Ability {
 			return;
 		}
 
-		if (CooldownAPI.hasCooldown(p.getUniqueId(), getName())) {
-			p.playSound(p.getLocation(), Sound.IRONGOLEM_HIT, 0.5F, 1.0F);
-			p.sendMessage(CooldownAPI.getCooldownFormated(p.getUniqueId(), getName()));
+		if (isCooldown(p)) {
 			return;
 		}
 
-		CooldownAPI.addCooldown(p.getUniqueId(), getName(), 8l);
+		addCooldown(p.getUniqueId(), 8l);
 
 		int randomN = new Random().nextInt(36);
 

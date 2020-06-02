@@ -9,7 +9,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import tk.yallandev.saintmc.bukkit.api.cooldown.CooldownAPI;
+import tk.yallandev.saintmc.bukkit.api.cooldown.CooldownController;
 import tk.yallandev.saintmc.bukkit.api.cooldown.types.Cooldown;
 import tk.yallandev.saintmc.bukkit.api.vanish.AdminMode;
 import tk.yallandev.saintmc.kitpvp.GameMain;
@@ -34,7 +34,7 @@ public class TimelordKit extends Kit {
 		if (p.getItemInHand() == null || p.getItemInHand().getType() != Material.WATCH)
 			return;
 		
-		if (CooldownAPI.hasCooldown(p, getName())) {
+		if (CooldownController.getInstance().hasCooldown(p, getName())) {
 //			p.sendMessage(CooldownAPI.getCooldownFormated(p, getName()));
 			return;
 		}
@@ -55,7 +55,7 @@ public class TimelordKit extends Kit {
 		}
 		
 		e.setCancelled(true);
-		CooldownAPI.addCooldown(p, new Cooldown(getName(), 25l));
+		CooldownController.getInstance().addCooldown(p, new Cooldown(getName(), 25l));
 	}
 
 	@Override

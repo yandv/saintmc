@@ -11,7 +11,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.bukkit.inventory.ItemStack;
 
-import tk.yallandev.saintmc.bukkit.api.cooldown.CooldownAPI;
+import tk.yallandev.saintmc.bukkit.api.cooldown.CooldownController;
 import tk.yallandev.saintmc.bukkit.event.player.PlayerDamagePlayerEvent;
 import tk.yallandev.saintmc.game.ability.AbilityRarity;
 import tk.yallandev.saintmc.game.constructor.Ability;
@@ -77,9 +77,9 @@ public class AjninAbility extends Ability implements Disableable {
 			return;
 		}
 
-		if (CooldownAPI.hasCooldown(p.getUniqueId(), getName())) {
+		if (CooldownController.hasCooldown(p.getUniqueId(), getName())) {
 			p.playSound(p.getLocation(), Sound.IRONGOLEM_HIT, 0.5F, 1.0F);
-			p.sendMessage(CooldownAPI.getCooldownFormated(p.getUniqueId(), getName()));
+			p.sendMessage(CooldownController.getCooldownFormated(p.getUniqueId(), getName()));
 			return;
 		}
 
@@ -94,7 +94,7 @@ public class AjninAbility extends Ability implements Disableable {
 		target.teleport(p.getLocation());
 		p.sendMessage("§a§l> §fJogador teletransportado!");
 		p.playSound(p.getLocation(), Sound.ENDERMAN_TELEPORT, 0.5F, 1.0F);
-		CooldownAPI.addCooldown(p.getUniqueId(), getName(), getOption(p, "COOLDOWN").getValue());
+		CooldownController.addCooldown(p.getUniqueId(), getName(), getOption(p, "COOLDOWN").getValue());
 	}
 
 	@EventHandler

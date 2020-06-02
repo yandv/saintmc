@@ -1,6 +1,7 @@
 package br.com.saintmc.hungergames.command;
 
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 
 import br.com.saintmc.hungergames.GameGeneral;
 import br.com.saintmc.hungergames.GameMain;
@@ -9,6 +10,7 @@ import br.com.saintmc.hungergames.event.game.GameStartEvent;
 import br.com.saintmc.hungergames.game.GameState;
 import br.com.saintmc.hungergames.kit.KitType;
 import br.com.saintmc.hungergames.listener.register.GameListener;
+import br.com.saintmc.hungergames.scheduler.types.GameScheduler;
 import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.common.command.CommandArgs;
 import tk.yallandev.saintmc.common.command.CommandClass;
@@ -91,6 +93,28 @@ public class GameCommand implements CommandClass {
 
 		sender.sendMessage(" ");
 		sender.sendMessage("§7Sala: §b" + GameMain.getInstance().getRoomId());
+	}
+	
+	@Command(name = "feast")
+	public void feastCommand(CommandArgs cmdArgs) {
+		
+		if (cmdArgs.isPlayer()) {
+			
+			CommandSender sender = cmdArgs.getSender();
+			
+			if (GameScheduler.feastLocation == null) {
+				
+				sender.sendMessage("§cO feast ainda não spawnou!");
+				
+			} else {
+				
+				sender.sendMessage("§aBussola apontando para o feast!");
+				((Player) sender).setCompassTarget(GameScheduler.feastLocation);
+				
+			}
+			
+		}
+		
 	}
 
 }

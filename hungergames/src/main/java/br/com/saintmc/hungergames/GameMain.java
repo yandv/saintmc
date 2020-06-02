@@ -22,6 +22,7 @@ import br.com.saintmc.hungergames.listener.register.KitListener;
 import br.com.saintmc.hungergames.listener.register.ScoreboardListener;
 import br.com.saintmc.hungergames.listener.register.UpdateListener;
 import br.com.saintmc.hungergames.scheduler.SchedulerListener;
+import br.com.saintmc.hungergames.utils.ServerConfig;
 import lombok.Getter;
 import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.bukkit.BukkitMain;
@@ -33,12 +34,8 @@ import tk.yallandev.saintmc.common.server.loadbalancer.server.MinigameState;
 @Getter
 public class GameMain extends JavaPlugin {
 	
-	public static final boolean SPECTATOR = true;
 	public static final boolean DOUBLEKIT = true;
-	
 	public static final Game GAME = new Game(0, 90);
-	
-	public static boolean canJoin = false;
 	
 	public static final HashMap<Group, List<String>> KITROTATE;
 	
@@ -112,7 +109,7 @@ public class GameMain extends JavaPlugin {
 					e.remove();
 				}
 				
-				canJoin = true;
+				ServerConfig.getInstance().setJoinEnabled(true);
 			}
 		});
 		

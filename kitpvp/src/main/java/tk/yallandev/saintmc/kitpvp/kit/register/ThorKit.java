@@ -14,7 +14,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 
-import tk.yallandev.saintmc.bukkit.api.cooldown.CooldownAPI;
+import tk.yallandev.saintmc.bukkit.api.cooldown.CooldownController;
 import tk.yallandev.saintmc.bukkit.api.cooldown.types.Cooldown;
 import tk.yallandev.saintmc.kitpvp.kit.Kit;
 
@@ -58,7 +58,7 @@ public class ThorKit extends Kit {
 			return;
 
 		if (hasAbility(p)) {
-			if (CooldownAPI.hasCooldown(p, getName())) {
+			if (CooldownController.getInstance().hasCooldown(p, getName())) {
 //				p.sendMessage(GameMain.getPlugin().getCooldownManager().getCooldownFormated(p.getUniqueId(), getName()));
 				return;
 			}
@@ -69,7 +69,7 @@ public class ThorKit extends Kit {
 			damageRaio.put(p.getUniqueId(), System.currentTimeMillis() + 4000l);
 			p.getWorld().strikeLightning(loc);
 
-			CooldownAPI.addCooldown(p, new Cooldown(getName(), 8l));
+			CooldownController.getInstance().addCooldown(p, new Cooldown(getName(), 8l));
 		}
 	}
 

@@ -14,7 +14,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import tk.yallandev.saintmc.bukkit.BukkitMain;
-import tk.yallandev.saintmc.bukkit.api.cooldown.CooldownAPI;
+import tk.yallandev.saintmc.bukkit.api.cooldown.CooldownController;
 import tk.yallandev.saintmc.bukkit.api.item.ItemBuilder;
 import tk.yallandev.saintmc.game.ability.AbilityRarity;
 import tk.yallandev.saintmc.game.constructor.Ability;
@@ -43,9 +43,9 @@ public class JackhammerAbility extends Ability implements Disableable {
 				return;
 			}
 			
-			if (CooldownAPI.hasCooldown(p.getUniqueId(), getName())) {
+			if (CooldownController.hasCooldown(p.getUniqueId(), getName())) {
 				p.playSound(p.getLocation(), Sound.IRONGOLEM_HIT, 0.5F, 1.0F);
-				p.sendMessage(CooldownAPI.getCooldownFormated(p.getUniqueId(), getName()));
+				p.sendMessage(CooldownController.getCooldownFormated(p.getUniqueId(), getName()));
 				return;
 			}
 			
@@ -62,7 +62,7 @@ public class JackhammerAbility extends Ability implements Disableable {
 					quebrar(e.getBlock(), BlockFace.DOWN);
 				}
 				this.jackHammeruses.remove(p);
-				CooldownAPI.addCooldown(p.getUniqueId(), getName(), getOption(p, "COOLDOWN").getValue());
+				CooldownController.addCooldown(p.getUniqueId(), getName(), getOption(p, "COOLDOWN").getValue());
 			} else {
 				if (e.getBlock().getRelative(BlockFace.UP).getType() != Material.AIR) {
 					quebrar(e.getBlock(), BlockFace.UP);

@@ -67,7 +67,7 @@ public class StomperKit extends Kit {
 				if (effect.distance(stomper.getLocation()) > 4)
 					continue;
 
-				PacketPlayOutWorldParticles packet = new PacketPlayOutWorldParticles(EnumParticle.SMOKE_NORMAL, true,
+				PacketPlayOutWorldParticles packet = new PacketPlayOutWorldParticles(EnumParticle.SPELL_WITCH, true,
 						(float) effect.getX(), (float) effect.getY(), (float) effect.getZ(), 0.1F, 0.1F, 0.1F, 1, 30);
 
 				Bukkit.getOnlinePlayers().stream().filter(viewer -> viewer.canSee(stomper))

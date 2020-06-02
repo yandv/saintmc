@@ -5,7 +5,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 
-import tk.yallandev.saintmc.bukkit.api.cooldown.CooldownAPI;
+import tk.yallandev.saintmc.bukkit.api.cooldown.CooldownController;
 import tk.yallandev.saintmc.bukkit.api.cooldown.types.Cooldown;
 import tk.yallandev.saintmc.kitpvp.GameMain;
 import tk.yallandev.saintmc.kitpvp.kit.Kit;
@@ -33,13 +33,13 @@ public class HulkKit extends Kit {
 			return;
 		
 		if (p.getItemInHand() == null || p.getItemInHand().getType() == Material.AIR) {
-			if (CooldownAPI.hasCooldown(p, getName())) {
+			if (CooldownController.getInstance().hasCooldown(p, getName())) {
 //				p.sendMessage(GameMain.getPlugin().getCooldownManager().getCooldownFormated(p.getUniqueId(), getName()));
 				return;
 			}
 			
 			p.setPassenger(event.getRightClicked());
-			CooldownAPI.addCooldown(p, new Cooldown(getName(), 12l));
+			CooldownController.getInstance().addCooldown(p, new Cooldown(getName(), 12l));
 		}
 	}
 

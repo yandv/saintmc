@@ -8,7 +8,7 @@ import lombok.Setter;
 @Getter
 public enum GameState {
 	
-	WAITING(300),
+	WAITING(90),
 	PREGAME(300),
 	STARTING(15),
 	
@@ -16,7 +16,7 @@ public enum GameState {
 	
 	GAMETIME(120, true),
 	
-	WINNING(30);
+	WINNING(15);
 	
 	@Setter
 	private int defaultTime;

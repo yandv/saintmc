@@ -19,6 +19,8 @@ import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import lombok.Getter;
 import lombok.Setter;
 import tk.yallandev.saintmc.bukkit.BukkitMain;
+import tk.yallandev.saintmc.bukkit.api.menu.click.MenuClickHandler;
+import tk.yallandev.saintmc.bukkit.event.player.MenuOpenEvent;
 
 public class MenuInventory {
 
@@ -108,6 +110,7 @@ public class MenuInventory {
 	public void open(Player p) {
 		if (!onePerPlayer) {
 			p.openInventory(inv);
+			Bukkit.getPluginManager().callEvent(new MenuOpenEvent(p, inv));
 		} else {
 			if (p.getOpenInventory() == null//
 					|| p.getOpenInventory().getTopInventory().getType() != InventoryType.CHEST//
@@ -127,10 +130,11 @@ public class MenuInventory {
 				}
 				p.updateInventory();
 			}
+			
+			Bukkit.getPluginManager().callEvent(new MenuOpenEvent(p, p.getOpenInventory().getTopInventory()));
 			((MenuHolder) p.getOpenInventory().getTopInventory().getHolder()).setMenu(this);
 		}
 		updateTitle(p);
-		// Garbage Colector
 		p = null;
 	}
 

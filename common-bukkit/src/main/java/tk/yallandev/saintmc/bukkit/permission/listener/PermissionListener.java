@@ -23,13 +23,14 @@ import tk.yallandev.saintmc.bukkit.permission.PermissionManager;
 import tk.yallandev.saintmc.common.permission.Group;
 
 public class PermissionListener implements Listener {
-	
+
 	private final Map<UUID, PermissionAttachment> attachments;
 	private PermissionManager manager;
 
 	public PermissionListener(PermissionManager manager) {
 		attachments = new HashMap<>();
 		this.manager = manager;
+
 		new BukkitRunnable() {
 			@Override
 			public void run() {
@@ -49,7 +50,7 @@ public class PermissionListener implements Listener {
 	private Group getServerGroup(Player player) {
 		if (CommonGeneral.getInstance().getMemberManager().getMember(player.getUniqueId()) == null)
 			return Group.MEMBRO;
-		
+
 		return CommonGeneral.getInstance().getMemberManager().getMember(player.getUniqueId()).getServerGroup();
 	}
 
@@ -68,17 +69,21 @@ public class PermissionListener implements Listener {
 	protected void updateAttachment(Player player, Group group) {
 		PermissionAttachment attach = (PermissionAttachment) attachments.get(player.getUniqueId());
 		Permission playerPerm = getCreateWrapper(player, player.getUniqueId().toString());
+		
 		if (attach == null) {
 			attach = player.addAttachment(manager.getPlugin());
 			attachments.put(player.getUniqueId(), attach);
 			attach.setPermission(playerPerm, true);
 		}
+		
 		playerPerm.getChildren().clear();
+		
 		for (String perm : group.getGroup().getPermissions()) {
 			if (!playerPerm.getChildren().containsKey(perm)) {
 				playerPerm.getChildren().put(perm, true);
 			}
 		}
+		
 		player.recalculatePermissions();
 	}
 

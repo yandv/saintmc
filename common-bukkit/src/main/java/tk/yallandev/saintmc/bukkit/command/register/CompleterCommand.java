@@ -164,11 +164,11 @@ public class CompleterCommand implements CommandClass {
 
 			if (cmdArgs.getArgs()[1].isEmpty()) {
 				for (PotionEffectType effect : PotionEffectType.values())
-					effectList.add(effect.getName());
+					effectList.add(effect.toString());
 			} else {
 				for (PotionEffectType effect : PotionEffectType.values())
-					if (effect.getName().toLowerCase().startsWith(cmdArgs.getArgs()[1].toLowerCase()))
-						effectList.add(effect.getName());
+					if (effect.toString().toLowerCase().startsWith(cmdArgs.getArgs()[1].toLowerCase()))
+						effectList.add(effect.toString());
 			}
 
 			return effectList;

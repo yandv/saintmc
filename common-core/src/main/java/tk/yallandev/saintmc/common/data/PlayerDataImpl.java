@@ -32,7 +32,7 @@ public class PlayerDataImpl implements PlayerData {
 
 	private RedisDatabase redisDatabase;
 	private Query<JsonElement> query;
-	
+
 	public PlayerDataImpl(MongoConnection mongoConnection, RedisDatabase redisDatabase) {
 		this.query = createDefault(mongoConnection);
 		this.redisDatabase = redisDatabase;
@@ -62,6 +62,17 @@ public class PlayerDataImpl implements PlayerData {
 		return memberModel;
 	}
 
+	@Override
+	public MemberModel loadMember(String playerName) {
+		JsonElement found = query.findOne("playerName",
+				Pattern.compile("^" + playerName + "$", Pattern.CASE_INSENSITIVE));
+
+		if (found == null)
+			return null;
+
+		return CommonConst.GSON.fromJson(CommonConst.GSON.toJson(found), MemberModel.class);
+	}
+
 	public MemberModel getRedisPlayer(UUID uuid) {
 		MemberModel player;
 
@@ -80,7 +91,7 @@ public class PlayerDataImpl implements PlayerData {
 	}
 
 	@Override
-	public void saveMember(MemberModel memberModel) {
+	public void createMember(MemberModel memberModel) {
 		boolean needCreate = query.findOne("uniqueId", memberModel.getUniqueId().toString()) == null;
 
 		if (needCreate)
@@ -95,21 +106,10 @@ public class PlayerDataImpl implements PlayerData {
 				}
 			}
 		});
-
-//		CommonGeneral.getInstance().getCommonPlatform().runAsync(() -> {
-//			Document document = memberCollection.find(Filters.eq("uniqueId", memberModel.getUniqueId().toString())).first();
-//			
-//			if (document == null)
-//				memberCollection.insertOne(Document.parse(CommonConst.GSON.toJson(memberModel)));
-//
-//			try (Jedis jedis = redisDatabase.getPool().getResource()) {
-//				jedis.hmset("account:" + memberModel.getUniqueId().toString(), objectToMap(memberModel));
-//			}
-//		});
 	}
 
 	@Override
-	public void saveMember(Member member) {
+	public void createMember(Member member) {
 		MemberModel memberModel = new MemberModel(member);
 		boolean needCreate = query.findOne("uniqueId", memberModel.getUniqueId().toString()) == null;
 
@@ -199,26 +199,13 @@ public class PlayerDataImpl implements PlayerData {
 	}
 
 	@Override
-	public String checkNickname(String playerName) {
-		JsonElement found = query
-				.findOne("playerName", Pattern.compile("^" + playerName + "$", Pattern.CASE_INSENSITIVE));
-
-		if (found == null)
-			return null;
-
-		MemberModel memberModel = CommonConst.GSON.fromJson(CommonConst.GSON.toJson(found), MemberModel.class);
-
-		return memberModel.getPlayerName();
-	}
-
-	@Override
 	public Collection<MemberModel> ranking(String fieldName) {
 		List<MemberModel> list = new ArrayList<>();
-		
+
 		for (JsonElement element : query.ranking(fieldName, -1, 10)) {
 			list.add(CommonConst.GSON.fromJson(CommonConst.GSON.toJson(element), MemberModel.class));
 		}
-		
+
 		return list;
 	}
 
@@ -252,7 +239,7 @@ public class PlayerDataImpl implements PlayerData {
 	public void closeConnection() {
 		redisDatabase.close();
 	}
-	
+
 	public static Query<JsonElement> createDefault(MongoConnection mongoConnection) {
 		return new MongoQuery(mongoConnection, "account");
 	}

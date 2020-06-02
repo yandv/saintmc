@@ -17,6 +17,7 @@
 		<module>updater</module>
 		<module>gameapi-old</module>
 		<module>hungergames</module>
+		<module>gladiator</module>
 	</modules>
 
 	<build>

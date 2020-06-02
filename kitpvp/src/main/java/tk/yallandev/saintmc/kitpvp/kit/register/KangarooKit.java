@@ -17,7 +17,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
-import tk.yallandev.saintmc.bukkit.api.cooldown.CooldownAPI;
+import tk.yallandev.saintmc.bukkit.api.cooldown.CooldownController;
 import tk.yallandev.saintmc.bukkit.api.cooldown.types.Cooldown;
 import tk.yallandev.saintmc.kitpvp.kit.Kit;
 
@@ -51,7 +51,7 @@ public class KangarooKit extends Kit {
 			event.setCancelled(true);
 		}
 		
-		if (CooldownAPI.hasCooldown(p, getName())) {
+		if (CooldownController.getInstance().hasCooldown(p, getName())) {
 //			p.sendMessage(GameMain.getPlugin().getCooldownManager().getCooldownFormated(p.getUniqueId(), getName()));
 			return;
 		}
@@ -128,7 +128,7 @@ public class KangarooKit extends Kit {
 		if (!hasAbility(kangaroo))
 			return;
 		
-		CooldownAPI.addCooldown(kangaroo, new Cooldown(getName(), 4l));
+		CooldownController.getInstance().addCooldown(kangaroo, new Cooldown(getName(), 4l));
 	}
 	
 	@EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)

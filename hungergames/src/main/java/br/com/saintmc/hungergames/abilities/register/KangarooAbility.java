@@ -21,7 +21,6 @@ import org.bukkit.util.Vector;
 import br.com.saintmc.hungergames.GameGeneral;
 import br.com.saintmc.hungergames.abilities.Ability;
 import br.com.saintmc.hungergames.game.GameState;
-import tk.yallandev.saintmc.bukkit.api.cooldown.CooldownAPI;
 import tk.yallandev.saintmc.bukkit.api.item.ItemBuilder;
 
 @SuppressWarnings("deprecation")
@@ -59,10 +58,8 @@ public class KangarooAbility extends Ability {
 		item.setDurability((short) 0);
 		p.updateInventory();
 		
-		if (CooldownAPI.hasCooldown(p.getUniqueId(), getName())) {
-			p.sendMessage(CooldownAPI.getCooldownFormated(p.getUniqueId(), getName()));
+		if (isCooldown(p))
 			return;
-		}
 		
 		if (p.isOnGround()) {
 			if (!p.isSneaking()) {
@@ -139,7 +136,7 @@ public class KangarooAbility extends Ability {
 		if (!hasAbility(kangaroo))
 			return;
 		
-		CooldownAPI.addCooldown(kangaroo.getUniqueId(), getName(), 7);
+		addCooldown(kangaroo.getUniqueId(), 7);
 	}
 	
 	@EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)

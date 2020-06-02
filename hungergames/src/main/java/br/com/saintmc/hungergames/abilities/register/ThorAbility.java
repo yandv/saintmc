@@ -16,7 +16,6 @@ import org.bukkit.event.player.PlayerInteractEvent;
 
 import br.com.saintmc.hungergames.abilities.Ability;
 import net.md_5.bungee.api.ChatColor;
-import tk.yallandev.saintmc.bukkit.api.cooldown.CooldownAPI;
 import tk.yallandev.saintmc.bukkit.api.item.ItemBuilder;
 
 public class ThorAbility extends Ability {
@@ -46,28 +45,27 @@ public class ThorAbility extends Ability {
 
 	@EventHandler
 	public void onPlayerInteract(PlayerInteractEvent e) {
-		Player p = e.getPlayer();
+		Player player = e.getPlayer();
 
-		if (p.getItemInHand() == null)
+		if (player.getItemInHand() == null)
 			return;
 
-		if (!isAbilityItem(p.getItemInHand()))
+		if (!isAbilityItem(player.getItemInHand()))
 			return;
 
 		if (!(e.getAction() == Action.RIGHT_CLICK_BLOCK || e.getAction() == Action.RIGHT_CLICK_AIR))
 			return;
 
-		if (hasAbility(p)) {
-			if (CooldownAPI.hasCooldown(p.getUniqueId(), getName())) {
-				p.sendMessage(CooldownAPI.getCooldownFormated(p.getUniqueId(), getName()));
+		if (hasAbility(player)) {
+			if (isCooldown(player)) {
 				return;
 			}
 
-			Location loc = p.getTargetBlock((Set<Material>) null, 20).getLocation();
+			Location loc = player.getTargetBlock((Set<Material>) null, 20).getLocation();
 			loc = loc.getWorld().getHighestBlockAt(loc).getLocation();
 
-			damageRaio.put(p.getUniqueId(), System.currentTimeMillis() + 4000l);
-			p.getWorld().strikeLightning(loc);
+			damageRaio.put(player.getUniqueId(), System.currentTimeMillis() + 4000l);
+			player.getWorld().strikeLightning(loc);
 
 			if (loc.getBlock().getY() >= 110) {
 				Location newLocation = loc.clone();
@@ -79,7 +77,7 @@ public class ThorAbility extends Ability {
 				}
 			}
 
-			CooldownAPI.addCooldown(p.getUniqueId(), getName(), 6l);
+			addCooldown(player.getUniqueId(), 6l);
 		}
 	}
 

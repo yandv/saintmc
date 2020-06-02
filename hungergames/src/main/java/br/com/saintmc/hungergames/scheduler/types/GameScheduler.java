@@ -17,6 +17,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import br.com.saintmc.hungergames.GameGeneral;
 import br.com.saintmc.hungergames.GameMain;
 import br.com.saintmc.hungergames.constructor.Gamer;
+import br.com.saintmc.hungergames.event.player.PlayerTimeoutEvent;
 import br.com.saintmc.hungergames.game.GameState;
 import br.com.saintmc.hungergames.listener.register.game.CombatlogListener;
 import br.com.saintmc.hungergames.listener.register.winner.WinnerListener;
@@ -27,6 +28,8 @@ import tk.yallandev.saintmc.bukkit.event.admin.PlayerAdminModeEvent;
 import tk.yallandev.saintmc.common.utils.string.StringUtils;
 
 public class GameScheduler implements GameSchedule {
+	
+	public static Location feastLocation;
 
 	private GameGeneral gameGeneral;
 	private List<Listener> listenerList;
@@ -34,7 +37,6 @@ public class GameScheduler implements GameSchedule {
 	private int feastTimer;
 	
 	private FeastStructure feastStructure;
-	private Location feastLocation;
 
 	public GameScheduler() {
 		this.gameGeneral = GameGeneral.getInstance();
@@ -49,7 +51,10 @@ public class GameScheduler implements GameSchedule {
 
 		if (time % 240 == 0) {
 			MinifeastStructure minifest = new MinifeastStructure();
-			minifest.spawn(minifest.findPlace());
+			Location place = minifest.findPlace();
+			minifest.spawn(place);
+			
+			Bukkit.broadcastMessage("§cUm minifeast spawnou entre §c(X: " + (place.getX() + 100) + " " + ( place.getX() - 100) + ") e §c(Z:" + (place.getZ() + 100) + " " + (place.getZ() - 100) + ")!");
 		}
 
 		if (feastStructure == null) {
@@ -76,11 +81,11 @@ public class GameScheduler implements GameSchedule {
 		
 		if (time == 60 * 35) {
 			FeastStructure feast = new FeastStructure(25, 450);
-			
 			Location location = feast.findPlace();
 			
 			feast.spawn(location);
 			feast.spawnChest(location);
+			Bukkit.broadcastMessage("§cO bonus feast spawnou em algum lugar do mapa!");
 		}
 		
 		if (ServerConfig.getInstance().isFinalBattle()) {
@@ -156,6 +161,11 @@ public class GameScheduler implements GameSchedule {
 
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onPlayerAdminMode(PlayerQuitEvent event) {
+		checkWin();
+	}
+	
+	@EventHandler
+	public void onPlayerTimeout(PlayerTimeoutEvent event) {
 		checkWin();
 	}
 

@@ -21,6 +21,11 @@ public class AnimatedScoreboard implements Scoreboard {
 		// TODO Auto-generated method stub
 		
 	}
+	
+	@Override
+	public void clear() {
+		
+	}
 
 	@Override
 	public void setScore(int scoreLine, String scoreName, String teamName, String prefix, String suffix) {

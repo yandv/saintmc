@@ -20,7 +20,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
-import tk.yallandev.saintmc.bukkit.api.cooldown.CooldownAPI;
+import tk.yallandev.saintmc.bukkit.api.cooldown.CooldownController;
 import tk.yallandev.saintmc.game.ability.AbilityRarity;
 import tk.yallandev.saintmc.game.constructor.Ability;
 import tk.yallandev.saintmc.game.constructor.CustomOption;
@@ -58,8 +58,8 @@ public class GrapplerAbility extends Ability implements Disableable {
 		item.setDurability(ITEM.getDurability());
 		p.updateInventory();
 		
-		if (CooldownAPI.hasCooldown(p, getName())) {
-			p.sendMessage(CooldownAPI.getCooldownFormated(p.getUniqueId(), getName()));
+		if (CooldownController.hasCooldown(p, getName())) {
+			p.sendMessage(CooldownController.getCooldownFormated(p.getUniqueId(), getName()));
 			return;
 		}
 		
@@ -177,7 +177,7 @@ public class GrapplerAbility extends Ability implements Disableable {
 		if (getOption(p, "COOLDOWN").getValue() <= 0)
 			return;
 		
-		CooldownAPI.addCooldown(p.getUniqueId(), getName(), getOption(p, "COOLDOWN").getValue());
+		CooldownController.addCooldown(p.getUniqueId(), getName(), getOption(p, "COOLDOWN").getValue());
 	}
 
 	@Override

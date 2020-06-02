@@ -130,8 +130,8 @@ public class DeathListener extends GameListener {
 		 * Teleport player to a random location
 		 */
 
-		int x = 100 + CommonConst.RANDOM.nextInt(400);
-		int z = 100 + CommonConst.RANDOM.nextInt(400);
+		int x = 80 + CommonConst.RANDOM.nextInt(400);
+		int z = 80 + CommonConst.RANDOM.nextInt(400);
 
 		if (CommonConst.RANDOM.nextBoolean())
 			x = -x;

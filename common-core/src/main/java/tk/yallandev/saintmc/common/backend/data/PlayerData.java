@@ -14,13 +14,13 @@ public interface PlayerData {
 
 	MemberModel loadMember(UUID uniqueId);
 	
-	void saveMember(MemberModel memberModel);
+	MemberModel loadMember(String playerName);
 	
-	void saveMember(Member member);
+	void createMember(MemberModel memberModel);
+	
+	void createMember(Member member);
 	
 	void updateMember(Member member, String fieldName);
-	
-	String checkNickname(String playerName) ;
 	
 	Collection<MemberModel> ranking(String fieldName);
 	

@@ -9,7 +9,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.inventory.ItemStack;
 
-import tk.yallandev.saintmc.bukkit.api.cooldown.CooldownAPI;
+import tk.yallandev.saintmc.bukkit.api.cooldown.CooldownController;
 import tk.yallandev.saintmc.game.GameMain;
 import tk.yallandev.saintmc.game.ability.AbilityRarity;
 import tk.yallandev.saintmc.game.constructor.Ability;
@@ -36,14 +36,14 @@ public class HulkAbility extends Ability implements Disableable {
 			if (gamer.isNotPlaying())
 				return;
 			
-			if (CooldownAPI.hasCooldown(p.getUniqueId(), getName())) {
+			if (CooldownController.hasCooldown(p.getUniqueId(), getName())) {
 				p.playSound(p.getLocation(), Sound.IRONGOLEM_HIT, 0.5F, 1.0F);
-				p.sendMessage(CooldownAPI.getCooldownFormated(p.getUniqueId(), getName()));
+				p.sendMessage(CooldownController.getCooldownFormated(p.getUniqueId(), getName()));
 				return;
 			}
 			
 			p.setPassenger(event.getRightClicked());
-			CooldownAPI.addCooldown(p.getUniqueId(), getName(), getOption(p, "COOLDOWN").getValue());
+			CooldownController.addCooldown(p.getUniqueId(), getName(), getOption(p, "COOLDOWN").getValue());
 		}
 	}
 

@@ -28,12 +28,13 @@ public class KitListener implements Listener {
 			return;
 
 		Player player = event.getPlayer();
-		
+
 		if (ServerConfig.getInstance().isDisabled(event.getKit(), event.getKitType())) {
-			player.sendMessage("§c§l> §fO kit §c" + NameUtils.formatString(event.getKit().getName()) + "§f está §cdesativado§f!");
+			player.sendMessage(
+					"§c§l> §fO kit §c" + NameUtils.formatString(event.getKit().getName()) + "§f está §cdesativado§f!");
 			return;
 		}
-		
+
 		Gamer gamer = GameGeneral.getInstance().getGamerController().getGamer(player);
 
 		if (!GameGeneral.getInstance().getGameState().isPregame()) {
@@ -63,7 +64,7 @@ public class KitListener implements Listener {
 				: gamer.getKit(KitType.PRIMARY) == event.getKit()) {
 			Title.send(player, " ", "§cVocê já está com esse kit!", SimpleTitle.class);
 			player.sendMessage(
-					" §c* §fVocê já está com o kit §c" + NameUtils.formatString(event.getKit().getName()) + "§f!");
+					"§c§l> §fVocê já está com o kit §c" + NameUtils.formatString(event.getKit().getName()) + "§f!");
 			event.setCancelled(true);
 			return;
 		}
@@ -80,7 +81,6 @@ public class KitListener implements Listener {
 		} else {
 			if (event.getKitType() == KitType.SECONDARY) {
 				event.setCancelled(true);
-				player.sendMessage("§c§l> §fO kit secundário está desativado!");
 				return;
 			}
 
@@ -95,7 +95,7 @@ public class KitListener implements Listener {
 		Title.send(player, "§a" + NameUtils.formatString(event.getKit().getName()), "§fSelecionado com sucesso!",
 				SimpleTitle.class);
 		player.sendMessage(
-				" §a* §fVocê selecionou o kit §a" + NameUtils.formatString(event.getKit().getName()) + "§f!");
+				"§a§l> §fVocê selecionou o kit §a" + NameUtils.formatString(event.getKit().getName()) + "§f!");
 		gamer.removeNoKit(event.getKitType());
 	}
 
@@ -109,10 +109,10 @@ public class KitListener implements Listener {
 						"§7" + entity.getName() + " §8- §a"
 								+ (GameMain.DOUBLEKIT
 										? gamer.hasKit(KitType.SECONDARY)
-												? gamer.getKitName(KitType.PRIMARY) + "/"
-														+ gamer.getKitName(KitType.SECONDARY)
-												: gamer.getKitName(KitType.PRIMARY)
-										: gamer.getKitName(KitType.PRIMARY)));
+												? NameUtils.formatString(gamer.getKitName(KitType.PRIMARY)) + "/"
+														+ NameUtils.formatString(gamer.getKitName(KitType.SECONDARY))
+												: NameUtils.formatString(gamer.getKitName(KitType.PRIMARY))
+										: NameUtils.formatString(gamer.getKitName(KitType.PRIMARY))));
 	}
 
 }

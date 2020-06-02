@@ -151,7 +151,7 @@ public class Gamer {
 	}
 
 	public boolean isNotPlaying() {
-		return gamemaker || spectator;
+		return gamemaker || spectator || timeout || deathCause != null;
 	}
 
 	public boolean hasKit(String kitName) {

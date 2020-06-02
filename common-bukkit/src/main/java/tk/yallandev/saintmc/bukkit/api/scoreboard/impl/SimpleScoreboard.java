@@ -103,6 +103,11 @@ public class SimpleScoreboard implements Scoreboard {
 
 		});
 	}
+	
+	@Override
+	public void clear() {
+		scoreList.clear();
+	}
 
 	@Override
 	public void updateScore(String teamName, String prefix, String suffix) {

@@ -13,6 +13,7 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import br.com.saintmc.hungergames.GameGeneral;
 import br.com.saintmc.hungergames.abilities.Ability;
 import br.com.saintmc.hungergames.constructor.Gamer;
+import br.com.saintmc.hungergames.event.ability.PlayerStompedEvent;
 
 public class StomperAbility extends Ability {
 
@@ -51,7 +52,11 @@ public class StomperAbility extends Ability {
 			if (stomped.isSneaking() && dmg > 8)
 				dmg = 8;
 			
-			stomped.damage(dmg, player);
+			PlayerStompedEvent playerStomperEvent = new PlayerStompedEvent(stomped, player);
+			Bukkit.getPluginManager().callEvent(playerStomperEvent);
+			
+			if (!playerStomperEvent.isCancelled())
+				stomped.damage(dmg, player);
 		}
 		
 		player.getWorld().playSound(player.getLocation(), Sound.ANVIL_LAND, 1, 1);

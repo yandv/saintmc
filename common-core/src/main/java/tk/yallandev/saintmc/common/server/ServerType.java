@@ -2,6 +2,7 @@ package tk.yallandev.saintmc.common.server;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import tk.yallandev.saintmc.common.utils.string.NameUtils;
 
 @Getter
 @AllArgsConstructor
@@ -20,7 +21,7 @@ public enum ServerType {
 	private String serverName;
 	
 	ServerType() {
-		serverName = name();
+		serverName = NameUtils.formatString(name());
 	}
 
     public boolean isLobby() {

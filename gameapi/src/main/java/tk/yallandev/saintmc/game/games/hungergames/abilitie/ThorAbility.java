@@ -15,7 +15,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 
 import net.md_5.bungee.api.ChatColor;
-import tk.yallandev.saintmc.bukkit.api.cooldown.CooldownAPI;
+import tk.yallandev.saintmc.bukkit.api.cooldown.CooldownController;
 import tk.yallandev.saintmc.game.ability.AbilityRarity;
 import tk.yallandev.saintmc.game.constructor.Ability;
 import tk.yallandev.saintmc.game.constructor.CustomOption;
@@ -65,8 +65,8 @@ public class ThorAbility extends Ability implements Disableable {
 			return;
 
 		if (hasAbility(p)) {
-			if (CooldownAPI.hasCooldown(p.getUniqueId(), getName())) {
-				p.sendMessage(CooldownAPI.getCooldownFormated(p.getUniqueId(), getName()));
+			if (CooldownController.hasCooldown(p.getUniqueId(), getName())) {
+				p.sendMessage(CooldownController.getCooldownFormated(p.getUniqueId(), getName()));
 				return;
 			}
 
@@ -86,7 +86,7 @@ public class ThorAbility extends Ability implements Disableable {
 				}
 			}
 
-			CooldownAPI.addCooldown(p.getUniqueId(), getName(), getOption(p, "COOLDOWN").getValue());
+			CooldownController.addCooldown(p.getUniqueId(), getName(), getOption(p, "COOLDOWN").getValue());
 		}
 	}
 

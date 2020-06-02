@@ -3,7 +3,6 @@ package br.com.saintmc.hungergames.abilities.register;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.PlayerDeathEvent;
@@ -13,7 +12,6 @@ import org.bukkit.event.player.PlayerToggleSneakEvent;
 import br.com.saintmc.hungergames.GameGeneral;
 import br.com.saintmc.hungergames.abilities.Ability;
 import br.com.saintmc.hungergames.constructor.Gamer;
-import tk.yallandev.saintmc.bukkit.api.cooldown.CooldownAPI;
 import tk.yallandev.saintmc.bukkit.event.player.PlayerDamagePlayerEvent;
 
 public class AjninAbility extends Ability {
@@ -72,9 +70,7 @@ public class AjninAbility extends Ability {
 			return;
 		}
 
-		if (CooldownAPI.hasCooldown(p.getUniqueId(), getName())) {
-			p.playSound(p.getLocation(), Sound.IRONGOLEM_HIT, 0.5F, 1.0F);
-			p.sendMessage(CooldownAPI.getCooldownFormated(p.getUniqueId(), getName()));
+		if (isCooldown(p)) {
 			return;
 		}
 		
@@ -84,8 +80,7 @@ public class AjninAbility extends Ability {
 
 		target.teleport(p.getLocation());
 		p.sendMessage("§a§l> §fJogador teletransportado!");
-		p.playSound(p.getLocation(), Sound.ENDERMAN_TELEPORT, 0.5F, 1.0F);
-		CooldownAPI.addCooldown(p.getUniqueId(), getName(), 8l);
+		addCooldown(p.getUniqueId(), 8l);
 	}
 
 	@EventHandler

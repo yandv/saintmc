@@ -16,7 +16,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import net.md_5.bungee.api.ChatColor;
 import net.minecraft.server.v1_8_R3.EnumParticle;
 import net.minecraft.server.v1_8_R3.PacketPlayOutWorldParticles;
-import tk.yallandev.saintmc.bukkit.api.cooldown.CooldownAPI;
+import tk.yallandev.saintmc.bukkit.api.cooldown.CooldownController;
 import tk.yallandev.saintmc.game.GameMain;
 import tk.yallandev.saintmc.game.ability.AbilityRarity;
 import tk.yallandev.saintmc.game.constructor.Ability;
@@ -52,8 +52,8 @@ public class TimelordAbility extends Ability implements Disableable {
 		if (!ItemUtils.isEquals(p.getItemInHand(), THOR_ITEM))
 			return;
 			
-		if (CooldownAPI.hasCooldown(p.getUniqueId(), getName())) {
-			p.sendMessage(CooldownAPI.getCooldownFormated(p.getUniqueId(), getName()));
+		if (CooldownController.hasCooldown(p.getUniqueId(), getName())) {
+			p.sendMessage(CooldownController.getCooldownFormated(p.getUniqueId(), getName()));
 			return;
 		}
 		
@@ -104,7 +104,7 @@ public class TimelordAbility extends Ability implements Disableable {
 		}.runTaskTimer(GameMain.getPlugin(), 0, 20);
 		
 		e.setCancelled(true);
-		CooldownAPI.addCooldown(p.getUniqueId(), getName(), getOption(p, "COOLDOWN").getValue());
+		CooldownController.addCooldown(p.getUniqueId(), getName(), getOption(p, "COOLDOWN").getValue());
 	}
 
 	@Override

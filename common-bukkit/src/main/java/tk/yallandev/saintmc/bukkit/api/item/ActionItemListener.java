@@ -6,10 +6,12 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
@@ -58,7 +60,7 @@ public class ActionItemListener implements Listener {
 			Player player = event.getPlayer();
 			Action action = event.getAction();
 			
-			handler.onInteract(player, null, event.getClickedBlock(), item, action.name().contains("RIGHT") ? ActionType.RIGHT : ActionType.LEFT);
+			event.setCancelled(handler.onInteract(player, null, event.getClickedBlock(), item, action.name().contains("RIGHT") ? ActionType.RIGHT : ActionType.LEFT));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -92,7 +94,44 @@ public class ActionItemListener implements Listener {
 			
 			Player player = event.getPlayer();
 			
-			handler.onInteract(player, event.getRightClicked(), null, item, ActionType.CLICK_PLAYER);
+			event.setCancelled(handler.onInteract(player, event.getRightClicked(), null, item, ActionType.CLICK_PLAYER));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+	public void onInteract(InventoryClickEvent event) {
+		if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR)
+			return;
+		
+		ItemStack stack = event.getCurrentItem();
+		
+		if (stack == null || stack.getType() == Material.AIR)
+			return;
+		
+		try {
+			Constructor<?> caller = MinecraftReflection.getCraftItemStackClass()
+					.getDeclaredConstructor(ItemStack.class);
+			caller.setAccessible(true);
+			ItemStack item = (ItemStack) caller.newInstance(stack);
+			NbtCompound compound = (NbtCompound) NbtFactory.fromItemTag(item);
+			
+			if (!compound.containsKey("interactHandler")) {
+				return;
+			}
+			
+			Interact handler = ActionItemStack.getHandler(compound.getInteger("interactHandler"));
+			
+			if (handler == null)
+				return;
+			
+			if (handler.getInteractType() == InteractType.PLAYER)
+				return;
+			
+			Player player = (Player) event.getWhoClicked();
+			
+			event.setCancelled(handler.onInteract(player, null, null, item, ActionType.LEFT));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

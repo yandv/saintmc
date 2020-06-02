@@ -2,6 +2,7 @@ package br.com.saintmc.hungergames.abilities.register;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 import org.bukkit.Material;
@@ -15,12 +16,12 @@ import br.com.saintmc.hungergames.abilities.Ability;
 import tk.yallandev.saintmc.bukkit.api.item.ItemBuilder;
 
 public class BarbarianAbility extends Ability {
-
+	
+	private Map<UUID, Integer> kills = new HashMap<>();
+	
 	public BarbarianAbility() {
 		super("Barbarian", Arrays.asList(new ItemBuilder().type(Material.WOOD_SWORD).name("§aEspada do barbarian").glow().enchantment(Enchantment.DURABILITY).build()));
 	}
-
-	private HashMap<UUID, Integer> kills = new HashMap<UUID, Integer>();
 
 	@EventHandler
 	public void onPlayerDeath(PlayerDeathEvent e) {
@@ -28,10 +29,10 @@ public class BarbarianAbility extends Ability {
 				&& (hasAbility(e.getEntity().getKiller()))) {
 			Player p = e.getEntity().getKiller();
 
-			if (this.kills.containsKey(p.getUniqueId())) {
-				this.kills.put(p.getUniqueId(), this.kills.get(p.getUniqueId()) + 1);
+			if (kills.containsKey(p.getUniqueId())) {
+				kills.put(p.getUniqueId(), this.kills.get(p.getUniqueId()) + 1);
 			} else {
-				this.kills.put(p.getUniqueId(), 1);
+				kills.put(p.getUniqueId(), 1);
 			}
 
 			if (p.getItemInHand() == null || !p.getItemInHand().hasItemMeta()
@@ -39,7 +40,7 @@ public class BarbarianAbility extends Ability {
 				return;
 
 			if (p.getItemInHand().getItemMeta().getDisplayName().contains("Espada do barbarian")) {
-				switch (this.kills.get(p.getUniqueId())) {
+				switch (kills.get(p.getUniqueId())) {
 				case 2:
 					p.getItemInHand().setType(Material.STONE_SWORD);
 					p.getItemInHand().setDurability((short) 0);

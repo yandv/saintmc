@@ -136,8 +136,8 @@ public class KitCommand implements CommandClass {
 
 			if (gamer == null)
 				continue;
-
-			gamer.setKit(kitType, kit);
+			
+			GameGeneral.getInstance().getKitController().setKit(player, kit, kitType);
 		}
 
 		sender.sendMessage("§a" + playerList.size() + " tiveram o kit alterado para o " + kit.getName() + "!");

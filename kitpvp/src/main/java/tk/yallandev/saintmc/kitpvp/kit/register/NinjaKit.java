@@ -11,7 +11,7 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
 
-import tk.yallandev.saintmc.bukkit.api.cooldown.CooldownAPI;
+import tk.yallandev.saintmc.bukkit.api.cooldown.CooldownController;
 import tk.yallandev.saintmc.bukkit.api.cooldown.types.Cooldown;
 import tk.yallandev.saintmc.kitpvp.kit.Kit;
 
@@ -67,14 +67,14 @@ public class NinjaKit extends Kit {
 			return;
 		}
 
-		if (CooldownAPI.hasCooldown(p, getName())) {
-			p.sendMessage(CooldownAPI.getCooldownFormated(p.getUniqueId(), getName()));
+		if (CooldownController.getInstance().hasCooldown(p, getName())) {
+			p.sendMessage(CooldownController.getInstance().getCooldownFormated(p.getUniqueId(), getName()));
 			return;
 		}
 
 		p.teleport(target.getLocation());
 		p.sendMessage("§a§l> §fTeletransportado até o §a" + target.getName() + "§f!");
-		CooldownAPI.addCooldown(p, new Cooldown(getName(), 6l));
+		CooldownController.getInstance().addCooldown(p, new Cooldown(getName(), 6l));
 	}
 
 	@EventHandler

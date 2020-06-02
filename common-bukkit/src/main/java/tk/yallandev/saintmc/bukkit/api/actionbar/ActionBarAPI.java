@@ -30,9 +30,9 @@ public class ActionBarAPI {
             }
         }
     }
-
+    
     public static void broadcast(String text) {
         Bukkit.getOnlinePlayers().forEach(p -> send(p, text));
     }
-
+    
 }

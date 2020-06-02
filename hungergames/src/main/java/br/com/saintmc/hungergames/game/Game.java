@@ -4,6 +4,12 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * 
+ * @author yandv
+ *
+ */
+
 @Getter
 @AllArgsConstructor
 public class Game {
@@ -12,5 +18,5 @@ public class Game {
 	private long startTime;
 	@Setter
 	private int startPlayers;
-
+	
 }
