@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -19,6 +20,8 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import de.inventivegames.hologram.Hologram;
+import de.inventivegames.hologram.HologramAPI;
 import tk.yallandev.saintmc.CommonConst;
 import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.bukkit.BukkitMain;
@@ -104,6 +107,9 @@ public class PlayerListener implements Listener {
 								AdminMode.getInstance().setAdmin(player, member);
 			}
 		}.runTaskLater(BukkitMain.getInstance(), 10);
+		
+		Hologram hologram = HologramAPI.createHologram(new Location(Bukkit.getWorlds().get(0), 0, 130, 0), "eae monark ake");
+		hologram.spawn();
 	}
 
     @EventHandler

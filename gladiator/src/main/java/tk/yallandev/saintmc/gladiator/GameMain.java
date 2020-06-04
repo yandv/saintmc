@@ -1,8 +1,10 @@
 package tk.yallandev.saintmc.gladiator;
 
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import lombok.Getter;
+import tk.yallandev.saintmc.gladiator.listener.PlayerListener;
 
 public class GameMain extends JavaPlugin {
 	
@@ -24,6 +26,7 @@ public class GameMain extends JavaPlugin {
 	@Override
 	public void onEnable() {
 		
+		loadListener();
 		gameGeneral.onEnable();
 		
 		super.onEnable();
@@ -35,6 +38,10 @@ public class GameMain extends JavaPlugin {
 		gameGeneral.onDisable();
 		
 		super.onDisable();
+	}
+	
+	public void loadListener() {
+		Bukkit.getPluginManager().registerEvents(new PlayerListener(), this);
 	}
 	
 }

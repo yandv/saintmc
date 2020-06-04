@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffectType;
@@ -175,6 +176,26 @@ public class CompleterCommand implements CommandClass {
 		}
 
 		return getPlayerList(cmdArgs.getArgs());
+	}
+	
+	@Command(name = "set", groupToUse = Group.BUILDER)
+	public List<String> setCompleter(CommandArgs cmdArgs) {
+		if (cmdArgs.getArgs().length == 1) {
+			List<String> enchantmentList = new ArrayList<>();
+
+			if (cmdArgs.getArgs()[0].isEmpty()) {
+				for (Material enchantment : Material.values())
+					enchantmentList.add(enchantment.name());
+			} else {
+				for (Material enchantment : Material.values())
+					if (enchantment.name().toLowerCase().startsWith(cmdArgs.getArgs()[0].toLowerCase()))
+						enchantmentList.add(enchantment.name());
+			}
+
+			return enchantmentList;
+		}
+
+		return new ArrayList<>();
 	}
 
 	public List<String> getPlayerList(String[] args) {

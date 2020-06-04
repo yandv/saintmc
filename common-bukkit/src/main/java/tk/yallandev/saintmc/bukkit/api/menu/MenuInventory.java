@@ -74,6 +74,7 @@ public class MenuInventory {
 
 	public void setItem(int slot, MenuItem item) {
 		this.slotItem.put(slot, item);
+		
 		if (!onePerPlayer) {
 			inv.setItem(slot, item.getStack());
 		}

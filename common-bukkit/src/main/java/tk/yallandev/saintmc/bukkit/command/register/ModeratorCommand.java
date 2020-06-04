@@ -346,7 +346,7 @@ public class ModeratorCommand implements CommandClass {
 
 		if (event.getResult() == TeleportResult.NO_PERMISSION || event.isCancelled()) {
 			p.sendMessage(" ");
-			p.sendMessage("§c* §fVocê não tem §cpermissão§f para executar esse comando!");
+			p.sendMessage(" §c* §fVocê não tem §cpermissão§f para executar esse comando!");
 			p.sendMessage(" ");
 			return;
 		}

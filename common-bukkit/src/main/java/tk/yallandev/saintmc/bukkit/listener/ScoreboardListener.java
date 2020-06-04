@@ -31,12 +31,15 @@ public class ScoreboardListener implements Listener {
 		}
 
 		e.getPlayer().setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
-		BukkitMember member = (BukkitMember) CommonGeneral.getInstance().getMemberManager()
-				.getMember(e.getPlayer().getUniqueId());
-		tk.yallandev.saintmc.bukkit.api.scoreboard.Scoreboard scoreboard = member.getScoreboard();
 
-		if (scoreboard != null)
-			scoreboard.removeViewer(member);
+		if (CommonGeneral.getInstance().getMemberManager().containsKey(e.getPlayer().getUniqueId())) {
+			BukkitMember member = (BukkitMember) CommonGeneral.getInstance().getMemberManager()
+					.getMember(e.getPlayer().getUniqueId());
+			tk.yallandev.saintmc.bukkit.api.scoreboard.Scoreboard scoreboard = member.getScoreboard();
+
+			if (scoreboard != null)
+				scoreboard.removeViewer(member);
+		}
 	}
 
 	@EventHandler(priority = EventPriority.LOWEST)

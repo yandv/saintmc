@@ -1,9 +1,13 @@
 package tk.yallandev.saintmc.kitpvp.listener;
 
+import org.bukkit.Bukkit;
+import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerLoginEvent.Result;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -22,6 +26,16 @@ public class PlayerListener implements Listener {
 		Gamer gamer = new Gamer(player);
 
 		GameMain.getInstance().getGamerManager().loadGamer(player.getUniqueId(), gamer);
+	}
+	
+	@EventHandler
+	public void asodk(PlayerJoinEvent event) {
+		ArmorStand armorStand = (ArmorStand) Bukkit.getWorlds().get(0).spawnEntity(event.getPlayer().getLocation(), EntityType.ARMOR_STAND);
+		
+		armorStand.setVisible(false);
+		armorStand.setGravity(false);
+		armorStand.setCustomName("yandv");
+		armorStand.setCustomNameVisible(true);
 	}
 
 	@EventHandler

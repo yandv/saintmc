@@ -16,6 +16,7 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockBurnEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent;
+import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
@@ -116,7 +117,8 @@ public class WorldListener implements Listener {
 	
 	@EventHandler
 	public void onCreatureSpawnChange(CreatureSpawnEvent event) {
-		event.setCancelled(true);
+		if (event.getSpawnReason() != SpawnReason.CUSTOM)
+			event.setCancelled(true);
 	}
 	
 	@EventHandler(priority = EventPriority.LOWEST)

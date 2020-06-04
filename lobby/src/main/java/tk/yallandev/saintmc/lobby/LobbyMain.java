@@ -15,6 +15,7 @@ import tk.yallandev.saintmc.common.backend.database.redis.RedisDatabase.PubSubLi
 import tk.yallandev.saintmc.common.command.CommandLoader;
 import tk.yallandev.saintmc.common.server.ServerType;
 import tk.yallandev.saintmc.lobby.collectable.Collectables;
+import tk.yallandev.saintmc.lobby.listener.CharacterListener;
 import tk.yallandev.saintmc.lobby.listener.LoginListener;
 import tk.yallandev.saintmc.lobby.listener.MoveListener;
 import tk.yallandev.saintmc.lobby.listener.ParticleListener;
@@ -64,6 +65,7 @@ public class LobbyMain extends JavaPlugin {
 		Bukkit.getPluginManager().registerEvents(new MoveListener(), getInstance());
 		Bukkit.getPluginManager().registerEvents(new LoginListener(), getInstance());
 		Bukkit.getPluginManager().registerEvents(new ScoreboardListener(), getInstance());
+		Bukkit.getPluginManager().registerEvents(new CharacterListener(), getInstance());
 		
 		for (Entry<String, Map<String, String>> entry : CommonGeneral.getInstance().getServerData().loadServers().entrySet()) {
 			try {

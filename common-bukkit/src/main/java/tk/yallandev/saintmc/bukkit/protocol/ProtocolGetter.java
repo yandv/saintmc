@@ -1,11 +1,18 @@
 package tk.yallandev.saintmc.bukkit.protocol;
 
-import static tk.yallandev.saintmc.bukkit.protocol.ProtocolVersion.*;
+import static tk.yallandev.saintmc.bukkit.protocol.ProtocolVersion.MINECRAFT_1_10;
+import static tk.yallandev.saintmc.bukkit.protocol.ProtocolVersion.MINECRAFT_1_11;
+import static tk.yallandev.saintmc.bukkit.protocol.ProtocolVersion.MINECRAFT_1_7_10;
+import static tk.yallandev.saintmc.bukkit.protocol.ProtocolVersion.MINECRAFT_1_7_5;
+import static tk.yallandev.saintmc.bukkit.protocol.ProtocolVersion.MINECRAFT_1_8;
+import static tk.yallandev.saintmc.bukkit.protocol.ProtocolVersion.MINECRAFT_1_9;
+import static tk.yallandev.saintmc.bukkit.protocol.ProtocolVersion.UNKNOWN;
 
 import java.lang.reflect.Method;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
 import lombok.Getter;
@@ -79,5 +86,9 @@ public class ProtocolGetter {
 		}
 
 		return ProtocolVersion.UNKNOWN;
+	}
+	
+	public static int getPing(Player player) {
+		return ((CraftPlayer)player).getHandle().ping;
 	}
 }

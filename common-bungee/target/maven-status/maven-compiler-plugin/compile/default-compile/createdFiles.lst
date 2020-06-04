@@ -69,4 +69,5 @@ tk\yallandev\saintmc\bungee\listener\LoginListener$1.class
 tk\yallandev\saintmc\discord\reaction\MessageReaction$2.class
 tk\yallandev\saintmc\bungee\command\register\PackageCommand.class
 tk\yallandev\saintmc\bungee\listener\LoginListener$1$1.class
+tk\yallandev\saintmc\bungee\listener\ForgerListener.class
 tk\yallandev\saintmc\bungee\listener\MultiserverTeleport.class

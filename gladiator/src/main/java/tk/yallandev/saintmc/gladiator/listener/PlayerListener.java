@@ -11,6 +11,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
@@ -33,13 +34,14 @@ import tk.yallandev.saintmc.gladiator.challenge.shadow.ShadowChallenge;
 import tk.yallandev.saintmc.gladiator.event.shadow.ShadowSearchingStartEvent;
 import tk.yallandev.saintmc.gladiator.event.shadow.ShadowSearchingStopEvent;
 
-public class PlayerListener {
+public class PlayerListener implements Listener{ 
+	
 	private ActionItemStack normalChallenge;
 	private ActionItemStack fastChallenge;
 	private ActionItemStack customChallenge;
 
 	private Map<Player, Map<Player, Map<ChallengeType, Challenge>>> challengeMap;
-	private Map<Player, Challenge> playersIn1v1;
+	private Map<Player, Challenge> playersInGladiator;
 	private Map<Player, Long> fastQueue;
 
 	private Location firstLocation;
@@ -48,7 +50,7 @@ public class PlayerListener {
 	public PlayerListener() {
 
 		challengeMap = new HashMap<>();
-		playersIn1v1 = new HashMap<>();
+		playersInGladiator = new HashMap<>();
 		fastQueue = new HashMap<>();
 
 		customChallenge = new ActionItemStack(new ItemBuilder().name("§aGladiator Custom").type(Material.IRON_FENCE).build(),
@@ -80,16 +82,16 @@ public class PlayerListener {
 
 						Player target = (Player) entity;
 
-						if (playersIn1v1.containsKey(target))
+						if (playersInGladiator.containsKey(target))
 							return false;
 
 						if (hasChallenge(player, target, ChallengeType.SHADOW_NORMAL)) {
 							Challenge challenge = getChallenge(player, target, ChallengeType.SHADOW_NORMAL);
 
 							if (!challenge.isExpired()) {
-								player.sendMessage("§a§l> §fVocê foi desafiado para §a1v1 normal§f pelo §a "
+								player.sendMessage("§a§l> §fVocê foi desafiado para §aGladiator normal§f pelo §a "
 										+ target.getName() + "§f!");
-								target.sendMessage("§a§l> §fVocê foi desafiado para §a1v1 normal§f pelo §a "
+								target.sendMessage("§a§l> §fVocê foi desafiado para §aGladiator normal§f pelo §a "
 										+ player.getName() + "§f!");
 
 								challenge.start(firstLocation, secondLocation);
@@ -116,8 +118,8 @@ public class PlayerListener {
 								fastQueue.remove(getTarget());
 								fastQueue.remove(getPlayer());
 
-								playersIn1v1.put(getTarget(), this);
-								playersIn1v1.put(getPlayer(), this);
+								playersInGladiator.put(getTarget(), this);
+								playersInGladiator.put(getPlayer(), this);
 
 								challengeMap.remove(getTarget());
 								challengeMap.remove(getPlayer());
@@ -127,8 +129,8 @@ public class PlayerListener {
 							public void finish(Player winner) {
 								super.finish(winner);
 
-								playersIn1v1.remove(getTarget());
-								playersIn1v1.remove(getPlayer());
+								playersInGladiator.remove(getTarget());
+								playersInGladiator.remove(getPlayer());
 
 								getPlayer().teleport(getSpawnLocation());
 								getTarget().teleport(getSpawnLocation());
@@ -139,22 +141,22 @@ public class PlayerListener {
 
 						});
 
-						player.sendMessage("§a§l> §fVocê enviou um desafio de §a1v1 normal§f para o §a"
+						player.sendMessage("§a§l> §fVocê enviou um desafio de §aGladiator normal§f para o §a"
 								+ target.getName() + "§f!");
 						target.sendMessage("§a§l> §fO jogador §a" + player.getName()
-								+ "§f enviou um desafio de §a1v1 normal§f para você!");
+								+ "§f enviou um desafio de §aGladiator normal§f para você!");
 						return false;
 					}
 				});
 
 		ActionItemStack itemStack = new ActionItemStack(
-				new ItemBuilder().name("§a1v1 Fast").type(Material.INK_SACK).durability(10).build(), new Interact() {
+				new ItemBuilder().name("§aGladiator Fast").type(Material.INK_SACK).durability(10).build(), new Interact() {
 
 					@Override
 					public boolean onInteract(Player player, Entity entity, Block block, ItemStack item,
 							ActionType action) {
 
-						if (playersIn1v1.containsKey(player))
+						if (playersInGladiator.containsKey(player))
 							return false;
 
 						ShadowSearchingStopEvent searchingStopEvent = new ShadowSearchingStopEvent(player);
@@ -165,7 +167,7 @@ public class PlayerListener {
 							player.setItemInHand(fastChallenge.getItemStack());
 
 							fastQueue.remove(player);
-							player.sendMessage("§a§l> §fVocê §csaiu§f na fila do §a1v1 rápido§f!");
+							player.sendMessage("§a§l> §fVocê §csaiu§f na fila do §aGladiator rápido§f!");
 						}
 						return false;
 					}
@@ -173,12 +175,12 @@ public class PlayerListener {
 				});
 
 		fastChallenge = new ActionItemStack(
-				new ItemBuilder().name("§c1v1 Fast").type(Material.INK_SACK).durability(8).build(), new Interact() {
+				new ItemBuilder().name("§cGladiator Fast").type(Material.INK_SACK).durability(8).build(), new Interact() {
 
 					@Override
 					public boolean onInteract(Player player, Entity entity, Block block, ItemStack item,
 							ActionType action) {
-						if (playersIn1v1.containsKey(player))
+						if (playersInGladiator.containsKey(player))
 							return false;
 
 						ShadowSearchingStartEvent searchingStartEvent = new ShadowSearchingStartEvent(player);
@@ -191,7 +193,7 @@ public class PlayerListener {
 						if (fastQueue.isEmpty()) {
 							fastQueue.put(player, System.currentTimeMillis());
 							player.setItemInHand(itemStack.getItemStack());
-							player.sendMessage("§a§l> §fVocê §aentrou§f na fila do §a1v1 rápido§f!");
+							player.sendMessage("§a§l> §fVocê §aentrou§f na fila do §aGladiator rápido§f!");
 						} else {
 							Player target = fastQueue.keySet().stream().findFirst().orElse(null);
 							Challenge challenge = new ShadowChallenge(target, player, ChallengeType.SHADOW_FAST) {
@@ -203,8 +205,8 @@ public class PlayerListener {
 									fastQueue.remove(getTarget());
 									fastQueue.remove(getPlayer());
 
-									playersIn1v1.put(getTarget(), this);
-									playersIn1v1.put(getPlayer(), this);
+									playersInGladiator.put(getTarget(), this);
+									playersInGladiator.put(getPlayer(), this);
 
 									challengeMap.remove(getTarget());
 									challengeMap.remove(getPlayer());
@@ -214,8 +216,8 @@ public class PlayerListener {
 								public void finish(Player winner) {
 									super.finish(winner);
 
-									playersIn1v1.remove(getTarget());
-									playersIn1v1.remove(getPlayer());
+									playersInGladiator.remove(getTarget());
+									playersInGladiator.remove(getPlayer());
 
 									getPlayer().teleport(getSpawnLocation());
 									getTarget().teleport(getSpawnLocation());
@@ -254,7 +256,7 @@ public class PlayerListener {
 
 		Player player = (Player) event.getEntity();
 
-		if (playersIn1v1.containsKey(player)) {
+		if (playersInGladiator.containsKey(player)) {
 			event.setCancelled(false);
 		} else {
 			event.setCancelled(true);
@@ -266,7 +268,7 @@ public class PlayerListener {
 		Player player = event.getPlayer();
 		Player damager = event.getDamager();
 
-		if (playersIn1v1.containsKey(player) && playersIn1v1.containsKey(damager)) {
+		if (playersInGladiator.containsKey(player) && playersInGladiator.containsKey(damager)) {
 			event.setCancelled(false);
 		} else {
 			event.setCancelled(true);
@@ -280,10 +282,10 @@ public class PlayerListener {
 		player.spigot().respawn();
 		handleInventory(player);
 
-		if (!playersIn1v1.containsKey(player))
+		if (!playersInGladiator.containsKey(player))
 			return;
 
-		Challenge challenge = playersIn1v1.get(player);
+		Challenge challenge = playersInGladiator.get(player);
 
 		challenge.finish(player.getKiller());
 	}
@@ -292,7 +294,7 @@ public class PlayerListener {
 	public void drop(PlayerDropItemEvent event) {
 		Player player = event.getPlayer();
 
-		if (playersIn1v1.containsKey(player)) {
+		if (playersInGladiator.containsKey(player)) {
 			event.setCancelled(false);
 		} else {
 			event.setCancelled(true);
@@ -330,8 +332,8 @@ public class PlayerListener {
 	}
 
 	public void handleQuit(Player player) {
-		if (playersIn1v1.containsKey(player)) {
-			ShadowChallenge challenge = (ShadowChallenge) playersIn1v1.get(player);
+		if (playersInGladiator.containsKey(player)) {
+			ShadowChallenge challenge = (ShadowChallenge) playersInGladiator.get(player);
 			Player winner = challenge.getPlayer();
 
 			if (winner == player)

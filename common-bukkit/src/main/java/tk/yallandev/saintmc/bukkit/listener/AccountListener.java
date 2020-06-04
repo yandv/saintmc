@@ -56,7 +56,7 @@ public class AccountListener implements Listener {
             ex.printStackTrace();
         }
     }
-
+    
     @EventHandler(priority = EventPriority.MONITOR)
     public void onAsyncPlayer(AsyncPlayerPreLoginEvent event) {
         if (event.getLoginResult() != AsyncPlayerPreLoginEvent.Result.ALLOWED) {

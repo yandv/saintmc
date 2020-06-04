@@ -109,6 +109,16 @@
 			<id>bungeecord-repo</id>
 			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
 		</repository>
+
+		<repository>
+			<id>jitpack.io</id>
+			<url>https://jitpack.io</url>
+		</repository>
+
+		<repository>
+			<id>inventive-repo</id>
+			<url>https://repo.inventivetalent.org/content/repositories/releases</url>
+		</repository>
 	</repositories>
 
 	<dependencies>

@@ -19,6 +19,7 @@ import tk.yallandev.saintmc.bungee.listener.ConnectionListener;
 import tk.yallandev.saintmc.bungee.listener.LoginListener;
 import tk.yallandev.saintmc.bungee.listener.MessageListener;
 import tk.yallandev.saintmc.bungee.listener.MultiserverTeleport;
+import tk.yallandev.saintmc.bungee.listener.PacketListener;
 import tk.yallandev.saintmc.bungee.manager.BungeePunishManager;
 import tk.yallandev.saintmc.bungee.manager.BungeeServerManager;
 import tk.yallandev.saintmc.bungee.manager.StoreManager;
@@ -122,10 +123,12 @@ public class BungeeMain extends Plugin {
 		storeManager = new StoreManager();
 
 		ProxyServer.getInstance().getServers().remove("lobby");
-
+		
 		/**
 		 * Server Info
 		 */
+		
+		ProxyServer.getInstance().registerChannel("LOLIMAHCKER");
 
 		ListenerInfo info = getProxy().getConfig().getListeners().iterator().next();
 		general.setServerAddress(info.getHost().getHostString() + ":" + info.getHost().getPort());
@@ -218,6 +221,7 @@ public class BungeeMain extends Plugin {
 		ProxyServer.getInstance().getPluginManager().registerListener(getInstance(), new ChatListener());
 		ProxyServer.getInstance().getPluginManager().registerListener(getInstance(), new MultiserverTeleport());
 		ProxyServer.getInstance().getPluginManager().registerListener(getInstance(), new LoginListener());
+		ProxyServer.getInstance().getPluginManager().registerListener(getInstance(), new PacketListener());
 		ProxyServer.getInstance().getPluginManager().registerListener(getInstance(),
 				new ConnectionListener(serverManager));
 		ProxyServer.getInstance().getPluginManager().registerListener(getInstance(),

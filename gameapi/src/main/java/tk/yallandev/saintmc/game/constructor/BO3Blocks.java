@@ -40,10 +40,6 @@ public class BO3Blocks {
 		return z;
 	}
 
-	public Material getType() {
-		return type;
-	}
-
 	public byte getData() {
 		return data;
 	}

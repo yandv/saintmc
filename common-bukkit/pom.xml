@@ -65,6 +65,20 @@
 			<scope>provided</scope>
 		</dependency>
 
+		<dependency>
+			<groupId>com.github.juliarn</groupId>
+			<artifactId>npc-lib</artifactId>
+			<version>2.3-RELEASE</version>
+			<scope>compile</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.inventivetalent</groupId>
+			<artifactId>hologramapi</artifactId>
+			<version>1.4.0</version>
+			<scope>provided</scope>
+		</dependency>
+
 	</dependencies>
 
 </project>

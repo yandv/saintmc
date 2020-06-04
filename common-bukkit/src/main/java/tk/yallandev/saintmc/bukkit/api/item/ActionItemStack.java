@@ -19,8 +19,6 @@ public class ActionItemStack {
 
 	private static final HashMap<Integer, Interact> handlers = new HashMap<>();
 
-	private static int HANDLER_ID = 0;
-
 	@Getter
 	private Interact interactHandler;
 	@Getter
@@ -36,11 +34,8 @@ public class ActionItemStack {
 	}
 
 	public static int register(Interact handler) {
-		if (handlers.containsKey(HANDLER_ID))
-			return -1;
-		handlers.put(HANDLER_ID, handler);
-		++HANDLER_ID;
-		return HANDLER_ID - 1;
+		handlers.put(handlers.size() + 1, handler);
+		return handlers.size();
 	}
 
 	public static void unregister(Integer id) {

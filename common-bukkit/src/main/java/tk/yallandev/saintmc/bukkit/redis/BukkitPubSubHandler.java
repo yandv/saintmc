@@ -17,6 +17,7 @@ import tk.yallandev.saintmc.bukkit.BukkitMain;
 import tk.yallandev.saintmc.bukkit.account.BukkitMember;
 import tk.yallandev.saintmc.bukkit.event.account.PlayerUpdateFieldEvent;
 import tk.yallandev.saintmc.bukkit.event.account.PlayerUpdatedFieldEvent;
+import tk.yallandev.saintmc.bukkit.event.report.ReportReceiveEvent;
 import tk.yallandev.saintmc.common.account.Member;
 import tk.yallandev.saintmc.common.data.payload.DataServerMessage;
 import tk.yallandev.saintmc.common.data.payload.DataServerMessage.Action;
@@ -148,6 +149,8 @@ public class BukkitPubSubHandler extends JedisPubSub {
 				if (CommonGeneral.getInstance().getReportManager().getReport(playerUuid) == null) {
 					CommonGeneral.getInstance().getReportManager().loadReport(report);
 					CommonGeneral.getInstance().debug("The report of " + report.getPlayerName() + " has been loaded!");
+					
+					Bukkit.getPluginManager().callEvent(new ReportReceiveEvent(report));
 				}
 			}
 
