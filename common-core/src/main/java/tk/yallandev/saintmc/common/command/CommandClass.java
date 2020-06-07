@@ -1,7 +1,7 @@
 package tk.yallandev.saintmc.common.command;
 
 /*
- * https://github.com/mcardy/CommandFramework
+ * Forked from https://github.com/mcardy/CommandFramework
  * Took from https://github.com/Battlebits
  * 
  */

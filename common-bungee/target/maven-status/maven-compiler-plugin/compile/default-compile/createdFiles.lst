@@ -22,6 +22,7 @@ tk\yallandev\saintmc\bungee\listener\ChatListener.class
 tk\yallandev\saintmc\bungee\manager\BungeePunishManager$1.class
 tk\yallandev\saintmc\discord\listener\BoosterListener.class
 tk\yallandev\saintmc\bungee\listener\LoginListener.class
+tk\yallandev\saintmc\bungee\listener\PacketListener.class
 tk\yallandev\saintmc\discord\command\register\DiscordCommand$1.class
 tk\yallandev\saintmc\bungee\command\register\GroupCommand$1.class
 tk\yallandev\saintmc\bungee\command\register\ReportCommand.class
@@ -61,6 +62,7 @@ tk\yallandev\saintmc\bungee\redis\BungeePubSubHandler$3.class
 tk\yallandev\saintmc\bungee\BungeeMain$1.class
 tk\yallandev\saintmc\discord\listener\ReactionListener.class
 tk\yallandev\saintmc\bungee\command\register\DiscordCommand$1.class
+tk\yallandev\saintmc\bungee\packet\BungeePacketHandler.class
 tk\yallandev\saintmc\bungee\manager\StoreManager.class
 tk\yallandev\saintmc\bungee\BungeePlatform.class
 tk\yallandev\saintmc\bungee\command\register\WooCommand.class
@@ -69,5 +71,4 @@ tk\yallandev\saintmc\bungee\listener\LoginListener$1.class
 tk\yallandev\saintmc\discord\reaction\MessageReaction$2.class
 tk\yallandev\saintmc\bungee\command\register\PackageCommand.class
 tk\yallandev\saintmc\bungee\listener\LoginListener$1$1.class
-tk\yallandev\saintmc\bungee\listener\ForgerListener.class
 tk\yallandev\saintmc\bungee\listener\MultiserverTeleport.class

@@ -1,7 +1,9 @@
 package tk.yallandev.saintmc.bukkit.permission.listener;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import org.bukkit.entity.Player;
@@ -28,7 +30,7 @@ public class PermissionListener implements Listener {
 	private PermissionManager manager;
 
 	public PermissionListener(PermissionManager manager) {
-		attachments = new HashMap<>();
+		this.attachments = new HashMap<>();
 		this.manager = manager;
 
 		new BukkitRunnable() {
@@ -45,13 +47,6 @@ public class PermissionListener implements Listener {
 	public void onLogin(PlayerLoginEvent event) {
 		final Player player = event.getPlayer();
 		updateAttachment(player, getServerGroup(player));
-	}
-
-	private Group getServerGroup(Player player) {
-		if (CommonGeneral.getInstance().getMemberManager().getMember(player.getUniqueId()) == null)
-			return Group.MEMBRO;
-
-		return CommonGeneral.getInstance().getMemberManager().getMember(player.getUniqueId()).getServerGroup();
 	}
 
 	@EventHandler(priority = EventPriority.MONITOR)
@@ -84,16 +79,14 @@ public class PermissionListener implements Listener {
 			}
 		}
 		
-		player.recalculatePermissions();
-	}
+		for (String permission : getPermissions(player))
+			if (!playerPerm.getChildren().containsKey(permission)) {
+				playerPerm.getChildren().put(permission, true);
+			}
 
-	private Permission getCreateWrapper(Player player, String name) {
-		Permission perm = manager.getServer().getPluginManager().getPermission(name);
-		if (perm == null) {
-			perm = new Permission(name, "Permissao Interna", PermissionDefault.FALSE);
-			manager.getServer().getPluginManager().addPermission(perm);
-		}
-		return perm;
+		player.recalculatePermissions();
+		
+		player.recalculatePermissions();
 	}
 
 	@EventHandler(priority = EventPriority.MONITOR)
@@ -119,5 +112,28 @@ public class PermissionListener implements Listener {
 			attach.remove();
 		}
 		attachments.clear();
+	}
+	
+	private Permission getCreateWrapper(Player player, String name) {
+		Permission perm = manager.getServer().getPluginManager().getPermission(name);
+		if (perm == null) {
+			perm = new Permission(name, "Interal Permission", PermissionDefault.FALSE);
+			manager.getServer().getPluginManager().addPermission(perm);
+		}
+		return perm;
+	}
+	
+	private Group getServerGroup(Player player) {
+		if (CommonGeneral.getInstance().getMemberManager().getMember(player.getUniqueId()) == null)
+			return Group.MEMBRO;
+
+		return CommonGeneral.getInstance().getMemberManager().getMember(player.getUniqueId()).getServerGroup();
+	}
+
+	private Set<String> getPermissions(Player player) {
+		if (CommonGeneral.getInstance().getMemberManager().getMember(player.getUniqueId()) == null)
+			return new HashSet<>();
+
+		return CommonGeneral.getInstance().getMemberManager().getMember(player.getUniqueId()).getPermissions().keySet();
 	}
 }

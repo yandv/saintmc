@@ -11,10 +11,11 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.entity.CreatureSpawnEvent;
+import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
-import org.bukkit.event.entity.EntitySpawnEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.ItemSpawnEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
@@ -44,9 +45,10 @@ import tk.yallandev.saintmc.bukkit.api.item.ItemBuilder;
 import tk.yallandev.saintmc.bukkit.api.tablist.Tablist;
 import tk.yallandev.saintmc.bukkit.event.account.PlayerChangeGroupEvent;
 import tk.yallandev.saintmc.bukkit.event.account.PlayerChangeLeagueEvent;
+import tk.yallandev.saintmc.common.account.League;
 import tk.yallandev.saintmc.common.account.Member;
 import tk.yallandev.saintmc.common.permission.Group;
-import tk.yallandev.saintmc.common.permission.Tag;
+import tk.yallandev.saintmc.common.tag.Tag;
 import tk.yallandev.saintmc.lobby.LobbyMain;
 import tk.yallandev.saintmc.lobby.gamer.Gamer;
 import tk.yallandev.saintmc.lobby.menu.collectable.CollectableInventory;
@@ -185,7 +187,10 @@ public class PlayerListener implements Listener {
 	}
 
 	@EventHandler
-	public void onEntitySpawn(EntitySpawnEvent e) {
+	public void onEntitySpawn(CreatureSpawnEvent e) {
+		if (e.getSpawnReason() == SpawnReason.CUSTOM)
+			return;
+		
 		if (e.getEntity() instanceof Player)
 			return;
 
@@ -414,6 +419,13 @@ public class PlayerListener implements Listener {
 		player.setHealth(20D);
 		player.setFoodLevel(20);
 		player.setLevel(member.getXp());
+		
+		float percentage = ((member.getXp() * 100) / member.getLeague().getMaxXp())/(float)100;
+		
+		if (member.getLeague() == League.CHALLENGER)
+			player.setExp(1f);
+		else
+			player.setExp(percentage);
 
 		player.getInventory().setItem(0, compass.getItemStack());
 		player.getInventory().setItem(1,

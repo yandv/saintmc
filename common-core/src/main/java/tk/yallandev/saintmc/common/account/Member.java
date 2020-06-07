@@ -13,12 +13,10 @@ import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.common.account.configuration.AccountConfiguration;
 import tk.yallandev.saintmc.common.account.configuration.LoginConfiguration;
 import tk.yallandev.saintmc.common.ban.PunishmentHistory;
-import tk.yallandev.saintmc.common.music.MusicKit;
-import tk.yallandev.saintmc.common.music.MusicType;
 import tk.yallandev.saintmc.common.permission.Group;
 import tk.yallandev.saintmc.common.permission.RankType;
-import tk.yallandev.saintmc.common.permission.Tag;
 import tk.yallandev.saintmc.common.server.ServerType;
+import tk.yallandev.saintmc.common.tag.Tag;
 
 @Getter
 public abstract class Member {
@@ -43,8 +41,6 @@ public abstract class Member {
 
 	private AccountConfiguration accountConfiguration;
 	private LoginConfiguration loginConfiguration;
-
-	private MusicKit musicKit;
 
 	/*
 	 * History
@@ -117,8 +113,6 @@ public abstract class Member {
 		accountConfiguration = memberModel.getAccountConfiguration();
 		loginConfiguration = memberModel.getLoginConfiguration();
 
-		musicKit = memberModel.getMusicKit();
-
 		punishmentHistory = memberModel.getPunishmentHistory();
 
 		discordId = memberModel.getDiscordId();
@@ -161,8 +155,6 @@ public abstract class Member {
 		this.accountConfiguration = new AccountConfiguration(this);
 		this.loginConfiguration = new LoginConfiguration(this);
 
-		this.musicKit = MusicKit.NONE;
-
 		this.punishmentHistory = new PunishmentHistory();
 
 		this.discordName = "";
@@ -204,22 +196,22 @@ public abstract class Member {
 
 	public boolean isOnCooldown(String cooldownKey) {
 		cooldownKey = cooldownKey.toLowerCase();
-		
+
 		if (cooldown.containsKey(cooldownKey)) {
 			if (cooldown.get(cooldownKey) > System.currentTimeMillis()) {
 				return true;
 			}
-			
+
 			cooldown.remove(cooldownKey);
 		}
-		
+
 		return false;
 	}
 
 	public void removeCooldown(String cooldownKey) {
 		cooldown.remove(cooldownKey.toLowerCase());
 	}
-	
+
 	public long getCooldown(String cooldownKey) {
 		return cooldown.get(cooldownKey.toLowerCase());
 	}
@@ -343,7 +335,7 @@ public abstract class Member {
 	public int addXp(int xp) {
 		if (xp < 0)
 			xp = 0;
-		
+
 		setTotalXp(getTotalXp() + xp);
 		setXp(getXp() + xp);
 		return xp;
@@ -362,17 +354,25 @@ public abstract class Member {
 		this.totalXp = xp;
 		CommonGeneral.getInstance().getPlayerData().updateMember(this, "totalXp");
 	}
-	
+
 	public boolean hasPermission(String string) {
+		if (permissions.containsKey(string.toLowerCase()))
+			if (permissions.get(string.toLowerCase()) == -1l)
+				return true;
+			else if (permissions.get(string.toLowerCase()) > System.currentTimeMillis())
+				return true;
+			else
+				return false; // TODO handler
+
 		return false;
 	}
 
 	public void addPermission(String string) {
-		
+		permissions.put(string.toLowerCase(), -1l);
 	}
 
-	public void addMoney(int nextInt) {
-		
+	public void addMoney(int money) {
+		this.money += money;
 	}
 
 	/*
@@ -408,11 +408,11 @@ public abstract class Member {
 	public long getSessionTime() {
 		return System.currentTimeMillis() - joinTime;
 	}
-	
+
 	public long getOnlineTime() {
 		return onlineTime;
 	}
-	
+
 	public void updateTime() {
 		this.joinTime = System.currentTimeMillis();
 		this.lastLogin = System.currentTimeMillis();
@@ -450,22 +450,6 @@ public abstract class Member {
 		CommonGeneral.getInstance().getPlayerData().updateMember(this, "onlineTime");
 	}
 
-	public boolean playMusic(MusicType musicType) {
-		if (getMusicKit() == MusicKit.NONE)
-			return false;
-
-		return true;
-	}
-
-	public void setMusicKit(MusicKit musicKit) {
-		this.musicKit = musicKit;
-		CommonGeneral.getInstance().getPlayerData().updateMember(this, "musicKit");
-	}
-
-	public MusicKit getMusicKit() {
-		return musicKit == null ? MusicKit.NONE : musicKit;
-	}
-
 	public void checkRanks() {
 		if (getRanks() != null && !getRanks().isEmpty()) {
 			Iterator<Entry<RankType, Long>> it = getRanks().entrySet().iterator();
@@ -477,15 +461,15 @@ public abstract class Member {
 				if (System.currentTimeMillis() > entry.getValue()) {
 					it.remove();
 
-					sendMessage("§c§l> §fO seu tempo de tag " + Tag.valueOf(entry.getKey().name()).getPrefix() + "§f expirou!");
+					sendMessage("§c§l> §fO seu tempo de tag " + Tag.valueOf(entry.getKey().name()).getPrefix()
+							+ "§f expirou!");
 					sendMessage("§c§l> §fVocê pode comprar novamente em §b" + CommonConst.STORE + "§f!");
-
 					save = true;
 				}
 			}
 
 			if (save)
-				CommonGeneral.getInstance().getPlayerData().updateMember(this, "ranks");
+				saveRanks();
 		}
 	}
 
@@ -494,7 +478,7 @@ public abstract class Member {
 	public abstract void sendMessage(BaseComponent message);
 
 	public abstract void sendMessage(BaseComponent[] message);
-	
+
 	public static Member getMember(UUID uniqueId) {
 		return CommonGeneral.getInstance().getMemberManager().getMember(uniqueId);
 	}
@@ -506,7 +490,7 @@ public abstract class Member {
 	public static boolean isGroup(UUID uniqueId, Group group) {
 		return CommonGeneral.getInstance().getMemberManager().getMember(uniqueId).isGroup(group);
 	}
-	
+
 	public static boolean isLogged(UUID uniqueId) {
 		return CommonGeneral.getInstance().getMemberManager().getMember(uniqueId).getLoginConfiguration().isLogged();
 	}

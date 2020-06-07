@@ -12,7 +12,7 @@ import tk.yallandev.saintmc.bukkit.api.menu.click.ClickType;
 import tk.yallandev.saintmc.bukkit.api.menu.click.MenuClickHandler;
 import tk.yallandev.saintmc.common.account.Member;
 import tk.yallandev.saintmc.common.permission.Group;
-import tk.yallandev.saintmc.common.permission.Tag;
+import tk.yallandev.saintmc.common.tag.Tag;
 
 public class CollectableInventory {
 

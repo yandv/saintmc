@@ -18,7 +18,7 @@ import tk.yallandev.saintmc.common.command.CommandFramework.Completer;
 import tk.yallandev.saintmc.common.command.CommandSender;
 import tk.yallandev.saintmc.common.permission.Group;
 import tk.yallandev.saintmc.common.permission.RankType;
-import tk.yallandev.saintmc.common.permission.Tag;
+import tk.yallandev.saintmc.common.tag.Tag;
 import tk.yallandev.saintmc.common.utils.DateUtils;
 
 public class PackageCommand implements CommandClass {
@@ -171,7 +171,7 @@ public class PackageCommand implements CommandClass {
 			return rankList;
 		}
 
-		return getPlayerList(cmdArgs.getArgs());
+		return getPlayerList(cmdArgs.getArgs(), 0);
 	}
 
 	@Completer(name = "removevip", aliases = { "removervip" })
@@ -191,10 +191,10 @@ public class PackageCommand implements CommandClass {
 			return rankList;
 		}
 
-		return getPlayerList(cmdArgs.getArgs());
+		return getPlayerList(cmdArgs.getArgs(), 0);
 	}
 
-	@Completer(name = "groupset", aliases = { "setargrupo" })
+	@Completer(name = "groupset", aliases = { "setargrupo", "setargrupo", "removevip", "removervip" })
 	public List<String> groupsetCompleter(CommandArgs cmdArgs) {
 		if (cmdArgs.getArgs().length == 2) {
 			List<String> groupList = new ArrayList<>();
@@ -211,18 +211,18 @@ public class PackageCommand implements CommandClass {
 			return groupList;
 		}
 
-		return getPlayerList(cmdArgs.getArgs());
+		return getPlayerList(cmdArgs.getArgs(), 0);
 	}
 	
-	public List<String> getPlayerList(String[] args) {
+	public List<String> getPlayerList(String[] args, int index) {
 		List<String> playerList = new ArrayList<>();
 
 		for (ProxiedPlayer player : ProxyServer.getInstance().getPlayers()) {
-			if (args[args.length - 1].isEmpty()) {
-				if (player.getName().toLowerCase().startsWith(args[args.length - 1].toLowerCase()))
+			if (args[index].isEmpty()) {
+				if (player.getName().toLowerCase().startsWith(args[index].toLowerCase()))
 					playerList.add(player.getName());
 			} else {
-				if (player.getName().toLowerCase().startsWith(args[args.length - 1].toLowerCase()))
+				if (player.getName().toLowerCase().startsWith(args[index].toLowerCase()))
 					playerList.add(player.getName());
 			}
 		}

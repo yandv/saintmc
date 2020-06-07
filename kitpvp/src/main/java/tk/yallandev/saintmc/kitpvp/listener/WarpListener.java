@@ -100,7 +100,9 @@ public class WarpListener implements Listener {
 	public void respawn(Player player, Warp warp) {
 		player.spigot().respawn();
 		player.teleport(warp.getSpawnLocation());
-
+		
+		GameMain.getInstance().getGamerManager().getGamer(player.getUniqueId()).setSpawnProtection(true);
+		
 		new BukkitRunnable() {
 
 			@Override

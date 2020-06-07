@@ -17,7 +17,7 @@ import tk.yallandev.saintmc.common.command.CommandFramework.Command;
 import tk.yallandev.saintmc.common.command.CommandFramework.Completer;
 import tk.yallandev.saintmc.common.permission.Group;
 import tk.yallandev.saintmc.common.permission.RankType;
-import tk.yallandev.saintmc.common.permission.Tag;
+import tk.yallandev.saintmc.common.tag.Tag;
 
 public class CompleterCommand implements CommandClass {
 
@@ -49,7 +49,7 @@ public class CompleterCommand implements CommandClass {
 
 	}
 
-	@Command(name = "lobby", aliases = { "server", "connect", "ir", "go", "discord" })
+	@Command(name = "lobby", aliases = { "server", "connect", "ir", "go", "discord", "hub" })
 	public void memberCommand(CommandArgs cmdArgs) {
 
 	}
@@ -165,11 +165,11 @@ public class CompleterCommand implements CommandClass {
 
 			if (cmdArgs.getArgs()[1].isEmpty()) {
 				for (PotionEffectType effect : PotionEffectType.values())
-					effectList.add(effect.toString());
+					effectList.add(effect.getName());
 			} else {
 				for (PotionEffectType effect : PotionEffectType.values())
-					if (effect.toString().toLowerCase().startsWith(cmdArgs.getArgs()[1].toLowerCase()))
-						effectList.add(effect.toString());
+					if (effect.getName().toLowerCase().startsWith(cmdArgs.getArgs()[1].toLowerCase()))
+						effectList.add(effect.getName());
 			}
 
 			return effectList;

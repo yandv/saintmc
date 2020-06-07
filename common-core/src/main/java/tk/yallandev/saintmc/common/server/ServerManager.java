@@ -8,18 +8,27 @@ import java.util.Set;
 import java.util.UUID;
 
 import tk.yallandev.saintmc.common.server.loadbalancer.BaseBalancer;
-import tk.yallandev.saintmc.common.server.loadbalancer.server.BattleServer;
 import tk.yallandev.saintmc.common.server.loadbalancer.server.HungerGamesServer;
 import tk.yallandev.saintmc.common.server.loadbalancer.server.MinigameServer;
 import tk.yallandev.saintmc.common.server.loadbalancer.server.MinigameState;
+import tk.yallandev.saintmc.common.server.loadbalancer.server.ProxiedServer;
 import tk.yallandev.saintmc.common.server.loadbalancer.type.LeastConnection;
 import tk.yallandev.saintmc.common.server.loadbalancer.type.MostConnection;
 
+/**
+ * 
+ * ServerManager to control and loadbalance all connected servers
+ * 
+ * @author yandv
+ * @since 1.0
+ *
+ */
+
 public class ServerManager {
 
-    private Map<String, BattleServer> activeServers;
+    private Map<String, ProxiedServer> activeServers;
 
-    private HashMap<ServerType, BaseBalancer<BattleServer>> balancers;
+    private Map<ServerType, BaseBalancer<ProxiedServer>> balancers;
 
     public ServerManager() {
         balancers = new HashMap<>();
@@ -37,11 +46,11 @@ public class ServerManager {
         activeServers = new HashMap<>();
     }
 
-    public BaseBalancer<BattleServer> getBalancer(ServerType type) {
+    public BaseBalancer<ProxiedServer> getBalancer(ServerType type) {
         return balancers.get(type);
     }
 
-    public void putBalancer(ServerType type, BaseBalancer<BattleServer> balancer) {
+    public void putBalancer(ServerType type, BaseBalancer<ProxiedServer> balancer) {
         balancers.put(type, balancer);
     }
 
@@ -54,30 +63,34 @@ public class ServerManager {
     }
 
     public void updateActiveServer(String serverId, ServerType type, Set<UUID> onlinePlayers, int maxPlayers, boolean canJoin, int tempo, String map, MinigameState state) {
-        BattleServer server = activeServers.get(serverId);
+        ProxiedServer server = activeServers.get(serverId);
+        
         if (server == null) {
             if (type == ServerType.HUNGERGAMES) {
                 server = new HungerGamesServer(serverId, type, onlinePlayers, true);
             } else {
-                server = new BattleServer(serverId, type, onlinePlayers, maxPlayers, true);
+                server = new ProxiedServer(serverId, type, onlinePlayers, maxPlayers, true);
             }
             activeServers.put(serverId.toLowerCase(), server);
         }
+        
         server.setOnlinePlayers(onlinePlayers);
         server.setJoinEnabled(canJoin);
+        
         if (state != null && server instanceof MinigameServer) {
             ((MinigameServer) server).setState(state);
             ((MinigameServer) server).setTime(tempo);
             ((MinigameServer) server).setMap(map);
         }
+        
         addToBalancers(serverId, server);
     }
 
-    public BattleServer getServer(String str) {
+    public ProxiedServer getServer(String str) {
         return activeServers.get(str.toLowerCase());
     }
     
-    public Collection<BattleServer> getServers() {
+    public Collection<ProxiedServer> getServers() {
         return activeServers.values();
     }
 
@@ -88,8 +101,8 @@ public class ServerManager {
         activeServers.remove(str.toLowerCase());
     }
 
-    public void addToBalancers(String serverId, BattleServer server) {
-        BaseBalancer<BattleServer> balancer = getBalancer(server.getServerType());
+    public void addToBalancers(String serverId, ProxiedServer server) {
+        BaseBalancer<ProxiedServer> balancer = getBalancer(server.getServerType());
         
         if (balancer == null)
             return;
@@ -97,8 +110,8 @@ public class ServerManager {
         balancer.add(serverId.toLowerCase(), server);
     }
 
-    public void removeFromBalancers(BattleServer serverId) {
-        BaseBalancer<BattleServer> balancer = getBalancer(serverId.getServerType());
+    public void removeFromBalancers(ProxiedServer serverId) {
+        BaseBalancer<ProxiedServer> balancer = getBalancer(serverId.getServerType());
         if (balancer != null)
             balancer.remove(serverId.getServerId().toLowerCase());
     }

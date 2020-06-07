@@ -6,32 +6,74 @@ import org.bukkit.entity.Player;
 
 import tk.yallandev.saintmc.bukkit.account.BukkitMember;
 
+/**
+ * 
+ * @author yandv
+ *
+ */
+
 public interface Scoreboard extends Cloneable {
+	
+	/**
+	 * Create the player scoreboard
+	 * 
+	 * @param player
+	 */
 	
 	void createScoreboard(Player player);
 	
-	/*
-	 * Line
+	/**
+	 * Set a line of scoreboard
+	 * 
+	 * @param player
 	 */
 	
 	void setScore(int scoreLine, String scoreName, String teamName, String prefix, String suffix);
 	
+	/**
+	 * Set a blank line of scoreboard
+	 * 
+	 * @param player
+	 */
+	
 	void blankLine(int scoreLine);
+	
+	/**
+	 * Clear the scoreboard
+	 * 
+	 * @param player
+	 */
 	
 	void clear();
 	
-	/*
-	 * update
+	/**
+	 * Update the team of scoreboard
+	 * 
+	 * @param player
 	 */
 	
 	void updateScore(String teamName, String prefix, String suffix);
 	
+	/**
+	 * Update the team of player (no necessary in scoreboard)
+	 * 
+	 * @param player
+	 */
+	
 	void updateScore(Player player, String teamName, String prefix, String suffix);
+	
+	/**
+	 * Change the displayName of scoreboard
+	 * 
+	 * @param player
+	 */
 	
 	void setDisplayName(String displayName);
 	
-	/*
-	 * Remove
+	/**
+	 * Remove the score
+	 * 
+	 * @param player
 	 */
 	
 	void removeScore(int scoreLine);

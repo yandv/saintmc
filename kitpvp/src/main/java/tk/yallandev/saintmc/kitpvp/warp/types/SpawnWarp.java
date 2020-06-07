@@ -17,6 +17,7 @@ import tk.yallandev.saintmc.kitpvp.event.warp.PlayerLostProtectionEvent;
 import tk.yallandev.saintmc.kitpvp.event.warp.PlayerWarpJoinEvent;
 import tk.yallandev.saintmc.kitpvp.event.warp.PlayerWarpRespawnEvent;
 import tk.yallandev.saintmc.kitpvp.gamer.Gamer;
+import tk.yallandev.saintmc.kitpvp.kit.Kit;
 import tk.yallandev.saintmc.kitpvp.menu.KitInventory;
 import tk.yallandev.saintmc.kitpvp.menu.KitInventory.InventoryType;
 import tk.yallandev.saintmc.kitpvp.menu.WarpInventory;
@@ -26,30 +27,32 @@ public class SpawnWarp extends Warp {
 
 	private ActionItemStack kitSelector = new ActionItemStack(
 			new ItemBuilder().type(Material.CHEST).name("§aKit Selector").build(), new ActionItemStack.Interact() {
-				
+
 				@Override
-				public boolean onInteract(Player player, Entity entity, Block block, ItemStack item, ActionType action) {
+				public boolean onInteract(Player player, Entity entity, Block block, ItemStack item,
+						ActionType action) {
 					new KitInventory(player, InventoryType.OWN);
 					return false;
 				}
-			});
+			}.setInventoryClick(true));
 
 	private ActionItemStack warpSelector = new ActionItemStack(
 			new ItemBuilder().type(Material.COMPASS).name("§aWarp Selector").build(), new ActionItemStack.Interact() {
-				
+
 				@Override
-				public boolean onInteract(Player player, Entity entity, Block block, ItemStack item, ActionType action) {
+				public boolean onInteract(Player player, Entity entity, Block block, ItemStack item,
+						ActionType action) {
 					new WarpInventory(player);
 					return false;
 				}
-			});
+			}.setInventoryClick(true));
 
 	public SpawnWarp() {
 		super("Spawn", BukkitMain.getInstance().getLocationFromConfig("spawn"));
 		getWarpSettings().setKitEnabled(true);
 		getWarpSettings().setSpawnProtection(true);
 	}
-	
+
 	@EventHandler
 	public void onPlayerWarpRespawn(PlayerWarpRespawnEvent event) {
 		Player player = event.getPlayer();
@@ -59,27 +62,31 @@ public class SpawnWarp extends Warp {
 
 		handleInventory(player);
 	}
-	
+
 	@EventHandler
 	public void onPlayerWarpJoin(PlayerWarpJoinEvent event) {
 		Player player = event.getPlayer();
 
 		if (event.getWarp() != this)
 			return;
-		
+
 		handleInventory(player);
 	}
-	
+
 	@EventHandler
 	public void onPlayerLostProtection(PlayerLostProtectionEvent event) {
 		if (event.getWarp() == this) {
 			Gamer gamer = GameMain.getInstance().getGamerManager().getGamer(event.getPlayer().getUniqueId());
-			
-			if (!gamer.hasKit())
-				GameMain.getInstance().getKitManager().selectKit(event.getPlayer(), GameMain.getInstance().getKitManager().getDefaultKit());
+
+			if (!gamer.hasKit()) {
+				Kit kit = GameMain.getInstance().getKitManager().getDefaultKit();
+
+				gamer.setKit(kit);
+				GameMain.getInstance().getKitManager().selectKit(event.getPlayer(), kit);
+			}
 		}
 	}
-	
+
 	private void handleInventory(Player player) {
 		player.getInventory().clear();
 		player.getInventory().setArmorContents(new ItemStack[4]);
@@ -94,7 +101,6 @@ public class SpawnWarp extends Warp {
 		player.getInventory().setItem(3, warpSelector.getItemStack());
 		player.getInventory().setItem(4, kitSelector.getItemStack());
 	}
-
 
 	@Override
 	public ItemStack getItem() {

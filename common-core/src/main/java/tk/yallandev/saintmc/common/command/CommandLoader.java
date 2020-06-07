@@ -8,7 +8,7 @@ import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.common.utils.ClassGetter;
 
 /*
- * https://github.com/mcardy/CommandFramework
+ * Forked from https://github.com/mcardy/CommandFramework
  * Took from https://github.com/Battlebits
  * 
  */

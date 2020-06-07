@@ -16,6 +16,10 @@ public class Score {
 	public Score(String text, String teamName) {
 		String part1 = text;
 		String part2 = "";
+		
+		/*
+		 *  
+		 */
 
 		if (text.length() > 12) {
 			int a = 12;

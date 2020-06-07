@@ -27,6 +27,9 @@ public class VelocityModule extends Module {
 		if (player.hasPotionEffect(PotionEffectType.POISON) || player.hasPotionEffect(PotionEffectType.WITHER) || player.getFireTicks() > 0)
 			return;
 		
+		if (FlyModule.hasSurrondingBlocks(player.getLocation().getBlock()))
+			return;
+		
 		Location location = player.getLocation().clone();
 		
 		new BukkitRunnable() {

@@ -23,7 +23,7 @@ import tk.yallandev.saintmc.common.data.payload.DataServerMessage.StopPayload;
 import tk.yallandev.saintmc.common.data.payload.DataServerMessage.UpdatePayload;
 import tk.yallandev.saintmc.common.report.Report;
 import tk.yallandev.saintmc.common.server.ServerType;
-import tk.yallandev.saintmc.common.server.loadbalancer.server.BattleServer;
+import tk.yallandev.saintmc.common.server.loadbalancer.server.ProxiedServer;
 import tk.yallandev.saintmc.common.server.loadbalancer.server.MinigameServer;
 import tk.yallandev.saintmc.common.utils.reflection.Reflection;
 
@@ -108,7 +108,7 @@ public class BungeePubSubHandler extends JedisPubSub {
 				if (sourceType == ServerType.NETWORK) {
 					break;
 				}
-				BattleServer server = BungeeMain.getPlugin().getServerManager().getServer(source);
+				ProxiedServer server = BungeeMain.getPlugin().getServerManager().getServer(source);
 				server.joinPlayer(payload.getPayload().getUniqueId());
 				break;
 			}
@@ -119,7 +119,7 @@ public class BungeePubSubHandler extends JedisPubSub {
 				if (sourceType == ServerType.NETWORK) {
 					break;
 				}
-				BattleServer server = BungeeMain.getPlugin().getServerManager().getServer(source);
+				ProxiedServer server = BungeeMain.getPlugin().getServerManager().getServer(source);
 				server.leavePlayer(payload.getPayload().getUniqueId());
 				break;
 			}
@@ -165,7 +165,7 @@ public class BungeePubSubHandler extends JedisPubSub {
 				if (sourceType == ServerType.NETWORK) {
 					break;
 				}
-				BattleServer server = BungeeMain.getPlugin().getServerManager().getServer(source);
+				ProxiedServer server = BungeeMain.getPlugin().getServerManager().getServer(source);
 				if (server instanceof MinigameServer) {
 					((MinigameServer) server).setState(payload.getPayload().getState());
 					((MinigameServer) server).setTime(payload.getPayload().getTime());

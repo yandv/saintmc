@@ -21,6 +21,7 @@ public class FlyModule extends Module {
 
 	public FlyModule() {
 		setMaxAlerts(30);
+		setAlertBungee(true);
 	}
 
 	public class Fly {

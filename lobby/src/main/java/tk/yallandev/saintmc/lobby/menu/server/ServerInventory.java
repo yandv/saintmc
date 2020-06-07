@@ -41,7 +41,7 @@ public class ServerInventory {
 								}
 								
 								ByteArrayDataOutput out = ByteStreams.newDataOutput();
-								out.writeUTF("PvP");
+								out.writeUTF("PVP");
 								player.sendPluginMessage(LobbyMain.getInstance(), "BungeeCord", out.toByteArray());
 								player.closeInventory();
 							}

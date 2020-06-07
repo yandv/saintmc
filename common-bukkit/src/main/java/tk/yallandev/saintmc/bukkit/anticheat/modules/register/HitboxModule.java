@@ -3,6 +3,7 @@ package tk.yallandev.saintmc.bukkit.anticheat.modules.register;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -30,6 +31,9 @@ public class HitboxModule extends Module {
 		
 		Player player = (Player) event.getDamager();
 		
+		if (player.getAllowFlight() || player.getGameMode() == GameMode.ADVENTURE || player.getGameMode() == GameMode.SPECTATOR)
+			return;
+		
 		if (cooldownMap.containsKey(player) && cooldownMap.get(player) > System.currentTimeMillis())
 			return;
 
@@ -43,24 +47,34 @@ public class HitboxModule extends Module {
 
 		Vector3D targetPos = new Vector3D(target.getLocation());
 		Vector3D minimum = targetPos.add(-0.7, 0, -0.7);
-		Vector3D maximum = targetPos.add(0.7, 2.1, 0.7);
+		Vector3D maximum = targetPos.add(0.7, 2.2, 0.7);
 		
-		if (!hasIntersection(start, end, minimum, maximum)) {
+		if (!hasIntersection(start, end, minimum, maximum))
 			alert(player);
-		}
 	}
 	
 	@EventHandler
 	public void onPlayerMoveUpdate(PlayerMoveUpdateEvent event) {
 		cooldownMap.put(event.getPlayer(), System.currentTimeMillis() + 500l);
 	}
+	
+	/**
+	 * 
+	 * Check if the player 
+	 * 
+	 * @param p1
+	 * @param p2
+	 * @param min
+	 * @param max
+	 * @return
+	 */
 
 	private boolean hasIntersection(Vector3D p1, Vector3D p2, Vector3D min, Vector3D max) {
 		final double epsilon = 0.0001f;
 
-		Vector3D d = p2.subtract(p1).multiply(0.5);
+		Vector3D d = p2.subtract(p1).multiply(0.2);
 		Vector3D e = max.subtract(min).multiply(0.5);
-		Vector3D c = p1.add(d).subtract(min.add(max).multiply(0.5));
+		Vector3D c = p1.add(d).subtract(min.add(max).multiply(0.2));
 		Vector3D ad = d.abs();
 
 		if (Math.abs(c.x) > e.x + ad.x)

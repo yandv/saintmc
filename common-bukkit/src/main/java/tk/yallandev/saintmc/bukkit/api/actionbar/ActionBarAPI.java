@@ -10,8 +10,8 @@ import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
 
 import tk.yallandev.saintmc.bukkit.BukkitMain;
-import tk.yallandev.saintmc.bukkit.protocol.ProtocolGetter;
-import tk.yallandev.saintmc.bukkit.protocol.ProtocolVersion;
+import tk.yallandev.saintmc.bukkit.api.protocol.ProtocolGetter;
+import tk.yallandev.saintmc.bukkit.api.protocol.ProtocolVersion;
 
 public class ActionBarAPI {
 

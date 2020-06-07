@@ -13,7 +13,7 @@ import tk.yallandev.saintmc.common.account.Member;
 import tk.yallandev.saintmc.common.account.status.Status;
 import tk.yallandev.saintmc.common.account.status.StatusType;
 import tk.yallandev.saintmc.common.permission.Group;
-import tk.yallandev.saintmc.common.permission.Tag;
+import tk.yallandev.saintmc.common.tag.Tag;
 
 public class StatusInventory {
 

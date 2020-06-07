@@ -27,7 +27,7 @@ import tk.yallandev.saintmc.common.data.payload.DataServerMessage.StartPayload;
 import tk.yallandev.saintmc.common.data.payload.DataServerMessage.StopPayload;
 import tk.yallandev.saintmc.common.data.payload.DataServerMessage.UpdatePayload;
 import tk.yallandev.saintmc.common.server.ServerType;
-import tk.yallandev.saintmc.common.server.loadbalancer.server.BattleServer;
+import tk.yallandev.saintmc.common.server.loadbalancer.server.ProxiedServer;
 import tk.yallandev.saintmc.common.server.loadbalancer.server.MinigameState;
 
 public class ServerDataImpl implements ServerData {
@@ -122,7 +122,7 @@ public class ServerDataImpl implements ServerData {
             map.put("address", CommonGeneral.getInstance().getServerAddress());
             pipe.hmset("server:" + CommonGeneral.getInstance().getServerId(), map);
             pipe.del("server:" + CommonGeneral.getInstance().getServerId() + ":players");
-            BattleServer server = new BattleServer(CommonGeneral.getInstance().getServerId(), CommonGeneral.getInstance().getServerType(), new HashSet<>(), maxPlayers, true);
+            ProxiedServer server = new ProxiedServer(CommonGeneral.getInstance().getServerId(), CommonGeneral.getInstance().getServerType(), new HashSet<>(), maxPlayers, true);
             pipe.publish("server-info", CommonConst.GSON.toJson(new DataServerMessage<StartPayload>(CommonGeneral.getInstance().getServerId(), CommonGeneral.getInstance().getServerType(), Action.START, new StartPayload(CommonGeneral.getInstance().getServerAddress(), server))));
             pipe.sync();
         }

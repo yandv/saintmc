@@ -10,7 +10,7 @@ import tk.yallandev.saintmc.bukkit.api.scoreboard.Scoreboard;
 /**
  * AnimatedScoreboard with
  * 
- * @author Allan
+ * @author yandv
  *
  */
 

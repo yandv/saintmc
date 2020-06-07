@@ -9,7 +9,7 @@ import tk.yallandev.saintmc.common.account.Member;
 import tk.yallandev.saintmc.common.account.MemberModel;
 import tk.yallandev.saintmc.common.account.MemberVoid;
 import tk.yallandev.saintmc.common.permission.RankType;
-import tk.yallandev.saintmc.common.permission.Tag;
+import tk.yallandev.saintmc.common.tag.Tag;
 
 public class BoosterListener extends ListenerAdapter {
 	
@@ -31,7 +31,8 @@ public class BoosterListener extends ListenerAdapter {
 
 			member.getRanks().put(RankType.DONATOR, System.currentTimeMillis() + (1000 * 60 * 60 * 24 * 14));
 			member.saveRanks();
-			member.sendMessage("§a§l> §fVocê ganhou " + Tag.DONATOR.getPrefix() + "§f por doar §dboost§f no discord!");
+			member.sendMessage("§a§l> §fObrigado por ajudar o discord doando §d§lBOOST§f!");
+			member.sendMessage("§a§l> §fVocê recebeu a tag " + Tag.DONATOR.getPrefix() + "§f!");
 		}
 	}
 	
@@ -52,7 +53,7 @@ public class BoosterListener extends ListenerAdapter {
 		}
 
 		if (member.getRanks().containsKey(RankType.DONATOR)) {
-			member.getRanks().put(RankType.DONATOR, System.currentTimeMillis() + (1000 * 60 * 60 * 24 * 21));
+			member.getRanks().remove(RankType.DONATOR);
 			member.saveRanks();
 			member.sendMessage("§a§l> §fVocê perdeu seu grupo " + Tag.DONATOR.getPrefix() + "§f por sair do discord!");
 		}

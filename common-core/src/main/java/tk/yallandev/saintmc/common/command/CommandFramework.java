@@ -8,7 +8,7 @@ import java.lang.annotation.Target;
 import tk.yallandev.saintmc.common.permission.Group;
 
 /*
- * https://github.com/mcardy/CommandFramework
+ * Forked from https://github.com/mcardy/CommandFramework
  * Took from https://github.com/Battlebits
  * 
  */
@@ -26,10 +26,6 @@ public interface CommandFramework {
 		String name();
 
 		Group groupToUse() default Group.MEMBRO;
-
-		String permission() default "";
-
-		String noPermMessageId() default "command-no-access";
 
 		String[] aliases() default {};
 

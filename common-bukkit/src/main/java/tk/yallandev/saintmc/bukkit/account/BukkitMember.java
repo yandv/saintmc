@@ -16,9 +16,8 @@ import tk.yallandev.saintmc.bukkit.event.account.PlayerChangeTagEvent;
 import tk.yallandev.saintmc.common.account.League;
 import tk.yallandev.saintmc.common.account.Member;
 import tk.yallandev.saintmc.common.account.MemberModel;
-import tk.yallandev.saintmc.common.music.MusicType;
 import tk.yallandev.saintmc.common.permission.Group;
-import tk.yallandev.saintmc.common.permission.Tag;
+import tk.yallandev.saintmc.common.tag.Tag;
 
 @Getter
 public class BukkitMember extends Member {
@@ -71,15 +70,6 @@ public class BukkitMember extends Member {
 			this.scoreboard = scoreboard;
 			this.scoreboard.createScoreboard(getPlayer());
 		}
-	}
-
-	@Override
-	public boolean playMusic(MusicType musicType) {
-		if (super.playMusic(musicType)) {
-			player.playSound(player.getLocation(), musicType.getMusic(), 1.0f, 1.0f);
-		}
-
-		return false;
 	}
 
 	@Override

@@ -1,6 +1,7 @@
 tk\yallandev\saintmc\common\backend\database\mongodb\MongoQuery$4.class
 tk\yallandev\saintmc\common\backend\data\StatusData.class
 tk\yallandev\saintmc\common\server\loadbalancer\element\NumberConnection.class
+tk\yallandev\saintmc\common\tag\Tag.class
 tk\yallandev\saintmc\common\utils\reflection\Reflection.class
 tk\yallandev\saintmc\common\account\status\StatusType$Type.class
 tk\yallandev\saintmc\common\account\status\types\normal\NormalModel.class
@@ -16,7 +17,6 @@ tk\yallandev\saintmc\common\utils\supertype\Callback.class
 tk\yallandev\saintmc\common\backend\data\ReportData.class
 tk\yallandev\saintmc\common\command\CommandFramework.class
 tk\yallandev\saintmc\common\permission\Group.class
-tk\yallandev\saintmc\common\permission\Tag.class
 tk\yallandev\saintmc\common\server\loadbalancer\element\LoadBalancerObject.class
 tk\yallandev\saintmc\common\server\ServerManager.class
 tk\yallandev\saintmc\common\utils\json\JsonBuilder.class
@@ -30,12 +30,10 @@ tk\yallandev\saintmc\common\backend\data\PlayerData.class
 tk\yallandev\saintmc\common\utils\reflection\Reflection$1.class
 tk\yallandev\saintmc\common\permission\group\OwnerGroup.class
 tk\yallandev\saintmc\common\utils\mojang\MojangFetcher$1.class
-tk\yallandev\saintmc\common\music\MusicKit.class
 tk\yallandev\saintmc\common\utils\web\http\ApacheWebImpl$3.class
 tk\yallandev\saintmc\common\data\PlayerDataImpl$3.class
 tk\yallandev\saintmc\common\server\loadbalancer\server\MinigameState.class
 tk\yallandev\saintmc\common\utils\reflection\Reflection$ConstructorInvoker.class
-tk\yallandev\saintmc\common\server\loadbalancer\server\BattleServer.class
 tk\yallandev\saintmc\common\server\loadbalancer\type\LeastConnection.class
 tk\yallandev\saintmc\common\ban\constructor\Mute.class
 tk\yallandev\saintmc\common\permission\group\SimpleGroup.class
@@ -48,7 +46,6 @@ tk\yallandev\saintmc\common\backend\database\mongodb\MongoQuery$12.class
 tk\yallandev\saintmc\common\data\PlayerDataImpl.class
 tk\yallandev\saintmc\common\backend\database\mongodb\MongoQuery$6.class
 tk\yallandev\saintmc\common\account\status\types\game\GameModel.class
-tk\yallandev\saintmc\common\music\MusicType.class
 tk\yallandev\saintmc\common\account\Member.class
 tk\yallandev\saintmc\common\server\loadbalancer\element\Server.class
 tk\yallandev\saintmc\common\account\status\StatusType.class
@@ -60,7 +57,10 @@ tk\yallandev\saintmc\common\utils\json\JsonUtils.class
 tk\yallandev\saintmc\common\account\configuration\LoginConfiguration.class
 tk\yallandev\saintmc\common\report\Report.class
 tk\yallandev\saintmc\common\utils\string\StringURLUtils.class
+tk\yallandev\saintmc\common\networking\packet\AnticheatAlertPacket.class
 tk\yallandev\saintmc\common\data\payload\DataServerMessage$JoinPayload.class
+tk\yallandev\saintmc\common\networking\PacketHandler.class
+tk\yallandev\saintmc\serializer\TagSerializer.class
 tk\yallandev\saintmc\common\backend\database\mongodb\MongoQuery$7.class
 tk\yallandev\saintmc\common\data\payload\DataServerMessage$Action.class
 tk\yallandev\saintmc\common\backend\database\mongodb\MongoQuery$11.class
@@ -75,11 +75,13 @@ tk\yallandev\saintmc\common\controller\StoreController$StoreConfig.class
 tk\yallandev\saintmc\CommonConst.class
 tk\yallandev\saintmc\common\account\MemberModel.class
 tk\yallandev\saintmc\common\utils\web\http\ApacheWebImpl$2.class
+tk\yallandev\saintmc\common\networking\PacketType.class
 tk\yallandev\saintmc\common\utils\reflection\Reflection$2.class
 tk\yallandev\saintmc\common\server\ServerType$1.class
 tk\yallandev\saintmc\common\utils\mojang\UUIDFetcher$1.class
 tk\yallandev\saintmc\common\data\payload\DataServerMessage$UpdatePayload.class
 tk\yallandev\saintmc\common\server\loadbalancer\server\MinigameState$1.class
+tk\yallandev\saintmc\common\tag\TagWrapper.class
 tk\yallandev\saintmc\common\server\loadbalancer\type\MostConnection.class
 tk\yallandev\saintmc\common\ban\constructor\Ban.class
 tk\yallandev\saintmc\common\controller\MemberManager.class
@@ -102,6 +104,7 @@ tk\yallandev\saintmc\common\utils\string\StringCenter.class
 tk\yallandev\saintmc\common\account\configuration\LoginConfiguration$AccountType.class
 tk\yallandev\saintmc\common\account\MemberVoid.class
 tk\yallandev\saintmc\common\server\loadbalancer\type\RoundRobin.class
+tk\yallandev\saintmc\common\networking\Packet.class
 tk\yallandev\saintmc\common\backend\data\PunishData.class
 tk\yallandev\saintmc\common\ban\constructor\Warn.class
 tk\yallandev\saintmc\common\utils\web\WebHelper.class
@@ -119,6 +122,7 @@ tk\yallandev\saintmc\common\backend\database\mongodb\MongoQuery$9.class
 tk\yallandev\saintmc\common\backend\Database.class
 tk\yallandev\saintmc\common\command\CommandArgs.class
 tk\yallandev\saintmc\common\command\CommandFramework$Completer.class
+tk\yallandev\saintmc\common\server\loadbalancer\server\ProxiedServer.class
 tk\yallandev\saintmc\common\utils\mojang\UUIDFetcher.class
 tk\yallandev\saintmc\common\account\DiscordType.class
 tk\yallandev\saintmc\common\command\CommandClass.class
@@ -128,11 +132,13 @@ tk\yallandev\saintmc\common\command\CommandFramework$Command.class
 tk\yallandev\saintmc\common\account\League.class
 tk\yallandev\saintmc\common\backend\database\mongodb\MongoConnection$1.class
 tk\yallandev\saintmc\common\permission\group\GroupInterface.class
+tk\yallandev\saintmc\common\networking\packet\AnticheatBanPacket.class
 tk\yallandev\saintmc\CommonGeneral.class
 tk\yallandev\saintmc\common\data\PlayerDataImpl$1.class
 tk\yallandev\saintmc\common\backend\database\mongodb\MongoQuery.class
 tk\yallandev\saintmc\common\backend\Query$QueryResponse.class
 tk\yallandev\saintmc\common\account\configuration\AccountConfiguration.class
+tk\yallandev\saintmc\common\controller\PacketController.class
 tk\yallandev\saintmc\common\utils\string\NameUtils.class
 tk\yallandev\saintmc\common\report\Report$ReportInformation.class
 tk\yallandev\saintmc\common\ban\constructor\Ban$UnbanReason.class

@@ -1,47 +1,20 @@
 package tk.yallandev.saintmc.common.networking;
 
-import java.util.HashSet;
-import java.util.Set;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
+import tk.yallandev.saintmc.common.server.loadbalancer.server.ProxiedServer;
 
-import com.google.common.io.ByteArrayDataInput;
-import com.google.common.io.ByteStreams;
+/**
+ * 
+ * Simple Packet Handler
+ * 
+ * Implements this class and register in your PacketController
+ * 
+ * @author yandv
+ *
+ */
 
-import tk.yallandev.saintmc.common.networking.packet.Packet;
-
-public abstract class PacketHandler {
-
-	private static final Set<PacketHandler> OBSERVER_SET;
-
-	static {
-		OBSERVER_SET = new HashSet<>();
-	}
-
-	public static void registerHandler(PacketHandler handler) {
-		OBSERVER_SET.add(handler);
-	}
-
-	public static void firePacket(Packet packet) {
-		OBSERVER_SET.forEach(handler -> handler.handlePacket(packet));
-	}
-
-	public static Packet decodePacket(byte[] bytes) {
-
-		ByteArrayDataInput in = ByteStreams.newDataInput(bytes);
-
-//		ByteArrayDataInput in = ByteStreams.newDataInput(bytes);
-//		DataInputStream msgout = new DataInputStream(in);
-
-//			int groupId = input.readByte();
-//			this.rank = Core.getCoreManager().getPermissionManager().getRank(groupId);
-//			if (rank == null) {
-//				throw new IllegalArgumentException("Invalid group id: " + groupId);
-//			}
-//			this.permission = input.readUTF();
-//			this.value = input.readBoolean();
-
-		return new Packet();
-	}
-
-	public abstract void handlePacket(Packet packet);
-
+public interface PacketHandler {
+	
+	void handlePacket(Packet packet, ProxiedServer server, ProxiedPlayer player);
+	
 }

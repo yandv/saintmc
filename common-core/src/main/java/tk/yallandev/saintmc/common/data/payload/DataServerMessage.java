@@ -5,7 +5,7 @@ import java.util.UUID;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import tk.yallandev.saintmc.common.server.ServerType;
-import tk.yallandev.saintmc.common.server.loadbalancer.server.BattleServer;
+import tk.yallandev.saintmc.common.server.loadbalancer.server.ProxiedServer;
 import tk.yallandev.saintmc.common.server.loadbalancer.server.MinigameState;
 
 @Getter
@@ -21,7 +21,7 @@ public class DataServerMessage<T> {
     @RequiredArgsConstructor
     public static class StartPayload {
         private final String serverAddress;
-        private final BattleServer server;
+        private final ProxiedServer server;
     }
 
     @Getter

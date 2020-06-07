@@ -37,6 +37,7 @@ public class FakePlayerAPI {
 
 		if (respawn)
 			removeFromTab(player);
+		
 		try {
 			Object minecraftServer = MinecraftReflection.getMinecraftServerClass().getMethod("getServer").invoke(null);
 			Object playerList = minecraftServer.getClass().getMethod("getPlayerList").invoke(minecraftServer);
@@ -161,6 +162,8 @@ public class FakePlayerAPI {
 			BukkitMain.getInstance().getProcotolManager().sendServerPacket(player, respawnPlayer);
 			player.teleport(player.getLocation());
 			player.setFlying(isFlying);
+			player.setExp(player.getExp());
+			player.setLevel(player.getLevel());
 		} catch (InvocationTargetException e) {
 			e.printStackTrace();
 		}

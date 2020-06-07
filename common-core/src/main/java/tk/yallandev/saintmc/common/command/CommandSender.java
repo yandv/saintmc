@@ -5,7 +5,7 @@ import java.util.UUID;
 import net.md_5.bungee.api.chat.BaseComponent;
 
 /*
- * https://github.com/mcardy/CommandFramework
+ * Forked from https://github.com/mcardy/CommandFramework
  * Took from https://github.com/Battlebits
  * 
  */

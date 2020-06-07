@@ -54,6 +54,8 @@ public class ServerCommand implements CommandClass {
 
 		member.getAccountConfiguration().setScoreboardEnabled(!member.getAccountConfiguration().isScoreboardEnabled());
 
+		// TODO fazer
+
 //		if (member.getAccountConfiguration().isScoreboardEnabled())
 //			BukkitMain.getInstance().getScoreboardManager().enableScoreboard(player);
 //		else 
@@ -61,6 +63,84 @@ public class ServerCommand implements CommandClass {
 
 		player.sendMessage(" §a* §fSua scoreboard foi "
 				+ (member.getAccountConfiguration().isScoreboardEnabled() ? "§aativada" : "§cdesativada") + "§f!");
+	}
+
+	@SuppressWarnings("deprecation")
+	@Command(name = "whitelist", groupToUse = Group.MODPLUS)
+	public void whitelistCommand(CommandArgs cmdArgs) {
+
+		CommandSender sender = cmdArgs.getSender();
+		String[] args = cmdArgs.getArgs();
+		
+		if (args.length == 0) {
+			sender.sendMessage(" §e* §fUse §a/whitelist <on:off:list:add:remove>§f ");
+			return;
+		}
+
+		// on/off/list/add/remove
+
+		switch (args[0].toLowerCase()) {
+		case "on": {
+
+			if (Bukkit.hasWhitelist()) {
+				sender.sendMessage("§cO servidor já está com a whitelist ativada!");
+			} else {
+				Bukkit.setWhitelist(true);
+				sender.sendMessage("§aVocê ativou a whitelist!");
+
+				new BukkitRunnable() {
+					@Override
+					public void run() {
+						CommonGeneral.getInstance().getServerData().setJoinEnabled(false);
+					}
+				}.runTaskAsynchronously(BukkitMain.getInstance());
+			}
+
+			break;
+		}
+		case "off": {
+			if (!Bukkit.hasWhitelist()) {
+				sender.sendMessage("§cO servidor já está com a whitelist desativada!");
+			} else {
+				Bukkit.setWhitelist(false);
+				sender.sendMessage("§cVocê desativou a whitelist!");
+
+				new BukkitRunnable() {
+					@Override
+					public void run() {
+						CommonGeneral.getInstance().getServerData().setJoinEnabled(true);
+					}
+				}.runTaskAsynchronously(BukkitMain.getInstance());
+			}
+			
+			break;
+		}
+		case "add": {
+			if (args.length == 1) {
+				sender.sendMessage(" §e*Use §f §a/whitelist <on:off:list:add:remove>§f ");
+				return;
+			}
+
+			Bukkit.getOfflinePlayer(args[1]).setWhitelisted(true);
+			sender.sendMessage("§a" + args[1] + " adicionado na whitelist!");
+			break;
+		}
+		case "remove": {
+			if (args.length == 1) {
+				sender.sendMessage(" §e*Use §f §a/whitelist <on:off:list:add:remove>§f ");
+				return;
+			}
+
+			Bukkit.getOfflinePlayer(args[1]).setWhitelisted(false);
+			sender.sendMessage("§a" + args[1] + " removido na whitelist!");
+			break;
+		}
+		default: {
+			sender.sendMessage(" §e* §fUse §a/whitelist <on:off:list:add:remove>§f ");
+			break;
+		}
+		}
+
 	}
 
 	@Command(name = "shutdown", aliases = { "stop" }, groupToUse = Group.ADMIN)

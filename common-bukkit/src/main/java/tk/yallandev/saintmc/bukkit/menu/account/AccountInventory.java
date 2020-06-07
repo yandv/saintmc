@@ -20,7 +20,7 @@ import tk.yallandev.saintmc.bukkit.api.menu.click.MenuClickHandler;
 import tk.yallandev.saintmc.common.account.Member;
 import tk.yallandev.saintmc.common.permission.Group;
 import tk.yallandev.saintmc.common.permission.RankType;
-import tk.yallandev.saintmc.common.permission.Tag;
+import tk.yallandev.saintmc.common.tag.Tag;
 import tk.yallandev.saintmc.common.utils.DateUtils;
 
 public class AccountInventory {
@@ -36,20 +36,18 @@ public class AccountInventory {
 				.name((player.getGroup() == Group.MEMBRO ? "§7" + player.getPlayerName()
 						: Tag.getByName(player.getGroup().toString()).getPrefix() + " " + player.getPlayerName()) + " "
 						+ "§7[" + player.getLeague().getColor() + player.getLeague().getSymbol() + "§7]")
-				.lore(lore).build());
+				.lore(lore).skin(player.getPlayerName()).build());
 
 		DateFormat df = new SimpleDateFormat("dd/MM/yyyy HH:mm");
-		
-		System.out.println(player.getOnlineTime());
 
-		menu.setItem(29, new ItemBuilder().type(Material.PAPER).name("§aTempo")
-				.lore("", "§7Primeiro login: §f" + df.format(new Date(player.getFirstLogin())),
-						"§7Ultimo login: §f" + df.format(new Date(player.getLastLogin())),
-						"§7Tempo online total: §f" + DateUtils.formatDifference(player.getOnlineTime() / 1000),
-						"§7Tempo online atual: §f" + DateUtils.formatDifference(player.getSessionTime() / 1000),
-						"",
-						(player.isOnline() ? "§aO usuario está online no momento!" : ""))
-				.build());
+		menu.setItem(29,
+				new ItemBuilder().type(Material.PAPER).name("§aTempo")
+						.lore("", "§7Primeiro login: §f" + df.format(new Date(player.getFirstLogin())),
+								"§7Ultimo login: §f" + df.format(new Date(player.getLastLogin())),
+								"§7Tempo online total: §f" + DateUtils.formatDifference(player.getOnlineTime() / 1000),
+								"§7Tempo online atual: §f" + DateUtils.formatDifference(player.getSessionTime() / 1000),
+								"", (player.isOnline() ? "§aO usuario está online no momento!" : ""))
+						.build());
 
 		menu.setItem(30,
 				new ItemBuilder().type(Material.BOOK).name("§aHistórico de punições")
@@ -86,8 +84,7 @@ public class AccountInventory {
 								"§7Ultimo login: §f" + df.format(new Date(player.getLastLogin())),
 								"§7Tempo online total: §f" + DateUtils.formatDifference(player.getOnlineTime() / 1000),
 								"§7Tempo online atual: §f" + DateUtils.formatDifference(player.getSessionTime() / 1000),
-								"",
-								(player.isOnline() ? "§aO usuario está online no momento!" : ""))
+								"", (player.isOnline() ? "§aO usuario está online no momento!" : ""))
 						.build());
 
 				List<String> temporaryRole = new ArrayList<>();

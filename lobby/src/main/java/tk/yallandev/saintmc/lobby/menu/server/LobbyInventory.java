@@ -14,7 +14,7 @@ import tk.yallandev.saintmc.bukkit.api.menu.MenuUpdateHandler;
 import tk.yallandev.saintmc.common.account.Member;
 import tk.yallandev.saintmc.common.permission.Group;
 import tk.yallandev.saintmc.common.server.ServerType;
-import tk.yallandev.saintmc.common.server.loadbalancer.server.BattleServer;
+import tk.yallandev.saintmc.common.server.loadbalancer.server.ProxiedServer;
 import tk.yallandev.saintmc.lobby.menu.server.ServerInventory.SendClick;
 
 public class LobbyInventory {
@@ -23,13 +23,13 @@ public class LobbyInventory {
 		Member member = CommonGeneral.getInstance().getMemberManager().getMember(player.getUniqueId());
 		int w = 10;
 		
-		List<BattleServer> battleServer = new ArrayList<>(BukkitMain.getInstance().getServerManager().getBalancer(ServerType.LOBBY).getList());
+		List<ProxiedServer> battleServer = new ArrayList<>(BukkitMain.getInstance().getServerManager().getBalancer(ServerType.LOBBY).getList());
 		
 		MenuInventory menu = new MenuInventory("§7Servidores de Lobby", 2 + (battleServer.size() == 0 ? 1 : (battleServer.size() / 7) + 1));
 		
 		battleServer.sort((o1, o2) -> Integer.valueOf(o1.getOnlinePlayers()).compareTo(o2.getOnlinePlayers()));
 		
-		for (BattleServer server : battleServer) {
+		for (ProxiedServer server : battleServer) {
 			if (!server.isJoinEnabled() && !member.hasGroupPermission(Group.DEV))
 				continue;
 			
@@ -67,7 +67,7 @@ public class LobbyInventory {
 			public void onUpdate(Player player, MenuInventory menu) {
 				int w = 10;
 				
-				for (BattleServer server : battleServer) {
+				for (ProxiedServer server : battleServer) {
 					if (!server.isJoinEnabled() && !member.hasGroupPermission(Group.DEV))
 						continue;
 					

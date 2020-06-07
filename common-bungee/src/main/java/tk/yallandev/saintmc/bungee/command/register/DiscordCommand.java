@@ -22,7 +22,7 @@ import tk.yallandev.saintmc.common.command.CommandClass;
 import tk.yallandev.saintmc.common.command.CommandFramework.Command;
 import tk.yallandev.saintmc.common.command.CommandSender;
 import tk.yallandev.saintmc.common.permission.RankType;
-import tk.yallandev.saintmc.common.permission.Tag;
+import tk.yallandev.saintmc.common.tag.Tag;
 import tk.yallandev.saintmc.common.utils.DateUtils;
 import tk.yallandev.saintmc.discord.DiscordMain;
 import tk.yallandev.saintmc.discord.command.register.DiscordCommand.Invite;

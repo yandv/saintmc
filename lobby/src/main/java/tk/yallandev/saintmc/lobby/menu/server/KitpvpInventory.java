@@ -15,14 +15,14 @@ import tk.yallandev.saintmc.bukkit.api.menu.MenuUpdateHandler;
 import tk.yallandev.saintmc.common.account.Member;
 import tk.yallandev.saintmc.common.permission.Group;
 import tk.yallandev.saintmc.common.server.ServerType;
-import tk.yallandev.saintmc.common.server.loadbalancer.server.BattleServer;
+import tk.yallandev.saintmc.common.server.loadbalancer.server.ProxiedServer;
 import tk.yallandev.saintmc.lobby.menu.server.ServerInventory.SendClick;
 
 public class KitpvpInventory {
 	
 	public KitpvpInventory(Player player) {
 		Member member = CommonGeneral.getInstance().getMemberManager().getMember(player.getUniqueId());
-		List<BattleServer> battleServer = new ArrayList<>();
+		List<ProxiedServer> battleServer = new ArrayList<>();
 		int w = 10;
 		
 		battleServer.addAll(BukkitMain.getInstance().getServerManager().getBalancer(ServerType.FULLIRON).getList());
@@ -30,10 +30,10 @@ public class KitpvpInventory {
 		
 		MenuInventory menu = new MenuInventory("§8Servidores de KitPvP", 2 + (battleServer.size() == 0 ? 1 : (battleServer.size() / 7) + 1));
 		
-		battleServer.sort(new Comparator<BattleServer>() {
+		battleServer.sort(new Comparator<ProxiedServer>() {
 
 			@Override
-			public int compare(BattleServer o1, BattleServer o2) {
+			public int compare(ProxiedServer o1, ProxiedServer o2) {
 				int object = Boolean.valueOf(o1.isFull()).compareTo(o2.isFull());
 				
 				if (object != 0) 
@@ -49,7 +49,7 @@ public class KitpvpInventory {
 
 		});
 		
-		for (BattleServer server : battleServer) {
+		for (ProxiedServer server : battleServer) {
 			if (!server.isJoinEnabled() && !member.hasGroupPermission(Group.TRIAL))
 				continue;
 			
@@ -84,7 +84,7 @@ public class KitpvpInventory {
 			public void onUpdate(Player player, MenuInventory menu) {
 				int w = 10;
 				
-				for (BattleServer server : battleServer) {
+				for (ProxiedServer server : battleServer) {
 					if (!server.isJoinEnabled() && !member.hasGroupPermission(Group.DEV))
 						continue;
 					

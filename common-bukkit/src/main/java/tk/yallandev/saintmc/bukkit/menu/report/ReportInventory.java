@@ -7,15 +7,15 @@ import org.bukkit.inventory.ItemStack;
 
 import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.bukkit.api.item.ItemBuilder;
+import tk.yallandev.saintmc.bukkit.api.menu.MenuInventory;
 import tk.yallandev.saintmc.bukkit.api.menu.click.ClickType;
 import tk.yallandev.saintmc.bukkit.api.menu.click.MenuClickHandler;
 import tk.yallandev.saintmc.bukkit.api.menu.types.ConfirmInventory;
 import tk.yallandev.saintmc.bukkit.api.menu.types.ConfirmInventory.ConfirmHandler;
-import tk.yallandev.saintmc.bukkit.api.menu.MenuInventory;
 import tk.yallandev.saintmc.common.account.Member;
 import tk.yallandev.saintmc.common.account.MemberVoid;
-import tk.yallandev.saintmc.common.permission.Tag;
 import tk.yallandev.saintmc.common.report.Report;
+import tk.yallandev.saintmc.common.tag.Tag;
 import tk.yallandev.saintmc.common.utils.DateUtils;
 
 public class ReportInventory {
@@ -38,11 +38,12 @@ public class ReportInventory {
 					CommonGeneral.getInstance().getPlayerData().loadMember(report.getPlayerUniqueId()));
 
 		System.out.println((report.getReportExpire() - System.currentTimeMillis()) / 1000);
-		
+
 		menu.setItem(22, new ItemBuilder().type(Material.SKULL_ITEM).durability(3)
 				.lore("", "§7Status: " + (reportPlayer.isOnline() ? "§aOnline no momento" : "§cOffline no momento"),
 						"§7Servidor: §f" + reportPlayer.getServerId(),
-						"§7Expira em: §f" + DateUtils.getTime(report.getReportExpire())).name(Tag.valueOf(reportPlayer.getGroup().name()).getPrefix() + " " + report.getPlayerName())
+						"§7Expira em: §f" + DateUtils.getTime(report.getReportExpire()))
+				.name(Tag.valueOf(reportPlayer.getGroup().name()).getPrefix() + " " + report.getPlayerName())
 				.skin(report.getPlayerName()).build());
 
 		menu.setItem(38, new ItemBuilder().type(Material.COMPASS).name("§aClique para teletransportar!").build(),
@@ -57,8 +58,8 @@ public class ReportInventory {
 		menu.setItem(40,
 				new ItemBuilder().type(Material.BOOK_AND_QUILL).name("§aLista de reports")
 						.lore("\n§7Ultimo motivo: §f" + report.getLastReport().getReason() + "\n§7Ultimo player: §f"
-								+ report.getLastReport().getPlayerName()
-								+ "\n\n§7Numero de reports: §f" + report.getPlayersReason().size())
+								+ report.getLastReport().getPlayerName() + "\n\n§7Numero de reports: §f"
+								+ report.getPlayersReason().size())
 						.build(),
 				new MenuClickHandler() {
 

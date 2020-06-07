@@ -19,7 +19,7 @@ import tk.yallandev.saintmc.bukkit.event.account.PlayerChangeLeagueEvent;
 import tk.yallandev.saintmc.common.account.League;
 import tk.yallandev.saintmc.common.account.Member;
 import tk.yallandev.saintmc.common.permission.Group;
-import tk.yallandev.saintmc.common.permission.Tag;
+import tk.yallandev.saintmc.common.tag.Tag;
 import tk.yallandev.saintmc.lobby.LobbyMain;
 
 public class ScoreboardListener implements Listener {

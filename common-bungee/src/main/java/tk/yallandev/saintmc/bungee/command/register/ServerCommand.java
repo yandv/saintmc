@@ -14,7 +14,7 @@ import tk.yallandev.saintmc.common.command.CommandFramework.Completer;
 import tk.yallandev.saintmc.common.command.CommandSender;
 import tk.yallandev.saintmc.common.permission.Group;
 import tk.yallandev.saintmc.common.server.ServerType;
-import tk.yallandev.saintmc.common.server.loadbalancer.server.BattleServer;
+import tk.yallandev.saintmc.common.server.loadbalancer.server.ProxiedServer;
 
 public class ServerCommand implements CommandClass {
 
@@ -59,7 +59,7 @@ public class ServerCommand implements CommandClass {
 		}
 
 		if (args[0].equalsIgnoreCase("all")) {
-			BattleServer server = BungeeMain.getInstance().getServerManager().getServer(args[1]);
+			ProxiedServer server = BungeeMain.getInstance().getServerManager().getServer(args[1]);
 
 			if (server == null || server.getServerInfo() == null) {
 				sender.sendMessage(" §c* §fO servidor §a" + args[1] + "§f não existe!");
@@ -74,7 +74,7 @@ public class ServerCommand implements CommandClass {
 
 		if (args[0].equalsIgnoreCase("current")) {
 			if (cmdArgs.isPlayer()) {
-				BattleServer server = BungeeMain.getInstance().getServerManager().getServer(args[1]);
+				ProxiedServer server = BungeeMain.getInstance().getServerManager().getServer(args[1]);
 
 				if (server == null || server.getServerInfo() == null) {
 					sender.sendMessage(" §c* §fO servidor §a" + args[1] + "§f não existe!");
@@ -98,7 +98,7 @@ public class ServerCommand implements CommandClass {
 			return;
 		}
 
-		BattleServer server = BungeeMain.getInstance().getServerManager().getServer(args[1]);
+		ProxiedServer server = BungeeMain.getInstance().getServerManager().getServer(args[1]);
 
 		if (server == null || server.getServerInfo() == null) {
 			sender.sendMessage(" §c* §fO servidor §a" + args[1] + "§f não existe!");
@@ -110,20 +110,24 @@ public class ServerCommand implements CommandClass {
 		target.connect(server.getServerInfo());
 	}
 
-	@Command(name = "lobby", usage = "/<command> <player> <server>")
+	@Command(name = "lobby", aliases = { "hub" }, usage = "/<command> <player> <server>")
 	public void lobbyCommand(BungeeCommandArgs cmdArgs) {
 		if (!cmdArgs.isPlayer())
 			return;
 
-		BattleServer server = BungeeMain.getInstance().getServerManager().getBalancer(ServerType.LOBBY).next();
+		CommandSender sender = cmdArgs.getSender();
+		ProxiedServer server = BungeeMain.getInstance().getServerManager().getBalancer(ServerType.LOBBY).next();
 
-		if (server == null || server.getServerInfo() == null)
+		if (server == null || server.getServerInfo() == null) {
+			sender.sendMessage("§cNenhum servidor de lobby disponivel!");
 			return;
+		}
+		
+		if (server.containsPlayer(sender.getUniqueId())) {
+			sender.sendMessage("§cVocê já está nesse servidor!");
+			return;
+		}
 
-		cmdArgs.getSender().sendMessage("");
-		cmdArgs.getSender()
-				.sendMessage("§a§l> §fConectando-se ao servidor §a" + server.getServerId().toLowerCase() + "§f!");
-		cmdArgs.getSender().sendMessage("");
 		cmdArgs.getPlayer().connect(server.getServerInfo());
 	}
 
@@ -143,16 +147,18 @@ public class ServerCommand implements CommandClass {
 			return;
 		}
 
-		BattleServer server = BungeeMain.getInstance().getServerManager().getServer(args[0]);
+		ProxiedServer server = BungeeMain.getInstance().getServerManager().getServer(args[0]);
 
 		if (server == null || server.getServerInfo() == null) {
 			sender.sendMessage(" §c* §fO servidor §a" + args[0] + "§f não existe!");
 			return;
 		}
+		
+		if (server.containsPlayer(sender.getUniqueId())) {
+			sender.sendMessage("§cVocê já está nesse servidor!");
+			return;
+		}
 
-		sender.sendMessage("");
-		sender.sendMessage("§a§l> §fConectando-se ao servidor §a" + server.getServerId().toLowerCase() + "§f!");
-		sender.sendMessage("");
 		cmdArgs.getPlayer().connect(server.getServerInfo());
 	}
 
@@ -162,10 +168,10 @@ public class ServerCommand implements CommandClass {
 			List<String> tagList = new ArrayList<>();
 
 			if (cmdArgs.getArgs()[0].isEmpty()) {
-				for (BattleServer server : BungeeMain.getInstance().getServerManager().getServers())
+				for (ProxiedServer server : BungeeMain.getInstance().getServerManager().getServers())
 					tagList.add(server.getServerId());
 			} else {
-				for (BattleServer server : BungeeMain.getInstance().getServerManager().getServers())
+				for (ProxiedServer server : BungeeMain.getInstance().getServerManager().getServers())
 					if (server.toString().toLowerCase().startsWith(cmdArgs.getArgs()[0].toLowerCase()))
 						tagList.add(server.getServerId());
 			}

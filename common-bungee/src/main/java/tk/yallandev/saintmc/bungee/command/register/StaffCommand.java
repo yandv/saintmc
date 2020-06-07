@@ -16,7 +16,7 @@ import tk.yallandev.saintmc.common.command.CommandFramework.Command;
 import tk.yallandev.saintmc.common.command.CommandSender;
 import tk.yallandev.saintmc.common.permission.Group;
 import tk.yallandev.saintmc.common.server.ServerType;
-import tk.yallandev.saintmc.common.server.loadbalancer.server.BattleServer;
+import tk.yallandev.saintmc.common.server.loadbalancer.server.ProxiedServer;
 
 public class StaffCommand implements CommandClass {
 
@@ -159,7 +159,7 @@ public class StaffCommand implements CommandClass {
 
 			sender.sendMessage(" §c* §fVocê não pode retirar esse jogador da §aScreenshare§f!");
 		} else {
-			BattleServer server = BungeeMain.getPlugin().getServerManager().getBalancer(ServerType.SCREENSHARE).next();
+			ProxiedServer server = BungeeMain.getPlugin().getServerManager().getBalancer(ServerType.SCREENSHARE).next();
 
 			if (server == null || server.getServerInfo() == null) {
 				sender.sendMessage("§c§l> §fNenhuma sala de §aScreenshare§f está disponível no momento!");

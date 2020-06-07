@@ -43,7 +43,7 @@ public class Gamer {
 	}
 	
 	public boolean isInCombat() {
-		return combatStart + 15000 > System.currentTimeMillis();
+		return combatStart + 10000 > System.currentTimeMillis();
 	}
 	
 	public void setCombat() {

@@ -47,7 +47,7 @@ public class BungeeCommandFramework implements CommandFramework {
 				if (sender instanceof ProxiedPlayer) {
 					ProxiedPlayer p = (ProxiedPlayer) sender;
 					Member member = CommonGeneral.getInstance().getMemberManager().getMember(p.getUniqueId());
-					
+
 					if (member == null) {
 						p.disconnect(TextComponent.fromLegacyText("ERRO"));
 						return true;
@@ -132,12 +132,7 @@ public class BungeeCommandFramework implements CommandFramework {
 		commandMap.put(label.toLowerCase(), entry);
 		String cmdLabel = label.replace(".", ",").split(",")[0].toLowerCase();
 
-		net.md_5.bungee.api.plugin.Command cmd;
-		if (command.permission().isEmpty())
-			cmd = new BungeeCommand(cmdLabel);
-		else
-			cmd = new BungeeCommand(cmdLabel, command.permission());
-		plugin.getProxy().getPluginManager().registerCommand(plugin, cmd);
+		plugin.getProxy().getPluginManager().registerCommand(plugin, new BungeeCommand(cmdLabel));
 	}
 
 	private void registerCompleter(String label, Method m, Object obj) {
@@ -162,7 +157,7 @@ public class BungeeCommandFramework implements CommandFramework {
 		public void execute(net.md_5.bungee.api.CommandSender sender, String[] args) {
 			handleCommand(sender, getName(), args);
 		}
-		
+
 	}
 
 	public class BungeeCompleter implements Listener {
@@ -171,34 +166,35 @@ public class BungeeCommandFramework implements CommandFramework {
 		public void onTabComplete(TabCompleteEvent event) {
 			if (!(event.getSender() instanceof ProxiedPlayer))
 				return;
-			
+
 			ProxiedPlayer player = (ProxiedPlayer) event.getSender();
 			String[] split = event.getCursor().replaceAll("\\s+", " ").split(" ");
 			String[] args = new String[split.length - 1];
-			
+
 			for (int i = 1; i < split.length; i++) {
 				args[i - 1] = split[i];
 			}
-			
+
 			String label = split[0].substring(1);
-			
+
 			for (int i = args.length; i >= 0; i--) {
 				StringBuilder buffer = new StringBuilder();
 				buffer.append(label.toLowerCase());
-				
+
 				for (int x = 0; x < i; x++) {
 					buffer.append(".").append(args[x].toLowerCase());
 				}
-				
+
 				String cmdLabel = buffer.toString();
-				
+
 				if (completers.containsKey(cmdLabel)) {
 					Entry<Method, Object> entry = completers.get(cmdLabel);
 					try {
 						event.getSuggestions().clear();
-						
-						List<String> list = (List<String>) entry.getKey().invoke(entry.getValue(), new BungeeCommandArgs(player, label, args, cmdLabel.split("\\.").length - 1));
-						
+
+						List<String> list = (List<String>) entry.getKey().invoke(entry.getValue(),
+								new BungeeCommandArgs(player, label, args, cmdLabel.split("\\.").length - 1));
+
 						event.getSuggestions().addAll(list);
 					} catch (IllegalArgumentException | IllegalAccessException | InvocationTargetException e) {
 						e.printStackTrace();

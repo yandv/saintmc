@@ -15,7 +15,7 @@ import tk.yallandev.saintmc.bukkit.api.menu.MenuUpdateHandler;
 import tk.yallandev.saintmc.common.account.Member;
 import tk.yallandev.saintmc.common.permission.Group;
 import tk.yallandev.saintmc.common.server.ServerType;
-import tk.yallandev.saintmc.common.server.loadbalancer.server.BattleServer;
+import tk.yallandev.saintmc.common.server.loadbalancer.server.ProxiedServer;
 import tk.yallandev.saintmc.common.server.loadbalancer.server.HungerGamesServer;
 import tk.yallandev.saintmc.common.utils.string.StringUtils;
 import tk.yallandev.saintmc.lobby.menu.server.ServerInventory.SendClick;
@@ -25,16 +25,16 @@ public class HungergamesInventory {
 	public HungergamesInventory(Player player) {
 		Member member = CommonGeneral.getInstance().getMemberManager().getMember(player.getUniqueId());
 		
-		List<BattleServer> serverList = new ArrayList<>(
+		List<ProxiedServer> serverList = new ArrayList<>(
 				BukkitMain.getInstance().getServerManager().getBalancer(ServerType.HUNGERGAMES).getList());
 
 		MenuInventory menu = new MenuInventory("§8Servidores de HungerGames",
 				2 + (serverList.size() == 0 ? 1 : (serverList.size() / 7) + 1));
 
-		serverList.sort(new Comparator<BattleServer>() {
+		serverList.sort(new Comparator<ProxiedServer>() {
 
 			@Override
-			public int compare(BattleServer o1, BattleServer o2) {
+			public int compare(ProxiedServer o1, ProxiedServer o2) {
 				int object = ((HungerGamesServer) o1).getState().compareTo(((HungerGamesServer) o2).getState());
 
 				if (object != 0)
@@ -66,10 +66,10 @@ public class HungergamesInventory {
 
 	}
 
-	public void create(List<BattleServer> serverList, Member member, MenuInventory menu) {
+	public void create(List<ProxiedServer> serverList, Member member, MenuInventory menu) {
 		int w = 10;
 		
-		for (BattleServer s : serverList) {
+		for (ProxiedServer s : serverList) {
 			if (!s.isJoinEnabled() && member.hasGroupPermission(Group.TRIAL))
 				continue;
 			

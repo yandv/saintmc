@@ -3,8 +3,10 @@ package tk.yallandev.saintmc.bukkit.command.register;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
+import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.bukkit.command.BukkitCommandSender;
 import tk.yallandev.saintmc.bukkit.menu.anticheat.AnticheatInventory;
+import tk.yallandev.saintmc.common.account.Member;
 import tk.yallandev.saintmc.common.command.CommandArgs;
 import tk.yallandev.saintmc.common.command.CommandClass;
 import tk.yallandev.saintmc.common.command.CommandFramework.Command;
@@ -19,6 +21,10 @@ public class AnticheatCommand implements CommandClass {
 		String[] args = cmdArgs.getArgs();
 		
 		if (args.length == 0 || !cmdArgs.isPlayer()) {
+			Member member = CommonGeneral.getInstance().getMemberManager().getMember(sender.getUniqueId());
+			
+			member.getAccountConfiguration().setAnticheatEnabled(!member.getAccountConfiguration().isAnticheatEnabled());
+			member.sendMessage(member.getAccountConfiguration().isAnticheatEnabled() ? "§aAs mensagens do anticheat foram ativadas!" : "§cAs mensagens do anticheat foram desativadas!");
 			return;
 		}
 		

@@ -22,7 +22,7 @@ import tk.yallandev.saintmc.bukkit.api.scoreboard.Scoreboard;
  * 
  * SimpleScoreboard helps when create a scoreboard
  * 
- * @author Allan
+ * @author yandv
  *
  */
 

@@ -7,8 +7,6 @@ import net.md_5.bungee.api.Callback;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.ServerPing;
 import net.md_5.bungee.api.ServerPing.PlayerInfo;
-import net.md_5.bungee.api.ServerPing.Players;
-import net.md_5.bungee.api.ServerPing.Protocol;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.PendingConnection;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -23,9 +21,10 @@ import tk.yallandev.saintmc.CommonConst;
 import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.bungee.BungeeMain;
 import tk.yallandev.saintmc.common.account.Member;
+import tk.yallandev.saintmc.common.permission.Group;
 import tk.yallandev.saintmc.common.server.ServerManager;
 import tk.yallandev.saintmc.common.server.ServerType;
-import tk.yallandev.saintmc.common.server.loadbalancer.server.BattleServer;
+import tk.yallandev.saintmc.common.server.loadbalancer.server.ProxiedServer;
 import tk.yallandev.saintmc.common.utils.string.StringCenter;
 
 public class ConnectionListener implements Listener {
@@ -46,7 +45,7 @@ public class ConnectionListener implements Listener {
 		 * Servidor que ele foi desconectado
 		 */
 
-		BattleServer kickedFrom = manager.getServer(event.getKickedFrom().getName());
+		ProxiedServer kickedFrom = manager.getServer(event.getKickedFrom().getName());
 
 		/*
 		 * Verifica se o servidor é nulo, caso seja, wtf / kicka o player
@@ -61,30 +60,10 @@ public class ConnectionListener implements Listener {
 		 * Se o servidor for lobby, desconectar o player do servidor!
 		 */
 
-		if (kickedFrom.getServerType().toString().contains("LOBBY")) {
-			player.disconnect(event.getKickReasonComponent());
-			return;
-		}
-
-		/*
-		 * Servidor de redirecionamento (fallback server), que serão os lobbies
-		 */
-
-		BattleServer fallbackServer = manager.getBalancer(kickedFrom.getServerType().getServerLobby()).next();
-
+		ProxiedServer fallbackServer = manager.getBalancer(kickedFrom.getServerType().getServerLobby()).next();
+		
 		if (kickedFrom.getServerType() == ServerType.HUNGERGAMES) {
-
-			/*
-			 * Mas caso o servidor seja um HG, será redirecionado para outro!
-			 */
-
-			/*
-			 * BattleServer hungerGames =
-			 * manager.getBalancer(ServerType.HUNGERGAMES).next();
-			 * 
-			 * if (hungerGames != null && hungerGames.getServerInfo() != null &&
-			 * hungerGames.isFull()) fallbackServer = hungerGames;
-			 */
+			
 		}
 
 		/*
@@ -96,156 +75,98 @@ public class ConnectionListener implements Listener {
 			event.getPlayer().disconnect(event.getKickReasonComponent());
 			return;
 		}
-
+		
+		if (kickedFrom.getServerType() == fallbackServer.getServerType()) {
+			player.disconnect(event.getKickReasonComponent());
+			return;
+		}
+		
 		String message = event.getKickReason();
 
 		for (String m : message.split("\n")) {
 			player.sendMessage(TextComponent.fromLegacyText(m.replace("\n", "")));
 		}
-
+		
 		event.setCancelled(true);
 
-		if (!fallbackServer.containsPlayer(player.getUniqueId()))
+		if (!fallbackServer.containsPlayer(player.getUniqueId())) {
 			event.setCancelServer(fallbackServer.getServerInfo());
+		}
 	}
 
 	@EventHandler
 	public void onSearchServer(SearchServerEvent event) {
-		BattleServer server = manager.getServer(getServerIp(event.getPlayer().getPendingConnection()));
+		String serverId = getServerIp(event.getPlayer().getPendingConnection());
 
 		AccountType accountType = event.getPlayer().getAccountType();
+		ProxiedServer server = manager.getServer(serverId) == null ? manager.getBalancer(
+				accountType == AccountType.CRACKED && CommonGeneral.getInstance().isLoginServer() ? ServerType.LOGIN
+						: ServerType.LOBBY)
+				.next() : manager.getServer(serverId);
 
 		if (server == null || server.getServerInfo() == null) {
-			server = manager
-					.getBalancer(accountType == AccountType.CRACKED
-							&& CommonGeneral.getInstance().isLoginServer() ? ServerType.LOGIN : ServerType.LOBBY)
-					.next();
-
-			if (server == null || server.getServerInfo() == null) {
-				event.setCancelled(true);
-				event.setCancelMessage(accountType == AccountType.CRACKED
-						? "§4§l" + CommonConst.KICK_PREFIX
-								+ "\n§f\n§fO servidor de §alogin§f está cheio no momento!\n§f\n§6Acesse nosso discord para mais informações:\n§b"
-								+ CommonConst.DISCORD
-						: "§4§l" + CommonConst.KICK_PREFIX
-								+ "\n\n§fNenhum servidor de §alobby§f está disponível no momento!\n§f\n§6Acesse nosso discord para mais informações:\n§b"
-								+ CommonConst.DISCORD);
-				return;
-			}
+			event.setCancelled(true);
+			event.setCancelMessage(accountType == AccountType.CRACKED ? "§4§l" + CommonConst.KICK_PREFIX
+					+ "\n§f\n§fO servidor de §alogin§f está cheio no momento!\n§f\n§6Acesse nosso discord para mais informações:\n§b"
+					+ CommonConst.DISCORD
+					: "§4§l" + CommonConst.KICK_PREFIX
+							+ "\n\n§fNenhum servidor de §alobby§f está disponível no momento!\n§f\n§6Acesse nosso discord para mais informações:\n§b"
+							+ CommonConst.DISCORD);
+			return;
 		}
-		
+
 		event.setServer(server.getServerInfo());
 	}
 
+	/*
+	 * ServerConnectRequest
+	 */
+	
 	@EventHandler
 	public void onServerConnect(ServerConnectEvent event) {
 		Member player = CommonGeneral.getInstance().getMemberManager().getMember(event.getPlayer().getUniqueId());
 
 		if (player == null)
 			return;
-
-		BattleServer server;
-
-		if (event.getTarget() == null) {
-			server = manager.getBalancer(ServerType.LOBBY).next();
-
-			if (server == null || server.getServerInfo() == null) {
-				event.setCancelled(true);
-				event.getPlayer().disconnect(TextComponent.fromLegacyText(
-						"§4§l" + CommonConst.KICK_PREFIX + "\n§f\n§fO servidor direcionado não está disponível!"));
-				return;
-			}
-
-			if (server.isFull()) {
-				player.sendMessage("§c§l> §fO servidor que você foi redirecionado está §ccheio§f!");
-				return;
-			}
-
-			player.sendMessage("§c§l> §fO servidor que você foi redirecionado não está mais disponível!");
-		} else {
-			server = manager.getServer(event.getTarget().getName());
-
-			if (server == null || server.getServerInfo() == null) {
-				server = manager.getBalancer(ServerType.LOBBY).next();
-
-				if (server == null || server.getServerInfo() == null) {
-					event.setCancelled(true);
-					event.getPlayer().disconnect(TextComponent.fromLegacyText(
-							"§4§l" + CommonConst.KICK_PREFIX + "\n§f\n§fO servidor direcionado não está disponível!"));
-					return;
-				}
-
-				if (server.isFull()) {
-					player.sendMessage("§c§l> §fO servidor que você foi redirecionado está §ccheio§f!");
-					return;
-				}
-
-				player.sendMessage("§c§l> §fO servidor que você foi redirecionado não está mais disponível!");
-			}
-		}
-
-		if (server.getServerType() == ServerType.SCREENSHARE) {
-			event.setTarget(server.getServerInfo());
-			return;
-		}
+		
+		ProxiedServer server = manager.getServer(event.getTarget().getName());
 
 		if (!player.getLoginConfiguration().isLogged()) {
-			if (CommonGeneral.getInstance().isLoginServer()) {
-				if (server.getServerType() != ServerType.LOGIN) {
-					server = BungeeMain.getInstance().getServerManager().getBalancer(ServerType.LOGIN).next();
-
-					if (server == null || server.getServerInfo() == null) {
-						event.setCancelled(true);
-						event.getPlayer().disconnect(TextComponent.fromLegacyText("§4§l" + CommonConst.KICK_PREFIX
-								+ "\n§f\n§fNenhum servidor de §alogin§f está disponível no momento!\n§f\n§6Acesse nosso discord para mais informações:\n§b"
-								+ CommonConst.DISCORD));
-						return;
-					}
-
-					if (server.isFull()) {
-						event.setCancelled(true);
-						event.getPlayer().disconnect(TextComponent.fromLegacyText("§4§l" + CommonConst.KICK_PREFIX
-								+ "\n§f\n§fO servidor de §alogin§f está cheio no momento!\n§f\n§6Acesse nosso discord para mais informações:\n§b"
-								+ CommonConst.DISCORD));
-						return;
-					}
-
-					if (!player.getServerId().equals(server.getServerId())) {
-						event.setTarget(server.getServerInfo());
-					}
-
-					player.sendMessage("§c§l> §fVocê não pode mudar de servidor!");
-					return;
-				}
-			} else {
-				if (server.getServerType() != ServerType.LOBBY) {
-					server = BungeeMain.getInstance().getServerManager().getBalancer(ServerType.LOBBY).next();
-
-					if (server == null || server.getServerInfo() == null) {
-						event.setCancelled(true);
-						event.getPlayer().disconnect(TextComponent.fromLegacyText("§4§l" + CommonConst.KICK_PREFIX
-								+ "\n§f\n§fNenhum servidor de §alobby§f está disponível no momento!\n§f\n§6Acesse nosso discord para mais informações:\n§b"
-								+ CommonConst.DISCORD));
-						return;
-					}
-
-					if (!player.getServerId().equals(server.getServerId())) {
-						event.setTarget(server.getServerInfo());
-					}
-
-					player.sendMessage("§c§l> §fVocê não pode mudar de servidor!");
-					return;
-				}
+			if (server.getServerType() == ServerType.LOGIN
+					|| (CommonGeneral.getInstance().isLoginServer() && server.getServerType() == ServerType.LOBBY)) {
+				return;
 			}
-		}
 
-		event.setTarget(server.getServerInfo());
+			event.setCancelled(true);
+			return;
+		}
+		
+		String message = "§aSucesso!";
+		
+		if (server.isFull() && !player.hasGroupPermission(Group.LIGHT)) {
+			event.setCancelled(true);
+			message = "§cO servidor está cheio!";
+		}
+		
+//		if (!server.canBeSelected() && !player.hasGroupPermission(Group.BUILDER)) {
+//			event.setCancelled(true);
+//			message = "§cO servidor está disponivel somente para a equipe!";
+//		}
+
+		if (event.isCancelled()) {
+			if (event.getPlayer().getServer() == null || event.getPlayer().getServer().getInfo() == null)
+				event.getPlayer().disconnect(message);
+			else
+				player.sendMessage(message);
+		} else {
+			event.setTarget(server.getServerInfo());
+		}
 	}
 
 	@EventHandler(priority = 127)
 	public void onProxyPing(ProxyPingEvent event) {
 		String serverIp = getServerIp(event.getConnection());
-		BattleServer server = manager.getServer(serverIp);
+		ProxiedServer server = manager.getServer(serverIp);
 		ServerPing serverPing = event.getResponse();
 
 		if (server == null) {
@@ -255,33 +176,35 @@ public class ConnectionListener implements Listener {
 					.setSample(new PlayerInfo[] { new PlayerInfo("§e" + CommonConst.WEBSITE, UUID.randomUUID()) });
 			serverPing.setDescription("      §f﹄ §6§lSaint§f§lMC §f| §eMinecraft Network §7(1.7-.12) §f﹃\n"
 					+ StringCenter.centered(motdList[new Random().nextInt(motdList.length)], 127));
-		} else {
-			event.registerIntent(BungeeMain.getPlugin());
+			return;
+		}
 
-			server.getServerInfo().ping(new Callback<ServerPing>() {
+		event.registerIntent(BungeeMain.getPlugin());
 
-				@Override
-				public void done(ServerPing realPing, Throwable throwable) {
-					if (throwable == null) {
-						serverPing.getPlayers().setMax(realPing.getPlayers().getMax());
-						serverPing.getPlayers().setOnline(realPing.getPlayers().getOnline());
-						serverPing.setDescription(realPing.getDescription());
-					} else {
-						serverPing.setPlayers(new Players(-1, -1, null));
-						serverPing.setVersion(new Protocol("-1", 0));
-						serverPing.setDescription(
-								"    §f﹄ §6§lSaint§f§lMC §f| §eMinecraft Network §7(1.7-.12) §f﹃\n    §4§nServidor não encontrado!");
-					}
+		server.getServerInfo().ping(new Callback<ServerPing>() {
 
-					event.setResponse(serverPing);
-					event.completeIntent(BungeeMain.getPlugin());
+			@Override
+			public void done(ServerPing realPing, Throwable throwable) {
+				if (throwable == null) {
+					serverPing.getPlayers().setMax(realPing.getPlayers().getMax());
+					serverPing.getPlayers().setOnline(realPing.getPlayers().getOnline());
+					serverPing.setDescription(realPing.getDescription());
+				} else {
+					serverPing.getPlayers().setMax(ProxyServer.getInstance().getOnlineCount() + 1);
+					serverPing.getPlayers().setOnline(ProxyServer.getInstance().getOnlineCount());
+					serverPing.getPlayers().setSample(
+							new PlayerInfo[] { new PlayerInfo("§cServidor não encontrado!", UUID.randomUUID()) });
+					serverPing.setDescription("    §f﹄ §6§lSaint§f§lMC §f| §eMinecraft Network §7(1.7-.12) §f﹃\n"
+							+ StringCenter.centered("§4§nServidor não encontrado!", 127));
 				}
 
-			});
-		}
+				event.completeIntent(BungeeMain.getPlugin());
+			}
+
+		});
 	}
 
-	public static String getServerIp(PendingConnection con) {
+	private String getServerIp(PendingConnection con) {
 		if (con == null || con.getVirtualHost() == null)
 			return "";
 

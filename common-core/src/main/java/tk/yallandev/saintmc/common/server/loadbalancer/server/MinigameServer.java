@@ -9,7 +9,7 @@ import tk.yallandev.saintmc.common.server.ServerType;
 
 @Getter
 @Setter
-public abstract class MinigameServer extends BattleServer {
+public abstract class MinigameServer extends ProxiedServer {
 
     private int time;
     private String map;

@@ -4,7 +4,7 @@ import org.bukkit.entity.Player;
 
 import lombok.Getter;
 import tk.yallandev.saintmc.bukkit.event.PlayerCancellableEvent;
-import tk.yallandev.saintmc.common.permission.Tag;
+import tk.yallandev.saintmc.common.tag.Tag;
 
 @Getter
 public class PlayerChangeTagEvent extends PlayerCancellableEvent {

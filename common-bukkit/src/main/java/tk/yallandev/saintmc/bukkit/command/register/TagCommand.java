@@ -12,7 +12,7 @@ import tk.yallandev.saintmc.bukkit.account.BukkitMember;
 import tk.yallandev.saintmc.bukkit.command.BukkitCommandArgs;
 import tk.yallandev.saintmc.common.command.CommandClass;
 import tk.yallandev.saintmc.common.command.CommandFramework.Command;
-import tk.yallandev.saintmc.common.permission.Tag;
+import tk.yallandev.saintmc.common.tag.Tag;
 
 public class TagCommand implements CommandClass {
 
@@ -48,7 +48,7 @@ public class TagCommand implements CommandClass {
 				component.setHoverEvent(new HoverEvent(Action.SHOW_TEXT,
 						new TextComponent[] { new TextComponent("§fClique para selecionar a tag!") }));
 				component.setClickEvent(
-						new ClickEvent(net.md_5.bungee.api.chat.ClickEvent.Action.RUN_COMMAND, "/tag " + t.name()));
+						new ClickEvent(net.md_5.bungee.api.chat.ClickEvent.Action.RUN_COMMAND, "/tag " + t.getName()));
 				message[i] = component;
 				i -= 1;
 			}

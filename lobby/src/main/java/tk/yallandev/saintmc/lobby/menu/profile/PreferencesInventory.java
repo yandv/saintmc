@@ -14,7 +14,7 @@ import tk.yallandev.saintmc.bukkit.api.menu.click.MenuClickHandler;
 import tk.yallandev.saintmc.bukkit.api.vanish.VanishAPI;
 import tk.yallandev.saintmc.common.account.Member;
 import tk.yallandev.saintmc.common.permission.Group;
-import tk.yallandev.saintmc.common.permission.Tag;
+import tk.yallandev.saintmc.common.tag.Tag;
 import tk.yallandev.saintmc.lobby.LobbyMain;
 import tk.yallandev.saintmc.lobby.gamer.Gamer;
 

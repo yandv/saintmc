@@ -28,16 +28,16 @@ import org.bukkit.generator.ChunkGenerator;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.messaging.PluginMessageListener;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
-import com.github.juliarn.npc.NPCPool;
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteStreams;
 
-import de.inventivegames.hologram.HologramListeners;
 import lombok.Getter;
 import lombok.Setter;
+import tk.yallandev.hologramapi.controller.HologramController;
 import tk.yallandev.saintmc.CommonConst;
 import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.bukkit.anticheat.AnticheatController;
@@ -45,13 +45,16 @@ import tk.yallandev.saintmc.bukkit.api.character.CharacterListener;
 import tk.yallandev.saintmc.bukkit.api.cooldown.CooldownController;
 import tk.yallandev.saintmc.bukkit.api.item.ActionItemListener;
 import tk.yallandev.saintmc.bukkit.api.menu.MenuListener;
+import tk.yallandev.saintmc.bukkit.api.protocol.ProtocolGetter;
+import tk.yallandev.saintmc.bukkit.api.server.Server;
+import tk.yallandev.saintmc.bukkit.api.server.impl.ServerImpl;
 import tk.yallandev.saintmc.bukkit.api.vanish.AdminMode;
 import tk.yallandev.saintmc.bukkit.api.worldedit.WorldeditController;
 import tk.yallandev.saintmc.bukkit.command.BukkitCommandFramework;
 import tk.yallandev.saintmc.bukkit.controller.SkinController;
+import tk.yallandev.saintmc.bukkit.networking.packet.BukkitPacketController;
+import tk.yallandev.saintmc.bukkit.networking.redis.BukkitPubSubHandler;
 import tk.yallandev.saintmc.bukkit.permission.PermissionManager;
-import tk.yallandev.saintmc.bukkit.protocol.ProtocolGetter;
-import tk.yallandev.saintmc.bukkit.redis.BukkitPubSubHandler;
 import tk.yallandev.saintmc.bukkit.scheduler.UpdateScheduler;
 import tk.yallandev.saintmc.common.account.Member;
 import tk.yallandev.saintmc.common.backend.data.PlayerData;
@@ -87,19 +90,23 @@ public class BukkitMain extends JavaPlugin {
 
 	private PermissionManager permissionManager;
 	private ServerManager serverManager;
+	
+	private HologramController hologramController;
+	private BukkitPacketController packetController;
 
 	private PubSubListener pubSubListener;
 	private Map<String, Location> location = new HashMap<>();
 	
-	private NPCPool npcPool;
-
+	@Setter
+	private Server serverConfig;
+	
 	@Setter
 	private boolean tagControl = true;
 	@Setter
 	private boolean removePlayerDat = true;
 	@Setter
 	private boolean serverLog = false;
-
+	
 	@Override
 	public void onLoad() {
 		instance = this;
@@ -149,9 +156,16 @@ public class BukkitMain extends JavaPlugin {
 		general.debug("The server has been loaded " + general.getServerAddress() + " (" + general.getServerId() + " - "
 				+ general.getServerType().toString() + ")");
 
-		general.getServerData().startServer(Bukkit.getMaxPlayers());
+		new BukkitRunnable() {
+			
+			@Override
+			public void run() {
+				general.getServerData().startServer(Bukkit.getMaxPlayers());
+				general.getServerData().setJoinEnabled(Bukkit.hasWhitelist());
 
-		general.debug("The server has been sent the start message to redis!");
+				general.debug("The server has been sent the start message to redis!");
+			}
+		}.runTaskAsynchronously(this);
 
 		for (Report report : general.getReportData().loadReports()) {
 			general.getReportManager().loadReport(report);
@@ -170,13 +184,16 @@ public class BukkitMain extends JavaPlugin {
 		
 		anticheatController = new AnticheatController();
 		anticheatController.registerModules();
+		
+		hologramController = new HologramController(getInstance());
+		packetController = new BukkitPacketController();
 
 		permissionManager = new PermissionManager(this);
 		permissionManager.onEnable();
 		
 		serverManager = new ServerManager();
+		serverConfig = new ServerImpl();
 		
-		npcPool = new NPCPool(getInstance());
 		ProtocolGetter.foundDependencies();
 
 		/*
@@ -184,6 +201,7 @@ public class BukkitMain extends JavaPlugin {
 		 */
 
 		getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
+		getServer().getMessenger().registerOutgoingPluginChannel(this, "server:packet");
 		getServer().getMessenger().registerIncomingPluginChannel(this, "BungeeCord", new PluginMessageListener() {
 
 			@Override
@@ -227,7 +245,7 @@ public class BukkitMain extends JavaPlugin {
 					"blockdata", "clone", "debug", "defaultgamemode", "entitydata", "execute", "fill", "gamemode",
 					"pardon", "pardon-ip", "replaceitem", "setidletimeout", "stats", "testforblock", "title", "trigger",
 					"viaver", "protocolsupport", "ps", "holograms", "hd", "holo", "hologram", "restart", "stop",
-					"filter", "packetlog", "pl", "plugins", "timings");
+					"filter", "packetlog", "pl", "plugins", "timings", "whitelist");
 
 			try {
 				new CommandLoader(new BukkitCommandFramework(this)).loadCommandsFromPackage(getFile(),
@@ -255,9 +273,7 @@ public class BukkitMain extends JavaPlugin {
 	private void registerListener() {
 		PluginManager pm = Bukkit.getPluginManager();
 		
-		pm.registerEvents(new HologramListeners(), this);
-		
-		for (Class<?> classes : ClassGetter.getClassesForPackage(getClass(), "tk.yallandev.saintmc.bukkit.listener")) {
+		for (Class<?> classes : ClassGetter.getClassesForPackage(getClass(), "tk.yallandev.saintmc.bukkit.listener.register")) {
 			if (Listener.class.isAssignableFrom(classes)) {
 
 				try {

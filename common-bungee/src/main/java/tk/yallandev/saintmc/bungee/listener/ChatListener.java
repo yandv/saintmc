@@ -10,7 +10,7 @@ import net.md_5.bungee.event.EventHandler;
 import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.common.account.Member;
 import tk.yallandev.saintmc.common.permission.Group;
-import tk.yallandev.saintmc.common.permission.Tag;
+import tk.yallandev.saintmc.common.tag.Tag;
 
 public class ChatListener implements Listener {
 

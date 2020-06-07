@@ -1,20 +1,14 @@
 package tk.yallandev.saintmc.bungee.command.register;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
-import net.md_5.bungee.api.connection.ProxiedPlayer;
 import tk.yallandev.saintmc.CommonGeneral;
-import tk.yallandev.saintmc.bungee.BungeeMain;
 import tk.yallandev.saintmc.bungee.command.BungeeCommandArgs;
 import tk.yallandev.saintmc.common.account.Member;
 import tk.yallandev.saintmc.common.account.MemberModel;
 import tk.yallandev.saintmc.common.account.MemberVoid;
-import tk.yallandev.saintmc.common.command.CommandArgs;
 import tk.yallandev.saintmc.common.command.CommandClass;
 import tk.yallandev.saintmc.common.command.CommandFramework.Command;
-import tk.yallandev.saintmc.common.command.CommandFramework.Completer;
 import tk.yallandev.saintmc.common.command.CommandSender;
 import tk.yallandev.saintmc.common.permission.Group;
 
@@ -134,27 +128,6 @@ public class GroupCommand implements CommandClass {
 		player.setGroup(group);
 		sender.sendMessage(" §a* §fVocê alterou o grupo do §a" + player.getPlayerName() + "("
 				+ player.getUniqueId().toString().replace("-", "") + ")" + "§f para §a" + group.name() + "§f!");
-	}
-
-	@Completer(name = "groupset", aliases = { "setargrupo", "removevip", "removervip" })
-	public List<String> groupsetCompleter(CommandArgs args) {
-		if (args.getArgs().length == 2) {
-			List<String> groupList = new ArrayList<>();
-			for (Group group : Group.values()) {
-				if (group.toString().toLowerCase().startsWith(args.getArgs()[1].toLowerCase())) {
-					groupList.add(group.toString());
-				}
-			}
-			return groupList;
-		}
-
-		List<String> players = new ArrayList<>();
-		for (ProxiedPlayer p : BungeeMain.getPlugin().getProxy().getPlayers()) {
-			if (p.getName().toLowerCase().startsWith(args.getArgs()[0].toLowerCase())) {
-				players.add(p.getName());
-			}
-		}
-		return players;
 	}
 
 }

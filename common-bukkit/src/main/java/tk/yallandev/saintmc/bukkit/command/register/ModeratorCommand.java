@@ -35,7 +35,7 @@ public class ModeratorCommand implements CommandClass {
 
 	private DecimalFormat locationFormater = new DecimalFormat("######.##");
 
-	@Command(name = "build", groupToUse = Group.MODGC, noPermMessageId = "command-gamemode-no-access")
+	@Command(name = "build", groupToUse = Group.MODGC)
 	public void buildCommand(BukkitCommandArgs cmdArgs) {
 		if (!cmdArgs.isPlayer()) {
 			cmdArgs.getSender().sendMessage("§4§lERRO §fComando disponivel apenas §c§lin-game");
@@ -50,8 +50,7 @@ public class ModeratorCommand implements CommandClass {
 				+ "§f o modo de construção!");
 	}
 
-	@Command(name = "gamemode", aliases = {
-			"gm" }, groupToUse = Group.TRIAL, noPermMessageId = "command-gamemode-no-access")
+	@Command(name = "gamemode", aliases = { "gm" }, groupToUse = Group.TRIAL)
 	public void gamemode(BukkitCommandArgs cmdArgs) {
 		if (!cmdArgs.isPlayer()) {
 			cmdArgs.getSender().sendMessage("§4§lERRO §fComando disponivel apenas §c§lin-game");
@@ -306,10 +305,10 @@ public class ModeratorCommand implements CommandClass {
 			worldCreator.generatorSettings("0;0");
 
 			world = BukkitMain.getInstance().getServer().createWorld(worldCreator);
-			
+
 			world.setDifficulty(Difficulty.EASY);
 			world.setGameRuleValue("doDaylightCycle", "false");
-			
+
 			CommonGeneral.getInstance().getLogger()
 					.info("The world " + cmdArgs.getArgs()[0] + " has loaded successfully.");
 			return;
@@ -431,8 +430,7 @@ public class ModeratorCommand implements CommandClass {
 		// TODO: ALERT STAFFS
 	}
 
-	@Command(name = "teleportall", aliases = {
-			"tpall" }, groupToUse = Group.MOD, noPermMessageId = "command-teleportall-no-access", runAsync = false)
+	@Command(name = "teleportall", aliases = { "tpall" }, groupToUse = Group.MOD)
 	public void tpall(BukkitCommandArgs cmdArgs) {
 		if (!cmdArgs.isPlayer()) {
 			cmdArgs.getSender().sendMessage("§4§lERRO §fComando disponivel apenas §c§lin-game");
@@ -482,8 +480,7 @@ public class ModeratorCommand implements CommandClass {
 		// TODO: ALERT STAFFS
 	}
 
-	@Command(name = "kick", aliases = {
-			"kickar" }, groupToUse = Group.TRIAL, noPermMessageId = "command-kick-no-access", runAsync = false)
+	@Command(name = "kick", aliases = { "kickar" }, groupToUse = Group.TRIAL)
 	public void kick(BukkitCommandArgs cmdArgs) {
 		CommandSender sender = ((BukkitCommandSender) cmdArgs.getSender()).getSender();
 		String[] args = cmdArgs.getArgs();

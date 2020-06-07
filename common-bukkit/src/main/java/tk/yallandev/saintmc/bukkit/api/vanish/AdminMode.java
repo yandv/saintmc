@@ -11,13 +11,17 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitRunnable;
 
+import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.bukkit.BukkitMain;
 import tk.yallandev.saintmc.bukkit.api.actionbar.ActionBarAPI;
 import tk.yallandev.saintmc.bukkit.event.admin.PlayerAdminModeEvent;
 import tk.yallandev.saintmc.common.account.Member;
 import tk.yallandev.saintmc.common.permission.Group;
+import tk.yallandev.saintmc.common.server.ServerType;
 
 public class AdminMode {
 
@@ -116,6 +120,24 @@ public class AdminMode {
 					event.getPlayer().performCommand("invsee " + event.getRightClicked().getName());
 				}
 			}
+		}
+		
+		@EventHandler
+		public void asodkad(PlayerJoinEvent event) {
+			Player player = event.getPlayer();
+			Member member = CommonGeneral.getInstance().getMemberManager().getMember(player.getUniqueId());
+			
+			new BukkitRunnable() {
+
+				@Override
+				public void run() {
+					if (CommonGeneral.getInstance().getServerType() != ServerType.SCREENSHARE)
+						if (member.getAccountConfiguration().isAdminOnJoin())
+							if (member.hasGroupPermission(Group.TRIAL))
+								if (!AdminMode.getInstance().isAdmin(player)) 
+									AdminMode.getInstance().setAdmin(player, member);
+				}
+			}.runTaskLater(BukkitMain.getInstance(), 10);
 		}
 
 	}

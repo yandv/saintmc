@@ -8,6 +8,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 
+import tk.yallandev.saintmc.bukkit.api.vanish.AdminMode;
 import tk.yallandev.saintmc.bukkit.event.PlayerMoveUpdateEvent;
 import tk.yallandev.saintmc.bukkit.event.player.PlayerDamagePlayerEvent;
 import tk.yallandev.saintmc.kitpvp.GameMain;
@@ -53,6 +54,10 @@ public class ProtectionListener implements Listener {
 	@EventHandler
 	public void onRealMove(PlayerMoveUpdateEvent event) {
 		Player player = event.getPlayer();
+		
+		if (AdminMode.getInstance().isAdmin(player))
+			return;
+		
 		Gamer gamer = GameMain.getInstance().getGamerManager().getGamer(player.getUniqueId());
 
 		if (!gamer.isSpawnProtection())

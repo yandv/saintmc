@@ -2,6 +2,7 @@ package tk.yallandev.saintmc.bukkit.api.item;
 
 import java.lang.reflect.Constructor;
 import java.util.HashMap;
+import java.util.Map.Entry;
 
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -17,7 +18,7 @@ import lombok.Getter;
 
 public class ActionItemStack {
 
-	private static final HashMap<Integer, Interact> handlers = new HashMap<>();
+	private static final HashMap<Integer, Interact> HANDLERS = new HashMap<>();
 
 	@Getter
 	private Interact interactHandler;
@@ -25,7 +26,7 @@ public class ActionItemStack {
 	private ItemStack itemStack;
 
 	public ActionItemStack(ItemStack stack, Interact handler) {
-		itemStack = setTag(stack, register(handler));
+		itemStack = setTag(stack, registerHandler(handler));
 		
 		if (itemStack == null)
 			itemStack = stack;
@@ -33,17 +34,20 @@ public class ActionItemStack {
 		interactHandler = handler;
 	}
 
-	public static int register(Interact handler) {
-		handlers.put(handlers.size() + 1, handler);
-		return handlers.size();
+	public static int registerHandler(Interact handler) {
+		if (HANDLERS.containsValue(handler))
+			return HANDLERS.entrySet().stream().filter(entry -> entry.getValue() == handler).map(Entry::getKey).findFirst().orElse(-1);
+		
+		HANDLERS.put(HANDLERS.size() + 1, handler);
+		return HANDLERS.size();
 	}
 
-	public static void unregister(Integer id) {
-		handlers.remove(id);
+	public static void unregisterHandler(Integer id) {
+		HANDLERS.remove(id);
 	}
 
 	public static Interact getHandler(Integer id) {
-		return handlers.get(id);
+		return HANDLERS.get(id);
 	}
 
 	public static ItemStack setTag(ItemStack stack, int id) {
@@ -63,10 +67,15 @@ public class ActionItemStack {
 		return null;
 	}
 	
+	public static ActionItemStack create(ItemStack stack, Interact handler) {
+		return new ActionItemStack(stack, handler);
+	}
+	
 	@Getter
 	public static abstract class Interact {
 		
 		private InteractType interactType;
+		private boolean inventoryClick;
 		
 		public Interact() {
 			this.interactType = InteractType.CLICK;
@@ -75,9 +84,13 @@ public class ActionItemStack {
 		public Interact(InteractType interactType) {
 			this.interactType = interactType;
 		}
+		
+		public Interact setInventoryClick(boolean inventoryClick) {
+			this.inventoryClick = inventoryClick;
+			return this;
+		}
 
 		public abstract boolean onInteract(Player player, Entity entity, Block block, ItemStack item, ActionType action);
-		
 	}
 	
 	public enum ActionType {

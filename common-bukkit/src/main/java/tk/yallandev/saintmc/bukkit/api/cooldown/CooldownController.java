@@ -296,7 +296,7 @@ public class CooldownController implements Listener {
 				bar.append("§c" + CHAR);
 
 			ActionBarAPI.send(player,
-					"§f" + cooldown.getName() + " " + bar.toString() + " " + (decimalFormat.format(cooldown.getRemaining() / 60)) + " segundos");
+					"§f" + cooldown.getName() + " " + bar.toString() + " §f" + (decimalFormat.format(cooldown.getRemaining() / 60)) + " segundos");
 		}
 	}
 

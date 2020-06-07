@@ -18,18 +18,14 @@ public class AutosoupModule extends Module {
 	private Map<UUID, Long> time;
 	
 	public AutosoupModule() {
+		setAlertBungee(true);
 		time = new HashMap<>();
 	}
 
 	@EventHandler
 	private void onClick(InventoryClickEvent event) {	
-		
-		/* Returing if the action is not move to other inventory or the current item is not mushroom soup */
-		
 		if (!event.getAction().equals(InventoryAction.MOVE_TO_OTHER_INVENTORY) || event.getCurrentItem() == null || !event.getCurrentItem().getType().equals(Material.MUSHROOM_SOUP))
 			return;
-		
-		/* Adding the current time at time data from player uniqueId */
 		
 		time.put(event.getWhoClicked().getUniqueId(), System.currentTimeMillis());
 	}
@@ -51,7 +47,6 @@ public class AutosoupModule extends Module {
 			
 			time.remove(uniqueId);
 		}
-			
 	}
 
 }

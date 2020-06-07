@@ -53,7 +53,27 @@ public class Character {
 		profile.setProperties(Arrays.asList(property));
 		
 		this.npc = new NPC.Builder(profile).location(location).imitatePlayer(false).lookAtPlayer(false)
-				.build(BukkitMain.getInstance().getNpcPool());
+				.build(BukkitMain.getInstance().getServerConfig().getNpcPool());
+		this.interactHandler = interactHandler;
+		registerCharacter(this);
+	}
+	
+	public Character(String name, UUID uniqueId, UUID skinUniqueId, Location location, Interact interactHandler) {
+		Profile profile = new Profile(uniqueId, name, new ArrayList<>());
+		Property property = null;
+
+		try {
+			WrappedSignedProperty wrappedProperty = TextureAPI.textures.get(new WrappedGameProfile(skinUniqueId, name));
+			property = new Profile.Property(wrappedProperty.getName(), wrappedProperty.getValue(),
+					wrappedProperty.getSignature());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		profile.setProperties(Arrays.asList(property));
+		
+		this.npc = new NPC.Builder(profile).location(location).imitatePlayer(false).lookAtPlayer(false)
+				.build(BukkitMain.getInstance().getServerConfig().getNpcPool());
 		this.interactHandler = interactHandler;
 		registerCharacter(this);
 	}
@@ -70,7 +90,7 @@ public class Character {
 
 	public static NPC createNpc(String name, UUID uniqueId) {
 		return new NPC.Builder(new Profile(uniqueId, name, new ArrayList<>())).imitatePlayer(false).lookAtPlayer(false)
-				.build(BukkitMain.getInstance().getNpcPool());
+				.build(BukkitMain.getInstance().getServerConfig().getNpcPool());
 	}
 
 	public void registerCharacter(Character character) {

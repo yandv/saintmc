@@ -6,8 +6,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.bukkit.BukkitMain;
-import tk.yallandev.saintmc.bukkit.api.chat.ChatAPI;
-import tk.yallandev.saintmc.bukkit.api.chat.ChatAPI.ChatState;
+import tk.yallandev.saintmc.bukkit.api.server.chat.ChatState;
 import tk.yallandev.saintmc.bukkit.api.vanish.AdminMode;
 import tk.yallandev.saintmc.bukkit.api.vanish.VanishAPI;
 import tk.yallandev.saintmc.bukkit.command.BukkitCommandArgs;
@@ -184,18 +183,18 @@ public class StaffCommand implements CommandClass {
 		}
 
 		if (args.getArgs()[0].equalsIgnoreCase("on")) {
-			if (ChatAPI.getInstance().getChatState() == ChatState.ENABLED) {
+			if (BukkitMain.getInstance().getServerConfig().getChatState() == ChatState.ENABLED) {
 				args.getPlayer().sendMessage(" §c* §fO chat já está §aativado§f!");
 				return;
 			}
-			ChatAPI.getInstance().setChatState(ChatState.ENABLED);
+			BukkitMain.getInstance().getServerConfig().setChatState(ChatState.ENABLED);
 			args.getPlayer().sendMessage(" §a* §fVocê §aativou§f o chat!");
 		} else if (args.getArgs()[0].equalsIgnoreCase("off")) {
-			if (ChatAPI.getInstance().getChatState() == ChatState.YOUTUBER) {
+			if (BukkitMain.getInstance().getServerConfig().getChatState() == ChatState.YOUTUBER) {
 				args.getPlayer().sendMessage(" §c* §fO chat já está §cdesativado§f!");
 				return;
 			}
-			ChatAPI.getInstance().setChatState(ChatState.YOUTUBER);
+			BukkitMain.getInstance().getServerConfig().setChatState(ChatState.YOUTUBER);
 			args.getPlayer().sendMessage(" §a* §fVocê §cdesativou§f o chat!");
 		} else {
 			args.getPlayer().sendMessage(" §e* §fUse §a/chat <on:off>§f para ativar ou desativar o chat!");

@@ -23,6 +23,7 @@ import tk.yallandev.saintmc.bungee.listener.PacketListener;
 import tk.yallandev.saintmc.bungee.manager.BungeePunishManager;
 import tk.yallandev.saintmc.bungee.manager.BungeeServerManager;
 import tk.yallandev.saintmc.bungee.manager.StoreManager;
+import tk.yallandev.saintmc.bungee.packet.BungeePacketHandler;
 import tk.yallandev.saintmc.bungee.redis.BungeePubSubHandler;
 import tk.yallandev.saintmc.common.backend.data.PlayerData;
 import tk.yallandev.saintmc.common.backend.data.PunishData;
@@ -32,6 +33,7 @@ import tk.yallandev.saintmc.common.backend.database.mongodb.MongoConnection;
 import tk.yallandev.saintmc.common.backend.database.redis.RedisDatabase;
 import tk.yallandev.saintmc.common.backend.database.redis.RedisDatabase.PubSubListener;
 import tk.yallandev.saintmc.common.command.CommandLoader;
+import tk.yallandev.saintmc.common.controller.PacketController;
 import tk.yallandev.saintmc.common.controller.PunishManager;
 import tk.yallandev.saintmc.common.data.PlayerDataImpl;
 import tk.yallandev.saintmc.common.data.PunishDataImpl;
@@ -53,6 +55,7 @@ public class BungeeMain extends Plugin {
 	private PunishManager punishManager;
 	private ServerManager serverManager;
 	private StoreManager storeManager;
+	private PacketController packetController;
 
 	private DiscordMain discord;
 
@@ -121,14 +124,17 @@ public class BungeeMain extends Plugin {
 		punishManager = new BungeePunishManager();
 		serverManager = new BungeeServerManager();
 		storeManager = new StoreManager();
+		
+		packetController = new PacketController();
+		packetController.registerHandler(new BungeePacketHandler());
 
 		ProxyServer.getInstance().getServers().remove("lobby");
-		
+
 		/**
 		 * Server Info
 		 */
-		
-		ProxyServer.getInstance().registerChannel("LOLIMAHCKER");
+
+		ProxyServer.getInstance().registerChannel("server:packet");
 
 		ListenerInfo info = getProxy().getConfig().getListeners().iterator().next();
 		general.setServerAddress(info.getHost().getHostString() + ":" + info.getHost().getPort());
@@ -164,6 +170,8 @@ public class BungeeMain extends Plugin {
 						Integer.valueOf(entry.getValue().get("maxplayers")));
 				BungeeMain.getPlugin().getServerManager().getServer(entry.getKey())
 						.setOnlinePlayers(general.getServerData().getPlayers(entry.getKey()));
+				BungeeMain.getPlugin().getServerManager().getServer(entry.getKey())
+						.setJoinEnabled(Boolean.valueOf(entry.getValue().get("joinenabled")));
 			} catch (Exception e) {
 			}
 		}
@@ -191,7 +199,8 @@ public class BungeeMain extends Plugin {
 							BungeeMain.getInstance().getStoreManager().check();
 						}
 
-						String message = BungeeConst.BROADCAST_MESSAGES[CommonConst.RANDOM.nextInt(BungeeConst.BROADCAST_MESSAGES.length)];
+						String message = BungeeConst.BROADCAST_MESSAGES[CommonConst.RANDOM
+								.nextInt(BungeeConst.BROADCAST_MESSAGES.length)];
 
 						ProxyServer.getInstance().getPlayers().forEach(proxied -> proxied
 								.sendMessage(TextComponent.fromLegacyText(message.replace("&", "§"))));
@@ -204,7 +213,7 @@ public class BungeeMain extends Plugin {
 
 		System.setProperty("DEBUG.MONGO", "false");
 		System.setProperty("DB.TRACE", "false");
-		
+
 		registerListener();
 	}
 

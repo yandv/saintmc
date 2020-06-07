@@ -1,5 +1,6 @@
 package tk.yallandev.saintmc.bukkit.anticheat.modules.register;
 
+import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -13,7 +14,7 @@ public class GlideModule extends Module {
 	public void onPlayerMoveUpdate(PlayerMoveUpdateEvent event) {
 		Player player = event.getPlayer();
 
-		if (player.getAllowFlight())
+		if (player.getAllowFlight() || player.getGameMode() == GameMode.ADVENTURE || player.getGameMode() == GameMode.SPECTATOR)
 			return;
 
 		/*

@@ -27,7 +27,7 @@ import tk.yallandev.saintmc.bukkit.event.update.UpdateEvent.UpdateType;
 import tk.yallandev.saintmc.common.account.Member;
 import tk.yallandev.saintmc.common.account.configuration.LoginConfiguration.AccountType;
 import tk.yallandev.saintmc.common.permission.Group;
-import tk.yallandev.saintmc.common.permission.Tag;
+import tk.yallandev.saintmc.common.tag.Tag;
 
 public class LoginListener implements Listener {
 
