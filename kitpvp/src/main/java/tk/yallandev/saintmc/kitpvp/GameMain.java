@@ -1,5 +1,7 @@
 package tk.yallandev.saintmc.kitpvp;
 
+import java.io.File;
+
 import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -15,6 +17,7 @@ import tk.yallandev.saintmc.kitpvp.hologram.RankingHologram;
 import tk.yallandev.saintmc.kitpvp.manager.GamerManager;
 import tk.yallandev.saintmc.kitpvp.manager.KitManager;
 import tk.yallandev.saintmc.kitpvp.manager.WarpManager;
+import tk.yallandev.saintmc.update.UpdatePlugin;
 
 @Getter
 public class GameMain extends JavaPlugin {
@@ -35,6 +38,19 @@ public class GameMain extends JavaPlugin {
 
 	@Override
 	public void onEnable() {
+		UpdatePlugin.Shutdown shutdown = new UpdatePlugin.Shutdown() {
+
+			@Override
+			public void stop() {
+				Bukkit.shutdown();
+			}
+
+		};
+
+		if (UpdatePlugin.update(new File(GameMain.class.getProtectionDomain().getCodeSource().getLocation().getPath()),
+				"SaintPvP", shutdown))
+			return;
+
 		gamerManager = new GamerManager();
 		kitManager = new KitManager();
 		warpManager = new WarpManager();

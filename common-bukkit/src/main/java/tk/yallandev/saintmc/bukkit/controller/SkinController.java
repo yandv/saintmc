@@ -84,4 +84,9 @@ public class SkinController {
 
 		return null;
 	}
+
+	public void getSkin(String playerName, FutureCallback<JsonElement> futureCallback) {
+		CommonConst.DEFAULT_WEB.doAsyncRequest(CommonConst.SKIN_URL + "?name=" + playerName, Method.GET,
+				futureCallback);
+	}
 }

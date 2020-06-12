@@ -41,12 +41,13 @@ public class YoutubeCommand implements CommandClass {
 			return;
 		}
 
-		if (member.isOnCooldown("fakeCommand") && !playerName.equals("#")
-				&& !playerName.equals(member.getPlayerName())) {
-			member.sendMessage(" §c* §fVocê precisa esperar §e" + DateUtils.getTime(member.getCooldown("fakeCommand"))
-					+ "§f para trocar de fake novamente!");
-			return;
-		}
+		if (!member.hasGroupPermission(Group.MODPLUS) && !member.hasGroupPermission(Group.YOUTUBER) && !member.hasGroupPermission(Group.YOUTUBERPLUS))
+			if (member.isOnCooldown("fakeCommand") && !playerName.equals("#")
+					&& !playerName.equals(member.getPlayerName())) {
+				member.sendMessage(" §c* §fVocê precisa esperar §e"
+						+ DateUtils.getTime(member.getCooldown("fakeCommand")) + "§f para trocar de fake novamente!");
+				return;
+			}
 
 		UUID uuid = CommonGeneral.getInstance().getMojangFetcher().requestUuid(playerName);
 
@@ -101,11 +102,13 @@ public class YoutubeCommand implements CommandClass {
 		Player p = args.getPlayer();
 		Member member = CommonGeneral.getInstance().getMemberManager().getMember(p.getUniqueId());
 
-		if (member.isOnCooldown("changeskinCommand")) {
-			member.sendMessage(" §c* §fVocê precisa esperar §e"
-					+ DateUtils.getTime(member.getCooldown("changeskinCommand")) + "§f para trocar de skin novamente!");
-			return;
-		}
+		if (!member.hasGroupPermission(Group.MODPLUS))
+			if (member.isOnCooldown("changeskinCommand")) {
+				member.sendMessage(
+						" §c* §fVocê precisa esperar §e" + DateUtils.getTime(member.getCooldown("changeskinCommand"))
+								+ "§f para trocar de skin novamente!");
+				return;
+			}
 
 		if (args.getArgs().length != 1) {
 			p.sendMessage(" §e* §fUse §a/changeskin <player>§f para trocar de skin!");

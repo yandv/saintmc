@@ -1,5 +1,7 @@
 package tk.yallandev.saintmc.kitpvp.kit.register;
 
+import java.util.Arrays;
+
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -11,13 +13,15 @@ import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 
+import tk.yallandev.saintmc.bukkit.api.item.ItemBuilder;
 import tk.yallandev.saintmc.kitpvp.GameMain;
 import tk.yallandev.saintmc.kitpvp.kit.Kit;
 
 public class SwitcherKit extends Kit {
 
 	public SwitcherKit() {
-		super("Switcher", "Troque de lugar com seus inimigos com sua bola de neve", Material.SNOW_BALL);
+		super("Switcher", "Troque de lugar com seus inimigos com sua bola de neve", Material.SNOW_BALL,
+				Arrays.asList(new ItemBuilder().name("§aSwitcher").type(Material.SNOW_BALL).amount(16).build()));
 	}
 	
 	@EventHandler
@@ -55,11 +59,6 @@ public class SwitcherKit extends Kit {
 	public void onPlayerDeath(PlayerDeathEvent event) {
 		if (hasAbility(event.getEntity()))
 			event.getEntity().getInventory().addItem(new ItemStack(Material.SNOW_BALL, 3));
-	}
-
-	@Override
-	public void applyKit(Player player) {
-		player.getInventory().setItem(1, new ItemStack(Material.SNOW_BALL, 16));
 	}
 
 }

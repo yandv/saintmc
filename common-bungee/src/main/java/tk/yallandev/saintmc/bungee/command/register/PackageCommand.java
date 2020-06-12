@@ -1,20 +1,14 @@
 package tk.yallandev.saintmc.bungee.command.register;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
-import net.md_5.bungee.api.ProxyServer;
-import net.md_5.bungee.api.connection.ProxiedPlayer;
 import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.bungee.command.BungeeCommandArgs;
 import tk.yallandev.saintmc.common.account.Member;
 import tk.yallandev.saintmc.common.account.MemberModel;
 import tk.yallandev.saintmc.common.account.MemberVoid;
-import tk.yallandev.saintmc.common.command.CommandArgs;
 import tk.yallandev.saintmc.common.command.CommandClass;
 import tk.yallandev.saintmc.common.command.CommandFramework.Command;
-import tk.yallandev.saintmc.common.command.CommandFramework.Completer;
 import tk.yallandev.saintmc.common.command.CommandSender;
 import tk.yallandev.saintmc.common.permission.Group;
 import tk.yallandev.saintmc.common.permission.RankType;
@@ -152,82 +146,6 @@ public class PackageCommand implements CommandClass {
 		sender.sendMessage(" §a* §fVocê removeu o grupo §a§l" + rank.name() + "§f de §a" + player.getPlayerName() + "("
 				+ player.getUniqueId().toString().replace("-", "") + ")§f!");
 //        BungeeMain.getPlugin().getDiscordManager().sendMessage(new EmbedBuilder().setTitle("LonneMC - " + (cmdArgs.isPlayer() ? cmdArgs.getPlayer().getName() : "CONSOLE")).appendDescription("\nO jogador " + player.getName() + " teve seu cargo atualizado (" + rank.name() + " foi removido").setColor(Color.YELLOW).build(), BungeeMain.getPlugin().getDiscordManager().getTextChannel("logs", true));
-	}
-
-	@Completer(name = "tempgroup", aliases = { "givevip" })
-	public List<String> tempgroupCompleter(CommandArgs cmdArgs) {
-		if (cmdArgs.getArgs().length == 3) {
-			List<String> rankList = new ArrayList<>();
-
-			if (cmdArgs.getArgs()[2].isEmpty()) {
-				for (RankType rankType : RankType.values())
-					rankList.add(rankType.toString());
-			} else {
-				for (RankType rankType : RankType.values())
-					if (rankType.toString().toLowerCase().startsWith(cmdArgs.getArgs()[2].toLowerCase()))
-						rankList.add(rankType.toString());
-			}
-
-			return rankList;
-		}
-
-		return getPlayerList(cmdArgs.getArgs(), 0);
-	}
-
-	@Completer(name = "removevip", aliases = { "removervip" })
-	public List<String> removervipCompleter(CommandArgs cmdArgs) {
-		if (cmdArgs.getArgs().length == 2) {
-			List<String> rankList = new ArrayList<>();
-
-			if (cmdArgs.getArgs()[1].isEmpty()) {
-				for (RankType rankType : RankType.values())
-					rankList.add(rankType.toString());
-			} else {
-				for (RankType rankType : RankType.values())
-					if (rankType.toString().toLowerCase().startsWith(cmdArgs.getArgs()[1].toLowerCase()))
-						rankList.add(rankType.toString());
-			}
-
-			return rankList;
-		}
-
-		return getPlayerList(cmdArgs.getArgs(), 0);
-	}
-
-	@Completer(name = "groupset", aliases = { "setargrupo", "setargrupo", "removevip", "removervip" })
-	public List<String> groupsetCompleter(CommandArgs cmdArgs) {
-		if (cmdArgs.getArgs().length == 2) {
-			List<String> groupList = new ArrayList<>();
-
-			if (cmdArgs.getArgs()[1].isEmpty()) {
-				for (Group group : Group.values())
-					groupList.add(group.toString());
-			} else {
-				for (Group group : Group.values())
-					if (group.toString().toLowerCase().startsWith(cmdArgs.getArgs()[1].toLowerCase()))
-						groupList.add(group.toString());
-			}
-
-			return groupList;
-		}
-
-		return getPlayerList(cmdArgs.getArgs(), 0);
-	}
-	
-	public List<String> getPlayerList(String[] args, int index) {
-		List<String> playerList = new ArrayList<>();
-
-		for (ProxiedPlayer player : ProxyServer.getInstance().getPlayers()) {
-			if (args[index].isEmpty()) {
-				if (player.getName().toLowerCase().startsWith(args[index].toLowerCase()))
-					playerList.add(player.getName());
-			} else {
-				if (player.getName().toLowerCase().startsWith(args[index].toLowerCase()))
-					playerList.add(player.getName());
-			}
-		}
-
-		return playerList;
 	}
 
 }

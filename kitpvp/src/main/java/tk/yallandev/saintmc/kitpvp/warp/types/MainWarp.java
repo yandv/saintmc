@@ -69,6 +69,7 @@ public class MainWarp extends Warp {
 		player.getInventory().setItem(13, new ItemStack(Material.RED_MUSHROOM, 64));
 		player.getInventory().setItem(14, new ItemStack(Material.BROWN_MUSHROOM, 64));
 		player.getInventory().setItem(15, new ItemStack(Material.BOWL, 64));
+		player.updateInventory();
 	}
 
 	@Override

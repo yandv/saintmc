@@ -16,6 +16,7 @@ import tk.yallandev.saintmc.bukkit.api.scoreboard.Scoreboard;
 import tk.yallandev.saintmc.bukkit.api.scoreboard.impl.SimpleScoreboard;
 import tk.yallandev.saintmc.bukkit.event.account.PlayerChangeGroupEvent;
 import tk.yallandev.saintmc.bukkit.event.account.PlayerChangeLeagueEvent;
+import tk.yallandev.saintmc.bukkit.event.player.PlayerScoreboardStateEvent;
 import tk.yallandev.saintmc.common.account.League;
 import tk.yallandev.saintmc.common.account.Member;
 import tk.yallandev.saintmc.common.permission.Group;
@@ -45,31 +46,7 @@ public class ScoreboardListener implements Listener {
 
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onPlayerJoin(PlayerJoinEvent event) {
-		Player player = event.getPlayer();
-		Member member = CommonGeneral.getInstance().getMemberManager().getMember(player.getUniqueId());
-
-		DEFAULT_SCOREBOARD.createScoreboard(player);
-
-		Group group = member.getGroup();
-		League league = member.getLeague();
-
-		DEFAULT_SCOREBOARD.updateScore(player, new Score(
-				"§fGrupo: §f§l" + (group == Group.MEMBRO ? "§7§lMEMBRO" : Tag.valueOf(group.name()).getPrefix()), "group"));
-		DEFAULT_SCOREBOARD.updateScore(player,
-				new Score("§fRanking: §7(" + league.getColor() + league.getSymbol() + "§7)", "ranking"));
-		DEFAULT_SCOREBOARD.updateScore(player,
-				new Score("§fXp: §7" + member.getXp(), "xp"));
-		DEFAULT_SCOREBOARD.updateScore(player,
-				new Score("§fCoins: §7" + member.getMoney(), "money"));
-
-		new BukkitRunnable() {
-
-			@Override
-			public void run() {
-				DEFAULT_SCOREBOARD.updateScore(new Score(
-						"§fJogadores: §e" + BukkitMain.getInstance().getServerManager().getTotalNumber(), "online"));
-			}
-		}.runTaskLater(LobbyMain.getInstance(), 20l);
+		handleScoreboard(event.getPlayer());
 	}
 
 	@EventHandler(priority = EventPriority.MONITOR)
@@ -112,5 +89,38 @@ public class ScoreboardListener implements Listener {
 			}
 		}.runTaskLater(LobbyMain.getInstance(), 10l);
 	}
+	
+	@EventHandler
+	public void onPlayerScoreboardState(PlayerScoreboardStateEvent event) {
+		if (event.isScoreboardEnabled())
+			handleScoreboard(event.getPlayer());
+	}
+	
+	private void handleScoreboard(Player player) {
+		Member member = CommonGeneral.getInstance().getMemberManager().getMember(player.getUniqueId());
 
+		DEFAULT_SCOREBOARD.createScoreboard(player);
+
+		Group group = member.getGroup();
+		League league = member.getLeague();
+
+		DEFAULT_SCOREBOARD.updateScore(player, new Score(
+				"§fGrupo: §f§l" + (group == Group.MEMBRO ? "§7§lMEMBRO" : Tag.valueOf(group.name()).getPrefix()), "group"));
+		DEFAULT_SCOREBOARD.updateScore(player,
+				new Score("§fRanking: §7(" + league.getColor() + league.getSymbol() + "§7)", "ranking"));
+		DEFAULT_SCOREBOARD.updateScore(player,
+				new Score("§fXp: §7" + member.getXp(), "xp"));
+		DEFAULT_SCOREBOARD.updateScore(player,
+				new Score("§fCoins: §7" + member.getMoney(), "money"));
+
+		new BukkitRunnable() {
+
+			@Override
+			public void run() {
+				DEFAULT_SCOREBOARD.updateScore(new Score(
+						"§fJogadores: §e" + BukkitMain.getInstance().getServerManager().getTotalNumber(), "online"));
+			}
+		}.runTaskLater(LobbyMain.getInstance(), 20l);
+	}
+	
 }

@@ -1,5 +1,6 @@
 package tk.yallandev.saintmc.kitpvp.kit.register;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
@@ -20,7 +21,7 @@ public class NinjaKit extends Kit {
 	private HashMap<String, NinjaHit> ninjaHits;
 
 	public NinjaKit() {
-		super("Ninja", "Como um ninja teletransporte-se para as costas de seus inimigos", Material.EMERALD);
+		super("Ninja", "Como um ninja teletransporte-se para as costas de seus inimigos", Material.EMERALD, new ArrayList<>());
 		ninjaHits = new HashMap<>();
 	}
 
@@ -123,12 +124,6 @@ public class NinjaKit extends Kit {
 			this.target = player;
 			this.targetExpires = System.currentTimeMillis() + 20000;
 		}
-
-	}
-
-	@Override
-	public void applyKit(Player player) {
-		// TODO Auto-generated method stub
 
 	}
 

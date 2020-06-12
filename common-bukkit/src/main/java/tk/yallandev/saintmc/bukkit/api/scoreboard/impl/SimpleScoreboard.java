@@ -69,11 +69,10 @@ public class SimpleScoreboard implements Scoreboard {
 
 			objective.getScore(entry.getValue().getScoreName()).setScore(entry.getKey());
 		}
-
-		BukkitMember member = (BukkitMember) CommonGeneral.getInstance().getMemberManager().getMember(player.getUniqueId());
-
-		member.setScoreboard(this);
-		addViewer(member);
+		
+	    BukkitMember member = (BukkitMember)CommonGeneral.getInstance().getMemberManager().getMember(player.getUniqueId());
+	    member.setScoreboard(this);
+	    addViewer(member);
 	}
 
 	@Override

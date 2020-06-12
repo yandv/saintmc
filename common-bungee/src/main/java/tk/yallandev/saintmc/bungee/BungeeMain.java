@@ -1,10 +1,12 @@
 package tk.yallandev.saintmc.bungee;
 
+import java.io.File;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
 
 import lombok.Getter;
+import net.md_5.bungee.BungeeCord;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.config.ListenerInfo;
@@ -43,6 +45,7 @@ import tk.yallandev.saintmc.common.report.Report;
 import tk.yallandev.saintmc.common.server.ServerManager;
 import tk.yallandev.saintmc.common.server.ServerType;
 import tk.yallandev.saintmc.discord.DiscordMain;
+import tk.yallandev.saintmc.update.UpdatePlugin;
 
 @Getter
 public class BungeeMain extends Plugin {
@@ -60,7 +63,7 @@ public class BungeeMain extends Plugin {
 	private DiscordMain discord;
 
 	private PubSubListener pubSubListener;
-
+	
 	@Override
 	public void onLoad() {
 		general = new CommonGeneral(ProxyServer.getInstance().getLogger());
@@ -70,11 +73,25 @@ public class BungeeMain extends Plugin {
 	@SuppressWarnings("deprecation")
 	@Override
 	public void onEnable() {
+		
+		UpdatePlugin.Shutdown shutdown = new UpdatePlugin.Shutdown() {
+
+			@Override
+			public void stop() {
+				BungeeCord.getInstance().stop("§aAtualizando o plugin!");
+			}
+
+		};
+
+		if (UpdatePlugin.update(
+				new File(BungeeMain.class.getProtectionDomain().getCodeSource().getLocation().getPath()),
+				"BungeeCommon", shutdown))
+			return;
 
 		/**
 		 * Initializing Database
 		 */
-
+		
 		try {
 
 			/*

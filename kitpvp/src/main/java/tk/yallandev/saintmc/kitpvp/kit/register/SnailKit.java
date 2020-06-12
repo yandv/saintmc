@@ -1,5 +1,6 @@
 package tk.yallandev.saintmc.kitpvp.kit.register;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 import org.bukkit.Material;
@@ -14,7 +15,8 @@ import tk.yallandev.saintmc.kitpvp.kit.Kit;
 public class SnailKit extends Kit {
 
 	public SnailKit() {
-		super("Snail", "Deixe seus inimigos mais lentos ao encosta-los", Material.WEB);
+		super("Snail", "Deixe seus inimigos mais lentos ao encosta-los", Material.WEB,
+				new ArrayList<>());
 	}
 	
 	@EventHandler
@@ -38,12 +40,6 @@ public class SnailKit extends Kit {
 				damaged.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 3 * 20, 0));
 			}
 		}
-	}
-
-	@Override
-	public void applyKit(Player player) {
-		// TODO Auto-generated method stub
-		
 	}
 
 }

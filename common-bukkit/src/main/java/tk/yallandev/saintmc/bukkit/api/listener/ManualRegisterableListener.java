@@ -3,20 +3,20 @@ package tk.yallandev.saintmc.bukkit.api.listener;
 import org.bukkit.Bukkit;
 import org.bukkit.event.HandlerList;
 
+import lombok.Getter;
 import tk.yallandev.saintmc.bukkit.BukkitMain;
 
 public class ManualRegisterableListener implements RegisterableListener {
 	
+	@Getter
 	private boolean registered;
 	
 	@Override
 	public void registerListener() {
-		
 		if (!registered) {
 			Bukkit.getPluginManager().registerEvents(this, BukkitMain.getInstance());
 			registered = true;
 		}
-		
 	}
 
 	@Override
@@ -26,5 +26,6 @@ public class ManualRegisterableListener implements RegisterableListener {
 			registered = false;
 		}
 	}
+
 
 }

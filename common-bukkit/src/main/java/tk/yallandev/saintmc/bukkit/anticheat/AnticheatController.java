@@ -64,6 +64,11 @@ public class AnticheatController {
 		banMap.put(player.getUniqueId(), new Autoban(player.getName(), hackName));
 		autobanListener.registerListener();
 	}
+	
+	public void autoban(Player player, String hackName, long time) {
+		banMap.put(player.getUniqueId(), new Autoban(player.getName(), hackName, time));
+		autobanListener.registerListener();
+	}
 
 	public Map<UUID, Autoban> getBanMap() {
 		return banMap;
@@ -79,6 +84,12 @@ public class AnticheatController {
 		public Autoban(String playerName, String hackType) {
 			this.playerName = playerName;
 			this.hackType = hackType;
+		}
+		
+		public Autoban(String playerName, String hackType, long expireTime) {
+			this.playerName = playerName;
+			this.hackType = hackType;
+			this.expireTime = expireTime;
 		}
 
 		public void ban() {

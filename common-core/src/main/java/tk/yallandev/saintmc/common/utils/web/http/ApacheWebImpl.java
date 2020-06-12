@@ -42,8 +42,8 @@ public class ApacheWebImpl implements WebHelper {
 	}
 
 	public ApacheWebImpl() {
-		RequestConfig requestConfig = RequestConfig.custom().setConnectTimeout(1500).setConnectionRequestTimeout(1500)
-				.setSocketTimeout(1500).setMaxRedirects(3).build();
+		RequestConfig requestConfig = RequestConfig.custom().setConnectTimeout(5000).setConnectionRequestTimeout(5000)
+				.setSocketTimeout(5000).setMaxRedirects(3).build();
 
 		this.closeableHttpClient = HttpClientBuilder.create().setConnectionTimeToLive(10, TimeUnit.SECONDS)
 				.setDefaultRequestConfig(requestConfig).build();
@@ -148,6 +148,30 @@ public class ApacheWebImpl implements WebHelper {
 					}
 
 				});
+	}
+	
+	public JsonElement doRequest(HttpRequestBase requestBase) throws Exception {
+		CloseableHttpResponse response = closeableHttpClient.execute(requestBase);
+
+		HttpEntity entity = response.getEntity();
+		String json = EntityUtils.toString(entity);
+
+		if (json == null) {
+			response.close();
+			throw new Exception("Received empty response from your server, check connections.");
+		}
+
+		JsonElement jsonElement = new JsonObject();
+
+		try {
+			jsonElement = JsonParser.parseString(json);
+		} catch (Exception ex) {
+			CommonGeneral.getInstance().getLogger().warning(json);
+		}
+
+		response.close();
+
+		return jsonElement;
 	}
 
 	private HttpRequestBase createRequestBase(String url, Method method, String jsonEntity) {

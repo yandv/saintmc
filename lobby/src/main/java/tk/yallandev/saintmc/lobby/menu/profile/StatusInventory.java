@@ -63,15 +63,19 @@ public class StatusInventory {
 		}
 		case HG: {
 			name = "§a§lHungerGames";
-			lore = "\n§fPartidas: §7" + (status.getMatches()) + "\n§fKills: §7" + status.getKills()
-					+ "\n§fDeaths: §7" + status.getDeaths() + "\n§fMaior killstreak: §7" + status.getMaxKillstreak();
+			lore = "\n§fPartidas: §7" + status.getMatches() + "\n§fKills: §7" + status.getKills() + "\n§fDeaths: §7"
+					+ status.getDeaths() + "\n§fWins: §7" + status.getWins() + "\n§fMaior killstreak: §7"
+					+ status.getMaxKillstreak();
 			type = Material.MUSHROOM_SOUP;
 //			inv.setItem(31, new ItemBuilder().type(Material.MUSHROOM_SOUP).name("§a§lHungerGames")
 //					.lore("", "§fPartidas: §7", "§fSKills: §70", "§fortes: §70", "").build());
 			break;
 		}
+		case GLADIATOR: {
+			break;
 		}
-		
+		}
+
 		status = null;
 
 		return new ItemBuilder().name(name).lore(lore).type(type).build();

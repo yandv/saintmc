@@ -9,7 +9,10 @@ import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.metadata.MetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
@@ -18,7 +21,27 @@ import tk.yallandev.saintmc.bukkit.listener.Listener;
 
 public class CombatListener extends Listener {
 	
-	@EventHandler(priority = EventPriority.NORMAL)
+	@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
+	public void onEntityDamage(EntityDamageEvent event) {
+		if (!(event.getEntity() instanceof Player)) {
+			return;
+		}
+		
+		Player player = (Player) event.getEntity();
+		
+		if (event.getCause() == DamageCause.FALL)
+			if (player.hasMetadata("nofall")) {
+				
+				 MetadataValue metadata = player.getMetadata("nofall").stream().findFirst().orElse(null);
+				
+				 if (metadata.asLong() > System.currentTimeMillis())
+					 event.setCancelled(true);
+				 
+				 metadata.invalidate();
+			}
+	}
+	
+	@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
 	public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
 		if (!(event.getEntity() instanceof Player))
 			return;

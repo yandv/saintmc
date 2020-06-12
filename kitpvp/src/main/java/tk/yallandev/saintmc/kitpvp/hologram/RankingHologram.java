@@ -15,7 +15,7 @@ import tk.yallandev.saintmc.common.account.MemberModel;
 import tk.yallandev.saintmc.common.account.MemberVoid;
 import tk.yallandev.saintmc.common.account.status.StatusType;
 import tk.yallandev.saintmc.common.account.status.types.normal.NormalModel;
-import tk.yallandev.saintmc.common.permission.Tag;
+import tk.yallandev.saintmc.common.tag.Tag;
 import tk.yallandev.saintmc.kitpvp.GameMain;
 
 public class RankingHologram {
@@ -101,7 +101,7 @@ public class RankingHologram {
 								"Não foi possível pegar as informações do jogador " + normalModel.getUniqueId() + "!");
 					}
 				}
-
+				
 				if (member != null) {
 					killsHologram.addLine("§a" + index + "° §7- "
 							+ ChatColor.getLastColors(Tag.valueOf(member.getGroup().name()).getPrefix())

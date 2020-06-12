@@ -14,7 +14,6 @@
 		<module>gameapi</module>
 		<module>kitpvp</module>
 		<module>lobby</module>
-		<module>updater</module>
 		<module>gameapi-old</module>
 		<module>hungergames</module>
 		<module>gladiator</module>
@@ -154,11 +153,11 @@
 			<scope>provided</scope>
 		</dependency>
 
-		<!-- HTTpCLIENT -->
+		<!-- HTTPCLIENT -->
 
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
-			<artifactId>httpclient</artifactId>
+			<artifactId>httpmime</artifactId>
 			<version>4.5.12</version>
 			<scope>provided</scope>
 		</dependency>

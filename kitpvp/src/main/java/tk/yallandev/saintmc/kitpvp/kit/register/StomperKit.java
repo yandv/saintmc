@@ -1,5 +1,7 @@
 package tk.yallandev.saintmc.kitpvp.kit.register;
 
+import java.util.ArrayList;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -20,7 +22,8 @@ import tk.yallandev.saintmc.kitpvp.kit.Kit;
 public class StomperKit extends Kit {
 
 	public StomperKit() {
-		super("Stomper", "Pise em cima de seus inimigos", Material.IRON_BOOTS);
+		super("Stomper", "Pise em cima de seus inimigos", Material.IRON_BOOTS,
+				new ArrayList<>());
 	}
 
 	@EventHandler
@@ -95,11 +98,6 @@ public class StomperKit extends Kit {
 			event.setCancelled(true);
 			p.damage(4.0D);
 		}
-	}
-
-	@Override
-	public void applyKit(Player player) {
-
 	}
 
 }

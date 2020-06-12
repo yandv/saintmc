@@ -1,19 +1,21 @@
 package tk.yallandev.saintmc.bukkit.listener.register;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.server.PluginDisableEvent;
 
-import net.md_5.bungee.api.ChatColor;
 import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.bukkit.BukkitMain;
 import tk.yallandev.saintmc.bukkit.account.BukkitMember;
 import tk.yallandev.saintmc.bukkit.api.scoreboard.ScoreboardAPI;
+import tk.yallandev.saintmc.bukkit.api.tag.Chroma;
 import tk.yallandev.saintmc.bukkit.event.account.PlayerChangeTagEvent;
 import tk.yallandev.saintmc.common.account.League;
 import tk.yallandev.saintmc.common.account.Member;
@@ -21,7 +23,13 @@ import tk.yallandev.saintmc.common.tag.Tag;
 
 public class TagListener implements Listener {
 
+	private BukkitMain main;
+	private ChromaListener listener;
+
 	public TagListener() {
+		main = BukkitMain.getInstance();
+		listener = new ChromaListener();
+
 		for (Player p : Bukkit.getServer().getOnlinePlayers()) {
 			Member player = CommonGeneral.getInstance().getMemberManager().getMember(p.getUniqueId());
 
@@ -30,30 +38,31 @@ public class TagListener implements Listener {
 
 			player.setTag(player.getTag());
 		}
+
+		if (!BukkitMain.getInstance().isTagControl())
+			HandlerList.unregisterAll(this);
 	}
 
 	@EventHandler
 	public void onQuit(PluginDisableEvent event) {
 		for (Player p : Bukkit.getServer().getOnlinePlayers()) {
-			removePlayerTag(p);
+			ScoreboardAPI.leaveCurrentTeamForOnlinePlayers(p);
 		}
 	}
 
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onQuit(PlayerQuitEvent event) {
-		removePlayerTag(event.getPlayer());
+		ScoreboardAPI.leaveCurrentTeamForOnlinePlayers(event.getPlayer());
 	}
 
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onPlayerJoinListener(PlayerJoinEvent e) {
 		Player p = e.getPlayer();
+
 		BukkitMember player = (BukkitMember) CommonGeneral.getInstance().getMemberManager()
 				.getMember(e.getPlayer().getUniqueId());
 
-		if (player == null)
-			return;
-
-		if (!BukkitMain.getInstance().isTagControl())
+		if (!main.isTagControl())
 			return;
 
 		player.setTag(player.getTag() == Tag.LOGANDO ? player.getDefaultTag() : player.getTag());
@@ -66,7 +75,8 @@ public class TagListener implements Listener {
 				if (bp == null)
 					continue;
 
-				String id = getTeamName(bp.getTag(), bp.getLeague());
+				String id = ScoreboardAPI.getTeamName(bp.getTag(), bp.getLeague(),
+						bp.getTag().isChroma() || bp.isChroma());
 
 				String tag = bp.getTag().getPrefix();
 				String league = bp.isUsingFake()
@@ -79,25 +89,47 @@ public class TagListener implements Listener {
 		}
 	}
 
+	@SuppressWarnings("unlikely-arg-type")
 	@EventHandler
 	public void onPlayerChangeTagListener(PlayerChangeTagEvent e) {
 		Player p = e.getPlayer();
-
-		if (!BukkitMain.getInstance().isTagControl())
-			return;
-
-		if (p == null)
-			return;
 
 		BukkitMember player = (BukkitMember) CommonGeneral.getInstance().getMemberManager().getMember(p.getUniqueId());
 
 		if (player == null)
 			return;
 
-		String id = getTeamName(e.getNewTag(), player.getLeague());
-		String oldId = getTeamName(e.getOldTag(), player.getLeague());
+		String id = ScoreboardAPI.getTeamName(e.getNewTag(), player.getLeague(),
+				e.getNewTag().isChroma() || player.isChroma());
+		String oldId = ScoreboardAPI.getTeamName(e.getOldTag(), player.getLeague(),
+				e.getNewTag().isChroma() || player.isChroma());
 
-		for (final Player o : Bukkit.getOnlinePlayers()) {
+		String tag = e.getNewTag().getPrefix();
+		String league = player.isUsingFake() ? " §7(" + League.UNRANKED.getColor() + League.UNRANKED.getSymbol() + "§7)"
+				: " §7(" + player.getLeague().getColor() + player.getLeague().getSymbol() + "§7)";
+
+		if (e.getOldTag().isChroma() || player.isChroma()) {
+			if (listener.getChromaList().contains(e.getOldTag())) {
+				listener.getChromaList().remove(new Chroma(id, tag, league));
+
+			}
+		}
+
+		if (e.getNewTag().isChroma() || player.isChroma())
+			if (!listener.getChromaList().contains(e.getNewTag())) {
+				listener.getChromaList().add(new Chroma(id, tag, league));
+			}
+		
+		/**
+		 * TICKs++
+		 */
+
+		if (listener.getChromaList().isEmpty())
+			listener.unregisterListener();
+		else
+			listener.registerListener();
+
+		for (Player o : Bukkit.getOnlinePlayers()) {
 			try {
 				BukkitMember bp = (BukkitMember) CommonGeneral.getInstance().getMemberManager()
 						.getMember(o.getUniqueId());
@@ -105,29 +137,12 @@ public class TagListener implements Listener {
 				if (bp == null)
 					continue;
 
-				String tag = e.getNewTag().getPrefix();
-
-				String league = player.isUsingFake()
-						? " §7(" + League.UNRANKED.getColor() + League.UNRANKED.getSymbol() + "§7)"
-						: " §7(" + player.getLeague().getColor() + player.getLeague().getSymbol() + "§7)";
-
 				ScoreboardAPI.leaveTeamToPlayer(o, oldId, p);
 				ScoreboardAPI.joinTeam(ScoreboardAPI.createTeamIfNotExistsToPlayer(o, id,
 						tag + (ChatColor.stripColor(tag).trim().length() > 0 ? " " : ""), league), p);
-			} catch (Exception e2) {
+			} catch (Exception ex) {
 			}
 		}
-	}
-
-	public void removePlayerTag(Player p) {
-		ScoreboardAPI.leaveCurrentTeamForOnlinePlayers(p);
-	}
-
-	private static char[] chars = new char[] { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n',
-			'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z' };
-
-	public static String getTeamName(Tag tag, League liga) {
-		return chars[tag.ordinal()] + "-" + chars[League.values().length - liga.ordinal()];
 	}
 
 }

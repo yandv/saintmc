@@ -6,16 +6,17 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public enum StatusType {
-	
-	PVP("pvp_status", Type.NORMAL), SHADOW("shadow_status", Type.NORMAL), HG("hungergames_status", Type.GAME);
-	
+
+	PVP("pvp", Type.NORMAL), SHADOW("shadow", Type.NORMAL), GLADIATOR("gladiator", Type.NORMAL),
+	HG("hungergames", Type.GAME);
+
 	private String mongoCollection;
 	private Type type;
-	
+
 	public enum Type {
-		
+
 		NORMAL, GAME;
-		
+
 	}
 
 }

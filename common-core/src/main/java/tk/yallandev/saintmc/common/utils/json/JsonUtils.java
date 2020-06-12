@@ -1,25 +1,22 @@
 package tk.yallandev.saintmc.common.utils.json;
 
-import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import org.bson.Document;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
 
+import tk.yallandev.saintmc.CommonConst;
+
 public class JsonUtils {
 
-    protected static final Gson gson = new GsonBuilder().excludeFieldsWithModifiers(Modifier.STATIC, Modifier.PROTECTED).create();
-
     public static JsonObject jsonTree(Object src) {
-        return gson.toJsonTree(src).getAsJsonObject();
+        return CommonConst.GSON.toJsonTree(src).getAsJsonObject();
     }
 
     public static Object elementToBson(JsonElement element) {
@@ -33,7 +30,10 @@ public class JsonUtils {
                 return primitive.getAsBoolean();
             }
         }
-        return Document.parse(gson.toJson(element));
+        
+        System.out.println(CommonConst.GSON.toJson(element));
+        
+        return Document.parse(CommonConst.GSON.toJson(element));
     }
 
     public static String elementToString(JsonElement element) {
@@ -43,7 +43,7 @@ public class JsonUtils {
                 return primitive.getAsString();
             }
         }
-        return gson.toJson(element);
+        return CommonConst.GSON.toJson(element);
     }
 
     public static <T> T mapToObject(Map<String, String> map, Class<T> clazz) {
@@ -57,15 +57,15 @@ public class JsonUtils {
             }
         }
         
-        return gson.fromJson(obj, clazz);
+        return CommonConst.GSON.fromJson(obj, clazz);
     }
 
     public static Map<String, String> objectToMap(Object src) {
         Map<String, String> map = new HashMap<>();
-        JsonObject obj = (JsonObject) gson.toJsonTree(src);
+        JsonObject obj = (JsonObject) CommonConst.GSON.toJsonTree(src);
         
         for (Entry<String, JsonElement> entry : obj.entrySet()) {
-            map.put(entry.getKey(), gson.toJson(entry.getValue()));
+            map.put(entry.getKey(), CommonConst.GSON.toJson(entry.getValue()));
         }
         
         return map;

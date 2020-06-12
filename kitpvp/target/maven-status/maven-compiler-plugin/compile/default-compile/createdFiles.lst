@@ -71,6 +71,7 @@ tk\yallandev\saintmc\kitpvp\warp\types\SumoWarp$1$1.class
 tk\yallandev\saintmc\kitpvp\kit\register\KangarooKit.class
 tk\yallandev\saintmc\kitpvp\event\challenge\SearchingStopEvent.class
 tk\yallandev\saintmc\kitpvp\manager\WarpManager.class
+tk\yallandev\saintmc\kitpvp\GameMain$1.class
 tk\yallandev\saintmc\kitpvp\listener\WorldListener.class
 tk\yallandev\saintmc\kitpvp\command\PartyCommand.class
 tk\yallandev\saintmc\kitpvp\menu\KitInventory$InventoryType.class

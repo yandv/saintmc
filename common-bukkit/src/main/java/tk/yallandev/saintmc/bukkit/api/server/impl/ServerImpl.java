@@ -22,7 +22,7 @@ public class ServerImpl implements Server {
 	private List<Profile> whiteList;
 	private Map<Profile, Long> blackMap;
 	
-	private ChatState chatState = ChatState.DISABLED;
+	private ChatState chatState = ChatState.ENABLED;
 	
 	@Getter
 	private NPCPool npcPool;

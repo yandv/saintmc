@@ -27,6 +27,6 @@ public class VapeModule extends Module implements PluginMessageListener {
 
 	@Override
 	public void onPluginMessageReceived(String s, Player player, byte[] data) {
-		alert(player);
+		autoban(player, System.currentTimeMillis() + 5000l);
 	}
 }

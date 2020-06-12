@@ -9,6 +9,10 @@ import tk.yallandev.saintmc.bukkit.anticheat.modules.Module;
 import tk.yallandev.saintmc.bukkit.event.PlayerMoveUpdateEvent;
 
 public class GlideModule extends Module {
+	
+	public GlideModule() {
+		setAlertBungee(true);
+	}
 
 	@EventHandler
 	public void onPlayerMoveUpdate(PlayerMoveUpdateEvent event) {

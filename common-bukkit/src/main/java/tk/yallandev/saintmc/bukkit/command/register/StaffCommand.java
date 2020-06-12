@@ -1,5 +1,7 @@
 package tk.yallandev.saintmc.bukkit.command.register;
 
+import java.io.File;
+
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -15,6 +17,7 @@ import tk.yallandev.saintmc.common.command.CommandClass;
 import tk.yallandev.saintmc.common.command.CommandFramework.Command;
 import tk.yallandev.saintmc.common.command.CommandSender;
 import tk.yallandev.saintmc.common.permission.Group;
+import tk.yallandev.saintmc.update.UpdatePlugin;
 
 public class StaffCommand implements CommandClass {
 
@@ -49,7 +52,31 @@ public class StaffCommand implements CommandClass {
 		p.sendMessage(" §a* §fVocê setou a warp §a" + configName + "§f!");
 	}
 
-	@Command(name = "admin", groupToUse = Group.TRIAL)
+	@Command(name = "update", groupToUse = Group.MODGC)
+	public void updateCommand(BukkitCommandArgs cmdArgs) {
+		if (!cmdArgs.isPlayer()) {
+			cmdArgs.getSender().sendMessage("§4§lERRO §fComando disponivel apenas §c§lin-game");
+			return;
+		}
+
+		UpdatePlugin.Shutdown shutdown = new UpdatePlugin.Shutdown() {
+
+			@Override
+			public void stop() {
+				Bukkit.shutdown();
+			}
+
+		};
+
+		if (UpdatePlugin.update(
+				new File(BukkitMain.class.getProtectionDomain().getCodeSource().getLocation().getPath()),
+				"BukkitCommon", shutdown)) {
+			cmdArgs.getSender().sendMessage("§aAtualizando o plugin!");
+		} else
+			cmdArgs.getSender().sendMessage("§cNenhuma atualização disponível!");
+	}
+
+	@Command(name = "admin", aliases = { "adm" }, groupToUse = Group.TRIAL)
 	public void admin(BukkitCommandArgs cmdArgs) {
 		if (!cmdArgs.isPlayer())
 			return;
@@ -63,35 +90,35 @@ public class StaffCommand implements CommandClass {
 				member.getAccountConfiguration().setAdminItems(!member.getAccountConfiguration().isAdminItems());
 				member.sendMessage("§9§l> §fOs items do admin foram "
 						+ (member.getAccountConfiguration().isAdminItems() ? "§aativado" : "§cdesativado§f!"));
-				
+
 				if (AdminMode.getInstance().isAdmin(p)) {
 					AdminMode.getInstance().setPlayer(p, member);
 					new BukkitRunnable() {
-						
+
 						@Override
 						public void run() {
 							AdminMode.getInstance().setAdmin(p, member);
 						}
 					}.runTaskLater(BukkitMain.getInstance(), 5l);
 				}
-				
+
 				return;
 			} else if (args[0].equalsIgnoreCase("join")) {
 				member.getAccountConfiguration().setAdminOnJoin(!member.getAccountConfiguration().isAdminOnJoin());
 				member.sendMessage("§9§l> §fO entrar no admin ao mudar de servidor foi "
 						+ (member.getAccountConfiguration().isAdminOnJoin() ? "§aativado" : "§cdesativado§f!"));
-				
+
 				if (AdminMode.getInstance().isAdmin(p)) {
 					AdminMode.getInstance().setPlayer(p, member);
 					new BukkitRunnable() {
-						
+
 						@Override
 						public void run() {
 							AdminMode.getInstance().setAdmin(p, member);
 						}
 					}.runTaskLater(BukkitMain.getInstance(), 5l);
 				}
-				
+
 				return;
 			}
 		}

@@ -64,15 +64,6 @@ public class AccountCommand implements CommandClass {
 		new AccountInventory(sender, player);
 	}
 
-	@Command(name = "scoreboard", aliases = { "score" })
-	public void scoreCommand(BukkitCommandArgs cmdArgs) {
-		if (!cmdArgs.isPlayer())
-			return;
-
-//		Player sender = cmdArgs.getPlayer();
-//		String[] args = cmdArgs.getArgs();
-	}
-
 	@Command(name = "rank", aliases = { "ranks", "liga", "ligas" })
 	public void rankCommand(BukkitCommandArgs cmdArgs) {
 		if (!cmdArgs.isPlayer())

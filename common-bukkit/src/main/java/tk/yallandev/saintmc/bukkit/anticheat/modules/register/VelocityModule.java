@@ -11,6 +11,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import tk.yallandev.saintmc.bukkit.BukkitMain;
 import tk.yallandev.saintmc.bukkit.anticheat.modules.Module;
+import tk.yallandev.saintmc.bukkit.api.protocol.ProtocolGetter;
 
 public class VelocityModule extends Module {
 	
@@ -24,7 +25,7 @@ public class VelocityModule extends Module {
 		
 		Player player = (Player) event.getEntity();
 		
-		if (player.hasPotionEffect(PotionEffectType.POISON) || player.hasPotionEffect(PotionEffectType.WITHER) || player.getFireTicks() > 0)
+		if (ProtocolGetter.getPing(player) >= 100 || player.hasPotionEffect(PotionEffectType.POISON) || player.hasPotionEffect(PotionEffectType.WITHER) || player.getFireTicks() > 0)
 			return;
 		
 		if (FlyModule.hasSurrondingBlocks(player.getLocation().getBlock()))

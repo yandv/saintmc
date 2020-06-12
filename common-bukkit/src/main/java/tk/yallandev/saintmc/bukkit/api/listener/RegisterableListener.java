@@ -8,4 +8,6 @@ public interface RegisterableListener extends Listener {
 	
 	void unregisterListener();
 	
+	boolean isRegistered();
+	
 }

@@ -29,7 +29,6 @@ import tk.yallandev.saintmc.bukkit.event.update.UpdateEvent;
 import tk.yallandev.saintmc.bukkit.event.update.UpdateEvent.UpdateType;
 import tk.yallandev.saintmc.common.utils.DateUtils;
 
-
 /**
  * 
  * Store and display like actionbar for players all Cooldown
@@ -41,22 +40,22 @@ import tk.yallandev.saintmc.common.utils.DateUtils;
  */
 
 public class CooldownController implements Listener {
-	
+
 	@Getter
 	private static CooldownController instance = new CooldownController();
 
 	private static final char CHAR = '|';
-	
+
 	private Map<UUID, List<Cooldown>> map;
 	private RegisterableListener listener;
 	private DecimalFormat decimalFormat;
-	
+
 	public CooldownController() {
 		map = new ConcurrentHashMap<>();
 		listener = new CooldownListener();
-		decimalFormat = new DecimalFormat("#,#");
+		decimalFormat = new DecimalFormat("#.#");
 	}
-	
+
 	/**
 	 * Add cooldown to player
 	 * 
@@ -70,9 +69,9 @@ public class CooldownController implements Listener {
 
 		if (!event.isCancelled()) {
 			List<Cooldown> list = map.computeIfAbsent(player.getUniqueId(), v -> new ArrayList<>());
-			
+
 			boolean add = true;
-			
+
 			for (Cooldown cool : list) {
 				if (cool.getName().equals(cooldown.getName())) {
 					cool.update(cooldown.getDuration(), cooldown.getStartTime());
@@ -82,12 +81,12 @@ public class CooldownController implements Listener {
 
 			if (add)
 				list.add(cooldown);
-			
+
 			if (!map.isEmpty())
 				listener.registerListener();
 		}
 	}
-	
+
 	/**
 	 * Add cooldown to player
 	 * 
@@ -108,9 +107,9 @@ public class CooldownController implements Listener {
 
 		if (!event.isCancelled()) {
 			List<Cooldown> list = map.computeIfAbsent(player.getUniqueId(), v -> new ArrayList<>());
-			
+
 			boolean add = true;
-			
+
 			for (Cooldown cool : list) {
 				if (cool.getName().equals(cooldown.getName())) {
 					cool.update(cooldown.getDuration(), cooldown.getStartTime());
@@ -120,12 +119,12 @@ public class CooldownController implements Listener {
 
 			if (add)
 				list.add(cooldown);
-			
+
 			if (!map.isEmpty())
 				listener.registerListener();
 		}
 	}
-	
+
 	/**
 	 * Remove player cooldown
 	 * 
@@ -139,7 +138,7 @@ public class CooldownController implements Listener {
 			Iterator<Cooldown> it = list.iterator();
 			while (it.hasNext()) {
 				Cooldown cooldown = it.next();
-				
+
 				if (cooldown.getName().equals(name)) {
 					it.remove();
 					Bukkit.getPluginManager().callEvent(new CooldownStopEvent(player, cooldown));
@@ -149,7 +148,7 @@ public class CooldownController implements Listener {
 		}
 		return false;
 	}
-	
+
 	/**
 	 * 
 	 * Check if player has cooldown
@@ -168,14 +167,14 @@ public class CooldownController implements Listener {
 		}
 		return false;
 	}
-	
+
 	/**
 	 * 
 	 * Check if player has cooldown
 	 * 
 	 * @param player
 	 * @param name
-	 * @return boolean has a cooldown is tr
+	 * @return boolean
 	 */
 
 	public boolean hasCooldown(UUID uniqueId, String name) {
@@ -187,6 +186,16 @@ public class CooldownController implements Listener {
 		}
 		return false;
 	}
+
+	/**
+	 * 
+	 * Return the cooldown of player, if the player not have cooldown will return
+	 * null
+	 * 
+	 * @param uniqueId
+	 * @param name
+	 * @return
+	 */
 
 	public Cooldown getCooldown(UUID uniqueId, String name) {
 		if (map.containsKey(uniqueId)) {
@@ -211,7 +220,7 @@ public class CooldownController implements Listener {
 	}
 
 	public class CooldownListener extends ManualRegisterableListener {
-		
+
 		@EventHandler
 		public void onUpdate(UpdateEvent event) {
 			if (event.getType() != UpdateType.TICK)
@@ -231,7 +240,7 @@ public class CooldownController implements Listener {
 					Cooldown found = null;
 					while (it.hasNext()) {
 						Cooldown cooldown = it.next();
-						
+
 						if (!cooldown.expired()) {
 							if (cooldown instanceof ItemCooldown) {
 								ItemStack hand = player.getItemInHand();
@@ -243,15 +252,21 @@ public class CooldownController implements Listener {
 										break;
 									}
 								}
-								
+
 								continue;
 							}
 							found = cooldown;
 							continue;
 						}
-						
+
 						it.remove();
-						player.playSound(player.getLocation(), Sound.LEVEL_UP, 1F, 1F);
+						
+						System.out.println(cooldown instanceof ItemCooldown);
+						System.out.println(!(cooldown instanceof ItemCooldown));
+
+						if (!(cooldown instanceof ItemCooldown))
+							player.playSound(player.getLocation(), Sound.LEVEL_UP, 1F, 1F);
+
 						CooldownFinishEvent e = new CooldownFinishEvent(player, cooldown);
 						Bukkit.getServer().getPluginManager().callEvent(e);
 					}
@@ -277,14 +292,14 @@ public class CooldownController implements Listener {
 				}
 			}
 		}
-		
+
 		@EventHandler
 		public void onCooldown(CooldownStopEvent event) {
 			if (map.isEmpty()) {
 				unregisterListener();
 			}
 		}
-		
+
 		private void display(Player player, Cooldown cooldown) {
 			StringBuilder bar = new StringBuilder();
 			double percentage = cooldown.getPercentage();
@@ -295,8 +310,8 @@ public class CooldownController implements Listener {
 			for (int a = 0; a < 20 - count; a++)
 				bar.append("§c" + CHAR);
 
-			ActionBarAPI.send(player,
-					"§f" + cooldown.getName() + " " + bar.toString() + " §f" + (decimalFormat.format(cooldown.getRemaining() / 60)) + " segundos");
+			ActionBarAPI.send(player, "§f" + cooldown.getName() + " " + bar.toString() + " §f"
+					+ (decimalFormat.format(cooldown.getRemaining())) + " segundos");
 		}
 	}
 

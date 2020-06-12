@@ -11,6 +11,7 @@ import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
@@ -156,6 +157,7 @@ public class FakePlayerAPI {
 		respawnPlayer.getGameModes().write(0, NativeGameMode.fromBukkit(player.getGameMode()));
 		respawnPlayer.getWorldTypeModifier().write(0, player.getWorld().getWorldType());
 		boolean isFlying = player.isFlying();
+		
 		try {
 			BukkitMain.getInstance().getProcotolManager().sendServerPacket(player, removePlayerInfo);
 			BukkitMain.getInstance().getProcotolManager().sendServerPacket(player, addPlayerInfo);
@@ -164,10 +166,18 @@ public class FakePlayerAPI {
 			player.setFlying(isFlying);
 			player.setExp(player.getExp());
 			player.setLevel(player.getLevel());
+			player.updateInventory();
 		} catch (InvocationTargetException e) {
 			e.printStackTrace();
 		}
-		player.updateInventory();
+		
+		new BukkitRunnable() {
+			
+			@Override
+			public void run() {
+				player.updateInventory();
+			}
+		}.runTaskLater(BukkitMain.getInstance(), 7l);
 	}
 
 	public static WrappedSignedProperty changePlayerSkin(Player player, String name, UUID uuid, boolean respawn) {

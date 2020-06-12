@@ -1,0 +1,26 @@
+{
+	"key":"allan",
+	"type":"download",
+	"pluginList":[
+		{
+			"pluginName":"BukkitCommon",
+			"path":"C:\\Users\\Allan\\git\\saintmc\\common-bukkit\\target\\BukkitCommon.jar"
+		},
+		{
+			"pluginName":"BungeeCommon",
+			"path":"C:\\Users\\Allan\\git\\saintmc\\common-bungee\\target\\BungeeCommon.jar"
+		},
+		{
+			"pluginName":"Lobby",
+			"path":"C:\\Users\\Allan\\git\\saintmc\\lobby\\target\\Lobby.jar"
+		},
+		{
+			"pluginName":"HungerGames",
+			"path":"C:\\Users\\Allan\\git\\saintmc\\hungergames\\target\\HungerGames.jar"
+		},
+		{
+			"pluginName":"SaintPvP",
+			"path":"C:\\Users\\Allan\\git\\saintmc\\kitpvp\\target\\SaintPvP.jar"
+		}
+	]
+}

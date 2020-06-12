@@ -126,24 +126,13 @@ public class PlayerDataImpl implements PlayerData {
 			}
 		});
 
-//		CommonGeneral.getInstance().getCommonPlatform().runAsync(() -> {
-//			Document document = memberCollection.find(Filters.eq("uniqueId", member.getUniqueId().toString())).first();
-//			
-//			if (document == null)
-//				memberCollection.insertOne(Document.parse(CommonConst.GSON.toJson(member)));
-//
-//			try (Jedis jedis = redisDatabase.getPool().getResource()) {
-//				jedis.hmset("account:" + member.getUniqueId().toString(),
-//						JsonUtils.objectToMap(new MemberModel(member)));
-//			}
-//		});
 	}
 
 	@Override
 	public void updateMember(Member member, String fieldName) {
 		MemberModel memberModel = new MemberModel(member);
 		JsonObject object = JsonUtils.jsonTree(memberModel);
-
+		
 		if (object.has(fieldName)) {
 			query.updateOne("uniqueId", member.getUniqueId().toString(),
 					new JsonBuilder().addProperty("fieldName", fieldName).add("value", object.get(fieldName)).build());
@@ -154,7 +143,7 @@ public class PlayerDataImpl implements PlayerData {
 			@Override
 			public void run() {
 				JsonObject tree = CommonConst.GSON.toJsonTree(member).getAsJsonObject();
-
+				
 				if (tree.has(fieldName)) {
 					JsonElement element = tree.get(fieldName);
 					try (Jedis jedis = redisDatabase.getPool().getResource()) {
@@ -182,12 +171,6 @@ public class PlayerDataImpl implements PlayerData {
 		MemberModel memberModel = CommonGeneral.getInstance().getMemberManager().getMemberAsMemberModel(discordId);
 
 		if (memberModel == null) {
-//			Document found = memberCollection.find(Filters.eq("discordId", discordId)).first();
-//
-//			if (found != null) {
-//				memberModel = CommonConst.GSON.fromJson(CommonConst.GSON.toJson(found), MemberModel.class);
-//			}
-
 			JsonElement found = query.findOne("discordId", discordId);
 
 			if (found != null) {

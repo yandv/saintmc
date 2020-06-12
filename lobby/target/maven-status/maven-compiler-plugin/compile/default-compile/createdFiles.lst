@@ -9,11 +9,11 @@ tk\yallandev\saintmc\lobby\menu\server\ServerInventory$2.class
 tk\yallandev\saintmc\lobby\listener\ScoreboardListener$3.class
 tk\yallandev\saintmc\lobby\listener\PlayerListener$1.class
 tk\yallandev\saintmc\lobby\listener\ScoreboardListener.class
-tk\yallandev\saintmc\lobby\listener\MoveListener$1.class
 tk\yallandev\saintmc\lobby\menu\server\GladiatorInventory.class
 tk\yallandev\saintmc\lobby\menu\collectable\HeadInventory.class
 tk\yallandev\saintmc\lobby\menu\collectable\CollectableInventory$1.class
 tk\yallandev\saintmc\lobby\collectable\Collectables$Wing.class
+tk\yallandev\saintmc\lobby\LobbyMain$1.class
 tk\yallandev\saintmc\lobby\listener\PlayerListener$7.class
 tk\yallandev\saintmc\lobby\listener\ScoreboardListener$4.class
 tk\yallandev\saintmc\lobby\command\SpawnCommand.class
@@ -64,7 +64,6 @@ tk\yallandev\saintmc\lobby\menu\collectable\HeadInventory$2.class
 tk\yallandev\saintmc\lobby\menu\server\ServerInventory$3.class
 tk\yallandev\saintmc\lobby\menu\server\KitpvpInventory$1.class
 tk\yallandev\saintmc\lobby\menu\collectable\CollectableInventory$2.class
-tk\yallandev\saintmc\lobby\listener\MoveListener.class
 tk\yallandev\saintmc\lobby\menu\profile\ProfileInventory.class
 tk\yallandev\saintmc\lobby\menu\server\HungergamesInventory$1.class
 tk\yallandev\saintmc\lobby\listener\PlayerListener.class

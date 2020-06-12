@@ -88,23 +88,15 @@ public class GameStatus implements Status {
 	}
 	
 	@Override
-	public int getMaxKillstreak() {
-		return maxStreak;
-	}
-
-	@Override
-	public int getMatches() {
-		return games;
-	}
-	
-	@Override
 	public void setMatch(int games) {
 		this.games = games;
+		CommonGeneral.getInstance().getStatusData().updateStatus(this, "games");
 	}
 	
 	@Override
 	public void addMatch() {
 		games++;
+		CommonGeneral.getInstance().getStatusData().updateStatus(this, "games");
 	}
 
 	@Override
@@ -115,11 +107,23 @@ public class GameStatus implements Status {
 	@Override
 	public void addWin() {
 		wins++;
+		CommonGeneral.getInstance().getStatusData().updateStatus(this, "wins");
 	}
 
 	@Override
 	public void setWins(int win) {
 		this.wins = win;
+		CommonGeneral.getInstance().getStatusData().updateStatus(this, "wins");
+	}
+	
+	@Override
+	public int getMaxKillstreak() {
+		return maxStreak;
+	}
+
+	@Override
+	public int getMatches() {
+		return games;
 	}
 
 }

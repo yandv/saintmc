@@ -5,6 +5,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 
+import tk.yallandev.saintmc.CommonConst;
 import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.common.account.status.Status;
 import tk.yallandev.saintmc.common.account.status.StatusType;
@@ -45,19 +46,22 @@ public class StatusListener implements Listener {
 			winnerXp *= 1.5;
 		}
 		
+		int lostXp = CommonConst.RANDOM.nextInt(8) + 1;
+		
 		player.sendMessage("§c§l> §fVocê §cmorreu§f para o §c" + killer.getName() + "§f!");
-		player.sendMessage("§c§l> §fVocê perdeu §c0§f!");
+		player.sendMessage("§c§l> §fVocê perdeu §c" + lostXp + "§f!");
 		
 		playerStatus.addDeath();
 		playerStatus.resetKillstreak();
 		
 		killer.sendMessage("§a§l> §fVocê matou o §a" + player.getName() + "§f!");
-		killer.sendMessage("§a§l> §fVocê ganhou §a" + winnerXp + "§f" + (duels ? " §7(1.5x no duels)" : "") + "§f!");
+		killer.sendMessage("§a§l> §fVocê ganhou §a" + winnerXp + " xp§f" + (duels ? " §7(1.5x no duels)" : "") + "§f!");
 		
 		killerStatus.addKill();
 		killerStatus.addKillstreak();
 		
 		CommonGeneral.getInstance().getMemberManager().getMember(killer.getUniqueId()).addXp(winnerXp);
+		CommonGeneral.getInstance().getMemberManager().getMember(player.getUniqueId()).removeXp(lostXp);
 	}
 
 }

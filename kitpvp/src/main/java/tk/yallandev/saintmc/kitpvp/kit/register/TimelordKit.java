@@ -1,16 +1,18 @@
 package tk.yallandev.saintmc.kitpvp.kit.register;
 
+import java.util.Arrays;
+
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import tk.yallandev.saintmc.bukkit.api.cooldown.CooldownController;
 import tk.yallandev.saintmc.bukkit.api.cooldown.types.Cooldown;
+import tk.yallandev.saintmc.bukkit.api.item.ItemBuilder;
 import tk.yallandev.saintmc.bukkit.api.vanish.AdminMode;
 import tk.yallandev.saintmc.kitpvp.GameMain;
 import tk.yallandev.saintmc.kitpvp.kit.Kit;
@@ -18,28 +20,29 @@ import tk.yallandev.saintmc.kitpvp.kit.Kit;
 public class TimelordKit extends Kit {
 
 	public TimelordKit() {
-		super("Timelord", "Pare o tempo com seu relógio", Material.WATCH);
+		super("Timelord", "Pare o tempo com seu relógio", Material.WATCH, 
+				Arrays.asList(new ItemBuilder().name("§aTimelord").type(Material.WATCH).build()));
 	}
 	
 	@EventHandler
-	public void onPlayerInteract(PlayerInteractEvent e) {
-		if (!e.getAction().name().contains("RIGHT"))
+	public void onPlayerInteract(PlayerInteractEvent event) {
+		if (!event.getAction().name().contains("RIGHT"))
 			return;
 		
-		if (!hasAbility(e.getPlayer()))
+		if (!hasAbility(event.getPlayer()))
 			return;
 		
-		Player p = e.getPlayer();
+		Player player = event.getPlayer();
 		
-		if (p.getItemInHand() == null || p.getItemInHand().getType() != Material.WATCH)
+		if (isAbilityItem(player.getItemInHand()))
 			return;
 		
-		if (CooldownController.getInstance().hasCooldown(p, getName())) {
+		if (CooldownController.getInstance().hasCooldown(player, getName())) {
 //			p.sendMessage(CooldownAPI.getCooldownFormated(p, getName()));
 			return;
 		}
 
-		for (Entity entity : e.getPlayer().getNearbyEntities(20, 20, 20)) {
+		for (Entity entity : event.getPlayer().getNearbyEntities(20, 20, 20)) {
 			if (!(entity instanceof Player)) {
 				continue;
 			}
@@ -54,13 +57,8 @@ public class TimelordKit extends Kit {
 			((Player) entity).addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 20 * 6, 250), true);
 		}
 		
-		e.setCancelled(true);
-		CooldownController.getInstance().addCooldown(p, new Cooldown(getName(), 25l));
-	}
-
-	@Override
-	public void applyKit(Player player) {
-		player.getInventory().setItem(1, new ItemStack(Material.WATCH));
+		event.setCancelled(true);
+		CooldownController.getInstance().addCooldown(player, new Cooldown(getName(), 25l));
 	}
 
 }

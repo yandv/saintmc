@@ -3,11 +3,13 @@ package tk.yallandev.saintmc.bungee.listener;
 import java.net.InetSocketAddress;
 import java.util.UUID;
 
+import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.PendingConnection;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.LoginEvent;
+import net.md_5.bungee.api.event.PermissionCheckEvent;
 import net.md_5.bungee.api.event.PlayerDisconnectEvent;
 import net.md_5.bungee.api.event.PostLoginEvent;
 import net.md_5.bungee.api.event.PreLoginEvent;
@@ -33,45 +35,45 @@ public class AccountListener implements Listener {
 	 * Change the onlineMode status
 	 */
 
-	@EventHandler(priority = EventPriority.NORMAL)
-	public void onLogin(PreLoginEvent event) {
-		if (event.isCancelled())
-			return;
-
-		String playerName = event.getConnection().getName();
-
-		PendingConnection connection = event.getConnection();
-
-		event.registerIntent(BungeeMain.getPlugin());
-		ProxyServer.getInstance().getScheduler().runAsync(BungeeMain.getPlugin(), new Runnable() {
-			@Override
-			public void run() {
-				/*
-				 * Verify if the player is cracked or premium
-				 */
-
-				try {
-					boolean cracked = CommonGeneral.getInstance().getMojangFetcher().isCracked(playerName);
-
-					/*
-					 * Change the login status If the onlineMode equals false the cracked player
-					 * will able to join or if equals true the cracked player wont able to join
-					 */
-
-					connection.setOnlineMode(!cracked);
-					CommonGeneral.getInstance().debug("The connection of " + event.getConnection().getName() + " is "
-							+ (cracked ? "Cracked" : "Premium"));
-				} catch (Exception ex) {
-					event.setCancelled(true);
-					event.setCancelReason("§4§l" + CommonConst.KICK_PREFIX
-							+ "\n§f\n§fNão foi possível checar o seu nome!§f\n§6Mais informação em: §b"
-							+ CommonConst.DISCORD);
-				}
-
-				event.completeIntent(BungeeMain.getPlugin());
-			}
-		});
-	}
+//	@EventHandler(priority = EventPriority.NORMAL)
+//	public void onLogin(PreLoginEvent event) {
+//		if (event.isCancelled())
+//			return;
+//
+//		String playerName = event.getConnection().getName();
+//
+//		PendingConnection connection = event.getConnection();
+//
+//		event.registerIntent(BungeeMain.getPlugin());
+//		ProxyServer.getInstance().getScheduler().runAsync(BungeeMain.getPlugin(), new Runnable() {
+//			@Override
+//			public void run() {
+//				/*
+//				 * Verify if the player is cracked or premium
+//				 */
+//
+//				try {
+//					boolean cracked = CommonGeneral.getInstance().getMojangFetcher().isCracked(playerName);
+//
+//					/*
+//					 * Change the login status If the onlineMode equals false the cracked player
+//					 * will able to join or if equals true the cracked player wont able to join
+//					 */
+//
+//					connection.setOnlineMode(!cracked);
+//					CommonGeneral.getInstance().debug("The connection of " + event.getConnection().getName() + " is "
+//							+ (cracked ? "Cracked" : "Premium"));
+//				} catch (Exception ex) {
+//					event.setCancelled(true);
+//					event.setCancelReason("§4§l" + CommonConst.KICK_PREFIX
+//							+ "\n§f\n§fNão foi possível checar o seu nome!§f\n§6Mais informação em: §b"
+//							+ CommonConst.DISCORD);
+//				}
+//
+//				event.completeIntent(BungeeMain.getPlugin());
+//			}
+//		});
+//	}
 
 	/*
 	 * Load Member
@@ -298,6 +300,20 @@ public class AccountListener implements Listener {
 		BungeeMember member = (BungeeMember) CommonGeneral.getInstance().getMemberManager()
 				.getMember(event.getPlayer().getUniqueId());
 		member.setProxiedPlayer(event.getPlayer());
+	}
+	
+	@EventHandler
+	public void onPermissionCheck(PermissionCheckEvent event) {
+		CommandSender sender = event.getSender();
+		
+		if (sender instanceof ProxiedPlayer) {
+			ProxiedPlayer proxiedPlayer = (ProxiedPlayer) sender;
+			
+			Member member = CommonGeneral.getInstance().getMemberManager().getMember(proxiedPlayer.getUniqueId());
+			
+			if (member.hasGroupPermission(Group.DIRETOR))
+				event.setHasPermission(true);
+		}
 	}
 
 	/*

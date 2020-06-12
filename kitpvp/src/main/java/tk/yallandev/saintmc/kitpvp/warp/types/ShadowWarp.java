@@ -17,6 +17,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 
 import tk.yallandev.saintmc.bukkit.BukkitMain;
+import tk.yallandev.saintmc.bukkit.api.cooldown.CooldownController;
+import tk.yallandev.saintmc.bukkit.api.cooldown.types.ItemCooldown;
 import tk.yallandev.saintmc.bukkit.api.item.ActionItemStack;
 import tk.yallandev.saintmc.bukkit.api.item.ActionItemStack.ActionType;
 import tk.yallandev.saintmc.bukkit.api.item.ActionItemStack.Interact;
@@ -26,6 +28,7 @@ import tk.yallandev.saintmc.bukkit.api.scoreboard.Score;
 import tk.yallandev.saintmc.bukkit.api.scoreboard.Scoreboard;
 import tk.yallandev.saintmc.bukkit.event.player.PlayerDamagePlayerEvent;
 import tk.yallandev.saintmc.bukkit.event.update.UpdateEvent;
+import tk.yallandev.saintmc.bukkit.event.update.UpdateEvent.UpdateType;
 import tk.yallandev.saintmc.common.utils.DateUtils;
 import tk.yallandev.saintmc.common.utils.string.StringUtils;
 import tk.yallandev.saintmc.kitpvp.GameMain;
@@ -62,8 +65,7 @@ public class ShadowWarp extends Warp implements DuelWarp {
 		playersIn1v1 = new HashMap<>();
 		fastQueue = new HashMap<>();
 
-		customChallenge = new ActionItemStack(
-				new ItemBuilder().name("§a1v1 Custom").type(Material.IRON_FENCE).build(),
+		customChallenge = new ActionItemStack(new ItemBuilder().name("§a1v1 Custom").type(Material.IRON_FENCE).build(),
 				new Interact(InteractType.PLAYER) {
 
 					@Override
@@ -77,8 +79,7 @@ public class ShadowWarp extends Warp implements DuelWarp {
 					}
 				});
 
-		normalChallenge = new ActionItemStack(
-				new ItemBuilder().type(Material.BLAZE_ROD).name("§a1v1 Normal").build(),
+		normalChallenge = new ActionItemStack(new ItemBuilder().type(Material.BLAZE_ROD).name("§a1v1 Normal").build(),
 				new Interact(InteractType.PLAYER) {
 
 					@Override
@@ -94,6 +95,9 @@ public class ShadowWarp extends Warp implements DuelWarp {
 						if (!(entity instanceof Player))
 							return false;
 
+						if (CooldownController.getInstance().hasCooldown(player, "1v1 normal"))
+							return false;
+
 						Player target = (Player) entity;
 
 						if (playersIn1v1.containsKey(target))
@@ -103,8 +107,10 @@ public class ShadowWarp extends Warp implements DuelWarp {
 							Challenge challenge = getChallenge(player, target, ChallengeType.SHADOW_NORMAL);
 
 							if (!challenge.isExpired()) {
-								player.sendMessage("§a§l> §fVocê foi desafiado para §a1v1 normal§f pelo §a " + target.getName() + "§f!");
-								target.sendMessage("§a§l> §fVocê foi desafiado para §a1v1 normal§f pelo §a " + player.getName() + "§f!");
+								player.sendMessage("§a§l> §fVocê foi desafiado para §a1v1 normal§f pelo §a "
+										+ target.getName() + "§f!");
+								target.sendMessage("§a§l> §fVocê foi desafiado para §a1v1 normal§f pelo §a "
+										+ player.getName() + "§f!");
 
 								challenge.start(firstLocation, secondLocation);
 								return false;
@@ -115,11 +121,12 @@ public class ShadowWarp extends Warp implements DuelWarp {
 							Challenge challenge = getChallenge(target, player, ChallengeType.SHADOW_NORMAL);
 
 							if (!challenge.isExpired()) {
-								player.sendMessage("§c§l> §fEspere §e" + DateUtils.getTime(challenge.getExpire()) + "§f para enviar outro desafio!");
+								player.sendMessage("§c§l> §fEspere §e" + DateUtils.getTime(challenge.getExpire())
+										+ "§f para enviar outro desafio!");
 								return false;
 							}
 						}
-	
+
 						newChallenge(player, target, new ShadowChallenge(player, target, ChallengeType.SHADOW_NORMAL) {
 
 							@Override
@@ -152,14 +159,17 @@ public class ShadowWarp extends Warp implements DuelWarp {
 
 						});
 
-						player.sendMessage("§a§l> §fVocê enviou um desafio de §a1v1 normal§f para o §a" + target.getName() + "§f!");
-						target.sendMessage("§a§l> §fO jogador §a" + player.getName() + "§f enviou um desafio de §a1v1 normal§f para você!");
+						player.sendMessage("§a§l> §fVocê enviou um desafio de §a1v1 normal§f para o §a"
+								+ target.getName() + "§f!");
+						target.sendMessage("§a§l> §fO jogador §a" + player.getName()
+								+ "§f enviou um desafio de §a1v1 normal§f para você!");
+						CooldownController.getInstance().addCooldown(player, new ItemCooldown(item, "1v1 normal", 5l));
 						return false;
 					}
 				});
 
-		ActionItemStack itemStack = new ActionItemStack(new ItemBuilder().name("§a1v1 Fast")
-				.type(Material.INK_SACK).durability(10).build(), new Interact() {
+		ActionItemStack itemStack = new ActionItemStack(
+				new ItemBuilder().name("§a1v1 Fast").type(Material.INK_SACK).durability(10).build(), new Interact() {
 
 					@Override
 					public boolean onInteract(Player player, Entity entity, Block block, ItemStack item,
@@ -167,13 +177,15 @@ public class ShadowWarp extends Warp implements DuelWarp {
 
 						if (playersIn1v1.containsKey(player))
 							return false;
-						
+
 						ShadowSearchingStopEvent searchingStopEvent = new ShadowSearchingStopEvent(player);
-						
+
 						Bukkit.getPluginManager().callEvent(searchingStopEvent);
 
 						if (!searchingStopEvent.isCancelled()) {
 							player.setItemInHand(fastChallenge.getItemStack());
+							CooldownController.getInstance().addCooldown(player,
+									new ItemCooldown(player.getItemInHand(), "1v1 rápido", 3l));
 
 							fastQueue.remove(player);
 							player.sendMessage("§a§l> §fVocê §csaiu§f na fila do §a1v1 rápido§f!");
@@ -183,8 +195,8 @@ public class ShadowWarp extends Warp implements DuelWarp {
 
 				});
 
-		fastChallenge = new ActionItemStack(new ItemBuilder().name("§c1v1 Fast")
-				.type(Material.INK_SACK).durability(8).build(), new Interact() {
+		fastChallenge = new ActionItemStack(
+				new ItemBuilder().name("§c1v1 Fast").type(Material.INK_SACK).durability(8).build(), new Interact() {
 
 					@Override
 					public boolean onInteract(Player player, Entity entity, Block block, ItemStack item,
@@ -194,11 +206,13 @@ public class ShadowWarp extends Warp implements DuelWarp {
 
 						if (playersIn1v1.containsKey(player))
 							return false;
-						
+
+						if (CooldownController.getInstance().hasCooldown(player, "1v1 rápido"))
+							return false;
+
 						ShadowSearchingStartEvent searchingStartEvent = new ShadowSearchingStartEvent(player);
-						
 						Bukkit.getPluginManager().callEvent(searchingStartEvent);
-						
+
 						if (searchingStartEvent.isCancelled())
 							return false;
 
@@ -239,7 +253,7 @@ public class ShadowWarp extends Warp implements DuelWarp {
 								}
 
 							};
-							
+
 							player.sendMessage("§a§l> §fVocê batalhará contra o §a" + target.getName() + "§f!");
 							target.sendMessage("§a§l> §fVocê batalhará contra o §a" + player.getName() + "§f!");
 
@@ -253,12 +267,12 @@ public class ShadowWarp extends Warp implements DuelWarp {
 		firstLocation = BukkitMain.getInstance().getLocationFromConfig("shadow.pos1");
 		secondLocation = BukkitMain.getInstance().getLocationFromConfig("shadow.pos2");
 	}
-	
+
 	@EventHandler
-	public void asdk(UpdateEvent event) {
-		fastQueue.forEach((player, time) -> {
-			ScoreboardListener.SEARCHING_SCOREBOARD.updateScore(player, new Score("§fTempo: §a" + StringUtils.formatTime((int)(System.currentTimeMillis() - time ) / 1000), "time"));
-		});
+	public void onUpdate(UpdateEvent event) {
+		if (event.getType() == UpdateType.SECOND)
+			fastQueue.forEach((player, time) -> ScoreboardListener.SEARCHING_SCOREBOARD.updateScore(player, new Score(
+					"§fTempo: §a" + StringUtils.formatTime((int) (System.currentTimeMillis() - time) / 1000), "time")));
 	}
 
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -312,11 +326,11 @@ public class ShadowWarp extends Warp implements DuelWarp {
 
 		handleInventory(player);
 	}
-	
+
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void drop(PlayerDropItemEvent event) {
 		Player player = event.getPlayer();
-		
+
 		if (inWarp(player)) {
 			if (playersIn1v1.containsKey(player)) {
 				event.setCancelled(false);
@@ -360,23 +374,24 @@ public class ShadowWarp extends Warp implements DuelWarp {
 		player.getInventory().setItem(3, fastChallenge.getItemStack());
 		player.getInventory().setItem(4, normalChallenge.getItemStack());
 		player.getInventory().setItem(5, customChallenge.getItemStack());
+		player.updateInventory();
 	}
 
 	public void handleQuit(Player player) {
 		if (playersIn1v1.containsKey(player)) {
 			ShadowChallenge challenge = (ShadowChallenge) playersIn1v1.get(player);
 			Player winner = challenge.getPlayer();
-			
+
 			if (winner == player)
 				winner = challenge.getTarget();
-			
+
 			challenge.finish(winner);
 		}
-		
+
 		challengeMap.remove(player);
 		fastQueue.remove(player);
 	}
-	
+
 	@Override
 	public Scoreboard getScoreboard() {
 		return ScoreboardListener.SHADOW_SCOREBOARD;
@@ -385,10 +400,12 @@ public class ShadowWarp extends Warp implements DuelWarp {
 	@Override
 	public ItemStack getItem() {
 		return new ItemBuilder().name("§a1v1")
-				.lore("\n§7Arena 1v1 sem interrupções.\n\n§a" + GameMain.getInstance().getGamerManager().filter(gamer -> gamer.getWarp() == this).size() + " jogadores")
+				.lore("\n§7Arena 1v1 sem interrupções.\n\n§a"
+						+ GameMain.getInstance().getGamerManager().filter(gamer -> gamer.getWarp() == this).size()
+						+ " jogadores")
 				.type(Material.BLAZE_ROD).build();
 	}
-	
+
 	public void newChallenge(Player player, Player target, Challenge challenge) {
 		Map<Player, Map<ChallengeType, Challenge>> map = challengeMap.computeIfAbsent(player, m -> new HashMap<>());
 		Map<ChallengeType, Challenge> challenges = map.computeIfAbsent(target, m -> new HashMap<>());
@@ -412,7 +429,7 @@ public class ShadowWarp extends Warp implements DuelWarp {
 
 	@Override
 	public void setSecondLocation(Location location) {
-		secondLocation = location;	
+		secondLocation = location;
 	}
 
 }

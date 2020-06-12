@@ -1,5 +1,7 @@
 package tk.yallandev.saintmc.kitpvp.kit.register;
 
+import java.util.ArrayList;
+
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -10,9 +12,8 @@ import tk.yallandev.saintmc.kitpvp.kit.Kit;
 public class BoxerKit extends Kit {
 
 	public BoxerKit() {
-		super("Boxer", "Vire um boxeador e esteja acustumado a receber pancadas e a revida-las", Material.STONE_SWORD);
+		super("Boxer", "Vire um boxeador e esteja acustumado a receber pancadas e a revida-las", Material.STONE_SWORD, new ArrayList<>());
 	}
-
 	
 	@EventHandler
 	public void onBoxer(EntityDamageByEntityEvent event) {
@@ -44,10 +45,4 @@ public class BoxerKit extends Kit {
 			event.setDamage(1);
 	}
 
-
-	@Override
-	public void applyKit(Player player) {
-		// TODO Auto-generated method stub
-		
-	}
 }

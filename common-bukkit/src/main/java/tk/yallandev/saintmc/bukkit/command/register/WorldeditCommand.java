@@ -1,22 +1,29 @@
 package tk.yallandev.saintmc.bukkit.command.register;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.BlockState;
 import org.bukkit.entity.Player;
 
+import com.google.common.base.Joiner;
+
 import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.bukkit.BukkitMain;
 import tk.yallandev.saintmc.bukkit.api.worldedit.WorldeditController;
+import tk.yallandev.saintmc.bukkit.api.worldedit.arena.ArenaResponse;
+import tk.yallandev.saintmc.bukkit.api.worldedit.arena.ArenaType;
 import tk.yallandev.saintmc.bukkit.command.BukkitCommandArgs;
 import tk.yallandev.saintmc.common.account.Member;
 import tk.yallandev.saintmc.common.command.CommandClass;
 import tk.yallandev.saintmc.common.command.CommandFramework.Command;
 import tk.yallandev.saintmc.common.permission.Group;
+import tk.yallandev.saintmc.common.utils.string.NameUtils;
 
 @SuppressWarnings("deprecation")
 public class WorldeditCommand implements CommandClass {
@@ -42,6 +49,92 @@ public class WorldeditCommand implements CommandClass {
 		player.sendMessage(" §a* §fVocê recebeu a varinha do §aWorldedit§f!");
 	}
 
+	@Command(name = "createarena", groupToUse = Group.BUILDER)
+	public void createarenaCommand(BukkitCommandArgs cmdArgs) {
+		if (!cmdArgs.isPlayer())
+			return;
+
+		Player player = cmdArgs.getPlayer();
+		Member member = CommonGeneral.getInstance().getMemberManager().getMember(player.getUniqueId());
+
+		if (checkPermission(member))
+			return;
+
+		String[] args = cmdArgs.getArgs();
+
+		if (args.length < 4) {
+			player.sendMessage(" §e* §fUse §a/createarena <"
+					+ (Joiner.on(":")
+							.join(Arrays.asList(ArenaType.values()).stream()
+									.map(arenaType -> arenaType.name().toLowerCase()).collect(Collectors.toList())))
+					+ "> <material:id> <radius> <height>§f para setar um grupo.");
+			return;
+		}
+
+		ArenaType arenaType = null;
+
+		try {
+			arenaType = ArenaType.valueOf(args[0].toUpperCase());
+		} catch (Exception ex) {
+
+		}
+
+		Material blockMaterial = null;
+		byte blockId = 0;
+
+		if (args[1].contains(":")) {
+			blockMaterial = Material.getMaterial(args[1].split(":")[0].toUpperCase());
+
+			if (blockMaterial == null) {
+				try {
+					blockMaterial = Material.getMaterial(Integer.valueOf(args[1].split(":")[0]));
+				} catch (NumberFormatException e) {
+				}
+			}
+
+			try {
+				blockId = Byte.valueOf(args[1].split(":")[1]);
+			} catch (Exception e) {
+				player.sendMessage("§cO bloco " + args[1] + " não existe!");
+				return;
+			}
+		} else {
+			blockMaterial = Material.getMaterial(args[1]);
+
+			if (blockMaterial == null) {
+				try {
+					blockMaterial = Material.getMaterial(Integer.valueOf(args[1]));
+				} catch (NumberFormatException e) {
+				}
+			}
+		}
+
+		Integer radius = null;
+
+		try {
+			radius = Integer.valueOf(args[2]);
+		} catch (NumberFormatException ex) {
+			player.sendMessage(" §c* §fFormato de numero para o radius inválidof!");
+			return;
+		}
+
+		Integer height = null;
+
+		try {
+			height = Integer.valueOf(args[3]);
+		} catch (NumberFormatException ex) {
+			player.sendMessage(" §c* §fFormato de numero para o radius inválidof!");
+			return;
+		}
+
+		ArenaResponse arenaResponse = arenaType.place(player.getLocation(), blockMaterial, blockId, radius, height,
+				true, false);
+
+		controller.addUndo(player, arenaResponse.getMap());
+		player.sendMessage("§dVocê criou uma arena " + NameUtils.formatString(arenaType.name()) + ", colocando "
+				+ arenaResponse.getBlocks() + " blocos!");
+	}
+
 	@Command(name = "set", groupToUse = Group.BUILDER)
 	public void setCommand(BukkitCommandArgs cmdArgs) {
 		if (!cmdArgs.isPlayer())
@@ -56,7 +149,7 @@ public class WorldeditCommand implements CommandClass {
 		String[] args = cmdArgs.getArgs();
 
 		if (args.length == 0) {
-			player.sendMessage(" §e* §fUse §a/groupset <player> <group>§f para setar um grupo.");
+			player.sendMessage(" §e* §fUse §a/set <material:id>§f para setar um grupo.");
 			return;
 		}
 
@@ -89,23 +182,23 @@ public class WorldeditCommand implements CommandClass {
 				}
 			}
 		}
-		
+
 		if (!controller.hasFirstPosition(player)) {
 			player.sendMessage("§cA primeira posição não foi setada!");
 			return;
 		}
-		
+
 		if (!controller.hasSecondPosition(player)) {
 			player.sendMessage("§cA segunda posição não foi setada!");
 			return;
 		}
-		
+
 		Location first = controller.getFirstPosition(player);
 		Location second = controller.getSecondPosition(player);
-		
+
 		Map<Location, BlockState> map = new HashMap<>();
 		int amount = 0;
-		
+
 		for (int x = (first.getBlockX() > second.getBlockX() ? second.getBlockX()
 				: first.getBlockX()); x <= (first.getBlockX() < second.getBlockX() ? second.getBlockX()
 						: first.getBlockX()); x++) {
@@ -126,7 +219,7 @@ public class WorldeditCommand implements CommandClass {
 				}
 			}
 		}
-		
+
 		controller.addUndo(player, map);
 		player.sendMessage("§dVocê colocou " + amount + " blocos!");
 	}
@@ -152,14 +245,11 @@ public class WorldeditCommand implements CommandClass {
 		int amount = 0;
 
 		for (Entry<Location, BlockState> entry : map.entrySet()) {
-			if (entry.getValue().getType() != entry.getKey().getBlock().getType()
-					|| entry.getValue().getData().getData() != entry.getKey().getBlock().getData()) {
-				entry.getKey().getBlock().setType(entry.getValue().getType());
-				entry.getKey().getBlock().setData(entry.getValue().getData().getData());
-				amount++;
-			}
+			entry.getKey().getBlock().setType(entry.getValue().getType());
+			entry.getKey().getBlock().setData(entry.getValue().getData().getData());
+			amount++;
 		}
-		
+
 		controller.removeUndo(player, map);
 		player.sendMessage("§dVocê colocou " + amount + " blocos!");
 	}

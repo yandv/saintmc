@@ -160,13 +160,7 @@ public class PlayerListener implements Listener {
 //			member.sendMessage(" ");
 //		}
 
-		if (member.hasGroupPermission(Group.LIGHT)) {
-			Gamer gamer = LobbyMain.getInstance().getPlayerManager().getGamer(player);
-
-			gamer.setFlying(true);
-			player.setAllowFlight(true);
-			player.setFlying(true);
-		} else {
+		if (!member.hasGroupPermission(Group.LIGHT)) {
 			for (Gamer gamer : LobbyMain.getInstance().getPlayerManager().getGamers())
 				if (!gamer.isSeeing())
 					gamer.getPlayer().hidePlayer(player);
@@ -213,7 +207,7 @@ public class PlayerListener implements Listener {
 				.getMember(e.getPlayer().getUniqueId());
 
 		if (player.isBuildEnabled())
-			if (player.hasGroupPermission(Group.DONO)) {
+			if (player.hasGroupPermission(Group.DEV)) {
 				e.setCancelled(false);
 				return;
 			}
@@ -227,7 +221,7 @@ public class PlayerListener implements Listener {
 				.getMember(e.getPlayer().getUniqueId());
 
 		if (player.isBuildEnabled())
-			if (player.hasGroupPermission(Group.DONO)) {
+			if (player.hasGroupPermission(Group.DEV)) {
 				e.setCancelled(false);
 				return;
 			}
@@ -241,7 +235,7 @@ public class PlayerListener implements Listener {
 				.getMember(event.getPlayer().getUniqueId());
 
 		if (player.isBuildEnabled())
-			if (player.hasGroupPermission(Group.DONO)) {
+			if (player.hasGroupPermission(Group.DEV)) {
 				event.setCancelled(false);
 				return;
 			}
@@ -312,7 +306,8 @@ public class PlayerListener implements Listener {
 
 					for (int x = 0; x < 15; x++)
 						player.getInventory().addItem(new ItemStack(Material.MUSHROOM_SOUP));
-
+					
+					player.updateInventory();
 					ActionBarAPI.send(player, "§cVocê entrou na área de combate!");
 				}
 		}
@@ -444,6 +439,7 @@ public class PlayerListener implements Listener {
 						}).getItemStack());
 		player.getInventory().setItem(7, collectable.getItemStack());
 		player.getInventory().setItem(8, lobbies.getItemStack());
+		player.updateInventory();
 	}
 
 	public TextComponent createClickable(String message, String hoverMessage, String url) {

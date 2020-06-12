@@ -6,6 +6,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent.Result;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -88,7 +89,10 @@ public class AccountListener extends Listener {
 
 		member.setPlayer(event.getPlayer());
 		member.connect(CommonGeneral.getInstance().getServerId(), CommonGeneral.getInstance().getServerType());
+	}
 
+	@EventHandler
+	public void onPlayerJoin(PlayerJoinEvent event) {
 		new BukkitRunnable() {
 
 			@Override

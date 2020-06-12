@@ -74,6 +74,9 @@ public class BukkitMember extends Member {
 
 	@Override
 	public boolean setTag(Tag tag) {
+		if (!BukkitMain.getInstance().isTagControl())
+			return false;
+
 		return setTag(tag, false);
 	}
 
@@ -122,6 +125,7 @@ public class BukkitMember extends Member {
 	public void setLeague(League liga) {
 		PlayerChangeLeagueEvent event = new PlayerChangeLeagueEvent(getPlayer(), this, getLeague(), liga);
 		BukkitMain.getInstance().getServer().getPluginManager().callEvent(event);
+
 		if (!event.isCancelled()) {
 			super.setLeague(liga);
 			setTag(getTag());
@@ -132,15 +136,24 @@ public class BukkitMember extends Member {
 		tags = new ArrayList<>();
 		for (Tag t : Tag.values()) {
 
+			if (hasPermission("tag." + t.getName().toLowerCase())) {
+				tags.add(t);
+				continue;
+			}
+
 			if (t.getGroupToUse() == null)
 				continue;
 
-			if ((t.isExclusive()
-					&& (t.getGroupToUse() == getServerGroup() || getServerGroup().ordinal() >= Group.ADMIN.ordinal()))
-					|| (!t.isExclusive() && getServerGroup().ordinal() >= t.getGroupToUse().ordinal())) {
+			if ((t.isExclusive() && (t.getGroupToUse() == getServerGroup() || hasRank(t.getGroupToUse())
+					|| getServerGroup().ordinal() >= Group.ADMIN.ordinal()))) {
 				tags.add(t);
+				continue;
 			}
+
+			if (getServerGroup().ordinal() >= t.getGroupToUse().ordinal())
+				tags.add(t);
 		}
+
 	}
 
 	public Tag getDefaultTag() {
@@ -149,6 +162,18 @@ public class BukkitMember extends Member {
 
 	public List<Tag> getTags() {
 		return tags;
+	}
+
+	public boolean hasTag(Tag tag) {
+		if (tags.contains(tag))
+			return true;
+
+		for (Tag t : tags) {
+			if (t.getName().equals(tag.getName()))
+				return true;
+		}
+
+		return false;
 	}
 
 }

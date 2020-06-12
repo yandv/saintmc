@@ -8,7 +8,13 @@ import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Team;
 
+import tk.yallandev.saintmc.common.account.League;
+import tk.yallandev.saintmc.common.tag.Tag;
+
 public class ScoreboardAPI {
+	
+	private static char[] chars = { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r',
+			's', 't', 'u', 'v', 'w', 'x', 'y', 'z' };
 
 	public static Team getTeamFromPlayer(Player player, String teamID) {
 		if (teamID.length() > 16) {
@@ -865,6 +871,10 @@ public class ScoreboardAPI {
 		for (Player player : Bukkit.getOnlinePlayers()) {
 			updateScoreOnObjectiveToPlayer(player, objectiveSlot, scoreID, name, value);
 		}
+	}
+
+	public static String getTeamName(Tag tag, League liga, boolean chroma) {
+		return chars[tag.ordinal()] + "-" + chars[League.values().length - liga.ordinal()] + (chroma ? "a" : "b");
 	}
 
 }

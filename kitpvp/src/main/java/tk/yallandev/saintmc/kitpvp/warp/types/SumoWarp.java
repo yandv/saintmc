@@ -323,6 +323,7 @@ public class SumoWarp extends Warp implements DuelWarp {
 
 		player.getInventory().setItem(3, normalChallenge.getItemStack());
 		player.getInventory().setItem(5, fastChallenge.getItemStack());
+		player.updateInventory();
 	}
 
 	public void handleQuit(Player player) {

@@ -42,7 +42,6 @@ public class ShadowListener implements Listener {
 	
 	@EventHandler
 	public void onFightStart(FightStartEvent event) {
-		
 		switch (event.getChallengeType()) {
 		case SHADOW_FAST: {
 			shadowNormalTitle.send(event.getPlayer());
@@ -59,7 +58,6 @@ public class ShadowListener implements Listener {
 			break;
 		}
 		}
-		
 	}
 	
 	@EventHandler

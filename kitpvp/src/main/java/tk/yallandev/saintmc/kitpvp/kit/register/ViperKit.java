@@ -1,5 +1,6 @@
 package tk.yallandev.saintmc.kitpvp.kit.register;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 import org.bukkit.Material;
@@ -14,7 +15,7 @@ import tk.yallandev.saintmc.kitpvp.kit.Kit;
 public class ViperKit extends Kit {
 
 	public ViperKit() {
-		super("Viper", "Envenene seus inimigos ao encosta-los", Material.SPIDER_EYE);
+		super("Viper", "Envenene seus inimigos ao encosta-los", Material.SPIDER_EYE, new ArrayList<>());
 	}
 	
 	@EventHandler
@@ -37,11 +38,6 @@ public class ViperKit extends Kit {
 				damaged.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 3 * 20, 0));
 			}
 		}
-	}
-
-	@Override
-	public void applyKit(Player player) {
-		
 	}
 
 }

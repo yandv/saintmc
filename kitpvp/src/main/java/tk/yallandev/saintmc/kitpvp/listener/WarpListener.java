@@ -4,6 +4,7 @@ package tk.yallandev.saintmc.kitpvp.listener;
 import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
@@ -13,17 +14,22 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import tk.yallandev.saintmc.bukkit.api.cooldown.CooldownController;
+import tk.yallandev.saintmc.bukkit.api.cooldown.types.ItemCooldown;
+import tk.yallandev.saintmc.bukkit.api.vanish.AdminMode;
 import tk.yallandev.saintmc.kitpvp.GameMain;
 import tk.yallandev.saintmc.kitpvp.event.warp.PlayerWarpDeathEvent;
 import tk.yallandev.saintmc.kitpvp.event.warp.PlayerWarpRespawnEvent;
 import tk.yallandev.saintmc.kitpvp.gamer.Gamer;
 import tk.yallandev.saintmc.kitpvp.warp.Warp;
+import tk.yallandev.saintmc.kitpvp.warp.types.SpawnWarp;
 
 public class WarpListener implements Listener {
 
@@ -100,9 +106,9 @@ public class WarpListener implements Listener {
 	public void respawn(Player player, Warp warp) {
 		player.spigot().respawn();
 		player.teleport(warp.getSpawnLocation());
-		
+
 		GameMain.getInstance().getGamerManager().getGamer(player.getUniqueId()).setSpawnProtection(true);
-		
+
 		new BukkitRunnable() {
 
 			@Override
@@ -118,6 +124,50 @@ public class WarpListener implements Listener {
 		Gamer gamer = GameMain.getInstance().getGamerManager().getGamer(player.getUniqueId());
 
 		GameMain.getInstance().getWarpManager().removeWarp(gamer);
+	}
+
+	@EventHandler
+	public void onPlayerInteract(PlayerInteractEvent event) {
+		Player player = event.getPlayer();
+		ItemStack item = event.getItem();
+
+		if (item == null || item.getType() == Material.AIR)
+			return;
+
+		Gamer gamer = GameMain.getInstance().getGamerManager().getGamer(player.getUniqueId());
+		
+		if (gamer.getWarp() instanceof SpawnWarp && !gamer.hasKit())
+			return;
+		
+		if (item.getType() == Material.COMPASS) {
+			if (CooldownController.getInstance().hasCooldown(player, "Bussola"))
+				return;
+			
+			Player target = null;
+			double distance = 10000;
+
+			for (Player game : Bukkit.getOnlinePlayers().stream()
+					.filter(game -> !AdminMode.getInstance().isAdmin(game) && GameMain.getInstance().getGamerManager()
+							.getGamer(game.getUniqueId()).getWarp().equals(gamer.getWarp()))
+					.collect(Collectors.toList())) {
+
+				double distOfPlayerToVictim = player.getLocation().distance(game.getPlayer().getLocation());
+				if (distOfPlayerToVictim < distance && distOfPlayerToVictim > 25) {
+					distance = distOfPlayerToVictim;
+					target = game;
+				}
+			}
+
+			if (target == null) {
+				player.sendMessage("§cNinguém foi encontrado, bussola apontando para o spawn!");
+				player.setCompassTarget(Bukkit.getWorlds().get(0).getSpawnLocation());
+			} else {
+				player.setCompassTarget(target.getLocation());
+				player.sendMessage("§aBussola apontando para o " + target.getName() + "!");
+			}
+			
+			CooldownController.getInstance().addCooldown(player, new ItemCooldown(item, "Bussola", 2l));
+		}
 	}
 
 }

@@ -89,10 +89,9 @@ public class MojangFetcher {
 
 	public UUID requestUuid(String playerName) {
 		try {
-
 			JsonObject jsonObject = (JsonObject) CommonConst.DEFAULT_WEB
 					.doRequest(CommonConst.MOJANG_FETCHER + "?name=" + playerName, Method.GET);
-
+			
 			return UUIDParser.parse(jsonObject.get("uuid").getAsString());
 		} catch (ConnectionPoolTimeoutException ex) {
 		} catch (Exception ex) {

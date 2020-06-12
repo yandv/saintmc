@@ -6,18 +6,17 @@ tk\yallandev\saintmc\discord\reaction\MessageReaction.class
 tk\yallandev\saintmc\bungee\account\BungeeMember.class
 tk\yallandev\saintmc\discord\command\DiscordCommandFramework.class
 tk\yallandev\saintmc\discord\command\register\DiscordCommand.class
+tk\yallandev\saintmc\bungee\BungeeMain$2.class
 tk\yallandev\saintmc\bungee\manager\BungeePunishManager.class
 tk\yallandev\saintmc\bungee\redis\BungeePubSubHandler$7.class
 tk\yallandev\saintmc\discord\command\register\DiscordCommand$Invite.class
 tk\yallandev\saintmc\bungee\listener\ConnectionListener.class
 tk\yallandev\saintmc\bungee\command\BungeeCommandArgs.class
-tk\yallandev\saintmc\bungee\BungeeMain$1$1.class
 tk\yallandev\saintmc\bungee\command\register\GroupCommand.class
 tk\yallandev\saintmc\discord\reaction\Reaction$1.class
 tk\yallandev\saintmc\bungee\server\BungeeServer.class
 tk\yallandev\saintmc\bungee\redis\BungeePubSubHandler.class
 tk\yallandev\saintmc\bungee\redis\BungeePubSubHandler$1.class
-tk\yallandev\saintmc\bungee\listener\AccountListener$3.class
 tk\yallandev\saintmc\bungee\listener\ChatListener.class
 tk\yallandev\saintmc\bungee\manager\BungeePunishManager$1.class
 tk\yallandev\saintmc\discord\listener\BoosterListener.class
@@ -48,6 +47,7 @@ tk\yallandev\saintmc\discord\command\DiscordCommandFramework$CommandRegister.cla
 tk\yallandev\saintmc\bungee\redis\BungeePubSubHandler$2.class
 tk\yallandev\saintmc\bungee\command\register\DiscordCommand$2.class
 tk\yallandev\saintmc\discord\manager\GuildManager.class
+tk\yallandev\saintmc\bungee\BungeeMain$2$1.class
 tk\yallandev\saintmc\BungeeConst.class
 tk\yallandev\saintmc\discord\command\DiscordCommandSender.class
 tk\yallandev\saintmc\bungee\redis\BungeePubSubHandler$6.class

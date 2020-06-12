@@ -76,17 +76,12 @@ public class WarpManager {
 		gamer.setKit(null);
 		gamer.getPlayer().teleport(warp.getSpawnLocation());
 		
-		PlayerWarpJoinEvent event = new PlayerWarpJoinEvent(gamer.getPlayer(), warp);
-		
-		Bukkit.getPluginManager().callEvent(event);
-		
-		PlayerWarpQuitEvent quitEvent = new PlayerWarpQuitEvent(gamer.getPlayer(), lastWarp);
-		Bukkit.getPluginManager().callEvent(quitEvent);
+		Bukkit.getPluginManager().callEvent(new PlayerWarpJoinEvent(gamer.getPlayer(), warp));
+		Bukkit.getPluginManager().callEvent(new PlayerWarpQuitEvent(gamer.getPlayer(), lastWarp));
 	}
 
 	public void removeWarp(Gamer gamer) {
-		PlayerWarpQuitEvent quitEvent = new PlayerWarpQuitEvent(gamer.getPlayer(), gamer.getWarp());
-		Bukkit.getPluginManager().callEvent(quitEvent);
+		Bukkit.getPluginManager().callEvent(new PlayerWarpQuitEvent(gamer.getPlayer(), gamer.getWarp()));
 		
 		gamer.setWarp(null);
 	}

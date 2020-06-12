@@ -3,11 +3,14 @@ package tk.yallandev.saintmc.kitpvp.listener;
 import java.util.Iterator;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Effect;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -30,6 +33,8 @@ import tk.yallandev.saintmc.bukkit.account.BukkitMember;
 import tk.yallandev.saintmc.bukkit.event.update.UpdateEvent;
 import tk.yallandev.saintmc.common.permission.Group;
 import tk.yallandev.saintmc.kitpvp.GameMain;
+import tk.yallandev.saintmc.kitpvp.gamer.Gamer;
+import tk.yallandev.saintmc.kitpvp.kit.Kit;
 
 public class WorldListener implements Listener {
 
@@ -40,8 +45,12 @@ public class WorldListener implements Listener {
 
 		for (World world : Bukkit.getServer().getWorlds())
 			for (Entity e : world.getEntitiesByClass(Item.class))
-				if (e.getTicksLived() >= 200)
+				if (e.getTicksLived() >= 200) {
+					Location location = e.getLocation().clone();
+					
+					world.playEffect(location, Effect.NOTE, 1);
 					e.remove();
+				}
 	}
 	
 	@EventHandler
@@ -51,6 +60,17 @@ public class WorldListener implements Listener {
 
 		if (item.toString().contains("SWORD") || item.toString().contains("AXE")) {
 			event.setCancelled(true);
+			return;
+		}
+		
+		Player player = event.getPlayer();
+		Gamer gamer = GameMain.getInstance().getGamerManager().getGamer(player.getUniqueId());
+		
+		if (gamer.hasKit()) {
+			Kit kit = gamer.getKit();
+			
+			if (kit.isAbilityItem(item))
+				event.setCancelled(true);
 		}
 	}
 
@@ -127,7 +147,7 @@ public class WorldListener implements Listener {
 				.getMember(e.getPlayer().getUniqueId());
 
 		if (player.isBuildEnabled())
-			if (player.hasGroupPermission(Group.DONO)) {
+			if (player.hasGroupPermission(Group.DEV)) {
 				e.setCancelled(false);
 				return;
 			}
@@ -141,7 +161,7 @@ public class WorldListener implements Listener {
 				.getMember(e.getPlayer().getUniqueId());
 
 		if (player.isBuildEnabled())
-			if (player.hasGroupPermission(Group.DONO)) {
+			if (player.hasGroupPermission(Group.DEV)) {
 				e.setCancelled(false);
 				return;
 			}
@@ -149,16 +169,4 @@ public class WorldListener implements Listener {
 		e.setCancelled(true);
 	}
 	
-//	@EventHandler(priority = EventPriority.LOWEST)
-//	public void onBlockBreak(BlockBreakEvent event) {
-//		if (event.getPlayer().getGameMode() != GameMode.CREATIVE)
-//			event.setCancelled(true);
-//	}
-//
-//	@EventHandler
-//	public void onBlockPlace(BlockPlaceEvent event) {
-//		if (event.getPlayer().getGameMode() != GameMode.CREATIVE)
-//			event.setCancelled(true);
-//	}
-
 }

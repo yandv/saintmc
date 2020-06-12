@@ -1,5 +1,6 @@
 package tk.yallandev.saintmc.lobby;
 
+import java.io.File;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -10,6 +11,7 @@ import lombok.Getter;
 import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.bukkit.BukkitMain;
 import tk.yallandev.saintmc.bukkit.command.BukkitCommandFramework;
+import tk.yallandev.saintmc.bukkit.listener.register.MoveListener;
 import tk.yallandev.saintmc.common.backend.database.redis.RedisDatabase;
 import tk.yallandev.saintmc.common.backend.database.redis.RedisDatabase.PubSubListener;
 import tk.yallandev.saintmc.common.command.CommandLoader;
@@ -17,11 +19,11 @@ import tk.yallandev.saintmc.common.server.ServerType;
 import tk.yallandev.saintmc.lobby.collectable.Collectables;
 import tk.yallandev.saintmc.lobby.listener.CharacterListener;
 import tk.yallandev.saintmc.lobby.listener.LoginListener;
-import tk.yallandev.saintmc.lobby.listener.MoveListener;
 import tk.yallandev.saintmc.lobby.listener.ParticleListener;
 import tk.yallandev.saintmc.lobby.listener.PlayerListener;
 import tk.yallandev.saintmc.lobby.listener.ScoreboardListener;
 import tk.yallandev.saintmc.lobby.manager.PlayerManager;
+import tk.yallandev.saintmc.update.UpdatePlugin;
 
 @Getter
 public class LobbyMain extends JavaPlugin {
@@ -45,6 +47,19 @@ public class LobbyMain extends JavaPlugin {
 	
 	@Override
 	public void onEnable() {
+		
+		UpdatePlugin.Shutdown shutdown = new UpdatePlugin.Shutdown() {
+
+			@Override
+			public void stop() {
+				Bukkit.shutdown();
+			}
+
+		};
+
+		if (UpdatePlugin.update(new File(LobbyMain.class.getProtectionDomain().getCodeSource().getLocation().getPath()),
+				"Lobby", shutdown))
+			return;
 		
 		try {
 

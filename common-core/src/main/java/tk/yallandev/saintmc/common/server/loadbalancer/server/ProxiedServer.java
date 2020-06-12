@@ -21,7 +21,7 @@ public class ProxiedServer implements LoadBalancerObject, NumberConnection {
 	private boolean joinEnabled;
 
 	public ProxiedServer(String serverId, ServerType serverType, Set<UUID> onlinePlayers, int maxPlayers, boolean joinEnabled) {
-		this.serverId = serverId.toUpperCase();
+		this.serverId = serverId.toLowerCase();
 		this.serverType = serverType;
 		this.players = onlinePlayers;
 		this.maxPlayers = maxPlayers;

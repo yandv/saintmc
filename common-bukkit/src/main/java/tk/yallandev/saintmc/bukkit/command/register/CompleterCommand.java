@@ -11,6 +11,7 @@ import org.bukkit.potion.PotionEffectType;
 
 import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.bukkit.account.BukkitMember;
+import tk.yallandev.saintmc.bukkit.api.worldedit.arena.ArenaType;
 import tk.yallandev.saintmc.common.command.CommandArgs;
 import tk.yallandev.saintmc.common.command.CommandClass;
 import tk.yallandev.saintmc.common.command.CommandFramework.Command;
@@ -49,7 +50,7 @@ public class CompleterCommand implements CommandClass {
 
 	}
 
-	@Command(name = "lobby", aliases = { "server", "connect", "ir", "go", "discord", "hub" })
+	@Command(name = "lobby", aliases = { "server", "connect", "ir", "go", "discord", "hub", "ping" })
 	public void memberCommand(CommandArgs cmdArgs) {
 
 	}
@@ -124,12 +125,12 @@ public class CompleterCommand implements CommandClass {
 			if (cmdArgs.getArgs()[0].isEmpty()) {
 				for (Tag tag : Tag.values())
 					if (member.getTags().contains(tag))
-						tagList.add(tag.toString());
+						tagList.add(tag.getName());
 			} else {
 				for (Tag tag : Tag.values())
 					if (member.getTags().contains(tag))
-						if (tag.toString().toLowerCase().startsWith(cmdArgs.getArgs()[0].toLowerCase()))
-							tagList.add(tag.toString());
+						if (tag.getName().toLowerCase().startsWith(cmdArgs.getArgs()[0].toLowerCase()))
+							tagList.add(tag.getName());
 			}
 
 			return tagList;
@@ -141,7 +142,7 @@ public class CompleterCommand implements CommandClass {
 	@Completer(name = "enchant")
 	public List<String> enchantCompleter(CommandArgs cmdArgs) {
 		if (cmdArgs.getArgs().length == 1) {
-			ArrayList<String> enchantmentList = new ArrayList<>();
+			List<String> enchantmentList = new ArrayList<>();
 
 			if (cmdArgs.getArgs()[0].isEmpty()) {
 				for (Enchantment enchantment : Enchantment.values())
@@ -178,7 +179,7 @@ public class CompleterCommand implements CommandClass {
 		return getPlayerList(cmdArgs.getArgs());
 	}
 	
-	@Command(name = "set", groupToUse = Group.BUILDER)
+	@Completer(name = "set")
 	public List<String> setCompleter(CommandArgs cmdArgs) {
 		if (cmdArgs.getArgs().length == 1) {
 			List<String> enchantmentList = new ArrayList<>();
@@ -193,6 +194,39 @@ public class CompleterCommand implements CommandClass {
 			}
 
 			return enchantmentList;
+		}
+
+		return new ArrayList<>();
+	}
+	
+	@Completer(name = "createarena")
+	public List<String> createarenaCompleter(CommandArgs cmdArgs) {
+		if (cmdArgs.getArgs().length == 1) {
+			List<String> typeList = new ArrayList<>();
+
+			if (cmdArgs.getArgs()[0].isEmpty()) {
+				for (ArenaType arenaType : ArenaType.values())
+					typeList.add(arenaType.name());
+			} else {
+				for (ArenaType arenaType : ArenaType.values())
+					if (arenaType.name().toLowerCase().startsWith(cmdArgs.getArgs()[0].toLowerCase()))
+						typeList.add(arenaType.name());
+			}
+			
+			return typeList;
+		} else if (cmdArgs.getArgs().length == 2) {
+			List<String> materialList = new ArrayList<>();
+
+			if (cmdArgs.getArgs()[1].isEmpty()) {
+				for (Material enchantment : Material.values())
+					materialList.add(enchantment.name());
+			} else {
+				for (Material enchantment : Material.values())
+					if (enchantment.name().toLowerCase().startsWith(cmdArgs.getArgs()[1].toLowerCase()))
+						materialList.add(enchantment.name());
+			}
+
+			return materialList;
 		}
 
 		return new ArrayList<>();

@@ -2,6 +2,7 @@ package tk.yallandev.saintmc.bukkit;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
+import java.io.File;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -44,6 +45,7 @@ import tk.yallandev.saintmc.bukkit.anticheat.AnticheatController;
 import tk.yallandev.saintmc.bukkit.api.character.CharacterListener;
 import tk.yallandev.saintmc.bukkit.api.cooldown.CooldownController;
 import tk.yallandev.saintmc.bukkit.api.item.ActionItemListener;
+import tk.yallandev.saintmc.bukkit.api.listener.ManualRegisterableListener;
 import tk.yallandev.saintmc.bukkit.api.menu.MenuListener;
 import tk.yallandev.saintmc.bukkit.api.protocol.ProtocolGetter;
 import tk.yallandev.saintmc.bukkit.api.server.Server;
@@ -73,6 +75,7 @@ import tk.yallandev.saintmc.common.permission.Group;
 import tk.yallandev.saintmc.common.report.Report;
 import tk.yallandev.saintmc.common.server.ServerManager;
 import tk.yallandev.saintmc.common.utils.ClassGetter;
+import tk.yallandev.saintmc.update.UpdatePlugin;
 
 @Getter
 @SuppressWarnings("deprecation")
@@ -90,23 +93,23 @@ public class BukkitMain extends JavaPlugin {
 
 	private PermissionManager permissionManager;
 	private ServerManager serverManager;
-	
+
 	private HologramController hologramController;
 	private BukkitPacketController packetController;
 
 	private PubSubListener pubSubListener;
 	private Map<String, Location> location = new HashMap<>();
-	
+
 	@Setter
 	private Server serverConfig;
-	
+
 	@Setter
 	private boolean tagControl = true;
 	@Setter
 	private boolean removePlayerDat = true;
 	@Setter
 	private boolean serverLog = false;
-	
+
 	@Override
 	public void onLoad() {
 		instance = this;
@@ -116,6 +119,19 @@ public class BukkitMain extends JavaPlugin {
 
 	@Override
 	public void onEnable() {
+		UpdatePlugin.Shutdown shutdown = new UpdatePlugin.Shutdown() {
+
+			@Override
+			public void stop() {
+				Bukkit.shutdown();
+			}
+
+		};
+
+		if (UpdatePlugin.update(
+				new File(BukkitMain.class.getProtectionDomain().getCodeSource().getLocation().getPath()),
+				"BukkitCommon", shutdown))
+			return;
 
 		try {
 
@@ -156,16 +172,9 @@ public class BukkitMain extends JavaPlugin {
 		general.debug("The server has been loaded " + general.getServerAddress() + " (" + general.getServerId() + " - "
 				+ general.getServerType().toString() + ")");
 
-		new BukkitRunnable() {
-			
-			@Override
-			public void run() {
-				general.getServerData().startServer(Bukkit.getMaxPlayers());
-				general.getServerData().setJoinEnabled(Bukkit.hasWhitelist());
+		general.getServerData().startServer(Bukkit.getMaxPlayers());
 
-				general.debug("The server has been sent the start message to redis!");
-			}
-		}.runTaskAsynchronously(this);
+		general.debug("The server has been sent the start message to redis!");
 
 		for (Report report : general.getReportData().loadReports()) {
 			general.getReportManager().loadReport(report);
@@ -181,19 +190,20 @@ public class BukkitMain extends JavaPlugin {
 
 		skinManager = new SkinController();
 		worldeditController = new WorldeditController();
-		
+
 		anticheatController = new AnticheatController();
 		anticheatController.registerModules();
-		
+
 		hologramController = new HologramController(getInstance());
 		packetController = new BukkitPacketController();
 
 		permissionManager = new PermissionManager(this);
 		permissionManager.onEnable();
-		
+
 		serverManager = new ServerManager();
 		serverConfig = new ServerImpl();
-		
+		general.getServerData().setJoinEnabled(!serverConfig.isWhitelist());
+
 		ProtocolGetter.foundDependencies();
 
 		/*
@@ -210,7 +220,7 @@ public class BukkitMain extends JavaPlugin {
 				String subchannel = in.readUTF();
 
 				if (subchannel.equalsIgnoreCase("BungeeTeleport")) {
-					String uuidStr = in.readUTF();
+					String uniqueId = in.readUTF();
 
 					if (!Member.hasGroupPermission(player.getUniqueId(), Group.YOUTUBERPLUS)) {
 						player.sendMessage("§c§l> §fVocê não tem §cpermissão§f para teletransportar!");
@@ -218,8 +228,7 @@ public class BukkitMain extends JavaPlugin {
 					}
 
 					AdminMode.getInstance().setAdmin(player, Member.getMember(player.getUniqueId()));
-					UUID uuid = UUID.fromString(uuidStr);
-					Player p = BukkitMain.getInstance().getServer().getPlayer(uuid);
+					Player p = BukkitMain.getInstance().getServer().getPlayer(UUID.fromString(uniqueId));
 					player.chat("/tp " + p.getName());
 				}
 			}
@@ -236,26 +245,23 @@ public class BukkitMain extends JavaPlugin {
 		 * Initializing Command
 		 */
 
-		getServer().getScheduler().runTaskLater(this, () -> {
+		new BukkitRunnable() {
 
-			unregisterCommands("icanhasbukkit", "ver", "version", "?", "about", "help", "ban", "ban-ip", "banlist",
-					"clear", "deop", "stop", "op", "difficulty", "effect", "enchant", "give", "kick", "kill", "list",
-					"me", "say", "scoreboard", "seed", "spawnpoint", "spreadplayers", "summon", "tell", "tellraw",
-					"testfor", "testforblocks", "tp", "weather", "xp", "reload", "rl", "worldborder", "achievement",
-					"blockdata", "clone", "debug", "defaultgamemode", "entitydata", "execute", "fill", "gamemode",
-					"pardon", "pardon-ip", "replaceitem", "setidletimeout", "stats", "testforblock", "title", "trigger",
-					"viaver", "protocolsupport", "ps", "holograms", "hd", "holo", "hologram", "restart", "stop",
-					"filter", "packetlog", "pl", "plugins", "timings", "whitelist");
+			@Override
+			public void run() {
+				unregisterCommands("icanhasbukkit", "ver", "?", "about", "help", "ban", "ban-ip", "banlist", "clear",
+						"deop", "stop", "op", "difficulty", "effect", "enchant", "give", "kick", "list", "me", "say",
+						"scoreboard", "seed", "spawnpoint", "spreadplayers", "summon", "tell", "tellraw", "testfor",
+						"testforblocks", "tp", "weather", "xp", "reload", "rl", "worldborder", "achievement",
+						"blockdata", "clone", "debug", "defaultgamemode", "entitydata", "execute", "fill", "gamemode",
+						"pardon", "pardon-ip", "replaceitem", "setidletimeout", "stats", "testforblock", "title",
+						"trigger", "viaver", "protocolsupport", "ps", "holograms", "hd", "holo", "hologram", "restart",
+						"stop", "filter", "packetlog", "pl", "plugins", "timings", "whitelist");
 
-			try {
-				new CommandLoader(new BukkitCommandFramework(this)).loadCommandsFromPackage(getFile(),
+				new CommandLoader(new BukkitCommandFramework(getInstance())).loadCommandsFromPackage(getFile(),
 						"tk.yallandev.saintmc.bukkit.command.register");
-			} catch (Exception e) {
-				CommonGeneral.getInstance().getLogger().warning("Erro ao carregar o commandFramework!");
-				e.printStackTrace();
 			}
-
-		}, 2L);
+		}.runTaskLater(this, 3l);
 
 		getServer().getScheduler().runTaskTimer(this, new UpdateScheduler(), 1, 1);
 	}
@@ -272,10 +278,11 @@ public class BukkitMain extends JavaPlugin {
 
 	private void registerListener() {
 		PluginManager pm = Bukkit.getPluginManager();
-		
-		for (Class<?> classes : ClassGetter.getClassesForPackage(getClass(), "tk.yallandev.saintmc.bukkit.listener.register")) {
-			if (Listener.class.isAssignableFrom(classes)) {
 
+		for (Class<?> classes : ClassGetter.getClassesForPackage(getClass(),
+				"tk.yallandev.saintmc.bukkit.listener.register")) {
+			if (Listener.class.isAssignableFrom(classes)
+					&& !ManualRegisterableListener.class.isAssignableFrom(classes)) {
 				try {
 					Listener listener = (Listener) classes.newInstance();
 					Bukkit.getPluginManager().registerEvents(listener, getInstance());
@@ -286,7 +293,7 @@ public class BukkitMain extends JavaPlugin {
 				}
 			}
 		}
-		
+
 		pm.registerEvents(new ActionItemListener(), getInstance());
 		pm.registerEvents(new CharacterListener(), getInstance());
 		pm.registerEvents(new MenuListener(), getInstance());

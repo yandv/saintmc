@@ -100,6 +100,7 @@ public class SpawnWarp extends Warp {
 
 		player.getInventory().setItem(3, warpSelector.getItemStack());
 		player.getInventory().setItem(4, kitSelector.getItemStack());
+		player.updateInventory();
 	}
 
 	@Override

@@ -68,6 +68,10 @@ public abstract class Module implements Listener {
 					+ "§f será auto banido por §c" + getName() + "§f em §a1 minuto§f!");
 		}
 	}
+	
+	public void autoban(Player player, long time) {
+		controller.autoban(player, name, time);
+	}
 
 	public void broadcast(Predicate<? super Member> filter, String message) {
 		CommonGeneral.getInstance().getMemberManager().getMembers().stream().filter(filter)

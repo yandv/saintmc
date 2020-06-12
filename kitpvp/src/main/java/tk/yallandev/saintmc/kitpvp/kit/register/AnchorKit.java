@@ -1,5 +1,7 @@
 package tk.yallandev.saintmc.kitpvp.kit.register;
 
+import java.util.ArrayList;
+
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Damageable;
@@ -13,7 +15,7 @@ import tk.yallandev.saintmc.kitpvp.kit.Kit;
 public class AnchorKit extends Kit {
 
 	public AnchorKit() {
-		super("Anchor", "Se prenda ao chão e não saia dele", Material.ANVIL);
+		super("Anchor", "Se prenda ao chão e não saia dele", Material.ANVIL, new ArrayList<>());
 	}
 
 	@EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
@@ -34,11 +36,6 @@ public class AnchorKit extends Kit {
 				}
 			}
 		}
-	}
-
-	@Override
-	public void applyKit(Player player) {
-		
 	}
 
 }

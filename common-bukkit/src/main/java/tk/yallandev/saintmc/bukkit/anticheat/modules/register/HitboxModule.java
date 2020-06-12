@@ -26,7 +26,14 @@ public class HitboxModule extends Module {
 
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
+		if (true) {
+			return;
+		}
+		
 		if (!(event.getDamager() instanceof Player))
+			return;
+		
+		if (!(event.getEntity() instanceof Player))
 			return;
 		
 		Player player = (Player) event.getDamager();

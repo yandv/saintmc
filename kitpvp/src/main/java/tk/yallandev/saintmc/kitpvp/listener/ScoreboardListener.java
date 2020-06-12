@@ -16,18 +16,18 @@ import org.bukkit.scheduler.BukkitRunnable;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import tk.yallandev.saintmc.CommonGeneral;
-import tk.yallandev.saintmc.bukkit.account.BukkitMember;
 import tk.yallandev.saintmc.bukkit.api.scoreboard.Score;
 import tk.yallandev.saintmc.bukkit.api.scoreboard.Scoreboard;
 import tk.yallandev.saintmc.bukkit.api.scoreboard.impl.SimpleScoreboard;
 import tk.yallandev.saintmc.bukkit.event.account.PlayerChangeGroupEvent;
+import tk.yallandev.saintmc.bukkit.event.player.PlayerScoreboardStateEvent;
 import tk.yallandev.saintmc.bukkit.event.update.UpdateEvent;
 import tk.yallandev.saintmc.bukkit.event.update.UpdateEvent.UpdateType;
 import tk.yallandev.saintmc.common.account.Member;
 import tk.yallandev.saintmc.common.account.status.Status;
 import tk.yallandev.saintmc.common.account.status.StatusType;
 import tk.yallandev.saintmc.common.permission.Group;
-import tk.yallandev.saintmc.common.permission.Tag;
+import tk.yallandev.saintmc.common.tag.Tag;
 import tk.yallandev.saintmc.kitpvp.GameMain;
 import tk.yallandev.saintmc.kitpvp.event.challenge.FightFinishEvent;
 import tk.yallandev.saintmc.kitpvp.event.challenge.FightStartEvent;
@@ -120,7 +120,7 @@ public class ScoreboardListener implements Listener {
 		if (event.getType() == UpdateType.SECOND)
 			observersList.forEach(FightPingUpdate::check);
 	}
-	
+
 	/*
 	 * Bukkit Default
 	 */
@@ -134,18 +134,17 @@ public class ScoreboardListener implements Listener {
 				if (!event.getPlayer().isOnline())
 					return;
 
-				Player player = event.getPlayer();
-				BukkitMember member = (BukkitMember) CommonGeneral.getInstance().getMemberManager()
-						.getMember(player.getUniqueId());
+				DEFAULT_SCOREBOARD
+						.updateScore(new Score("§fJogadores: §b" + (Bukkit.getOnlinePlayers().size()), "players"));
+				SHADOW_SCOREBOARD
+						.updateScore(new Score("§fJogadores: §b" + (Bukkit.getOnlinePlayers().size()), "players"));
+				FIGHT_SCOREBOARD
+						.updateScore(new Score("§fJogadores: §b" + (Bukkit.getOnlinePlayers().size()), "players"));
+				SEARCHING_SCOREBOARD
+						.updateScore(new Score("§fJogadores: §b" + (Bukkit.getOnlinePlayers().size()), "players"));
 
-				Scoreboard scoreboard = member.getScoreboard();
-
-				if (scoreboard != null) {
-					scoreboard.updateScore(new Score("§fJogadores: §b" + Bukkit.getOnlinePlayers().size(), "players"));
-					scoreboard.updateScore(player,
-							new Score("§fGrupo: §7" + (member.getGroup() == Group.MEMBRO ? "Membro"
-									: Tag.valueOf(member.getGroup().name()).getPrefix()), "group"));
-				}
+				updateScore(event.getPlayer(), DEFAULT_SCOREBOARD,
+						GameMain.getInstance().getWarpManager().getWarpByName("spawn"));
 			}
 		}.runTaskLater(GameMain.getInstance(), 20l);
 	}
@@ -156,20 +155,22 @@ public class ScoreboardListener implements Listener {
 
 			@Override
 			public void run() {
-				if (!event.getPlayer().isOnline())
+				if (event.getPlayer().isOnline())
 					return;
 
-				BukkitMember member = (BukkitMember) CommonGeneral.getInstance().getMemberManager()
-						.getMember(event.getPlayer().getUniqueId());
-				Scoreboard scoreboard = member.getScoreboard();
+				DEFAULT_SCOREBOARD
+						.updateScore(new Score("§fJogadores: §b" + (Bukkit.getOnlinePlayers().size()), "players"));
+				SHADOW_SCOREBOARD
+						.updateScore(new Score("§fJogadores: §b" + (Bukkit.getOnlinePlayers().size()), "players"));
+				FIGHT_SCOREBOARD
+						.updateScore(new Score("§fJogadores: §b" + (Bukkit.getOnlinePlayers().size()), "players"));
+				SEARCHING_SCOREBOARD
+						.updateScore(new Score("§fJogadores: §b" + (Bukkit.getOnlinePlayers().size()), "players"));
 
-				if (scoreboard != null)
-					scoreboard.updateScore(
-							new Score("§fJogadores: §b" + (Bukkit.getOnlinePlayers().size() - 1), "players"));
 			}
 		}.runTaskLater(GameMain.getInstance(), 20l);
 	}
-	
+
 	/*
 	 * Warp
 	 */
@@ -178,54 +179,67 @@ public class ScoreboardListener implements Listener {
 	public void onPlayerWarpJoin(PlayerWarpJoinEvent event) {
 		loadScoreboard(event.getPlayer(), event.getWarp());
 	}
-	
+
+	@EventHandler
+	public void onPlayerWarpJoin(PlayerScoreboardStateEvent event) {
+		if (event.isScoreboardEnabled())
+			loadScoreboard(event.getPlayer(),
+					GameMain.getInstance().getGamerManager().getGamer(event.getPlayer().getUniqueId()).getWarp());
+	}
+
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onPlayerWarpDeath(PlayerWarpDeathEvent event) {
 		boolean duels = event.getWarp() instanceof DuelWarp;
 		StatusType statusType = duels ? StatusType.SHADOW : StatusType.PVP;
-		
+
 		boolean updatePlayer = true;
 		boolean updateKiller = event.getKiller() != null;
-		
+
 		Scoreboard scoreboard = DEFAULT_SCOREBOARD;
-		
+
 		if (updatePlayer) {
 			Player player = event.getPlayer();
-			Status playerStatus = CommonGeneral.getInstance().getStatusManager().loadStatus(player.getUniqueId(), statusType);
-			
+			Status playerStatus = CommonGeneral.getInstance().getStatusManager().loadStatus(player.getUniqueId(),
+					statusType);
+
 			if (duels) {
 				scoreboard.updateScore(player, new Score("§fVitórias: §7" + playerStatus.getKills(), "wins"));
 				scoreboard.updateScore(player, new Score("§fDerrotas: §7" + playerStatus.getDeaths(), "loses"));
-				scoreboard.updateScore(player, new Score("§fWinstreak: §7" + playerStatus.getKillstreak(), "winstreak"));
+				scoreboard.updateScore(player,
+						new Score("§fWinstreak: §7" + playerStatus.getKillstreak(), "winstreak"));
 			} else {
 				scoreboard.updateScore(player, new Score("§fKills: §7" + playerStatus.getKills(), "kills"));
-				scoreboard.updateScore(player, new Score("§fDeaths: §7" + playerStatus.getKills(), "deaths"));
-				scoreboard.updateScore(player, new Score("§fKillstreak: §7" + playerStatus.getKills(), "killstreak"));
+				scoreboard.updateScore(player, new Score("§fDeaths: §7" + playerStatus.getDeaths(), "deaths"));
+				scoreboard.updateScore(player,
+						new Score("§fKillstreak: §7" + playerStatus.getKillstreak(), "killstreak"));
 			}
 		}
-		
+
 		if (updateKiller) {
 			Player killer = event.getKiller();
-			Status killerStatus = CommonGeneral.getInstance().getStatusManager().loadStatus(killer.getUniqueId(), statusType);
-			
+			Status killerStatus = CommonGeneral.getInstance().getStatusManager().loadStatus(killer.getUniqueId(),
+					statusType);
+
 			if (duels) {
 				scoreboard.updateScore(killer, new Score("§fVitórias: §7" + killerStatus.getKills(), "wins"));
 				scoreboard.updateScore(killer, new Score("§fDerrotas: §7" + killerStatus.getDeaths(), "loses"));
-				scoreboard.updateScore(killer, new Score("§fWinstreak: §7" + killerStatus.getKillstreak(), "winstreak"));
+				scoreboard.updateScore(killer,
+						new Score("§fWinstreak: §7" + killerStatus.getKillstreak(), "winstreak"));
 			} else {
 				scoreboard.updateScore(killer, new Score("§fKills: §7" + killerStatus.getKills(), "kills"));
-				scoreboard.updateScore(killer, new Score("§fDeaths: §7" + killerStatus.getKills(), "deaths"));
-				scoreboard.updateScore(killer, new Score("§fKillstreak: §7" + killerStatus.getKills(), "killstreak"));
+				scoreboard.updateScore(killer, new Score("§fDeaths: §7" + killerStatus.getDeaths(), "deaths"));
+				scoreboard.updateScore(killer,
+						new Score("§fKillstreak: §7" + killerStatus.getKillstreak(), "killstreak"));
 			}
 		}
 	}
-	
+
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void respawn(PlayerWarpRespawnEvent event) {
 		Member member = CommonGeneral.getInstance().getMemberManager().getMember(event.getPlayer().getUniqueId());
 		DEFAULT_SCOREBOARD.updateScore(event.getPlayer(), new Score("§fMoney: §6" + member.getMoney(), "coins"));
 	}
-	
+
 	/*
 	 * Member update
 	 */
@@ -233,17 +247,12 @@ public class ScoreboardListener implements Listener {
 	@EventHandler
 	public void onPlayerChangeTag(PlayerChangeGroupEvent event) {
 		Player player = event.getPlayer();
-		Scoreboard scoreboard = event.getBukkitMember().getScoreboard();
-
-		if (scoreboard == null)
-			return;
-
 		Group group = event.getGroup();
 
-		scoreboard.updateScore(player, new Score(
+		DEFAULT_SCOREBOARD.updateScore(player, new Score(
 				"§fGrupo: §7" + (group == Group.MEMBRO ? "Membro" : Tag.valueOf(group.name()).getPrefix()), "group"));
 	}
-	
+
 	/*
 	 * Shadow
 	 */
@@ -266,7 +275,7 @@ public class ScoreboardListener implements Listener {
 		Player player = event.getPlayer();
 		loadScoreboard(player, GameMain.getInstance().getGamerManager().getGamer(player.getUniqueId()).getWarp());
 	}
-	
+
 	@EventHandler
 	public void onFightStart(FightStartEvent event) {
 		Player player = event.getPlayer();
@@ -277,7 +286,7 @@ public class ScoreboardListener implements Listener {
 
 		scoreboard.createScoreboard(player);
 		scoreboardTarget.createScoreboard(target);
-		
+
 		updateScore(player, scoreboard, event.getWarp());
 		updateScore(target, scoreboardTarget, event.getWarp());
 
@@ -321,11 +330,11 @@ public class ScoreboardListener implements Listener {
 		loadScoreboard(event.getTarget(), warp);
 		loadScoreboard(event.getPlayer(), warp);
 	}
-	
+
 	/*
 	 * Kit
 	 */
-	
+
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onPlayerSelectKit(PlayerSelectKitEvent event) {
 		Player player = event.getPlayer();
@@ -342,28 +351,29 @@ public class ScoreboardListener implements Listener {
 	}
 
 	public void updateScore(Player player, Scoreboard scoreboard, Warp warp) {
-		
+
 		boolean duels = warp instanceof DuelWarp;
-		
+
 		Member member = CommonGeneral.getInstance().getMemberManager().getMember(player.getUniqueId());
-		Status playerStatus = CommonGeneral.getInstance().getStatusManager().loadStatus(player.getUniqueId(), duels ? StatusType.SHADOW : StatusType.PVP);
-		
+		Status playerStatus = CommonGeneral.getInstance().getStatusManager().loadStatus(player.getUniqueId(),
+				duels ? StatusType.SHADOW : StatusType.PVP);
+
 		if (duels) {
 			scoreboard.updateScore(player, new Score("§fVitórias: §7" + playerStatus.getKills(), "wins"));
 			scoreboard.updateScore(player, new Score("§fDerrotas: §7" + playerStatus.getDeaths(), "loses"));
 			scoreboard.updateScore(player, new Score("§fWinstreak: §7" + playerStatus.getKillstreak(), "winstreak"));
 		} else {
 			scoreboard.updateScore(player, new Score("§fKills: §7" + playerStatus.getKills(), "kills"));
-			scoreboard.updateScore(player, new Score("§fDeaths: §7" + playerStatus.getKills(), "deaths"));
-			scoreboard.updateScore(player, new Score("§fKillstreak: §7" + playerStatus.getKills(), "killstreak"));
+			scoreboard.updateScore(player, new Score("§fDeaths: §7" + playerStatus.getDeaths(), "deaths"));
+			scoreboard.updateScore(player, new Score("§fKillstreak: §7" + playerStatus.getKillstreak(), "killstreak"));
 		}
-		
+
 		scoreboard.updateScore(player, new Score(
 				"§fRanking: §7(" + member.getLeague().getColor() + member.getLeague().getSymbol() + "§7)", "rank"));
 		scoreboard.updateScore(player, new Score("§fGrupo: §7"
 				+ (member.getGroup() == Group.MEMBRO ? "Membro" : Tag.valueOf(member.getGroup().name()).getPrefix()),
 				"group"));
-		
+
 		scoreboard.updateScore(player, new Score("§fMoney: §6" + member.getMoney(), "coins"));
 		scoreboard.updateScore(player, new Score("§fJogadores: §b" + Bukkit.getOnlinePlayers().size(), "players"));
 	}

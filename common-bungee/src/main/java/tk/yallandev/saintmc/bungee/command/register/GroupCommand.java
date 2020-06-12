@@ -45,7 +45,7 @@ public class GroupCommand implements CommandClass {
 			playerGroup = Group.DONO;
 		}
 
-		if (group.ordinal() <= Group.YOUTUBER.ordinal() && group.ordinal() >= Group.LIGHT.ordinal()) {
+		if (group.ordinal() < Group.YOUTUBER.ordinal() && group.ordinal() >= Group.LIGHT.ordinal()) {
 			sender.sendMessage(" §e* §fO grupo §a" + group.name() + "§f pode ser setado, somente, temporariamente.");
 			return;
 		}

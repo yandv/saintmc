@@ -1,6 +1,8 @@
 package tk.yallandev.saintmc.kitpvp.kit.register;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -12,18 +14,19 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.inventory.ItemStack;
 
 import tk.yallandev.saintmc.bukkit.api.cooldown.CooldownController;
 import tk.yallandev.saintmc.bukkit.api.cooldown.types.Cooldown;
+import tk.yallandev.saintmc.bukkit.api.item.ItemBuilder;
 import tk.yallandev.saintmc.kitpvp.kit.Kit;
 
 public class ThorKit extends Kit {
 	
-	private HashMap<UUID, Long> damageRaio;
+	private Map<UUID, Long> damageRaio;
 
 	public ThorKit() {
-		super("Thor", "Jogue raios em seus inimigos com seu machado", Material.WOOD_AXE);
+		super("Thor", "Jogue raios em seus inimigos com seu machado", Material.WOOD_AXE,
+				Arrays.asList(new ItemBuilder().name("§aThor").type(Material.WOOD_AXE).build()));
 		damageRaio = new HashMap<>();
 	}
 	
@@ -51,7 +54,7 @@ public class ThorKit extends Kit {
 		if (p.getItemInHand() == null)
 			return;
 
-		if (p.getItemInHand().getType() != Material.WOOD_AXE)
+		if (!isAbilityItem(p.getItemInHand()))
 			return;
 
 		if (!(e.getAction() == Action.RIGHT_CLICK_BLOCK || e.getAction() == Action.RIGHT_CLICK_AIR))
@@ -71,11 +74,6 @@ public class ThorKit extends Kit {
 
 			CooldownController.getInstance().addCooldown(p, new Cooldown(getName(), 8l));
 		}
-	}
-
-	@Override
-	public void applyKit(Player player) {
-		player.getInventory().setItem(1, new ItemStack(Material.WOOD_AXE));
 	}
 
 }

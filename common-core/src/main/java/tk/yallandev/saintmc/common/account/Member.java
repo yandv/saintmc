@@ -66,7 +66,9 @@ public abstract class Member {
 	private Group group;
 	private Map<RankType, Long> ranks;
 	private Map<String, Long> permissions;
+
 	private Tag tag;
+	private boolean chroma;
 
 	/*
 	 * Status Information
@@ -261,8 +263,12 @@ public abstract class Member {
 	public boolean setTag(Tag tag) {
 		this.tag = tag;
 		CommonGeneral.getInstance().getPlayerData().updateMember(this, "tag");
-
 		return true;
+	}
+
+	public void setChroma(boolean chroma) {
+		this.chroma = chroma;
+		CommonGeneral.getInstance().getPlayerData().updateMember(this, "chroma");
 	}
 
 	public Group getServerGroup() {
@@ -289,13 +295,30 @@ public abstract class Member {
 	public void setGroup(Group group) {
 		this.group = group;
 		CommonGeneral.getInstance().getPlayerData().updateMember(this, "group");
+		setChroma(false);
 	}
 
 	public boolean hasGroupPermission(Group groupToUse) {
-//		if (getServerGroup() == Group.YOUTUBERPLUS) {
-//			return Group.MOD.ordinal() >= groupToUse.ordinal();
-//		}
+		if (getServerGroup() == Group.YOUTUBERPLUS)
+			return Group.MOD.ordinal() >= groupToUse.ordinal();
 		return getServerGroup().ordinal() >= groupToUse.ordinal();
+	}
+
+	public boolean hasRank(Group group) {
+
+		RankType rankType = null;
+
+		try {
+			rankType = RankType.valueOf(group.name());
+		} catch (Exception ex) {
+			return false;
+		}
+
+		return getRanks().containsKey(rankType);
+	}
+
+	public boolean hasRank(RankType rankType) {
+		return getRanks().containsKey(rankType);
 	}
 
 	public boolean isGroup(Group groupToUse) {
@@ -497,6 +520,17 @@ public abstract class Member {
 
 	public static Group getGroup(UUID uniqueId) {
 		return CommonGeneral.getInstance().getMemberManager().getMember(uniqueId).getGroup();
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof Member) {
+			Member member = (Member) obj;
+			
+			return member.getPlayerName().equals(getPlayerName()) && member.getUniqueId().equals(getUniqueId());
+		}
+		
+		return super.equals(obj);
 	}
 
 }

@@ -58,22 +58,6 @@ public interface Query<T> {
 	<GenericType> T findOne(String collection, String key, GenericType value);
 
 	/*
-	 * Find
-	 */
-
-	void find(QueryResponse<Collection<T>> response);
-
-	<GenericType> void find(String collection, QueryResponse<Collection<T>> response);
-
-	<GenericType> void find(String key, GenericType value, QueryResponse<Collection<T>> response);
-
-	<GenericType> void find(String collection, String key, GenericType value, QueryResponse<Collection<T>> response);
-
-	<GenericType> void findOne(String key, GenericType value, QueryResponse<T> response);
-
-	<GenericType> void findOne(String collection, String key, GenericType value, QueryResponse<T> response);
-
-	/*
 	 * Create
 	 */
 

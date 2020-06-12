@@ -1,6 +1,8 @@
 package tk.yallandev.saintmc.kitpvp.kit.register;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
@@ -19,14 +21,15 @@ import org.bukkit.util.Vector;
 
 import tk.yallandev.saintmc.bukkit.api.cooldown.CooldownController;
 import tk.yallandev.saintmc.bukkit.api.cooldown.types.Cooldown;
+import tk.yallandev.saintmc.bukkit.api.item.ItemBuilder;
 import tk.yallandev.saintmc.kitpvp.kit.Kit;
 
 public class KangarooKit extends Kit {
 	
-	private ArrayList<Player> kangaroodj = new ArrayList<>();
+	private List<Player> kangaroodj = new ArrayList<>();
 
 	public KangarooKit() {
-		super("Kangaroo", "Use o seu foguete para movimentar-se mais rapidamente pelo mapa", Material.FIREWORK);
+		super("Kangaroo", "Use o seu foguete para movimentar-se mais rapidamente pelo mapa", Material.FIREWORK, Arrays.asList(new ItemBuilder().name("§aKangaroo").type(Material.FIREWORK).build()));
 	}
 
 	@EventHandler
@@ -41,10 +44,7 @@ public class KangarooKit extends Kit {
 		if (!hasAbility(p))
 			return;
 		
-		if (item == null)
-			return;
-		
-		if (item.getType() != Material.FIREWORK)
+		if (!isAbilityItem(item))
 			return;
 		
 		if (a.name().contains("RIGHT")) {
@@ -52,7 +52,6 @@ public class KangarooKit extends Kit {
 		}
 		
 		if (CooldownController.getInstance().hasCooldown(p, getName())) {
-//			p.sendMessage(GameMain.getPlugin().getCooldownManager().getCooldownFormated(p.getUniqueId(), getName()));
 			return;
 		}
 		
@@ -131,7 +130,7 @@ public class KangarooKit extends Kit {
 		CooldownController.getInstance().addCooldown(kangaroo, new Cooldown(getName(), 4l));
 	}
 	
-	@EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
+	@EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
 	public void onDamage(EntityDamageEvent event) {
 		if (!(event.getEntity() instanceof Player))
 			return;
@@ -148,11 +147,6 @@ public class KangarooKit extends Kit {
 			event.setCancelled(true);
 			p.damage(7.0D);
 		}
-	}
-	
-	@Override
-	public void applyKit(Player player) {
-		player.getInventory().setItem(1, new ItemStack(Material.FIREWORK));
 	}
 	
 }

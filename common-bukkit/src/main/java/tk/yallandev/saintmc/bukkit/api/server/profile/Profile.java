@@ -10,20 +10,10 @@ import tk.yallandev.saintmc.common.account.Member;
 
 @Getter
 @AllArgsConstructor
-public class Profile implements Comparable<Profile> {
+public class Profile {
 
 	private String playerName;
 	private UUID uniqueId;
-	
-	@Override
-	public int compareTo(Profile profile) {
-		int x = playerName.compareTo(profile.getPlayerName());
-		
-		if (x == 0)
-			return uniqueId.compareTo(profile.getUniqueId());
-		
-		return x;
-	}
 	
 	public static Profile fromPlayer(Player player) {
 		return new Profile(player.getName(), player.getUniqueId());
@@ -33,4 +23,15 @@ public class Profile implements Comparable<Profile> {
 		return new Profile(member.getPlayerName(), member.getUniqueId());
 	}
 	
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof Profile) {
+			Profile profile = (Profile) obj;
+			
+			return profile.getUniqueId().equals(uniqueId) || profile.getPlayerName().equals(playerName);
+		}
+		
+		return super.equals(obj);
+	}
+
 }

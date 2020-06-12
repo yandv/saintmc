@@ -20,6 +20,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.SimplePluginManager;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scoreboard.DisplaySlot;
+import org.bukkit.scoreboard.Objective;
 import org.spigotmc.CustomTimingsHandler;
 
 import com.google.gson.Gson;
@@ -29,8 +31,11 @@ import net.md_5.bungee.api.ChatColor;
 import net.minecraft.server.v1_8_R3.MinecraftServer;
 import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.bukkit.BukkitMain;
+import tk.yallandev.saintmc.bukkit.account.BukkitMember;
+import tk.yallandev.saintmc.bukkit.api.scoreboard.Scoreboard;
 import tk.yallandev.saintmc.bukkit.command.BukkitCommandArgs;
 import tk.yallandev.saintmc.bukkit.command.BukkitCommandSender;
+import tk.yallandev.saintmc.bukkit.event.player.PlayerScoreboardStateEvent;
 import tk.yallandev.saintmc.common.account.Member;
 import tk.yallandev.saintmc.common.command.CommandArgs;
 import tk.yallandev.saintmc.common.command.CommandClass;
@@ -54,93 +59,24 @@ public class ServerCommand implements CommandClass {
 
 		member.getAccountConfiguration().setScoreboardEnabled(!member.getAccountConfiguration().isScoreboardEnabled());
 
-		// TODO fazer
+		if (member.getAccountConfiguration().isScoreboardEnabled()) {
+			Scoreboard score = ((BukkitMember) member).getScoreboard();
 
-//		if (member.getAccountConfiguration().isScoreboardEnabled())
-//			BukkitMain.getInstance().getScoreboardManager().enableScoreboard(player);
-//		else 
-//			BukkitMain.getInstance().getScoreboardManager().disableScoreboard(player);
+			if (score != null)
+				score.createScoreboard(player);
+		} else {
+			Objective objective = player.getScoreboard().getObjective("clear");
+
+			if (objective == null)
+				objective = player.getScoreboard().registerNewObjective("clear", "dummy");
+
+			objective.setDisplaySlot(DisplaySlot.SIDEBAR);
+		}
+		
+		Bukkit.getServer().getPluginManager().callEvent(new PlayerScoreboardStateEvent(player, member.getAccountConfiguration().isScoreboardEnabled()));
 
 		player.sendMessage(" §a* §fSua scoreboard foi "
 				+ (member.getAccountConfiguration().isScoreboardEnabled() ? "§aativada" : "§cdesativada") + "§f!");
-	}
-
-	@SuppressWarnings("deprecation")
-	@Command(name = "whitelist", groupToUse = Group.MODPLUS)
-	public void whitelistCommand(CommandArgs cmdArgs) {
-
-		CommandSender sender = cmdArgs.getSender();
-		String[] args = cmdArgs.getArgs();
-		
-		if (args.length == 0) {
-			sender.sendMessage(" §e* §fUse §a/whitelist <on:off:list:add:remove>§f ");
-			return;
-		}
-
-		// on/off/list/add/remove
-
-		switch (args[0].toLowerCase()) {
-		case "on": {
-
-			if (Bukkit.hasWhitelist()) {
-				sender.sendMessage("§cO servidor já está com a whitelist ativada!");
-			} else {
-				Bukkit.setWhitelist(true);
-				sender.sendMessage("§aVocê ativou a whitelist!");
-
-				new BukkitRunnable() {
-					@Override
-					public void run() {
-						CommonGeneral.getInstance().getServerData().setJoinEnabled(false);
-					}
-				}.runTaskAsynchronously(BukkitMain.getInstance());
-			}
-
-			break;
-		}
-		case "off": {
-			if (!Bukkit.hasWhitelist()) {
-				sender.sendMessage("§cO servidor já está com a whitelist desativada!");
-			} else {
-				Bukkit.setWhitelist(false);
-				sender.sendMessage("§cVocê desativou a whitelist!");
-
-				new BukkitRunnable() {
-					@Override
-					public void run() {
-						CommonGeneral.getInstance().getServerData().setJoinEnabled(true);
-					}
-				}.runTaskAsynchronously(BukkitMain.getInstance());
-			}
-			
-			break;
-		}
-		case "add": {
-			if (args.length == 1) {
-				sender.sendMessage(" §e*Use §f §a/whitelist <on:off:list:add:remove>§f ");
-				return;
-			}
-
-			Bukkit.getOfflinePlayer(args[1]).setWhitelisted(true);
-			sender.sendMessage("§a" + args[1] + " adicionado na whitelist!");
-			break;
-		}
-		case "remove": {
-			if (args.length == 1) {
-				sender.sendMessage(" §e*Use §f §a/whitelist <on:off:list:add:remove>§f ");
-				return;
-			}
-
-			Bukkit.getOfflinePlayer(args[1]).setWhitelisted(false);
-			sender.sendMessage("§a" + args[1] + " removido na whitelist!");
-			break;
-		}
-		default: {
-			sender.sendMessage(" §e* §fUse §a/whitelist <on:off:list:add:remove>§f ");
-			break;
-		}
-		}
-
 	}
 
 	@Command(name = "shutdown", aliases = { "stop" }, groupToUse = Group.ADMIN)

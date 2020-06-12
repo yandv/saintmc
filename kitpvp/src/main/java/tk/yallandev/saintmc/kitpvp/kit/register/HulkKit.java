@@ -1,5 +1,7 @@
 package tk.yallandev.saintmc.kitpvp.kit.register;
 
+import java.util.ArrayList;
+
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -13,7 +15,7 @@ import tk.yallandev.saintmc.kitpvp.kit.Kit;
 public class HulkKit extends Kit {
 
 	public HulkKit() {
-		super("Hulk", "Pegue seus inimigos em suas costas e lançe-os para longe", Material.SADDLE);
+		super("Hulk", "Pegue seus inimigos em suas costas e lançe-os para longe", Material.SADDLE, new ArrayList<>());
 	}
 	
 	@EventHandler
@@ -42,11 +44,5 @@ public class HulkKit extends Kit {
 			CooldownController.getInstance().addCooldown(p, new Cooldown(getName(), 12l));
 		}
 	}
-
-	@Override
-	public void applyKit(Player player) {
-		
-	}
-
 
 }

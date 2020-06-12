@@ -1,6 +1,7 @@
 package tk.yallandev.saintmc.bukkit.command.register;
 
 import java.text.DecimalFormat;
+import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Difficulty;
@@ -16,16 +17,19 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import tk.yallandev.saintmc.CommonConst;
 import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.bukkit.BukkitMain;
 import tk.yallandev.saintmc.bukkit.account.BukkitMember;
+import tk.yallandev.saintmc.bukkit.api.server.profile.Profile;
 import tk.yallandev.saintmc.bukkit.command.BukkitCommandArgs;
 import tk.yallandev.saintmc.bukkit.command.BukkitCommandSender;
 import tk.yallandev.saintmc.bukkit.event.teleport.PlayerTeleportCommandEvent;
 import tk.yallandev.saintmc.bukkit.event.teleport.PlayerTeleportCommandEvent.TeleportResult;
 import tk.yallandev.saintmc.common.account.Member;
+import tk.yallandev.saintmc.common.command.CommandArgs;
 import tk.yallandev.saintmc.common.command.CommandClass;
 import tk.yallandev.saintmc.common.command.CommandFramework.Command;
 import tk.yallandev.saintmc.common.permission.Group;
@@ -34,7 +38,7 @@ import tk.yallandev.saintmc.common.permission.Group;
 public class ModeratorCommand implements CommandClass {
 
 	private DecimalFormat locationFormater = new DecimalFormat("######.##");
-
+	
 	@Command(name = "build", groupToUse = Group.MODGC)
 	public void buildCommand(BukkitCommandArgs cmdArgs) {
 		if (!cmdArgs.isPlayer()) {
@@ -49,7 +53,7 @@ public class ModeratorCommand implements CommandClass {
 		member.sendMessage(" §a* §fVocê " + (member.isBuildEnabled() ? "§aativou§f" : "§cdesativou§f")
 				+ "§f o modo de construção!");
 	}
-
+	
 	@Command(name = "gamemode", aliases = { "gm" }, groupToUse = Group.TRIAL)
 	public void gamemode(BukkitCommandArgs cmdArgs) {
 		if (!cmdArgs.isPlayer()) {
@@ -57,53 +61,53 @@ public class ModeratorCommand implements CommandClass {
 			return;
 		}
 
-		Player p = cmdArgs.getPlayer();
+		Player player = cmdArgs.getPlayer();
 		String[] args = cmdArgs.getArgs();
 
 		if (args.length == 0) {
-			p.sendMessage(" §e* §fUse §a/gamemode <gamemode>§f para alterar seu gamemode!");
+			player.sendMessage(" §e* §fUse §a/gamemode <gamemode>§f para alterar seu gamemode!");
 			return;
 		}
 
-		GameMode gm = null;
+		GameMode gamemode = null;
 
 		try {
-			gm = GameMode.valueOf(args[0].toUpperCase());
+			gamemode = GameMode.valueOf(args[0].toUpperCase());
 		} catch (Exception e) {
 			try {
-				gm = GameMode.getByValue(Integer.parseInt(args[0]));
+				gamemode = GameMode.getByValue(Integer.parseInt(args[0]));
 			} catch (Exception ex) {
-				p.sendMessage(" §c* §fO gamemode §c\"" + args[0] + "\"§f não foi encontrado!");
+				player.sendMessage(" §c* §fO gamemode §c\"" + args[0] + "\"§f não foi encontrado!");
 				return;
 			}
 		}
 
-		String gamemodeName = gm == GameMode.SURVIVAL ? "Sobrevivência"
-				: gm == GameMode.ADVENTURE ? "Aventura" : gm == GameMode.SPECTATOR ? "Espectador" : "Criativo";
+		String gamemodeName = gamemode == GameMode.SURVIVAL ? "Sobrevivência"
+				: gamemode == GameMode.ADVENTURE ? "Aventura" : gamemode == GameMode.SPECTATOR ? "Espectador" : "Criativo";
 
 		if (args.length == 1) {
-			if (p.getGameMode() != gm) {
-				p.setGameMode(gm);
-				p.sendMessage(" §a* §fVocê alterou seu gamemode para §a" + gamemodeName + "§f!");
+			if (player.getGameMode() != gamemode) {
+				player.setGameMode(gamemode);
+				player.sendMessage(" §a* §fVocê alterou seu gamemode para §a" + gamemodeName + "§f!");
 			} else {
-				p.sendMessage(" §c* §fVocê já está nesse gamemode!");
+				player.sendMessage(" §c* §fVocê já está nesse gamemode!");
 			}
 
 			return;
 		}
 
-		Player t = Bukkit.getPlayer(args[1]);
+		Player target = Bukkit.getPlayer(args[1]);
 
-		if (t == null) {
-			p.sendMessage(" §c* §fO jogador §a\"" + args[1] + "\"§f não existe!");
+		if (target == null) {
+			player.sendMessage(" §c* §fO jogador §a\"" + args[1] + "\"§f não existe!");
 			return;
 		}
 
-		if (t.getGameMode() != gm) {
-			t.setGameMode(gm);
-			p.sendMessage(" §a* §fVocê alterou gamemode de §a" + t.getName() + "§f para §a" + gamemodeName + "§f!");
+		if (target.getGameMode() != gamemode) {
+			target.setGameMode(gamemode);
+			player.sendMessage(" §a* §fVocê alterou gamemode de §a" + target.getName() + "§f para §a" + gamemodeName + "§f!");
 		} else {
-			p.sendMessage(" §d* §fO §a" + t.getName() + "§f já está nesse gamemode§f!");
+			player.sendMessage(" §d* §fO §a" + target.getName() + "§f já está nesse gamemode§f!");
 		}
 	}
 
@@ -114,31 +118,31 @@ public class ModeratorCommand implements CommandClass {
 			return;
 		}
 
-		Player p = cmdArgs.getPlayer();
+		Player player = cmdArgs.getPlayer();
 		String[] args = cmdArgs.getArgs();
 
 		if (args.length == 0) {
-			p.getInventory().clear();
-			p.getInventory().setArmorContents(new ItemStack[4]);
-			p.getActivePotionEffects().clear();
-			p.getInventory().setHeldItemSlot(0);
-			p.sendMessage(" §a* §fVocê limpou o seu inventário!");
+			player.getInventory().clear();
+			player.getInventory().setArmorContents(new ItemStack[4]);
+			player.getActivePotionEffects().clear();
+			player.getInventory().setHeldItemSlot(0);
+			player.sendMessage(" §a* §fVocê limpou o seu inventário!");
 			return;
 		}
 
-		Player t = Bukkit.getPlayer(args[0]);
+		Player target = Bukkit.getPlayer(args[0]);
 
-		if (t == null) {
-			p.sendMessage(" §c* §fO jogador §a\"" + args[0] + "\"§f não existe!");
+		if (target == null) {
+			player.sendMessage(" §c* §fO jogador §a\"" + args[0] + "\"§f não existe!");
 			return;
 		}
 
-		t.getInventory().clear();
-		t.getInventory().setArmorContents(new ItemStack[4]);
-		t.getActivePotionEffects().clear();
-		t.getInventory().setHeldItemSlot(0);
-		t.sendMessage(" §e* §fO seu inventário foi limpo pelo §a" + p.getName() + "§f!");
-		p.sendMessage(" §a* §fVocê limpou o inventário de §a" + t.getName() + "§f!");
+		target.getInventory().clear();
+		target.getInventory().setArmorContents(new ItemStack[4]);
+		target.getActivePotionEffects().clear();
+		target.getInventory().setHeldItemSlot(0);
+		target.sendMessage(" §e* §fO seu inventário foi limpo pelo §a" + player.getName() + "§f!");
+		player.sendMessage(" §a* §fVocê limpou o inventário de §a" + target.getName() + "§f!");
 	}
 
 	@Command(name = "enchant", usage = "/<command> <enchanment> <level>", groupToUse = Group.MOD)
@@ -148,18 +152,18 @@ public class ModeratorCommand implements CommandClass {
 			return;
 		}
 
-		Player p = cmdArgs.getPlayer();
+		Player player = cmdArgs.getPlayer();
 		String[] args = cmdArgs.getArgs();
 
 		if (args.length == 0) {
-			p.sendMessage(" §e* §fUtilize §a/enchant <encantamento> <level>§f para alterar seu gamemode!");
+			player.sendMessage(" §e* §fUtilize §a/enchant <encantamento> <level>§f para alterar seu gamemode!");
 			return;
 		}
 
-		ItemStack item = p.getItemInHand();
+		ItemStack item = player.getItemInHand();
 
 		if (item == null || item.getType() == Material.AIR) {
-			p.sendMessage(" §c* §fVocê não está com nada na sua mão para encantar!");
+			player.sendMessage(" §c* §fVocê não está com nada na sua mão para encantar!");
 			return;
 		}
 
@@ -171,7 +175,7 @@ public class ModeratorCommand implements CommandClass {
 			try {
 				id = Integer.valueOf(args[0]);
 			} catch (NumberFormatException e) {
-				p.sendMessage(" §c* §fO formato de numero é inválido!");
+				player.sendMessage(" §c* §fO formato de numero é inválido!");
 				return;
 			}
 
@@ -187,14 +191,94 @@ public class ModeratorCommand implements CommandClass {
 			}
 
 			if (level < 1) {
-				p.sendMessage(" §c* §fO nível de encantamento é muito baixo!");
+				player.sendMessage(" §c* §fO nível de encantamento é muito baixo!");
 				return;
 			}
 		}
 
 		item.addUnsafeEnchantment(enchantment, level);
-		p.sendMessage(" §a* §fVocê aplicou o encantamento §a" + enchantment.getName() + "§f no nível §a" + level
+		player.sendMessage(" §a* §fVocê aplicou o encantamento §a" + enchantment.getName() + "§f no nível §a" + level
 				+ "§f na sua §a" + item.getType().toString() + "§f!");
+	}
+
+	@Command(name = "whitelist", groupToUse = Group.MODPLUS, runAsync = true)
+	public void whitelistCommand(CommandArgs cmdArgs) {
+
+		tk.yallandev.saintmc.common.command.CommandSender sender = cmdArgs.getSender();
+		String[] args = cmdArgs.getArgs();
+
+		if (args.length == 0) {
+			sender.sendMessage(" §e* §fUse §a/whitelist <on:off:list:add:remove>§f ");
+			return;
+		}
+
+		// on/off/list/add/remove
+
+		switch (args[0].toLowerCase()) {
+		case "on": {
+
+			if (!BukkitMain.getInstance().getServerConfig().isWhitelist()) {
+				sender.sendMessage("§cO servidor já está com a whitelist ativada!");
+			} else {
+				Bukkit.setWhitelist(true);
+				BukkitMain.getInstance().getServerConfig().setWhitelist(true);
+				sender.sendMessage("§aVocê ativou a whitelist!");
+
+				new BukkitRunnable() {
+					@Override
+					public void run() {
+						CommonGeneral.getInstance().getServerData().setJoinEnabled(false);
+					}
+				}.runTaskAsynchronously(BukkitMain.getInstance());
+			}
+
+			break;
+		}
+		case "off": {
+			if (!BukkitMain.getInstance().getServerConfig().isWhitelist()) {
+				sender.sendMessage("§cO servidor já está com a whitelist desativada!");
+			} else {
+				Bukkit.setWhitelist(false);
+				BukkitMain.getInstance().getServerConfig().setWhitelist(false);
+				sender.sendMessage("§cVocê desativou a whitelist!");
+
+				new BukkitRunnable() {
+					@Override
+					public void run() {
+						CommonGeneral.getInstance().getServerData().setJoinEnabled(true);
+					}
+				}.runTaskAsynchronously(BukkitMain.getInstance());
+			}
+
+			break;
+		}
+		case "add":
+		case "remove": {
+			if (args.length == 1) {
+				sender.sendMessage(" §e*Use §f §a/whitelist <on:off:list:add:remove>§f ");
+				break;
+			}
+
+			String playerName = args[1];
+			UUID uniqueId = CommonGeneral.getInstance().getUuid(playerName);
+
+			Profile profile = new Profile(playerName, uniqueId);
+
+			if (args[0].equalsIgnoreCase("add")) {
+				BukkitMain.getInstance().getServerConfig().addWhitelist(profile);
+				sender.sendMessage("§a" + args[1] + " adicionado na whitelist!");
+			} else {
+				BukkitMain.getInstance().getServerConfig().removeWhitelist(profile);
+				sender.sendMessage("§a" + args[1] + " removido na whitelist!");
+			}
+			break;
+		}
+		default: {
+			sender.sendMessage(" §e* §fUse §a/whitelist <on:off:list:add:remove>§f ");
+			break;
+		}
+		}
+
 	}
 
 	@Command(name = "effect", usage = "/<command> <effect> <duration> <amplifier>", groupToUse = Group.MOD)
@@ -328,12 +412,12 @@ public class ModeratorCommand implements CommandClass {
 		Player p = cmdArgs.getPlayer();
 		TeleportResult result = TeleportResult.NO_PERMISSION;
 		String[] args = cmdArgs.getArgs();
-		Member bp = CommonGeneral.getInstance().getMemberManager().getMember(p.getUniqueId());
+		Member member = CommonGeneral.getInstance().getMemberManager().getMember(p.getUniqueId());
 
-		if (!bp.hasGroupPermission(Group.TRIAL)) {
+		if (!member.hasGroupPermission(Group.TRIAL)) {
 			result = TeleportResult.NO_PERMISSION;
 		} else {
-			if (bp.hasGroupPermission(Group.MOD)) {
+			if (member.hasGroupPermission(Group.MOD)) {
 				result = TeleportResult.ALLOWED;
 			} else {
 				result = TeleportResult.ONLY_PLAYER_TELEPORT;
@@ -437,44 +521,44 @@ public class ModeratorCommand implements CommandClass {
 			return;
 		}
 
-		Player p = cmdArgs.getPlayer();
+		Player player = cmdArgs.getPlayer();
 		String[] args = cmdArgs.getArgs();
 
 		if (args.length == 0) {
 			int i = 0;
 
 			for (Player on : Bukkit.getOnlinePlayers()) {
-				if (on != null && on.isOnline() && on.getUniqueId() != p.getUniqueId()) {
-					on.teleport(p.getLocation());
+				if (on != null && on.isOnline() && on.getUniqueId() != player.getUniqueId()) {
+					on.teleport(player.getLocation());
 					on.setFallDistance(0.0F);
-					on.sendMessage(" §a* §fVocê foi teletransportado até o §a" + p.getName() + "§f!");
+					on.sendMessage(" §a* §fVocê foi teletransportado até o §a" + player.getName() + "§f!");
 					i++;
 				}
 			}
 
-			p.sendMessage(" §aVocê puxou todos os " + i + " jogadores até você!");
+			player.sendMessage(" §aVocê puxou todos os " + i + " jogadores até você!");
 			return;
 		}
 
-		Player t = Bukkit.getPlayer(args[0]);
+		Player target = Bukkit.getPlayer(args[0]);
 
-		if (t == null) {
-			p.sendMessage(" §c* §fO jogador §a\"" + args[0] + "\"§f não existe!");
+		if (target == null) {
+			player.sendMessage(" §c* §fO jogador §a\"" + args[0] + "\"§f não existe!");
 			return;
 		}
 		int i = 0;
 
 		for (Player on : Bukkit.getOnlinePlayers()) {
-			if (on != null && on.isOnline() && on.getUniqueId() != t.getUniqueId()
-					&& on.getUniqueId() != p.getUniqueId()) {
-				on.teleport(t.getLocation());
+			if (on != null && on.isOnline() && on.getUniqueId() != target.getUniqueId()
+					&& on.getUniqueId() != player.getUniqueId()) {
+				on.teleport(target.getLocation());
 				on.setFallDistance(0.0F);
-				on.sendMessage(" §a* §fVocê foi teletransportado até o §a" + t.getName() + "§f!");
+				on.sendMessage(" §a* §fVocê foi teletransportado até o §a" + target.getName() + "§f!");
 				i++;
 			}
 		}
 
-		p.sendMessage(" §aVocê levou todos os " + i + " jogadores até " + t.getName() + "!");
+		player.sendMessage(" §aVocê levou todos os " + i + " jogadores até " + target.getName() + "!");
 		return;
 
 		// TODO: ALERT STAFFS
@@ -512,13 +596,13 @@ public class ModeratorCommand implements CommandClass {
 		if (!hasReason)
 			builder.append("Sem motivo");
 
-		for (Player p : Bukkit.getOnlinePlayers()) {
-			Member player = CommonGeneral.getInstance().getMemberManager().getMember(p.getUniqueId());
+		for (Player player : Bukkit.getOnlinePlayers()) {
+			Member member = CommonGeneral.getInstance().getMemberManager().getMember(player.getUniqueId());
 
-			if (!player.hasGroupPermission(Group.YOUTUBERPLUS))
+			if (!member.hasGroupPermission(Group.YOUTUBERPLUS))
 				continue;
 
-			p.sendMessage("\n§c* O jogador " + target.getName() + " foi kickado pelo " + sender.getName() + " por "
+			player.sendMessage("\n§c* O jogador " + target.getName() + " foi kickado pelo " + sender.getName() + " por "
 					+ builder.toString() + "\n§c ");
 		}
 
