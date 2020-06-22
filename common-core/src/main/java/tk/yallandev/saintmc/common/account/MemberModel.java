@@ -27,6 +27,8 @@ public class MemberModel {
     private String fakeName;
     private Map<String, Long> cooldown;
     
+    private String lastIpAddress;
+    
     /*
      *  Configuration
      *  

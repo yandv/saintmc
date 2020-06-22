@@ -9,7 +9,9 @@ package tk.yallandev.saintmc.common.server.loadbalancer.element;
  */
 
 public interface LoadBalancerObject {
+	
+	String getServerId();
 
-	public boolean canBeSelected();
+	boolean canBeSelected();
 	
 }

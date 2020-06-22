@@ -19,6 +19,7 @@ import net.md_5.bungee.event.EventPriority;
 import tk.yallandev.saintmc.CommonConst;
 import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.bungee.BungeeMain;
+import tk.yallandev.saintmc.bungee.event.UnblockAddressEvent;
 import tk.yallandev.saintmc.common.utils.supertype.FutureCallback;
 import tk.yallandev.saintmc.common.utils.web.WebHelper.Method;
 
@@ -126,10 +127,30 @@ public class LoginListener implements Listener {
 			}
 		});
 	}
+	
+	@EventHandler
+	public void onUnblockAddress(UnblockAddressEvent event) {
+		blockedAddress.remove(event.getIpAddress());
+	}
 
 	public void blockAddress(String ipAddress) {
 		blockedAddress.add(ipAddress);
 		CommonGeneral.getInstance().debug("The address " + ipAddress + " has been blocked!");
+
+		ProxyServer.getInstance().getScheduler().runAsync(BungeeMain.getInstance(), new Runnable() {
+
+			@Override
+			public void run() {
+				try {
+					CommonConst.DEFAULT_WEB.doRequest(
+							CommonConst.API + "/ip/?ip" + URLEncoder.encode(ipAddress, "UTF-8") + "&allowed=false",
+							Method.POST);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+			
+		});
 	}
 
 }

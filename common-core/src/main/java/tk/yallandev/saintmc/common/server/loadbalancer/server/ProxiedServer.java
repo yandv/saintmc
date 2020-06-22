@@ -10,14 +10,15 @@ import tk.yallandev.saintmc.common.server.ServerType;
 import tk.yallandev.saintmc.common.server.loadbalancer.element.LoadBalancerObject;
 import tk.yallandev.saintmc.common.server.loadbalancer.element.NumberConnection;
 
+@Getter
 public class ProxiedServer implements LoadBalancerObject, NumberConnection {
 
 	private String serverId;
-	@Getter
 	private ServerType serverType;
 	private Set<UUID> players;
+	
 	private int maxPlayers;
-
+	
 	private boolean joinEnabled;
 
 	public ProxiedServer(String serverId, ServerType serverType, Set<UUID> onlinePlayers, int maxPlayers, boolean joinEnabled) {
@@ -44,16 +45,8 @@ public class ProxiedServer implements LoadBalancerObject, NumberConnection {
 		return players.contains(uuid);
 	}
 
-	public String getServerId() {
-		return serverId;
-	}
-
 	public int getOnlinePlayers() {
 		return players.size();
-	}
-
-	public int getMaxPlayers() {
-		return maxPlayers;
 	}
 
 	public boolean isFull() {
@@ -64,10 +57,6 @@ public class ProxiedServer implements LoadBalancerObject, NumberConnection {
 		this.joinEnabled = joinEnabled;
 	}
 
-	public boolean isJoinEnabled() {
-		return joinEnabled;
-	}
-	
 	public ServerInfo getServerInfo() {
 		return ProxyServer.getInstance().getServerInfo(serverId);
 	}

@@ -1,5 +1,6 @@
 package tk.yallandev.saintmc.bungee.manager;
 
+import java.util.AbstractMap;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.UUID;
@@ -48,7 +49,6 @@ public class BungeePunishManager implements PunishManager {
 			return false;
 
 		member.getPunishmentHistory().ban(ban);
-
 		CommonGeneral.getInstance().getMemberManager().getMembers().forEach(m -> {
 			if (m.hasGroupPermission(Group.TRIAL)) {
 				if (ban.isPermanent()) {
@@ -71,10 +71,11 @@ public class BungeePunishManager implements PunishManager {
 			}
 		});
 
-//		if (ban.isPermanent())
-//			if (member.getLastIpAddress() != null)
-//				banCache.put(member.getLastIpAddress(),
-//						new AbstractMap.SimpleEntry<UUID, Ban>(member.getUniqueId(), ban));
+		if (ban.isPermanent())
+			if (member.getLastIpAddress() != null) {
+				banCache.put(member.getLastIpAddress(),
+						new AbstractMap.SimpleEntry<UUID, Ban>(member.getUniqueId(), ban));
+			}
 
 		ProxiedPlayer proxiedPlayer = ProxyServer.getInstance().getPlayer(member.getUniqueId());
 
@@ -87,7 +88,6 @@ public class BungeePunishManager implements PunishManager {
 			report.banPlayer();
 
 		CommonGeneral.getInstance().getPlayerData().updateMember(member, "punishmentHistory");
-//		MessageUtils.sendMessage("", new EmbedBuilder().build(), true);
 		return true;
 	}
 
@@ -163,7 +163,7 @@ public class BungeePunishManager implements PunishManager {
 
 		member.setReputation(member.getReputation() - 3);
 		member.sendMessage("§c* Você recebeu um aviso por: " + warn.getReason()
-				+ ". Por isso você perdeu 3 pontos de sua reputação.");
+				+ ". Você perdeu 3 pontos de sua reputação.");
 
 		CommonGeneral.getInstance().getPunishData().addWarn(warn);
 		return true;
@@ -176,8 +176,8 @@ public class BungeePunishManager implements PunishManager {
 		if (activeBan == null)
 			return false;
 		
-//		if (banCache.asMap().containsKey(member.getLastIpAddress()))
-//			banCache.asMap().remove(member.getLastIpAddress());
+		if (banCache.asMap().containsKey(member.getLastIpAddress()))
+			banCache.invalidate(member.getLastIpAddress());
 		
 		activeBan.unban(uniqueId, userName, unbanReason);
 		CommonGeneral.getInstance().getMemberManager().getMembers().stream()

@@ -280,11 +280,13 @@ public class AccountListener implements Listener {
 					member.getPunishmentHistory().ban(ban);
 					CommonGeneral.getInstance().getMemberManager().getMembers().stream()
 							.filter(m -> m.hasGroupPermission(Group.TRIAL)).forEach(m -> {
-								m.sendMessage(" §4* §cO jogador " + member.getPlayerName() + " foi banido pelo §a"
+								m.sendMessage(" §4* §cO jogador " + member.getPlayerName() + " foi banido pelo "
 										+ ban.getBannedBy() + " por " + ban.getReason() + "!");
 							});
 
 					CommonGeneral.getInstance().getPlayerData().updateMember(member, "punishmentHistory");
+					event.setCancelled(true);
+					event.setCancelReason(BungeeMain.getInstance().getPunishManager().getBanMessage(ban));
 				}
 
 				Report report = CommonGeneral.getInstance().getReportManager().getReport(uniqueId);

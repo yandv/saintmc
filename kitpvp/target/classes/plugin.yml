@@ -1,5 +1,5 @@
 name: SaintPvP
-version: 1.0.38
+version: 1.0.39
 main: tk.yallandev.saintmc.kitpvp.GameMain
 author: yandv
 softdepend: [BukkitCommon]

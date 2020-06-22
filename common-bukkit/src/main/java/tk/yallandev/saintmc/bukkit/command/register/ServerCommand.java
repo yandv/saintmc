@@ -58,7 +58,8 @@ public class ServerCommand implements CommandClass {
 		Member member = CommonGeneral.getInstance().getMemberManager().getMember(player.getUniqueId());
 
 		member.getAccountConfiguration().setScoreboardEnabled(!member.getAccountConfiguration().isScoreboardEnabled());
-
+		Bukkit.getServer().getPluginManager().callEvent(new PlayerScoreboardStateEvent(player, member.getAccountConfiguration().isScoreboardEnabled()));
+		
 		if (member.getAccountConfiguration().isScoreboardEnabled()) {
 			Scoreboard score = ((BukkitMember) member).getScoreboard();
 
@@ -73,8 +74,6 @@ public class ServerCommand implements CommandClass {
 			objective.setDisplaySlot(DisplaySlot.SIDEBAR);
 		}
 		
-		Bukkit.getServer().getPluginManager().callEvent(new PlayerScoreboardStateEvent(player, member.getAccountConfiguration().isScoreboardEnabled()));
-
 		player.sendMessage(" §a* §fSua scoreboard foi "
 				+ (member.getAccountConfiguration().isScoreboardEnabled() ? "§aativada" : "§cdesativada") + "§f!");
 	}

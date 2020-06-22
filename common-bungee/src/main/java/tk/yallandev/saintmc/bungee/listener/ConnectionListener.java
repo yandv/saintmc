@@ -132,12 +132,10 @@ public class ConnectionListener implements Listener {
 		ProxiedServer server = manager.getServer(event.getTarget().getName());
 		
 		if (server.getServerType() == ServerType.SCREENSHARE) {
-			if (player.isScreensharing() || player.hasGroupPermission(Group.MODGC)) {
-				player.sendMessage("§aVocê foi enviado para S	creenshare!");
-			} else {
+			if (player.isScreensharing() || player.hasGroupPermission(Group.MODGC))
+				player.sendMessage("§aVocê foi enviado para Screenshare!");
+			else
 				event.setCancelled(true);
-				player.sendMessage("§cVocê não pode entrar na §aScreenshare§f!");
-			}
 			
 			return;
 		}
@@ -158,11 +156,6 @@ public class ConnectionListener implements Listener {
 			event.setCancelled(true);
 			message = "§cO servidor está cheio!";
 		}
-
-//		if (!server.canBeSelected() && !player.hasGroupPermission(Group.BUILDER)) {
-//			event.setCancelled(true);
-//			message = "§cO servidor está disponivel somente para a equipe!";
-//		}
 
 		if (event.isCancelled()) {
 			if (event.getPlayer().getServer() == null || event.getPlayer().getServer().getInfo() == null)

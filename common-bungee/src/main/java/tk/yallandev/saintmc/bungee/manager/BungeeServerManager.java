@@ -28,9 +28,8 @@ public class BungeeServerManager extends ServerManager {
 	public void removeActiveServer(String str) {
 		super.removeActiveServer(str);
 
-		if (ProxyServer.getInstance().getServers().containsKey(str.toLowerCase())) {
+		if (ProxyServer.getInstance().getServers().containsKey(str.toLowerCase()))
 			ProxyServer.getInstance().getServers().remove(str.toLowerCase());
-		}
 	}
 
 }

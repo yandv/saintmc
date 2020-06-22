@@ -110,24 +110,6 @@ public class BukkitMember extends Member {
 				setLeague(getLeague().getPreviousLeague());
 			}
 		}
-		
-//		if (getXp() >= getLeague().getMaxXp()) {
-//			xp = getXp() - getLeague().getMaxXp();
-//			nextLeague = getLeague().getNextLeague();
-//		} else if (getXp() < 0) {
-//			nextLeague = getLeague().getPreviousLeague();
-//
-//			if (nextLeague == League.UNRANKED) {
-//				xp = 0;
-//				super.setXp(0);
-//			} else
-//				xp = nextLeague.getMaxXp() + getXp();
-//		}
-//
-//		if (nextLeague != getLeague()) {
-//			setLeague(nextLeague);
-//			setXp(xp);
-//		}
 	}
 
 	@Override

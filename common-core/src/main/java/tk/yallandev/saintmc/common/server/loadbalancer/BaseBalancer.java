@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import tk.yallandev.saintmc.common.server.loadbalancer.element.LoadBalancerObject;
 
@@ -50,7 +51,8 @@ public abstract class BaseBalancer<T extends LoadBalancerObject> implements Load
 		if (nextObj != null)
 			nextObj.clear();
 		nextObj = new ArrayList<>();
-		nextObj.addAll(objects.values());
+		nextObj.addAll(objects.values().stream().sorted((o1, o2) -> o1.getServerId().compareTo(o2.getServerId()))
+				.collect(Collectors.toList()));
 	}
 
 	public abstract int getTotalNumber();

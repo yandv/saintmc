@@ -7,7 +7,6 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -26,13 +25,15 @@ public class StomperKit extends Kit {
 	}
 
 	@EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
-	public void onStomper(EntityDamageEvent event) {
-		Entity entityStomper = event.getEntity();
-
-		if (!(entityStomper instanceof Player))
+	public void onDamage(EntityDamageEvent event) {
+		if (!(event.getEntity() instanceof Player))
 			return;
 
-		Player stomper = (Player) entityStomper;
+		if (event.getCause() != DamageCause.FALL)
+			return;
+
+		
+		Player stomper = (Player) event.getEntity();
 
 		if (!hasAbility(stomper))
 			return;
@@ -86,24 +87,13 @@ public class StomperKit extends Kit {
 		}
 
 		stomper.getWorld().playSound(stomper.getLocation(), Sound.ANVIL_LAND, 1, 1);
-	}
-
-	@EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
-	public void onDamage(EntityDamageEvent event) {
-		if (!(event.getEntity() instanceof Player))
-			return;
-
-		if (event.getCause() != DamageCause.FALL)
-			return;
-
-		Player p = (Player) event.getEntity();
 
 		if (event.getDamage() < 4.0D)
 			return;
-
-		if (hasAbility(p)) {
+		
+		if (hasAbility(stomper)) {
 			event.setCancelled(true);
-			p.damage(4.0D);
+			stomper.damage(4.0D);
 		}
 	}
 

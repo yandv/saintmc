@@ -7,6 +7,7 @@ import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import tk.yallandev.saintmc.bungee.BungeeMain;
 import tk.yallandev.saintmc.bungee.command.BungeeCommandArgs;
+import tk.yallandev.saintmc.bungee.event.UnblockAddressEvent;
 import tk.yallandev.saintmc.common.command.CommandArgs;
 import tk.yallandev.saintmc.common.command.CommandClass;
 import tk.yallandev.saintmc.common.command.CommandFramework.Command;
@@ -43,7 +44,18 @@ public class ServerCommand implements CommandClass {
 	@Command(name = "ip")
 	public void ipCommand(BungeeCommandArgs cmdArgs) {
 		if (cmdArgs.isPlayer()) {
-			cmdArgs.getSender().sendMessage("§aVocê está no servidor " + cmdArgs.getPlayer().getServer().getInfo());
+			cmdArgs.getSender().sendMessage("§aVocê está no servidor " + cmdArgs.getPlayer().getServer().getInfo().getName());
+		} else {
+			CommandSender sender = cmdArgs.getSender();
+			String[] args = cmdArgs.getArgs();
+			
+			if (args.length == 0) {
+				sender.sendMessage(" §e* §fUse §a/" + cmdArgs.getLabel() + " <ip>§f para desbloquear um ip.");
+				return;
+			}
+			
+			ProxyServer.getInstance().getPluginManager().callEvent(new UnblockAddressEvent(args[0]));
+			sender.sendMessage("§aO ip " + args[0] + " foi desbloqueado!");
 		}
 	}
 

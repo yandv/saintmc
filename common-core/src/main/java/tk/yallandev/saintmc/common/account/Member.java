@@ -110,6 +110,8 @@ public abstract class Member {
 
 		fakeName = memberModel.getFakeName();
 		cooldown = memberModel.getCooldown();
+		
+		lastIpAddress = memberModel.getLastIpAddress();
 
 		accountConfiguration = memberModel.getAccountConfiguration();
 		loginConfiguration = memberModel.getLoginConfiguration();
