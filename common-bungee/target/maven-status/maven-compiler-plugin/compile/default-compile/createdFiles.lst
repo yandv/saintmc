@@ -12,6 +12,7 @@ tk\yallandev\saintmc\bungee\redis\BungeePubSubHandler$7.class
 tk\yallandev\saintmc\discord\command\register\DiscordCommand$Invite.class
 tk\yallandev\saintmc\discord\command\register\SayCommand.class
 tk\yallandev\saintmc\bungee\listener\ConnectionListener.class
+tk\yallandev\saintmc\bungee\listener\LoginListener$2.class
 tk\yallandev\saintmc\bungee\command\BungeeCommandArgs.class
 tk\yallandev\saintmc\bungee\command\register\GroupCommand.class
 tk\yallandev\saintmc\bungee\listener\AccountListener$1$1.class
@@ -20,6 +21,7 @@ tk\yallandev\saintmc\bungee\server\BungeeServer.class
 tk\yallandev\saintmc\bungee\redis\BungeePubSubHandler.class
 tk\yallandev\saintmc\bungee\redis\BungeePubSubHandler$1.class
 tk\yallandev\saintmc\bungee\listener\AccountListener$3.class
+tk\yallandev\saintmc\bungee\event\UnblockAddressEvent.class
 tk\yallandev\saintmc\bungee\listener\ChatListener.class
 tk\yallandev\saintmc\bungee\manager\BungeePunishManager$1.class
 tk\yallandev\saintmc\discord\listener\BoosterListener.class
