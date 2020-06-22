@@ -1,13 +1,9 @@
 package tk.yallandev.saintmc.kitpvp.menu;
 
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
 
 import tk.yallandev.saintmc.bukkit.api.menu.MenuInventory;
 import tk.yallandev.saintmc.bukkit.api.menu.MenuItem;
-import tk.yallandev.saintmc.bukkit.api.menu.click.ClickType;
-import tk.yallandev.saintmc.bukkit.api.menu.click.MenuClickHandler;
 import tk.yallandev.saintmc.kitpvp.GameMain;
 import tk.yallandev.saintmc.kitpvp.warp.Warp;
 
@@ -24,14 +20,8 @@ public class WarpInventory {
 			if (warp.getItem() == null)
 				continue;
 
-			menuInventory.setItem(11 + i, new MenuItem(warp.getItem(), new MenuClickHandler() {
-
-				@Override
-				public void onClick(Player p, Inventory inv, ClickType type, ItemStack stack, int slot) {
-					GameMain.getInstance().getWarpManager()
-							.teleport(GameMain.getInstance().getGamerManager().getGamer(player.getUniqueId()), warp, 5);
-				}
-			}));
+			menuInventory.setItem(11 + i, new MenuItem(warp.getItem(),
+					(p, inv, type, stack, slot) -> GameMain.getInstance().getWarpManager().teleport(p, warp, 5)));
 			i++;
 		}
 

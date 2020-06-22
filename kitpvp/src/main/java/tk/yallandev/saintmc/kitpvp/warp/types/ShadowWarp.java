@@ -29,6 +29,8 @@ import tk.yallandev.saintmc.bukkit.api.scoreboard.Scoreboard;
 import tk.yallandev.saintmc.bukkit.event.player.PlayerDamagePlayerEvent;
 import tk.yallandev.saintmc.bukkit.event.update.UpdateEvent;
 import tk.yallandev.saintmc.bukkit.event.update.UpdateEvent.UpdateType;
+import tk.yallandev.saintmc.bukkit.event.vanish.PlayerHideToPlayerEvent;
+import tk.yallandev.saintmc.bukkit.event.vanish.PlayerShowToPlayerEvent;
 import tk.yallandev.saintmc.common.utils.DateUtils;
 import tk.yallandev.saintmc.common.utils.string.StringUtils;
 import tk.yallandev.saintmc.kitpvp.GameMain;
@@ -145,8 +147,6 @@ public class ShadowWarp extends Warp implements DuelWarp {
 
 							@Override
 							public void finish(Player winner) {
-								super.finish(winner);
-
 								playersIn1v1.remove(getTarget());
 								playersIn1v1.remove(getPlayer());
 
@@ -155,6 +155,8 @@ public class ShadowWarp extends Warp implements DuelWarp {
 
 								handleInventory(getPlayer());
 								handleInventory(getTarget());
+								
+								super.finish(winner);
 							}
 
 						});
@@ -240,8 +242,6 @@ public class ShadowWarp extends Warp implements DuelWarp {
 
 								@Override
 								public void finish(Player winner) {
-									super.finish(winner);
-
 									playersIn1v1.remove(getTarget());
 									playersIn1v1.remove(getPlayer());
 
@@ -250,6 +250,8 @@ public class ShadowWarp extends Warp implements DuelWarp {
 
 									handleInventory(getTarget());
 									handleInventory(getPlayer());
+									
+									super.finish(winner);
 								}
 
 							};
@@ -272,11 +274,11 @@ public class ShadowWarp extends Warp implements DuelWarp {
 	public void onUpdate(UpdateEvent event) {
 		if (event.getType() == UpdateType.SECOND)
 			fastQueue.forEach((player, time) -> ScoreboardListener.SEARCHING_SCOREBOARD.updateScore(player, new Score(
-					"§fTempo: §a" + StringUtils.formatTime((int) (System.currentTimeMillis() - time) / 1000), "time")));
+					"§fTempo: §e" + StringUtils.formatTime((int) (System.currentTimeMillis() - time) / 1000), "time")));
 	}
 
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-	public void entitydamage(EntityDamageEvent event) {
+	public void onEntityDamage(EntityDamageEvent event) {
 		if (!(event.getEntity() instanceof Player))
 			return;
 
@@ -291,17 +293,19 @@ public class ShadowWarp extends Warp implements DuelWarp {
 		}
 	}
 
-	@EventHandler
+	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onPlayerDamagePlayer(PlayerDamagePlayerEvent event) {
 		Player player = event.getPlayer();
 		Player damager = event.getDamager();
 
-		if (inWarp(player) && inWarp(damager)) {
-			if (playersIn1v1.containsKey(player) && playersIn1v1.containsKey(damager)) {
-				event.setCancelled(false);
-			} else {
+		if (inWarp(player)) {
+			if (inWarp(damager)) {
+				if (playersIn1v1.containsKey(player) && playersIn1v1.containsKey(damager))
+					event.setCancelled(false);
+				else
+					event.setCancelled(true);
+			} else
 				event.setCancelled(true);
-			}
 		}
 	}
 
@@ -328,7 +332,7 @@ public class ShadowWarp extends Warp implements DuelWarp {
 	}
 
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-	public void drop(PlayerDropItemEvent event) {
+	public void onPlayerDropItem(PlayerDropItemEvent event) {
 		Player player = event.getPlayer();
 
 		if (inWarp(player)) {
@@ -344,20 +348,40 @@ public class ShadowWarp extends Warp implements DuelWarp {
 	public void onPlayerWarpJoin(PlayerWarpJoinEvent event) {
 		Player player = event.getPlayer();
 
-		if (event.getWarp() != this)
-			return;
-
-		handleInventory(player);
+		if (event.getWarp() == this)
+			handleInventory(player);
 	}
 
 	@EventHandler
 	public void onPlayerWarpJoin(PlayerWarpQuitEvent event) {
 		Player player = event.getPlayer();
 
-		if (!inWarp(player))
-			return;
+		if (event.getWarp() == this)
+			handleQuit(player);
+	}
 
-		handleQuit(player);
+	@EventHandler
+	public void onPlayerShowToPlayer(PlayerShowToPlayerEvent event) {
+		if (playersIn1v1.containsKey(event.getToPlayer())) {
+			Challenge challenge = playersIn1v1.get(event.getToPlayer());
+			
+			if (challenge.isInChallenge(event.getPlayer())) 
+				event.setCancelled(false);
+			else 
+				event.setCancelled(true);
+		}
+	}
+	
+	@EventHandler
+	public void onPlayerHideToPlayer(PlayerHideToPlayerEvent event) {
+		if (playersIn1v1.containsKey(event.getToPlayer())) {
+			Challenge challenge = playersIn1v1.get(event.getToPlayer());
+			
+			if (challenge.isInChallenge(event.getPlayer())) 
+				event.setCancelled(true);
+			else 
+				event.setCancelled(false);
+		}
 	}
 
 	public void handleInventory(Player player) {

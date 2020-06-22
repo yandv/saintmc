@@ -31,8 +31,6 @@ public class JsonUtils {
             }
         }
         
-        System.out.println(CommonConst.GSON.toJson(element));
-        
         return Document.parse(CommonConst.GSON.toJson(element));
     }
 

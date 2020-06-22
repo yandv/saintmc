@@ -20,119 +20,111 @@ import tk.yallandev.saintmc.bukkit.event.player.PlayerDamagePlayerEvent;
 import tk.yallandev.saintmc.bukkit.listener.Listener;
 
 public class CombatListener extends Listener {
-	
+
 	@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
 	public void onEntityDamage(EntityDamageEvent event) {
 		if (!(event.getEntity() instanceof Player)) {
 			return;
 		}
-		
+
 		Player player = (Player) event.getEntity();
-		
+
 		if (event.getCause() == DamageCause.FALL)
 			if (player.hasMetadata("nofall")) {
-				
-				 MetadataValue metadata = player.getMetadata("nofall").stream().findFirst().orElse(null);
-				
-				 if (metadata.asLong() > System.currentTimeMillis())
-					 event.setCancelled(true);
-				 
-				 metadata.invalidate();
+				MetadataValue metadata = player.getMetadata("nofall").stream().findFirst().orElse(null);
+
+				if (metadata.asLong() > System.currentTimeMillis())
+					event.setCancelled(true);
+
+				metadata.invalidate();
 			}
 	}
-	
-	@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
+
+	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
 		if (!(event.getEntity() instanceof Player))
 			return;
-		
+
 		Player player = (Player) event.getEntity();
 		Player damager = null;
-		
+
 		if (event.getDamager() instanceof Player) {
 			damager = (Player) event.getDamager();
 		} else if (event.getDamager() instanceof Projectile) {
 			Projectile projectile = (Projectile) event.getDamager();
-			
+
 			if (projectile.getShooter() instanceof Player) {
 				damager = (Player) projectile.getShooter();
 			}
 		}
-		
-		PlayerDamagePlayerEvent playerDamagePlayerEvent = new PlayerDamagePlayerEvent(player, damager, event.isCancelled(), event.getDamage(), event.getFinalDamage());
-		
+
+		if (!(damager instanceof Player))
+			return;
+
+		PlayerDamagePlayerEvent playerDamagePlayerEvent = new PlayerDamagePlayerEvent(player, damager,
+				event.isCancelled(), event.getDamage(), event.getFinalDamage());
+
 		Bukkit.getPluginManager().callEvent(playerDamagePlayerEvent);
-		
+
 		event.setCancelled(playerDamagePlayerEvent.isCancelled());
 		event.setDamage(playerDamagePlayerEvent.getDamage());
 	}
-	
+
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onEntityDamageEvent(EntityDamageByEntityEvent event) {
 		if (!(event.getDamager() instanceof Player))
 			return;
-		
+
 		Player p = (Player) event.getDamager();
 		ItemStack sword = p.getItemInHand();
 		double damage = event.getDamage();
 		double danoEspada = getDamage(sword.getType());
 		boolean isMore = false;
-		
+
 		if (damage > 1)
 			isMore = true;
-		
+
 		if (p.hasPotionEffect(PotionEffectType.INCREASE_DAMAGE))
 			for (PotionEffect effect : p.getActivePotionEffects())
 				if (effect.getType().equals(PotionEffectType.INCREASE_DAMAGE)) {
-					double minus;
-					
-					if (isCrital(p))
-						minus = (danoEspada + (danoEspada / 2)) * 1.2 * (effect.getAmplifier() + 1);
-					else
-						minus = danoEspada * 1.3 * (effect.getAmplifier() + 1);
-					
-					
-					damage = damage - minus;
-					damage += 2 * (effect.getAmplifier() + 1);
+					damage += 0.25 * (effect.getAmplifier() + 1);
 					break;
 				}
-		
-		if (!sword.getEnchantments().isEmpty()) {
-			if (sword.containsEnchantment(Enchantment.DAMAGE_ALL)) {
-				damage += 0.5 * sword.getEnchantmentLevel(Enchantment.DAMAGE_ALL);
-			}
-		}
-		
+
+		if (!sword.getEnchantments().isEmpty())
+			if (sword.containsEnchantment(Enchantment.DAMAGE_ALL))
+				damage += 0.35 * sword.getEnchantmentLevel(Enchantment.DAMAGE_ALL);
+
 		if (isCrital(p)) {
 			damage = damage - (danoEspada / 2);
-			damage += 1;
+			damage += 0.40;
 		}
-		
+
 		if (isMore)
-			damage -= 2;
-		
+			damage -= 3;
+
 		event.setDamage(damage);
 	}
 
 	private boolean isCrital(Player p) {
-		return p.getFallDistance() > 0 && !((Entity)p).isOnGround() && !p.hasPotionEffect(PotionEffectType.BLINDNESS);
+		return p.getFallDistance() > 0 && !((Entity) p).isOnGround() && !p.hasPotionEffect(PotionEffectType.BLINDNESS);
 	}
 
 	private double getDamage(Material type) {
 		double damage = 1.0;
-		
+
 		if (type.toString().contains("DIAMOND_")) {
-			damage = 6.0;
+			damage = 6.5;
 		} else if (type.toString().contains("IRON_")) {
+			damage = 5.5;
+		} else if (type.toString().contains("GOLD_")) {
 			damage = 5.0;
 		} else if (type.toString().contains("STONE_")) {
-			damage = 3.0;
+			damage = 4.5;
 		} else if (type.toString().contains("WOOD_")) {
-			damage = 2.5;
-		} else if (type.toString().contains("GOLD_")) {
-			damage = 2.5;
+			damage = 4.0;
 		}
-		
+
 		if (!type.toString().contains("_SWORD")) {
 			damage--;
 			if (!type.toString().contains("_AXE")) {
@@ -145,7 +137,7 @@ public class CombatListener extends Listener {
 				}
 			}
 		}
-		
+
 		return damage;
 	}
 }

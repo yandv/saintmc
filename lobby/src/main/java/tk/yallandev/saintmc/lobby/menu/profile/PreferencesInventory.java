@@ -80,7 +80,7 @@ public class PreferencesInventory {
 				});
 
 		inv.setItem(32,
-				(gamer.isFlying()
+				(player.getAllowFlight()
 						? builder.type(Material.INK_SACK).durability(10).name("§eFly")
 								.lore("\n§7Clique para §cdesativar§7 o fly\n\n§7Você precisa ser "
 										+ Tag.LIGHT.getPrefix() + "§7 ou superior para usar o fly!")
@@ -99,12 +99,7 @@ public class PreferencesInventory {
 							return;
 						}
 
-						gamer.setFlying(!gamer.isFlying());
-
-						if (gamer.isFlying()) {
-							player.setAllowFlight(true);
-							player.setFlying(true);
-						}
+						player.setAllowFlight(!player.getAllowFlight());
 
 						new PreferencesInventory(player);
 					}

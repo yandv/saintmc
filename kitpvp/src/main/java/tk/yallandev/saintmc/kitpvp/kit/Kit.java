@@ -1,6 +1,7 @@
 package tk.yallandev.saintmc.kitpvp.kit;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -10,6 +11,10 @@ import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 
 import lombok.Getter;
+import tk.yallandev.saintmc.bukkit.api.cooldown.CooldownController;
+import tk.yallandev.saintmc.bukkit.api.cooldown.types.Cooldown;
+import tk.yallandev.saintmc.common.utils.DateUtils;
+import tk.yallandev.saintmc.common.utils.string.NameUtils;
 import tk.yallandev.saintmc.kitpvp.GameMain;
 
 @Getter
@@ -73,6 +78,34 @@ public abstract class Kit implements Listener {
 		return false;
 	}
 
+	public boolean isCooldown(Player player) {
+		if (CooldownController.getInstance().hasCooldown(player.getUniqueId(),
+				"Kit " + NameUtils.formatString(getName()))) {
+
+			Cooldown cooldown = CooldownController.getInstance().getCooldown(player.getUniqueId(),
+					"Kit " + NameUtils.formatString(getName()));
+
+			if (cooldown == null)
+				return false;
+
+			String message = "§cAguarde " + DateUtils.formatDifference((long) cooldown.getRemaining())
+					+ " para usar o Kit " + NameUtils.formatString(getName()) + " novamente!";
+
+			player.sendMessage(message);
+			return true;
+		}
+
+		return false;
+	}
+
+	public void addCooldown(Player player, long time) {
+		CooldownController.getInstance().addCooldown(player.getUniqueId(), "Kit " + NameUtils.formatString(getName()), time);
+	}
+
+	public void addCooldown(UUID uniqueId, long time) {
+		CooldownController.getInstance().addCooldown(uniqueId, "Kit " + NameUtils.formatString(getName()), time);
+	}
+	
 	/**
 	 * O inventário já vai estar pronto, só adicionar o kit no inv
 	 */

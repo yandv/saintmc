@@ -36,12 +36,18 @@ public class BukkitCommandSender implements CommandSender {
 
 	@Override
 	public void sendMessage(BaseComponent str) {
-		sender.sendMessage(str.toLegacyText());
+		if (sender instanceof Player)
+			((Player) sender).spigot().sendMessage(str);
+		else
+			sender.sendMessage(str.toLegacyText());
 	}
 
 	@Override
-	public void sendMessage(BaseComponent[] fromLegacyText) {
-
+	public void sendMessage(BaseComponent[] str) {
+		if (sender instanceof Player)
+			((Player) sender).spigot().sendMessage(str);
+		else
+			System.out.println("Mensagem nao suportada pelo console!");
 	}
 
 }

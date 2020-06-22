@@ -28,13 +28,20 @@ public class MessageUtils {
 		messageChannel.sendMessage(messageEmbed).content(content).complete();
 	}
 	
+	public static void sendMessage(long messageChannel, Message message) {
+		TextChannel textChannel = DiscordMain.getInstance().getJda().getTextChannelById(messageChannel);
+		
+		if (textChannel != null)
+			textChannel.sendMessage(message).complete();
+	}
+	
 	public static void sendMessage(String messageChannel, Message message, boolean staffChat) {
-		List<TextChannel> textChannel = DiscordMain.getInstance().getJda().getTextChannels();
+		List<TextChannel> textChannel = DiscordMain.getInstance().getJda().getTextChannelsByName(messageChannel, true);
 		
 		if (staffChat)
 			textChannel = textChannel.stream().filter(channel -> DiscordMain.getInstance().getGuildManager().getGuild(channel.getGuild().getIdLong()).isStaffChat()).collect(Collectors.toList());
 		
-		textChannel.forEach(channel -> channel.sendMessage(message).queue());
+		textChannel.forEach(channel -> channel.sendMessage(message).complete());
 	}
 	
 	public static void sendMessage(String messageChannel, MessageEmbed messageEmbed, boolean staffChat) {
@@ -43,7 +50,7 @@ public class MessageUtils {
 		if (staffChat)
 			textChannel = textChannel.stream().filter(channel -> DiscordMain.getInstance().getGuildManager().getGuild(channel.getGuild().getIdLong()).isStaffChat()).collect(Collectors.toList());
 		
-		textChannel.forEach(channel -> channel.sendMessage(messageEmbed).queue());
+		textChannel.forEach(channel -> channel.sendMessage(messageEmbed).complete());
 	}
 
 }

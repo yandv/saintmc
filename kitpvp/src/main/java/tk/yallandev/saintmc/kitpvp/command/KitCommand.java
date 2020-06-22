@@ -16,35 +16,40 @@ public class KitCommand implements CommandClass {
 		if (!cmdArgs.isPlayer())
 			return;
 		
-		Player p = cmdArgs.getPlayer();
-		String[] a = cmdArgs.getArgs();
-		Gamer gamer = GameMain.getInstance().getGamerManager().getGamer(p.getUniqueId());
+		Player player = cmdArgs.getPlayer();
+		String[] args = cmdArgs.getArgs();
+		Gamer gamer = GameMain.getInstance().getGamerManager().getGamer(player.getUniqueId());
 		
-		if (a.length == 0) {
-			p.sendMessage(" §e* §fUse §a/kit <kitName>§f para selecionar um kit.");
+		if (args.length == 0) {
+			player.sendMessage(" §e* §fUse §a/kit <kitName>§f para selecionar um kit.");
 			return;
 		}
 		
 		if (!gamer.getWarp().getWarpSettings().isKitEnabled()) {
-			p.sendMessage(" §c* §fEssa warp não permite kit!");
+			player.sendMessage(" §c* §fEssa warp não permite kit!");
 			return;
 		}
 		
-		Kit kit = GameMain.getInstance().getKitManager().getKit(a[0]);
+		Kit kit = GameMain.getInstance().getKitManager().getKit(args[0]);
 		
 		if (kit == null) {
-			p.sendMessage(" §c* §fO kit §a" + a[0] + "§f não existe!");
+			player.sendMessage(" §c* §fO kit §a" + args[0] + "§f não existe!");
 			return;
 		}
 		
 		if (gamer.hasKit()) {
-			p.sendMessage(" §c* §fVocê já está §ausando§f um kit!");
+			player.sendMessage(" §c* §fVocê já está §ausando§f um kit!");
+			return;
+		}
+		
+		if (!gamer.hasKitPermission(kit)) {
+			player.sendMessage(" §c* §fVocê não possui este kit!");
 			return;
 		}
 		
 		gamer.setKit(kit);
-		GameMain.getInstance().getKitManager().selectKit(p, kit);
-		p.sendMessage(" §a* §fVocê selecionou o kit §a" + kit.getKitName() + "§f!");
+		GameMain.getInstance().getKitManager().selectKit(player, kit);
+		player.sendMessage(" §a* §fVocê selecionou o kit §a" + kit.getKitName() + "§f!");
 	}
 
 }

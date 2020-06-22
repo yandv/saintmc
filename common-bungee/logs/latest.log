@@ -1,0 +1,3 @@
+[18:02:03] [main/INFO] [net.dv8tion.jda.api.JDA]: Login Successful!
+[18:02:05] [JDA MainWS-ReadThread/INFO] [net.dv8tion.jda.internal.requests.WebSocketClient]: Connected to WebSocket
+[18:02:05] [JDA MainWS-ReadThread/INFO] [net.dv8tion.jda.api.JDA]: Finished Loading!

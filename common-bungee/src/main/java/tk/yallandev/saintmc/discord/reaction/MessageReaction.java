@@ -23,7 +23,7 @@ public class MessageReaction {
 
     private Message message;
     private boolean removeReaction;
-    private HashMap<String, ReactionInterface> reactions;
+    private HashMap<String, ReactionHandler> reactions;
 
     @Getter
     private boolean removed = false;
@@ -43,7 +43,7 @@ public class MessageReaction {
         this(new MessageBuilder().setEmbed(embedBuilder.build()).build(), removeReaction);
     }
 
-    public MessageReaction addReaction(String reactionEmote, ReactionInterface reactionInterface) {
+    public MessageReaction addReaction(String reactionEmote, ReactionHandler reactionInterface) {
         if (removed) {
             throw new IllegalArgumentException("You cant make this when MessageReaction is closed");
         }
@@ -59,10 +59,10 @@ public class MessageReaction {
         }
 
         message.addReaction(reactionEmote).complete();
-        this.reactions.put(reactionEmote, new ReactionInterface() {
+        this.reactions.put(reactionEmote, new ReactionHandler() {
 
             @Override
-            public void onClick(User user, Guild guild, TextChannel textChannel, ReactionEmote reaction) {
+            public void onClick(User user, Guild guild, TextChannel textChannel, ReactionEmote reaction, ReactionAction action) {
 
             }
 
@@ -71,7 +71,7 @@ public class MessageReaction {
         return this;
     }
 
-    public MessageReaction addReaction(Emote emote, ReactionInterface reactionInterface) {
+    public MessageReaction addReaction(Emote emote, ReactionHandler reactionInterface) {
         if (removed) {
             throw new IllegalArgumentException("You cant make this when MessageReaction is closed");
         }
@@ -81,15 +81,15 @@ public class MessageReaction {
         return this;
     }
 
-    public MessageReaction addReaction(ReactionEnum reactionEnum, ReactionInterface reactionInterface) {
+    public MessageReaction addReaction(ReactionEnum reactionEnum, ReactionHandler reactionInterface) {
         return reactionEnum.isCustomEmote() ? addReaction(DiscordMain.getInstance().getJda().getEmoteById(reactionEnum.getEmoteId()), reactionInterface) : addReaction(reactionEnum.getEmote(), reactionInterface);
     }
 
     public MessageReaction addReaction(Emote emote) {
-        return addReaction(emote, new ReactionInterface() {
+        return addReaction(emote, new ReactionHandler() {
 
             @Override
-            public void onClick(User user, Guild guild, TextChannel textChannel, ReactionEmote reaction) {
+            public void onClick(User user, Guild guild, TextChannel textChannel, ReactionEmote reaction, ReactionAction action) {
             }
 
         });
@@ -107,7 +107,7 @@ public class MessageReaction {
         this.removeReaction = removeReaction;
     }
 
-    public HashMap<String, ReactionInterface> getReactions() {
+    public HashMap<String, ReactionHandler> getReactions() {
         return reactions;
     }
 

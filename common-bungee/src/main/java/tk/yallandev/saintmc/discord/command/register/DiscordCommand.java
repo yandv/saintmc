@@ -1,5 +1,6 @@
 package tk.yallandev.saintmc.discord.command.register;
 
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -8,16 +9,20 @@ import java.util.Map.Entry;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import com.google.common.base.Joiner;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Role;
-import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.entities.User;
+import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
 import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.common.account.DiscordType;
 import tk.yallandev.saintmc.common.account.Member;
@@ -140,6 +145,19 @@ public class DiscordCommand implements CommandClass {
 				return;
 			}
 
+			for (Map<Long, Invite> value : MAP.values()) {
+				if (value.containsKey(sender.getUser().getIdLong())) {
+
+					if (value.get(sender.getUser().getIdLong()).getExpireTime() > System.currentTimeMillis()) {
+						sender.sendMessage("Você ainda está em um processo de sincronização!");
+						return;
+					}
+
+					value.remove(sender.getUser().getIdLong());
+					break;
+				}
+			}
+
 			Member member = CommonGeneral.getInstance().getMemberManager().getMember(args[1]);
 
 			if (member == null) {
@@ -167,9 +185,7 @@ public class DiscordCommand implements CommandClass {
 			deny.setClickEvent(
 					new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/discord deny " + sender.getUser().getIdLong()));
 			deny.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
-					TextComponent.fromLegacyText("§cClique aqui para aceitar")));
-
-			System.out.println("Discord boost: " + sender.getAsMember().getTimeBoosted());
+					TextComponent.fromLegacyText("§cClique aqui para rejeitar")));
 
 			member.sendMessage(new BaseComponent[] {
 					new TextComponent(
@@ -179,93 +195,64 @@ public class DiscordCommand implements CommandClass {
 					accept, new TextComponent("§fpara aceitar e "), deny, new TextComponent("§fpara rejeitar!") });
 			MAP.computeIfAbsent(member.getUniqueId(), v -> new HashMap<>()).put(sender.getUser().getIdLong(),
 					new Invite(System.currentTimeMillis() + 120000l, sender.getAsMember().getTimeBoosted() != null,
-							sender.getUser().getName() + "#" + sender.getUser().getDiscriminator(), sender.getUser().getIdLong(), cmdArgs.getTextChannel().getIdLong()));
+							sender.getUser().getName() + "#" + sender.getUser().getDiscriminator(),
+							sender.getUser().getIdLong(), cmdArgs.getTextChannel().getIdLong()));
 			break;
 		}
 		}
 	}
 
-	public static void main(String[] args) {
-		new DiscordMain();
-		Guild guild = DiscordMain.getInstance().getJda().getGuildById(694671881961209857l);
-		User user = guild.getMemberById(477643841999077378l).getUser();
-		TextChannel textChannel = guild.getTextChannelById(695419371736006756l);
+	@Command(name = "glist", aliases = { "globallist" }, runAsync = true)
+	public void glistCommand(DiscordCommandArgs cmdArgs) {
+		EmbedBuilder builder = new EmbedBuilder().setTitle("Temos " + ProxyServer.getInstance().getPlayers().size())
+				.setColor(Color.YELLOW).appendDescription(Joiner.on(", ").join(ProxyServer.getInstance().getPlayers()
+						.stream().map(ProxiedPlayer::getName).collect(Collectors.toList())));
 
-		Member member = new Member("yandv", UUID.randomUUID()) {
+		cmdArgs.getTextChannel().sendMessage(builder.build()).complete();
+	}
+	
+	@Command(name = "broadcast", aliases = { "bc" }, runAsync = true)
+	public void broadcastCommand(DiscordCommandArgs cmdArgs) {
+		if (!cmdArgs.getSender().getAsMember().hasPermission(Permission.ADMINISTRATOR))
+			return;
+		
+		DiscordCommandSender sender = cmdArgs.getSender();
+		String[] args = cmdArgs.getArgs();
 
-			@Override
-			public void sendMessage(BaseComponent[] message) {
+		if (args.length == 0) {
+			sender.sendMessage("Use /broadcast <mensagem> para enviar broadcast no servidor!");
+			return;
+		}
+		
+		String msg = "";
 
-			}
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < args.length; i++)
+			sb.append(args[i]).append(" ");
+		msg = sb.toString();
+		
+		ProxyServer.getInstance().broadcast(TextComponent.fromLegacyText(" "));
+		ProxyServer.getInstance().broadcast(TextComponent.fromLegacyText("§c§lAVISO §f" + msg.replace("&", "§")));
+		ProxyServer.getInstance().broadcast(TextComponent.fromLegacyText(" "));
+		sender.sendMessage("");
+	}
 
-			@Override
-			public void sendMessage(BaseComponent message) {
+	@Command(name = "stafflist", runAsync = true)
+	public void stafflistCommand(DiscordCommandArgs cmdArgs) {
+		if (!cmdArgs.getSender().getAsMember().hasPermission(Permission.ADMINISTRATOR))
+			return;
+		
+		EmbedBuilder builder = new EmbedBuilder();
 
-			}
+		builder.setTitle("Jogadores da equipe onlines:");
+		builder.setColor(Color.YELLOW);
 
-			@Override
-			public void sendMessage(String message) {
-
-			}
-		};
-
-		DiscordCommandSender sender = new DiscordCommandSender(user, textChannel, guild);
-		net.dv8tion.jda.api.entities.Member discordMember = sender.getAsMember();
-		GuildConfiguration configuration = DiscordMain.getInstance().getGuildManager()
-				.getGuild(sender.getGuild().getIdLong());
-
-		List<String> addedList = new ArrayList<>();
-		List<String> removedList = new ArrayList<>();
-
-		for (Entry<String, Long> roleEntry : configuration.getRoleMap().entrySet()) {
-			try {
-				if (roleEntry.getKey().equalsIgnoreCase("membro")
-						&& roleEntry.getKey().toLowerCase().contains("programador")
-						&& discordMember.getRoles().stream().filter(role -> roleEntry.getValue() == role.getIdLong())
-								.collect(Collectors.toList()).size() > 0) {
-					removedList.add(Group.valueOf(roleEntry.getKey().toUpperCase()).name());
-					guild.removeRoleFromMember(discordMember, guild.getRoleById(roleEntry.getValue())).complete();
-				}
-			} catch (Exception ex) {
-				ex.printStackTrace();
-				CommonGeneral.getInstance()
-						.debug("The server hasn't found the Group " + roleEntry.getKey().toUpperCase());
-			}
+		for (Member member : CommonGeneral.getInstance().getMemberManager().getMembers().stream()
+				.filter(member -> member.hasGroupPermission(Group.BUILDER)).collect(Collectors.toList())) {
+			builder.addField(member.getPlayerName(), member.getServerGroup().name(), false);
 		}
 
-		if (member.getGroup().ordinal() >= Group.YOUTUBER.ordinal()) {
-			Role role = guild.getRoleById(configuration.getRoleMap().get(member.getGroup().name().toLowerCase()));
-
-			if (role == null) {
-				CommonGeneral.getInstance().debug(
-						"The server hasn't found the role " + member.getGroup().name().toLowerCase() + " in discord");
-			} else {
-				guild.addRoleToMember(discordMember, role).complete();
-
-				addedList.add(Group.valueOf(member.getGroup().name()).name());
-			}
-		}
-
-		for (Entry<RankType, Long> entryRank : member.getRanks().entrySet()) {
-			if (configuration.getRoleMap().containsKey(entryRank.getKey().name().toLowerCase())) {
-
-				Role role = guild.getRoleById(configuration.getRoleMap().get(entryRank.getKey().name().toLowerCase()));
-
-				if (role == null) {
-					CommonGeneral.getInstance().debug("The server hasn't found the role "
-							+ entryRank.getKey().name().toLowerCase() + " in discord");
-				} else {
-					guild.addRoleToMember(discordMember, role).complete();
-					addedList.add(Group.valueOf(entryRank.getKey().name()).name());
-				}
-
-			} else {
-				CommonGeneral.getInstance().debug(
-						"The server hasn't found the role " + entryRank.getKey().name().toLowerCase() + " in map");
-			}
-		}
-
-		sender.sendMessage("Sua conta foi sincronizada!");
+		cmdArgs.getTextChannel().sendMessage(builder.build()).complete();
 	}
 
 	@AllArgsConstructor
@@ -275,7 +262,7 @@ public class DiscordCommand implements CommandClass {
 		private long expireTime;
 		private boolean booster;
 		private String discordName;
-		
+
 		private long userId;
 		private long chatId;
 

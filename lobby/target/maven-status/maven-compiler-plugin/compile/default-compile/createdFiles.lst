@@ -6,12 +6,14 @@ tk\yallandev\saintmc\lobby\menu\profile\PreferencesInventory$3.class
 tk\yallandev\saintmc\lobby\menu\collectable\ParticleInventory$2.class
 tk\yallandev\saintmc\lobby\menu\server\HungergamesInventory$3.class
 tk\yallandev\saintmc\lobby\menu\server\ServerInventory$2.class
+tk\yallandev\saintmc\lobby\listener\HologramListener.class
 tk\yallandev\saintmc\lobby\listener\ScoreboardListener$3.class
 tk\yallandev\saintmc\lobby\listener\PlayerListener$1.class
 tk\yallandev\saintmc\lobby\listener\ScoreboardListener.class
 tk\yallandev\saintmc\lobby\menu\server\GladiatorInventory.class
 tk\yallandev\saintmc\lobby\menu\collectable\HeadInventory.class
 tk\yallandev\saintmc\lobby\menu\collectable\CollectableInventory$1.class
+tk\yallandev\saintmc\lobby\listener\PlayerListener$8.class
 tk\yallandev\saintmc\lobby\collectable\Collectables$Wing.class
 tk\yallandev\saintmc\lobby\LobbyMain$1.class
 tk\yallandev\saintmc\lobby\listener\PlayerListener$7.class
@@ -19,6 +21,7 @@ tk\yallandev\saintmc\lobby\listener\ScoreboardListener$4.class
 tk\yallandev\saintmc\lobby\command\SpawnCommand.class
 tk\yallandev\saintmc\lobby\menu\collectable\WingInventory$1.class
 tk\yallandev\saintmc\lobby\menu\server\LobbyInventory.class
+tk\yallandev\saintmc\lobby\listener\PlayerListener$6$1.class
 tk\yallandev\saintmc\lobby\menu\server\KitpvpInventory.class
 tk\yallandev\saintmc\lobby\collectable\Collectables$CollectableType.class
 tk\yallandev\saintmc\lobby\menu\collectable\CollectableInventory$4.class
@@ -38,7 +41,6 @@ tk\yallandev\saintmc\lobby\menu\server\LobbyInventory$1.class
 tk\yallandev\saintmc\lobby\menu\profile\PreferencesInventory$1.class
 tk\yallandev\saintmc\lobby\listener\PlayerListener$6.class
 tk\yallandev\saintmc\lobby\listener\ScoreboardListener$1.class
-tk\yallandev\saintmc\lobby\listener\CharacterListener$1.class
 tk\yallandev\saintmc\lobby\LobbyMain.class
 tk\yallandev\saintmc\lobby\menu\server\HungergamesInventory$2.class
 tk\yallandev\saintmc\lobby\menu\server\ServerInventory$1.class
@@ -52,11 +54,14 @@ tk\yallandev\saintmc\lobby\listener\ParticleListener.class
 tk\yallandev\saintmc\lobby\menu\server\HungergamesInventory.class
 tk\yallandev\saintmc\lobby\menu\profile\PreferencesInventory$2.class
 tk\yallandev\saintmc\lobby\listener\PlayerListener$3.class
+tk\yallandev\saintmc\lobby\listener\HologramListener$1.class
 tk\yallandev\saintmc\lobby\menu\collectable\CollectableInventory$6.class
 tk\yallandev\saintmc\lobby\listener\CharacterListener.class
 tk\yallandev\saintmc\lobby\menu\collectable\CollectableInventory.class
+tk\yallandev\saintmc\lobby\listener\PlayerListener$10.class
 tk\yallandev\saintmc\lobby\menu\collectable\ParticleInventory$1.class
 tk\yallandev\saintmc\lobby\listener\PlayerListener$2.class
+tk\yallandev\saintmc\lobby\listener\PlayerListener$9.class
 tk\yallandev\saintmc\lobby\menu\profile\ProfileInventory$2.class
 tk\yallandev\saintmc\lobby\listener\PlayerListener$5.class
 tk\yallandev\saintmc\lobby\listener\ScoreboardListener$2.class

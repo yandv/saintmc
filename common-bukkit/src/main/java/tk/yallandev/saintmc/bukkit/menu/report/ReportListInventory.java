@@ -90,13 +90,15 @@ public class ReportListInventory {
 		for (int i = pageStart; i < pageEnd; i++) {
 			Report report = reports.get(i);
 
-			menu.setItem(w,
-					new ItemBuilder().type(Material.SKULL_ITEM).durability(3)
-							.name((report.isOnline() ? "§a" : "§c") + report.getPlayerName())
-							.lore("\n§7Status: " + (report.isOnline() ? "§aOnline no momento" : "§cOffline no momento")
-									+ "\n\n§aClique para teletransportar")
-							.skin(report.getPlayerName()).build(),
-					new ReportClickHandler(report, menu));
+			if (report.isExpired())
+				report.expire();
+			else
+				menu.setItem(w, new ItemBuilder().type(Material.SKULL_ITEM).durability(3)
+						.name((report.isOnline() ? "§a" : "§c") + report.getPlayerName())
+						.lore("\n§7Status: " + (report.isOnline() ? "§aOnline no momento" : "§cOffline no momento")
+								+ "\n\n§aClique para teletransportar")
+						.skin(report.getPlayerName()).build(), new ReportClickHandler(report, menu));
+
 			w += 1;
 		}
 

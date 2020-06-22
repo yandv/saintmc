@@ -20,6 +20,7 @@ public class MainWarp extends Warp {
 	public MainWarp() {
 		super("Main", BukkitMain.getInstance().getLocationFromConfig("main"));
 		getWarpSettings().setSpawnProtection(true);
+		getWarpSettings().setWarpEnabled(false);
 	}
 
 	@EventHandler

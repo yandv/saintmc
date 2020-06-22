@@ -10,6 +10,7 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.player.PlayerAchievementAwardedEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
@@ -45,17 +46,15 @@ public class PlayerListener extends Listener {
 			event.disallow(Result.KICK_OTHER, ChatColor.RED + "Ocorreu um erro!");
 			return;
 		}
-
-		if (event.getResult() == Result.KICK_WHITELIST) {
-			if (getServerConfig().isWhitelist()) {
-				if (player.hasGroupPermission(Group.BUILDER)) {
-					event.allow();
-				} else {
-					event.disallow(Result.KICK_OTHER, "§cO servidor está disponivel somente para a equipe!");
-				}
-			} else
+		
+		if (getServerConfig().isWhitelist()) {
+			if (player.hasGroupPermission(Group.BUILDER) || getServerConfig().hasWhitelist(new Profile(player.getPlayerName(), player.getUniqueId()))) {
 				event.allow();
-		}
+			} else {
+				event.disallow(Result.KICK_OTHER, "§cO servidor está disponivel somente para a equipe!");
+			}
+		} else
+			event.allow();
 
 		if (getServerConfig().isBlackedlist(Profile.fromMember(player)))
 			event.disallow(Result.KICK_OTHER, "§cVocê está bloqueado de entrar nesse servidor! Expire em " + DateUtils
@@ -129,6 +128,11 @@ public class PlayerListener extends Listener {
 	public void onPlayerQuit(PlayerQuitEvent event) {
 		if (getMain().isRemovePlayerDat())
 			removePlayerFile(event.getPlayer().getUniqueId());
+	}
+	
+	@EventHandler
+	public void onPlayerQuit(PlayerAchievementAwardedEvent event) {
+		event.setCancelled(true);
 	}
 
 	private void removePlayerFile(UUID uuid) {

@@ -142,7 +142,7 @@ public class DiscordCommandFramework implements CommandFramework {
 				args[i - 1] = txt[i];
 			}
 
-			handleCommand(new DiscordCommandSender(event.getAuthor(), event.getTextChannel(), event.getGuild()), txt[0],
+			handleCommand(new DiscordCommandSender(event.getAuthor(), event.getMember(), event.getTextChannel(), event.getGuild()), txt[0],
 					args, event.getTextChannel(), event.getGuild());
 			super.onMessageReceived(event);
 		}

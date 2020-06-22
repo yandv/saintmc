@@ -2,6 +2,7 @@ package tk.yallandev.saintmc.kitpvp.kit.register;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map.Entry;
 
 import org.bukkit.Material;
@@ -12,8 +13,6 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
 
-import tk.yallandev.saintmc.bukkit.api.cooldown.CooldownController;
-import tk.yallandev.saintmc.bukkit.api.cooldown.types.Cooldown;
 import tk.yallandev.saintmc.kitpvp.kit.Kit;
 
 public class NinjaKit extends Kit {
@@ -68,25 +67,30 @@ public class NinjaKit extends Kit {
 			return;
 		}
 
-		if (CooldownController.getInstance().hasCooldown(p, getName())) {
-			p.sendMessage(CooldownController.getInstance().getCooldownFormated(p.getUniqueId(), getName()));
+		if (isCooldown(p)) {
 			return;
 		}
 
 		p.teleport(target.getLocation());
 		p.sendMessage("§a§l> §fTeletransportado até o §a" + target.getName() + "§f!");
-		CooldownController.getInstance().addCooldown(p, new Cooldown(getName(), 6l));
+		addCooldown(p, 6l);
 	}
 
 	@EventHandler
 	public void onDeath(PlayerDeathEvent event) {
 		Player p = event.getEntity();
 
-		if (p.getKiller() != null)
-			for (Entry<String, NinjaHit> entry : ninjaHits.entrySet())
+		if (p.getKiller() != null) {
+			Iterator<Entry<String, NinjaHit>> iterator = ninjaHits.entrySet().iterator();
+			
+			while (iterator.hasNext()) {
+				Entry<String, NinjaHit> entry = iterator.next();
+				
 				if (entry.getValue().target == p.getKiller())
-					ninjaHits.remove(entry.getKey());
-
+					iterator.remove();
+			}
+		}
+			
 		if (!ninjaHits.containsKey(p.getName()))
 			return;
 

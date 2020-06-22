@@ -78,9 +78,15 @@ public class KitManager {
 					kit.getKitName().equalsIgnoreCase("pvp")
 							? new ItemBuilder().unbreakable().type(Material.STONE_SWORD).build()
 							: new ItemBuilder().unbreakable().type(Material.WOOD_SWORD).build());
+		
+		player.getInventory().setItem(13, new ItemStack(Material.BROWN_MUSHROOM, 64));
+		player.getInventory().setItem(14, new ItemStack(Material.RED_MUSHROOM, 64));
+		player.getInventory().setItem(15, new ItemStack(Material.BOWL, 64));
 
 		for (int x = 0; x < player.getInventory().getSize(); x++)
 			player.getInventory().addItem(new ItemStack(Material.MUSHROOM_SOUP, 1));
+		
+		player.getInventory().setItem(8, new ItemStack(Material.COMPASS));
 
 		kit.applyKit(player);
 		Bukkit.getPluginManager().callEvent(new PlayerSelectKitEvent(player, kit));

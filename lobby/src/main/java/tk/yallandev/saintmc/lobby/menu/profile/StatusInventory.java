@@ -71,9 +71,10 @@ public class StatusInventory {
 //					.lore("", "§fPartidas: §7", "§fSKills: §70", "§fortes: §70", "").build());
 			break;
 		}
-		case GLADIATOR: {
+		case GLADIATOR:
 			break;
-		}
+		case LOBBY:
+			break;
 		}
 
 		status = null;

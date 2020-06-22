@@ -1,16 +1,22 @@
 package tk.yallandev.saintmc.kitpvp;
 
 import java.io.File;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import lombok.Getter;
+import tk.yallandev.saintmc.CommonConst;
 import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.bukkit.BukkitMain;
 import tk.yallandev.saintmc.bukkit.command.BukkitCommandFramework;
 import tk.yallandev.saintmc.common.command.CommandLoader;
+import tk.yallandev.saintmc.common.permission.Group;
 import tk.yallandev.saintmc.common.server.ServerType;
 import tk.yallandev.saintmc.common.utils.ClassGetter;
 import tk.yallandev.saintmc.kitpvp.hologram.RankingHologram;
@@ -29,6 +35,16 @@ public class GameMain extends JavaPlugin {
 	private WarpManager warpManager;
 
 	private RankingHologram rankingHologram;
+	
+	public static final Map<Group, List<String>> KITROTATE;
+	
+	static {
+		KITROTATE = new HashMap<>();
+		KITROTATE.put(Group.MEMBRO, Arrays.asList("pvp", "monk", "viper", "snail", "ninja"));
+		KITROTATE.put(Group.DONATOR, Arrays.asList("hulk", "anchor", "thor", "gladiator", "timelord"));
+		KITROTATE.put(Group.LIGHT, Arrays.asList("switcher", "boxer", "stomper", "endermage", "ultimato"));
+		KITROTATE.put(Group.BLIZZARD, Arrays.asList("viper", "grappler", "viking", "hotpotato", "timelord", "launcher"));
+	}
 
 	@Override
 	public void onLoad() {
@@ -48,7 +64,7 @@ public class GameMain extends JavaPlugin {
 		};
 
 		if (UpdatePlugin.update(new File(GameMain.class.getProtectionDomain().getCodeSource().getLocation().getPath()),
-				"SaintPvP", shutdown))
+				"SaintPvP", CommonConst.DOWNLOAD_KEY, shutdown))
 			return;
 
 		gamerManager = new GamerManager();

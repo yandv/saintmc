@@ -223,14 +223,14 @@ public class PluginInfo {
 		}
 		
 		return major > actualMajor || major <= actualMajor && minor > actualMinor
-				|| major <= actualMajor && minor > actualMinor && build > actualBuild;
+				|| major <= actualMajor && minor <= actualMinor && build > actualBuild;
 	}
 
-	public boolean update() {
+	public boolean update(String key) {
 		if (getPlugin() == null)
 			throw new IllegalStateException();
 
-		return getPlugin().update();
+		return getPlugin().update(key);
 	}
 
 	public Plugin getPlugin() {

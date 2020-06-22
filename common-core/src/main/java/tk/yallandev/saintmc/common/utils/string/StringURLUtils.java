@@ -9,7 +9,7 @@ public class StringURLUtils {
 
 	private static Pattern urlFinderPattern = Pattern
 			.compile("((https?):((//)|(\\\\))+[\\w\\d:#@%/;$()~_?\\+-=\\\\\\.&]*)", Pattern.CASE_INSENSITIVE);
-
+	
 	public static List<String> extractUrls(String text) {
 		List<String> containedUrls = new ArrayList<String>();
 		Matcher urlMatcher = urlFinderPattern.matcher(text);

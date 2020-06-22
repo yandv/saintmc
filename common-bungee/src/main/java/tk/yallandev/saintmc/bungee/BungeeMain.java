@@ -63,7 +63,7 @@ public class BungeeMain extends Plugin {
 	private DiscordMain discord;
 
 	private PubSubListener pubSubListener;
-	
+
 	@Override
 	public void onLoad() {
 		general = new CommonGeneral(ProxyServer.getInstance().getLogger());
@@ -73,7 +73,7 @@ public class BungeeMain extends Plugin {
 	@SuppressWarnings("deprecation")
 	@Override
 	public void onEnable() {
-		
+
 		UpdatePlugin.Shutdown shutdown = new UpdatePlugin.Shutdown() {
 
 			@Override
@@ -85,13 +85,13 @@ public class BungeeMain extends Plugin {
 
 		if (UpdatePlugin.update(
 				new File(BungeeMain.class.getProtectionDomain().getCodeSource().getLocation().getPath()),
-				"BungeeCommon", shutdown))
+				"BungeeCommon", CommonConst.DOWNLOAD_KEY, shutdown))
 			return;
 
 		/**
 		 * Initializing Database
 		 */
-		
+
 		try {
 
 			/*
@@ -99,7 +99,7 @@ public class BungeeMain extends Plugin {
 			 */
 
 			MongoConnection mongo = new MongoConnection(CommonConst.MONGO_URL);
-			RedisDatabase redis = new RedisDatabase("127.0.0.1", "", 6379);
+			RedisDatabase redis = new RedisDatabase(CommonConst.REDIS_HOSTNAME, CommonConst.REDIS_PASSWORD, 6379);
 
 			mongo.connect();
 			redis.connect();
@@ -141,7 +141,7 @@ public class BungeeMain extends Plugin {
 		punishManager = new BungeePunishManager();
 		serverManager = new BungeeServerManager();
 		storeManager = new StoreManager();
-		
+
 		packetController = new PacketController();
 		packetController.registerHandler(new BungeePacketHandler());
 

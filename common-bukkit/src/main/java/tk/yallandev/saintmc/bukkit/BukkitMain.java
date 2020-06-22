@@ -41,7 +41,6 @@ import lombok.Setter;
 import tk.yallandev.hologramapi.controller.HologramController;
 import tk.yallandev.saintmc.CommonConst;
 import tk.yallandev.saintmc.CommonGeneral;
-import tk.yallandev.saintmc.bukkit.anticheat.AnticheatController;
 import tk.yallandev.saintmc.bukkit.api.character.CharacterListener;
 import tk.yallandev.saintmc.bukkit.api.cooldown.CooldownController;
 import tk.yallandev.saintmc.bukkit.api.item.ActionItemListener;
@@ -54,6 +53,7 @@ import tk.yallandev.saintmc.bukkit.api.vanish.AdminMode;
 import tk.yallandev.saintmc.bukkit.api.worldedit.WorldeditController;
 import tk.yallandev.saintmc.bukkit.command.BukkitCommandFramework;
 import tk.yallandev.saintmc.bukkit.controller.SkinController;
+import tk.yallandev.saintmc.bukkit.exploit.Exploit;
 import tk.yallandev.saintmc.bukkit.networking.packet.BukkitPacketController;
 import tk.yallandev.saintmc.bukkit.networking.redis.BukkitPubSubHandler;
 import tk.yallandev.saintmc.bukkit.permission.PermissionManager;
@@ -74,12 +74,17 @@ import tk.yallandev.saintmc.common.data.StatusDataImpl;
 import tk.yallandev.saintmc.common.permission.Group;
 import tk.yallandev.saintmc.common.report.Report;
 import tk.yallandev.saintmc.common.server.ServerManager;
+import tk.yallandev.saintmc.common.server.ServerType;
+import tk.yallandev.saintmc.common.server.loadbalancer.server.MinigameState;
 import tk.yallandev.saintmc.common.utils.ClassGetter;
 import tk.yallandev.saintmc.update.UpdatePlugin;
 
 @Getter
 @SuppressWarnings("deprecation")
 public class BukkitMain extends JavaPlugin {
+	
+	public static final boolean BUNGEECORD = true;
+	public static final boolean IP_WHITELIST = true;
 
 	@Getter
 	private static BukkitMain instance;
@@ -89,7 +94,6 @@ public class BukkitMain extends JavaPlugin {
 
 	private SkinController skinManager;
 	private WorldeditController worldeditController;
-	private AnticheatController anticheatController;
 
 	private PermissionManager permissionManager;
 	private ServerManager serverManager;
@@ -130,13 +134,13 @@ public class BukkitMain extends JavaPlugin {
 
 		if (UpdatePlugin.update(
 				new File(BukkitMain.class.getProtectionDomain().getCodeSource().getLocation().getPath()),
-				"BukkitCommon", shutdown))
+				"BukkitCommon", CommonConst.DOWNLOAD_KEY, shutdown))
 			return;
-
+		
 		try {
 
 			MongoConnection mongo = new MongoConnection(CommonConst.MONGO_URL);
-			RedisDatabase redis = new RedisDatabase("127.0.0.1", "", 6379);
+			RedisDatabase redis = new RedisDatabase(CommonConst.REDIS_HOSTNAME, CommonConst.REDIS_PASSWORD, 6379);
 
 			mongo.connect();
 			redis.connect();
@@ -173,6 +177,9 @@ public class BukkitMain extends JavaPlugin {
 				+ general.getServerType().toString() + ")");
 
 		general.getServerData().startServer(Bukkit.getMaxPlayers());
+		
+		if (general.getServerType() == ServerType.HUNGERGAMES)
+			general.getServerData().updateStatus(MinigameState.NONE, 300);
 
 		general.debug("The server has been sent the start message to redis!");
 
@@ -190,9 +197,6 @@ public class BukkitMain extends JavaPlugin {
 
 		skinManager = new SkinController();
 		worldeditController = new WorldeditController();
-
-		anticheatController = new AnticheatController();
-		anticheatController.registerModules();
 
 		hologramController = new HologramController(getInstance());
 		packetController = new BukkitPacketController();
@@ -240,6 +244,7 @@ public class BukkitMain extends JavaPlugin {
 		 */
 
 		registerListener();
+		registerExploit();
 
 		/*
 		 * Initializing Command
@@ -249,8 +254,8 @@ public class BukkitMain extends JavaPlugin {
 
 			@Override
 			public void run() {
-				unregisterCommands("icanhasbukkit", "ver", "?", "about", "help", "ban", "ban-ip", "banlist", "clear",
-						"deop", "stop", "op", "difficulty", "effect", "enchant", "give", "kick", "list", "me", "say",
+				unregisterCommands("icanhasbukkit", "?", "about", "help", "ban", "ban-ip", "banlist", "clear", "deop",
+						"stop", "op", "difficulty", "effect", "enchant", "give", "kick", "list", "me", "say",
 						"scoreboard", "seed", "spawnpoint", "spreadplayers", "summon", "tell", "tellraw", "testfor",
 						"testforblocks", "tp", "weather", "xp", "reload", "rl", "worldborder", "achievement",
 						"blockdata", "clone", "debug", "defaultgamemode", "entitydata", "execute", "fill", "gamemode",
@@ -258,8 +263,10 @@ public class BukkitMain extends JavaPlugin {
 						"trigger", "viaver", "protocolsupport", "ps", "holograms", "hd", "holo", "hologram", "restart",
 						"stop", "filter", "packetlog", "pl", "plugins", "timings", "whitelist");
 
-				new CommandLoader(new BukkitCommandFramework(getInstance())).loadCommandsFromPackage(getFile(),
+				new CommandLoader(BukkitCommandFramework.INSTANCE).loadCommandsFromPackage(getFile(),
 						"tk.yallandev.saintmc.bukkit.command.register");
+
+				Bukkit.setWhitelist(false);
 			}
 		}.runTaskLater(this, 3l);
 
@@ -274,6 +281,21 @@ public class BukkitMain extends JavaPlugin {
 		general.getPlayerData().closeConnection();
 
 		permissionManager.onDisable();
+	}
+
+	private void registerExploit() {
+		for (Class<?> classes : ClassGetter.getClassesForPackage(getClass(),
+				"tk.yallandev.saintmc.bukkit.exploit.register")) {
+			if (Exploit.class.isAssignableFrom(classes)) {
+				try {
+					((Exploit) classes.newInstance()).register();
+				} catch (Exception e) {
+					e.printStackTrace();
+					CommonGeneral.getInstance().getLogger()
+							.warning("Couldn't load " + classes.getSimpleName() + " listener!");
+				}
+			}
+		}
 	}
 
 	private void registerListener() {
@@ -293,7 +315,7 @@ public class BukkitMain extends JavaPlugin {
 				}
 			}
 		}
-
+		
 		pm.registerEvents(new ActionItemListener(), getInstance());
 		pm.registerEvents(new CharacterListener(), getInstance());
 		pm.registerEvents(new MenuListener(), getInstance());

@@ -73,6 +73,11 @@ public class ShadowChallenge implements Challenge {
 		this.challengeType = ChallengeType.SHADOW_CUSTOM;
 	}
 
+	@Override
+	public boolean isInChallenge(Player player) {
+		return this.player == player || this.target == player;
+	}
+
 	public void createInventory(Player player) {
 		player.getInventory().clear();
 		player.getInventory().setArmorContents(new ItemStack[4]);

@@ -5,6 +5,8 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 
@@ -71,6 +73,21 @@ public class SpawnWarp extends Warp {
 			return;
 
 		handleInventory(player);
+	}
+	
+	@EventHandler
+	public void onEntityDamage(EntityDamageEvent event) {
+		if(!(event.getEntity() instanceof Player))
+			return;
+		
+		if (event.getCause() != DamageCause.VOID)
+			return;
+		
+		Player player = (Player) event.getEntity();
+		Gamer gamer = GameMain.getInstance().getGamerManager().getGamer(player.getUniqueId());
+
+		if (gamer.getWarp() == this)
+			event.setDamage(Integer.MAX_VALUE);
 	}
 
 	@EventHandler

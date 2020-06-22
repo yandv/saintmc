@@ -22,11 +22,10 @@ import tk.yallandev.saintmc.kitpvp.kit.Kit;
 public class StomperKit extends Kit {
 
 	public StomperKit() {
-		super("Stomper", "Pise em cima de seus inimigos", Material.IRON_BOOTS,
-				new ArrayList<>());
+		super("Stomper", "Pise em cima de seus inimigos", Material.IRON_BOOTS, new ArrayList<>());
 	}
 
-	@EventHandler
+	@EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
 	public void onStomper(EntityDamageEvent event) {
 		Entity entityStomper = event.getEntity();
 
@@ -49,10 +48,13 @@ public class StomperKit extends Kit {
 			if (stompado.getUniqueId() == stomper.getUniqueId())
 				continue;
 
+			if (stompado.isDead())
+				continue;
+
 			if (GameMain.getInstance().getGamerManager().getGamer(stompado.getUniqueId()).isSpawnProtection())
 				continue;
 
-			if (stompado.getLocation().distance(stomper.getLocation()) > 4)
+			if (stompado.getLocation().distance(stomper.getLocation()) > 3)
 				continue;
 
 			double dmg2 = dmg;
@@ -60,14 +62,19 @@ public class StomperKit extends Kit {
 			if (stompado.isSneaking() && dmg2 > 8)
 				dmg2 = 8;
 
-			stompado.damage(dmg2, stomper);
+			if (stompado.getHealth() - dmg2 <= 0)
+				stompado.damage(Integer.MAX_VALUE, stomper);
+			else {
+				stompado.damage(dmg2, stomper);
+				stompado.setHealth(stompado.getHealth() - dmg2);
+			}
 		}
 
-		for (int x = (int) -4; x <= 4; x++) {
-			for (int z = (int) -4; z <= 4; z++) {
+		for (int x = (int) -3; x <= 3; x++) {
+			for (int z = (int) -3; z <= 3; z++) {
 				Location effect = stomper.getLocation().clone().add(x, 0, z);
 
-				if (effect.distance(stomper.getLocation()) > 4)
+				if (effect.distance(stomper.getLocation()) > 3)
 					continue;
 
 				PacketPlayOutWorldParticles packet = new PacketPlayOutWorldParticles(EnumParticle.SPELL_WITCH, true,

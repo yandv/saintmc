@@ -1,0 +1,6 @@
+name: Anticheat
+main: tk.yallandev.anticheat.AnticheatMain
+version: 1.0
+author: yandv
+softdepend: [BukkitCommon]
+load: POSTWORLD

@@ -25,7 +25,7 @@ public interface Server {
 	 * @return
 	 */
 	
-	void addWhitelist(Profile profile);
+	boolean addWhitelist(Profile profile);
 	
 	/**
 	 * 
@@ -34,7 +34,9 @@ public interface Server {
 	 * @return
 	 */
 	
-	void removeWhitelist(Profile profile);
+	boolean removeWhitelist(Profile profile);
+	
+	boolean hasWhitelist(Profile profile);
 	
 	/**
 	 * 
@@ -129,6 +131,24 @@ public interface Server {
 	 */
 	
 	ChatState getChatState();
+	
+	/**
+	 * 
+	 * Return the actual restoreMode
+	 * 
+	 * @return
+	 */
+	
+	boolean isRestoreMode();
+	
+	/**
+	 * 
+	 * Change the restoreMode state
+	 * 
+	 * @return
+	 */
+	
+	void setRestoreMode(boolean restoreMode);
 	
 	NPCPool getNpcPool();
 

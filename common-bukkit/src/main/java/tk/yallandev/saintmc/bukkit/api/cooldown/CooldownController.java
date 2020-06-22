@@ -261,9 +261,6 @@ public class CooldownController implements Listener {
 
 						it.remove();
 						
-						System.out.println(cooldown instanceof ItemCooldown);
-						System.out.println(!(cooldown instanceof ItemCooldown));
-
 						if (!(cooldown instanceof ItemCooldown))
 							player.playSound(player.getLocation(), Sound.LEVEL_UP, 1F, 1F);
 

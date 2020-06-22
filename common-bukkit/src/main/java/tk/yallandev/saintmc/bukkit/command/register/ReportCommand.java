@@ -13,6 +13,7 @@ import tk.yallandev.saintmc.common.account.MemberModel;
 import tk.yallandev.saintmc.common.account.MemberVoid;
 import tk.yallandev.saintmc.common.command.CommandClass;
 import tk.yallandev.saintmc.common.command.CommandFramework.Command;
+import tk.yallandev.saintmc.common.permission.Group;
 import tk.yallandev.saintmc.common.report.Report;
 
 public class ReportCommand implements CommandClass {
@@ -24,6 +25,11 @@ public class ReportCommand implements CommandClass {
 		
 		Player sender = cmdArgs.getPlayer();
 		String[] args = cmdArgs.getArgs();
+		
+		Member member = CommonGeneral.getInstance().getMemberManager().getMember(sender.getUniqueId());
+		
+		if (!member.hasGroupPermission(Group.TRIAL))
+			return;
 		
 		if (args.length == 0) {
 			new ReportListInventory(cmdArgs.getPlayer(), 1);

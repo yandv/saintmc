@@ -17,12 +17,15 @@ C:\Users\Allan\git\saintmc\kitpvp\src\main\java\tk\yallandev\saintmc\kitpvp\even
 C:\Users\Allan\git\saintmc\kitpvp\src\main\java\tk\yallandev\saintmc\kitpvp\warp\types\ShadowWarp.java
 C:\Users\Allan\git\saintmc\kitpvp\src\main\java\tk\yallandev\saintmc\kitpvp\manager\WarpManager.java
 C:\Users\Allan\git\saintmc\kitpvp\src\main\java\tk\yallandev\saintmc\kitpvp\warp\challenge\ArmorType.java
+C:\Users\Allan\git\saintmc\kitpvp\src\main\java\tk\yallandev\saintmc\kitpvp\event\party\PartyEndEvent.java
 C:\Users\Allan\git\saintmc\kitpvp\src\main\java\tk\yallandev\saintmc\kitpvp\kit\register\AnchorKit.java
+C:\Users\Allan\git\saintmc\kitpvp\src\main\java\tk\yallandev\saintmc\kitpvp\warp\types\party\Party.java
 C:\Users\Allan\git\saintmc\kitpvp\src\main\java\tk\yallandev\saintmc\kitpvp\warp\types\FpsWarp.java
 C:\Users\Allan\git\saintmc\kitpvp\src\main\java\tk\yallandev\saintmc\kitpvp\utils\RewardCalculator.java
 C:\Users\Allan\git\saintmc\kitpvp\src\main\java\tk\yallandev\saintmc\kitpvp\warp\Warp.java
 C:\Users\Allan\git\saintmc\kitpvp\src\main\java\tk\yallandev\saintmc\kitpvp\manager\KitManager.java
 C:\Users\Allan\git\saintmc\kitpvp\src\main\java\tk\yallandev\saintmc\kitpvp\listener\ScoreboardListener.java
+C:\Users\Allan\git\saintmc\kitpvp\src\main\java\tk\yallandev\saintmc\kitpvp\warp\types\party\PartyType.java
 C:\Users\Allan\git\saintmc\kitpvp\src\main\java\tk\yallandev\saintmc\kitpvp\event\warp\PlayerLostProtectionEvent.java
 C:\Users\Allan\git\saintmc\kitpvp\src\main\java\tk\yallandev\saintmc\kitpvp\manager\GamerManager.java
 C:\Users\Allan\git\saintmc\kitpvp\src\main\java\tk\yallandev\saintmc\kitpvp\kit\register\KangarooKit.java
@@ -34,9 +37,11 @@ C:\Users\Allan\git\saintmc\kitpvp\src\main\java\tk\yallandev\saintmc\kitpvp\even
 C:\Users\Allan\git\saintmc\kitpvp\src\main\java\tk\yallandev\saintmc\kitpvp\kit\register\BoxerKit.java
 C:\Users\Allan\git\saintmc\kitpvp\src\main\java\tk\yallandev\saintmc\kitpvp\menu\KitInventory.java
 C:\Users\Allan\git\saintmc\kitpvp\src\main\java\tk\yallandev\saintmc\kitpvp\event\warp\PlayerWarpRespawnEvent.java
+C:\Users\Allan\git\saintmc\kitpvp\src\main\java\tk\yallandev\saintmc\kitpvp\warp\types\party\register\RdmParty.java
 C:\Users\Allan\git\saintmc\kitpvp\src\main\java\tk\yallandev\saintmc\kitpvp\kit\register\TimelordKit.java
 C:\Users\Allan\git\saintmc\kitpvp\src\main\java\tk\yallandev\saintmc\kitpvp\GameMain.java
 C:\Users\Allan\git\saintmc\kitpvp\src\main\java\tk\yallandev\saintmc\kitpvp\hologram\RankingHologram.java
+C:\Users\Allan\git\saintmc\kitpvp\src\main\java\tk\yallandev\saintmc\kitpvp\event\party\PartyEvent.java
 C:\Users\Allan\git\saintmc\kitpvp\src\main\java\tk\yallandev\saintmc\kitpvp\command\PartyCommand.java
 C:\Users\Allan\git\saintmc\kitpvp\src\main\java\tk\yallandev\saintmc\kitpvp\command\WarpCommand.java
 C:\Users\Allan\git\saintmc\kitpvp\src\main\java\tk\yallandev\saintmc\kitpvp\warp\types\SpawnWarp.java

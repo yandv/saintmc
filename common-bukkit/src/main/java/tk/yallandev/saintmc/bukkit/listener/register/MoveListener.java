@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -37,7 +38,10 @@ public class MoveListener extends Listener {
 						Bukkit.getPluginManager().callEvent(realMoveEvent);
 
 						if (realMoveEvent.isCancelled())
-							player.teleport(location);
+							if (location.clone().subtract(0, 0.15, 0).getBlock().getType() == Material.AIR)
+								player.teleport(location.subtract(0, 0.15, 0));
+							else
+								player.teleport(location);
 					}
 				}
 

@@ -8,7 +8,7 @@ import lombok.Getter;
 public enum StatusType {
 
 	PVP("pvp", Type.NORMAL), SHADOW("shadow", Type.NORMAL), GLADIATOR("gladiator", Type.NORMAL),
-	HG("hungergames", Type.GAME);
+	HG("hungergames", Type.GAME), LOBBY("lobby-combat", Type.NORMAL);
 
 	private String mongoCollection;
 	private Type type;

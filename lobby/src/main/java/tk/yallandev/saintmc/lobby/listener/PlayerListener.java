@@ -28,6 +28,7 @@ import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.weather.WeatherChangeEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.util.Vector;
 
 import lombok.Getter;
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -45,8 +46,12 @@ import tk.yallandev.saintmc.bukkit.api.item.ItemBuilder;
 import tk.yallandev.saintmc.bukkit.api.tablist.Tablist;
 import tk.yallandev.saintmc.bukkit.event.account.PlayerChangeGroupEvent;
 import tk.yallandev.saintmc.bukkit.event.account.PlayerChangeLeagueEvent;
+import tk.yallandev.saintmc.bukkit.event.login.PlayerChangeLoginStatusEvent;
+import tk.yallandev.saintmc.bukkit.event.update.UpdateEvent;
 import tk.yallandev.saintmc.common.account.League;
 import tk.yallandev.saintmc.common.account.Member;
+import tk.yallandev.saintmc.common.account.configuration.LoginConfiguration.AccountType;
+import tk.yallandev.saintmc.common.account.status.StatusType;
 import tk.yallandev.saintmc.common.permission.Group;
 import tk.yallandev.saintmc.common.tag.Tag;
 import tk.yallandev.saintmc.lobby.LobbyMain;
@@ -125,7 +130,7 @@ public class PlayerListener implements Listener {
 					}
 
 				});
-	
+
 		playerListener = this;
 	}
 
@@ -136,38 +141,29 @@ public class PlayerListener implements Listener {
 		BukkitMember member = (BukkitMember) CommonGeneral.getInstance().getMemberManager()
 				.getMember(event.getPlayer().getUniqueId());
 
-//		if (member.getSessionTime() <= 5000) {
-//			for (int x = 0; x < 100; x++)
-//				member.sendMessage(" ");
-//
-//			member.sendMessage(StringCenter.centered("§a§l> §fSeja bem-vindo ao §aLobby§f! §a§l<"));
-//			member.sendMessage(" ");
-//			member.sendMessage("§e§l> §fEstamos em fase de §3desenvolvimento§f, qualquer bug report!");
-//
-//			TextComponent text = new TextComponent("§e§l> §fEntre em nosso ");
-//			text.addExtra(createClickable("§bdiscord", CommonConst.DISCORD, "§bClique para ir ao discord!"));
-//			text.addExtra("§f para ficar por dentro das atualizações§7!");
-//
-//			member.sendMessage(text);
-//			member.sendMessage(" ");
-//
-//			text = new TextComponent("§c§l> §fPara obter maiores informações sobre o servidor acesse nosso ");
-//			text.addExtra(createClickable("§esite", CommonConst.WEBSITE, "§eClique para ir ao site!"));
-//			text.addExtra("§7!");
-//
-//			member.sendMessage(text);
-//
-//			member.sendMessage(" ");
-//		}
-
 		if (!member.hasGroupPermission(Group.LIGHT)) {
 			for (Gamer gamer : LobbyMain.getInstance().getPlayerManager().getGamers())
 				if (!gamer.isSeeing())
 					gamer.getPlayer().hidePlayer(player);
 		}
 
+		player.teleport(
+				member.getLoginConfiguration().isLogged() ? BukkitMain.getInstance().getLocationFromConfig("spawn")
+						: BukkitMain.getInstance().getLocationFromConfig("login"));
+
 		tablist.addViewer(player);
 		addItem(player, member);
+
+		player.setFlying(false);
+		player.setAllowFlight(false);
+	}
+	
+	@EventHandler
+	public void onPlayerChangeLoginStatus(PlayerChangeLoginStatusEvent event) {
+		if (event.isLogged() || event.getMember().getLoginConfiguration().getAccountType() == AccountType.ORIGINAL) {
+			event.getPlayer().teleport(BukkitMain.getInstance().getLocationFromConfig("spawn"));
+			addItem(event.getPlayer(), event.getMember());
+		}
 	}
 
 	@EventHandler(priority = EventPriority.LOWEST)
@@ -184,7 +180,7 @@ public class PlayerListener implements Listener {
 	public void onEntitySpawn(CreatureSpawnEvent e) {
 		if (e.getSpawnReason() == SpawnReason.CUSTOM)
 			return;
-		
+
 		if (e.getEntity() instanceof Player)
 			return;
 
@@ -265,15 +261,65 @@ public class PlayerListener implements Listener {
 	public void onPlayerDeath(PlayerDeathEvent event) {
 		Player player = event.getEntity();
 
+		boolean killer = false;
+
 		if (LobbyMain.getInstance().getPlayerManager().getPlayersInCombat().contains(player)) {
 			LobbyMain.getInstance().getPlayerManager().getPlayersInCombat().remove(player);
 
 			if (player.getKiller() != null) {
+				killer = true;
 				player.getKiller().getInventory().addItem(new ItemStack(Material.RED_MUSHROOM, 16));
 				player.getKiller().getInventory().addItem(new ItemStack(Material.BROWN_MUSHROOM, 16));
 				player.getKiller().getInventory().addItem(new ItemStack(Material.BOWL, 16));
+
+				new BukkitRunnable() {
+
+					@Override
+					public void run() {
+						CommonGeneral.getInstance().getStatusManager()
+								.loadStatus(player.getKiller().getUniqueId(), StatusType.LOBBY).addKill();
+					}
+				}.runTaskAsynchronously(LobbyMain.getInstance());
 			}
 		}
+
+		player.setHealth(player.getMaxHealth());
+		player.setFoodLevel(20);
+		player.setSaturation(5);
+		player.setFireTicks(0);
+		player.setFallDistance(0);
+		player.setLevel(0);
+		player.setExp(0);
+		player.setVelocity(new Vector(0, 0, 0));
+		player.teleport(BukkitMain.getInstance().getLocationFromConfig("combat"));
+
+		if (killer)
+			new BukkitRunnable() {
+
+				@Override
+				public void run() {
+					CommonGeneral.getInstance().getStatusManager().loadStatus(player.getUniqueId(), StatusType.LOBBY)
+							.addDeath();
+
+					/**
+					 * Wait the next tick to
+					 */
+
+					new BukkitRunnable() {
+
+						@Override
+						public void run() {
+							player.sendMessage("§cVocê morreu!");
+							player.sendMessage("§eVocê está com §b"
+									+ CommonGeneral.getInstance().getStatusManager()
+											.loadStatus(player.getUniqueId(), StatusType.LOBBY).getKills()
+									+ " kills§e!");
+							addItem(player,
+									CommonGeneral.getInstance().getMemberManager().getMember(player.getUniqueId()));
+						}
+					}.runTask(LobbyMain.getInstance());
+				}
+			}.runTaskAsynchronously(LobbyMain.getInstance());
 
 		event.getDrops().clear();
 		event.setDroppedExp(0);
@@ -299,16 +345,25 @@ public class PlayerListener implements Listener {
 			if (!LobbyMain.getInstance().getPlayerManager().getPlayersInCombat().contains(player))
 				if (player.getLocation().getX() > -5 && player.getLocation().getY() < 118
 						&& player.getLocation().getZ() < -40) {
-					LobbyMain.getInstance().getPlayerManager().getPlayersInCombat().add(player);
-
 					player.getInventory().clear();
 					player.getInventory().setItem(0, new ItemStack(Material.STONE_SWORD));
 
 					for (int x = 0; x < 15; x++)
 						player.getInventory().addItem(new ItemStack(Material.MUSHROOM_SOUP));
-					
+
 					player.updateInventory();
 					ActionBarAPI.send(player, "§cVocê entrou na área de combate!");
+
+					new BukkitRunnable() {
+
+						@Override
+						public void run() {
+							CommonGeneral.getInstance().getStatusManager().loadStatus(player.getUniqueId(),
+									StatusType.LOBBY);
+						}
+					}.runTaskAsynchronously(LobbyMain.getInstance());
+
+					LobbyMain.getInstance().getPlayerManager().getPlayersInCombat().add(player);
 				}
 		}
 
@@ -407,6 +462,17 @@ public class PlayerListener implements Listener {
 		}.runTaskLater(LobbyMain.getInstance(), 10l);
 	}
 
+	@EventHandler
+	public void onUpdate(UpdateEvent event) {
+		for (Player player : LobbyMain.getInstance().getPlayerManager().getPlayersInCombat()) {
+			ActionBarAPI.send(player,
+					"§eVocê tem §b"
+							+ CommonGeneral.getInstance().getStatusManager()
+									.loadStatus(player.getUniqueId(), StatusType.LOBBY).getKills()
+							+ " kills§e na arena!");
+		}
+	}
+
 	public void addItem(Player player, Member member) {
 		player.getInventory().clear();
 		player.getInventory().setArmorContents(new ItemStack[4]);
@@ -414,9 +480,9 @@ public class PlayerListener implements Listener {
 		player.setHealth(20D);
 		player.setFoodLevel(20);
 		player.setLevel(member.getXp());
-		
-		float percentage = ((member.getXp() * 100) / member.getLeague().getMaxXp())/(float)100;
-		
+
+		float percentage = ((member.getXp() * 100) / member.getLeague().getMaxXp()) / (float) 100;
+
 		if (member.getLeague() == League.CHALLENGER)
 			player.setExp(1f);
 		else

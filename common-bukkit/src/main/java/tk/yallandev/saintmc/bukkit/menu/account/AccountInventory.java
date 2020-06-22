@@ -29,14 +29,17 @@ public class AccountInventory {
 		MenuInventory menu = new MenuInventory("§7Conta de " + player.getPlayerName(), 5);
 		boolean isStaff = Member.hasGroupPermission(sender.getUniqueId(), Group.DEV);
 
-		String lore = isStaff ? "\n§7Fake: §f" + player.getFakeName() + "\n§7Discord: §f" + player.getDiscordName()
+		String lore = isStaff
+				? "\n§7Fake: §f" + player.getFakeName() + "\n§7Discord: §f" + player.getDiscordName() + "\n§7Conta: §f"
+						+ player.getLoginConfiguration().getAccountType().name()
 				: "\n§7";
 
-		menu.setItem(13, new ItemBuilder().type(Material.SKULL_ITEM).durability(3)
-				.name((player.getGroup() == Group.MEMBRO ? "§7" + player.getPlayerName()
-						: Tag.getByName(player.getGroup().toString()).getPrefix() + " " + player.getPlayerName()) + " "
-						+ "§7[" + player.getLeague().getColor() + player.getLeague().getSymbol() + "§7]")
-				.lore(lore).skin(player.getPlayerName()).build());
+		menu.setItem(13,
+				new ItemBuilder().type(Material.SKULL_ITEM).durability(3)
+						.name((player.getGroup() == Group.MEMBRO ? "§7" + player.getPlayerName()
+								: Tag.getByName(player.getGroup().name()).getPrefix() + " " + player.getPlayerName())
+								+ " " + "§7[" + player.getLeague().getColor() + player.getLeague().getSymbol() + "§7]")
+						.lore(lore).skin(player.getPlayerName()).build());
 
 		DateFormat df = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 

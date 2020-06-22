@@ -1,6 +1,7 @@
 package tk.yallandev.saintmc.common.utils.mojang;
 
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.http.conn.ConnectionPoolTimeoutException;
@@ -30,7 +31,7 @@ public class MojangFetcher {
 					}
 				});
 
-		cacheUuid = CacheBuilder.newBuilder().expireAfterWrite(2L, TimeUnit.HOURS)
+		cacheUuid = CacheBuilder.newBuilder().expireAfterWrite(6L, TimeUnit.HOURS)
 				.build(new CacheLoader<String, UUID>() {
 					@Override
 					public UUID load(String playerName) throws Exception {
@@ -92,6 +93,9 @@ public class MojangFetcher {
 			JsonObject jsonObject = (JsonObject) CommonConst.DEFAULT_WEB
 					.doRequest(CommonConst.MOJANG_FETCHER + "?name=" + playerName, Method.GET);
 			
+			if (jsonObject == null)
+				return null;
+
 			return UUIDParser.parse(jsonObject.get("uuid").getAsString());
 		} catch (ConnectionPoolTimeoutException ex) {
 		} catch (Exception ex) {
@@ -113,6 +117,36 @@ public class MojangFetcher {
 		}
 
 		return true;
+	}
+
+	public void isCracked(String playerName, FutureCallback<Boolean> futureCallback) {
+		if (cache.asMap().containsKey(playerName)) {
+			try {
+				futureCallback.result(cache.get(playerName), null);
+			} catch (ExecutionException e) {
+				e.printStackTrace();
+				futureCallback.result(false, e);
+			}
+			return;
+		}
+		
+		FutureCallback<JsonElement> future = new FutureCallback<JsonElement>() {
+
+			@Override
+			public void result(JsonElement result, Throwable error) {
+				if (error == null) {
+					boolean cracked = result.getAsJsonObject().get("cracked").getAsBoolean();
+					futureCallback.result(cracked, error);
+					cache.put(playerName, cracked);
+				} else {
+					futureCallback.result(false, error);
+				}
+			}
+			
+		};
+		
+		CommonConst.DEFAULT_WEB.doAsyncRequest(CommonConst.MOJANG_FETCHER + "?name=" + playerName, Method.GET,
+				future);
 	}
 
 }

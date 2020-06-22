@@ -2,15 +2,16 @@ package tk.yallandev.saintmc.bungee.packet;
 
 import java.util.UUID;
 
-import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.bungee.BungeeMain;
 import tk.yallandev.saintmc.bungee.account.BungeeMember;
+import tk.yallandev.saintmc.common.account.Member;
 import tk.yallandev.saintmc.common.ban.constructor.Ban;
 import tk.yallandev.saintmc.common.networking.Packet;
 import tk.yallandev.saintmc.common.networking.packet.AnticheatAlertPacket;
 import tk.yallandev.saintmc.common.networking.packet.AnticheatBanPacket;
+import tk.yallandev.saintmc.common.permission.Group;
 import tk.yallandev.saintmc.common.server.loadbalancer.server.ProxiedServer;
 
 public class BungeePacketHandler implements tk.yallandev.saintmc.common.networking.PacketHandler {
@@ -32,12 +33,12 @@ public class BungeePacketHandler implements tk.yallandev.saintmc.common.networki
 			String hackName = anticheatPacket.getHackType();
 			int alerts = anticheatPacket.getAlerts();
 			int maxAlerts = anticheatPacket.getMaxAlerts();
-			
-			for (ProxiedPlayer online : ProxyServer.getInstance().getPlayers()) {
-				if (online.getServer().getInfo().getName().equalsIgnoreCase(server.getServerId()))
-					continue;
-				
-				online.sendMessage("§9Anticheat> §fO jogador §d" + player.getName() + "§f está usando §c" + hackName
+
+			for (Member onlineMember : CommonGeneral.getInstance().getMemberManager().getMembers().stream()
+					.filter(o -> !o.getServerId().equalsIgnoreCase(server.getServerId())
+							&& o.hasGroupPermission(Group.TRIAL) && o.getAccountConfiguration().isAnticheatEnabled())
+					.toArray(Member[]::new)) {
+				onlineMember.sendMessage("§9Anticheat> §fO jogador §d" + player.getName() + "§f está usando §c" + hackName
 						+ (cps > 0 ? " §4(" + cps + " cps)" : "") + " §7(" + alerts + "/" + maxAlerts + ")!");
 			}
 		}

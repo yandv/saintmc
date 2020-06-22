@@ -15,6 +15,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import tk.yallandev.saintmc.CommonConst;
 import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.bukkit.api.scoreboard.Score;
 import tk.yallandev.saintmc.bukkit.api.scoreboard.Scoreboard;
@@ -52,12 +53,12 @@ public class ScoreboardListener implements Listener {
 	public static final Scoreboard SEARCHING_SCOREBOARD;
 
 	static {
-		DEFAULT_SCOREBOARD = new SimpleScoreboard("§b§lSAINTMC");
+		DEFAULT_SCOREBOARD = new SimpleScoreboard("§6§lKITPVP");
 
 		DEFAULT_SCOREBOARD.blankLine(12);
-		DEFAULT_SCOREBOARD.setScore(11, new Score("§fKills: §70", "kills"));
-		DEFAULT_SCOREBOARD.setScore(10, new Score("§fDeaths: §70", "deaths"));
-		DEFAULT_SCOREBOARD.setScore(9, new Score("§fKillstreak: §70", "killstreak"));
+		DEFAULT_SCOREBOARD.setScore(11, new Score("§fKills: §e0", "kills"));
+		DEFAULT_SCOREBOARD.setScore(10, new Score("§fDeaths: §e0", "deaths"));
+		DEFAULT_SCOREBOARD.setScore(9, new Score("§fKillstreak: §e0", "killstreak"));
 		DEFAULT_SCOREBOARD.blankLine(8);
 		DEFAULT_SCOREBOARD.setScore(7, new Score("§fRanking: §7(§f-§7)", "rank"));
 		DEFAULT_SCOREBOARD.setScore(6, new Score("§fXp: §a0", "xp"));
@@ -65,40 +66,40 @@ public class ScoreboardListener implements Listener {
 		DEFAULT_SCOREBOARD.setScore(4, new Score("§fMoney: §60", "coins"));
 		DEFAULT_SCOREBOARD.setScore(3, new Score("§fJogadores: §b" + Bukkit.getOnlinePlayers().size(), "players"));
 		DEFAULT_SCOREBOARD.blankLine(2);
-		DEFAULT_SCOREBOARD.setScore(1, new Score("§awww.saintmc.com.br", "site"));
+		DEFAULT_SCOREBOARD.setScore(1, new Score("§6" + CommonConst.SITE, "site"));
 
-		SHADOW_SCOREBOARD = new SimpleScoreboard("§b§lSAINTMC");
+		SHADOW_SCOREBOARD = new SimpleScoreboard("§6§lKITPVP");
 
 		SHADOW_SCOREBOARD.blankLine(11);
-		SHADOW_SCOREBOARD.setScore(10, new Score("§fVitórias: §70", "wins"));
-		SHADOW_SCOREBOARD.setScore(9, new Score("§fDerrotas: §70", "loses"));
-		SHADOW_SCOREBOARD.setScore(8, new Score("§fWinstreak: §70", "winstreak"));
+		SHADOW_SCOREBOARD.setScore(10, new Score("§fVitórias: §e0", "wins"));
+		SHADOW_SCOREBOARD.setScore(9, new Score("§fDerrotas: §e0", "loses"));
+		SHADOW_SCOREBOARD.setScore(8, new Score("§fWinstreak: §e0", "winstreak"));
 		SHADOW_SCOREBOARD.blankLine(7);
 		SHADOW_SCOREBOARD.setScore(6, new Score("§fRanking: §7(§f-§7)", "rank"));
 		SHADOW_SCOREBOARD.setScore(5, new Score("§fXp: §a0", "xp"));
 		SHADOW_SCOREBOARD.blankLine(4);
 		SHADOW_SCOREBOARD.setScore(3, new Score("§fJogadores: §b" + Bukkit.getOnlinePlayers().size(), "players"));
 		SHADOW_SCOREBOARD.blankLine(2);
-		SHADOW_SCOREBOARD.setScore(1, new Score("§awww.saintmc.com.br", "site"));
+		SHADOW_SCOREBOARD.setScore(1, new Score("§6" + CommonConst.SITE, "site"));
 
-		SEARCHING_SCOREBOARD = new SimpleScoreboard("§b§lSEARCHING");
+		SEARCHING_SCOREBOARD = new SimpleScoreboard("§6§lKITPVP");
 
 		SEARCHING_SCOREBOARD.blankLine(10);
-		SEARCHING_SCOREBOARD.setScore(9, new Score("§fProcurando: §7", "searching"));
-		SEARCHING_SCOREBOARD.setScore(8, new Score("§fTempo: §a0s", "time"));
+		SEARCHING_SCOREBOARD.setScore(9, new Score("§fProcurando: §e", "searching"));
+		SEARCHING_SCOREBOARD.setScore(8, new Score("§fTempo: §e0s", "time"));
 		SEARCHING_SCOREBOARD.blankLine(7);
 		SEARCHING_SCOREBOARD.setScore(6, new Score("§fRanking: §a-/-", "rank"));
 		SEARCHING_SCOREBOARD.setScore(5, new Score("§fXp: §a0", "xp"));
 		SEARCHING_SCOREBOARD.blankLine(4);
 		SEARCHING_SCOREBOARD.setScore(3, new Score("§fJogadores: §b" + Bukkit.getOnlinePlayers().size(), "players"));
 		SEARCHING_SCOREBOARD.blankLine(2);
-		SEARCHING_SCOREBOARD.setScore(1, new Score("§awww.saintmc.com.br", "site"));
+		SEARCHING_SCOREBOARD.setScore(1, new Score("§6" + CommonConst.SITE, "site"));
 
-		FIGHT_SCOREBOARD = new SimpleScoreboard("§b§lSAINTMC");
+		FIGHT_SCOREBOARD = new SimpleScoreboard("§6§lKITPVP");
 
 		FIGHT_SCOREBOARD.blankLine(11);
-		FIGHT_SCOREBOARD.setScore(10, new Score("§9Ninguém: §70ms", "playerPing"));
-		FIGHT_SCOREBOARD.setScore(9, new Score("§cNinguém: §70ms", "targetPing"));
+		FIGHT_SCOREBOARD.setScore(10, new Score("§9Ninguém: §e0ms", "playerPing"));
+		FIGHT_SCOREBOARD.setScore(9, new Score("§cNinguém: §e0ms", "targetPing"));
 		FIGHT_SCOREBOARD.blankLine(8);
 		FIGHT_SCOREBOARD.setScore(7, new Score("§fRanking: §a-/-", "rank"));
 		FIGHT_SCOREBOARD.setScore(6, new Score("§fXp: §a0", "xp"));
@@ -106,7 +107,7 @@ public class ScoreboardListener implements Listener {
 		FIGHT_SCOREBOARD.setScore(4, new Score("§fWarp: §a1v1", "warp"));
 		FIGHT_SCOREBOARD.setScore(3, new Score("§fWinstreak: §70", "winstreak"));
 		FIGHT_SCOREBOARD.blankLine(2);
-		FIGHT_SCOREBOARD.setScore(1, new Score("§awww.saintmc.com.br", "site"));
+		FIGHT_SCOREBOARD.setScore(1, new Score("§6" + CommonConst.SITE, "site"));
 	}
 
 	private List<FightPingUpdate> observersList;
@@ -203,15 +204,15 @@ public class ScoreboardListener implements Listener {
 					statusType);
 
 			if (duels) {
-				scoreboard.updateScore(player, new Score("§fVitórias: §7" + playerStatus.getKills(), "wins"));
-				scoreboard.updateScore(player, new Score("§fDerrotas: §7" + playerStatus.getDeaths(), "loses"));
+				scoreboard.updateScore(player, new Score("§fVitórias: §e" + playerStatus.getKills(), "wins"));
+				scoreboard.updateScore(player, new Score("§fDerrotas: §e" + playerStatus.getDeaths(), "loses"));
 				scoreboard.updateScore(player,
-						new Score("§fWinstreak: §7" + playerStatus.getKillstreak(), "winstreak"));
+						new Score("§fWinstreak: §e" + playerStatus.getKillstreak(), "winstreak"));
 			} else {
-				scoreboard.updateScore(player, new Score("§fKills: §7" + playerStatus.getKills(), "kills"));
-				scoreboard.updateScore(player, new Score("§fDeaths: §7" + playerStatus.getDeaths(), "deaths"));
+				scoreboard.updateScore(player, new Score("§fKills: §e" + playerStatus.getKills(), "kills"));
+				scoreboard.updateScore(player, new Score("§fDeaths: §e" + playerStatus.getDeaths(), "deaths"));
 				scoreboard.updateScore(player,
-						new Score("§fKillstreak: §7" + playerStatus.getKillstreak(), "killstreak"));
+						new Score("§fKillstreak: §e" + playerStatus.getKillstreak(), "killstreak"));
 			}
 		}
 
@@ -221,15 +222,15 @@ public class ScoreboardListener implements Listener {
 					statusType);
 
 			if (duels) {
-				scoreboard.updateScore(killer, new Score("§fVitórias: §7" + killerStatus.getKills(), "wins"));
-				scoreboard.updateScore(killer, new Score("§fDerrotas: §7" + killerStatus.getDeaths(), "loses"));
+				scoreboard.updateScore(killer, new Score("§fVitórias: §e" + killerStatus.getKills(), "wins"));
+				scoreboard.updateScore(killer, new Score("§fDerrotas: §e" + killerStatus.getDeaths(), "loses"));
 				scoreboard.updateScore(killer,
-						new Score("§fWinstreak: §7" + killerStatus.getKillstreak(), "winstreak"));
+						new Score("§fWinstreak: §e" + killerStatus.getKillstreak(), "winstreak"));
 			} else {
-				scoreboard.updateScore(killer, new Score("§fKills: §7" + killerStatus.getKills(), "kills"));
-				scoreboard.updateScore(killer, new Score("§fDeaths: §7" + killerStatus.getDeaths(), "deaths"));
+				scoreboard.updateScore(killer, new Score("§fKills: §e" + killerStatus.getKills(), "kills"));
+				scoreboard.updateScore(killer, new Score("§fDeaths: §e" + killerStatus.getDeaths(), "deaths"));
 				scoreboard.updateScore(killer,
-						new Score("§fKillstreak: §7" + killerStatus.getKillstreak(), "killstreak"));
+						new Score("§fKillstreak: §e" + killerStatus.getKillstreak(), "killstreak"));
 			}
 		}
 	}
@@ -265,8 +266,8 @@ public class ScoreboardListener implements Listener {
 
 		scoreboard.createScoreboard(player);
 		scoreboard.updateScore(player, new Score(
-				"§fProcurando: §7" + (warp instanceof ShadowWarp ? "1v1 rápido" : "Sumo rápido"), "searching"));
-		scoreboard.updateScore(player, new Score("§fTempo: §a0s", "time"));
+				"§fProcurando: §e" + (warp instanceof ShadowWarp ? "1v1 rápido" : "Sumo rápido"), "searching"));
+		scoreboard.updateScore(player, new Score("§fTempo: §e0s", "time"));
 		updateScore(player, scoreboard, warp);
 	}
 
@@ -295,17 +296,17 @@ public class ScoreboardListener implements Listener {
 			@Override
 			public FightPingUpdate onUpdate(Player p, int ping) {
 				scoreboard.updateScore(player,
-						new Score("§9" + player.getName() + ": §7" + ((CraftPlayer) player).getHandle().ping + "ms",
+						new Score("§9" + player.getName() + ": §e" + ((CraftPlayer) player).getHandle().ping + "ms",
 								"playerPing"));
 				scoreboard.updateScore(player,
-						new Score("§c" + target.getName() + ": §7" + ((CraftPlayer) target).getHandle().ping + "ms",
+						new Score("§c" + target.getName() + ": §e" + ((CraftPlayer) target).getHandle().ping + "ms",
 								"targetPing"));
 
 				scoreboardTarget.updateScore(getTarget(),
-						new Score("§9" + target.getName() + ": §7" + ((CraftPlayer) target).getHandle().ping + "ms",
+						new Score("§9" + target.getName() + ": §e" + ((CraftPlayer) target).getHandle().ping + "ms",
 								"playerPing"));
 				scoreboardTarget.updateScore(getTarget(),
-						new Score("§c" + player.getName() + ": §7" + ((CraftPlayer) player).getHandle().ping + "ms",
+						new Score("§c" + player.getName() + ": §e" + ((CraftPlayer) player).getHandle().ping + "ms",
 								"targetPing"));
 				return this;
 			}
@@ -359,13 +360,13 @@ public class ScoreboardListener implements Listener {
 				duels ? StatusType.SHADOW : StatusType.PVP);
 
 		if (duels) {
-			scoreboard.updateScore(player, new Score("§fVitórias: §7" + playerStatus.getKills(), "wins"));
-			scoreboard.updateScore(player, new Score("§fDerrotas: §7" + playerStatus.getDeaths(), "loses"));
-			scoreboard.updateScore(player, new Score("§fWinstreak: §7" + playerStatus.getKillstreak(), "winstreak"));
+			scoreboard.updateScore(player, new Score("§fVitórias: §e" + playerStatus.getKills(), "wins"));
+			scoreboard.updateScore(player, new Score("§fDerrotas: §e" + playerStatus.getDeaths(), "loses"));
+			scoreboard.updateScore(player, new Score("§fWinstreak: §e" + playerStatus.getKillstreak(), "winstreak"));
 		} else {
-			scoreboard.updateScore(player, new Score("§fKills: §7" + playerStatus.getKills(), "kills"));
-			scoreboard.updateScore(player, new Score("§fDeaths: §7" + playerStatus.getDeaths(), "deaths"));
-			scoreboard.updateScore(player, new Score("§fKillstreak: §7" + playerStatus.getKillstreak(), "killstreak"));
+			scoreboard.updateScore(player, new Score("§fKills: §e" + playerStatus.getKills(), "kills"));
+			scoreboard.updateScore(player, new Score("§fDeaths: §e" + playerStatus.getDeaths(), "deaths"));
+			scoreboard.updateScore(player, new Score("§fKillstreak: §e" + playerStatus.getKillstreak(), "killstreak"));
 		}
 
 		scoreboard.updateScore(player, new Score(
@@ -373,6 +374,7 @@ public class ScoreboardListener implements Listener {
 		scoreboard.updateScore(player, new Score("§fGrupo: §7"
 				+ (member.getGroup() == Group.MEMBRO ? "Membro" : Tag.valueOf(member.getGroup().name()).getPrefix()),
 				"group"));
+		scoreboard.updateScore(player, new Score("§fXp: §a" + member.getXp(), "xp"));
 
 		scoreboard.updateScore(player, new Score("§fMoney: §6" + member.getMoney(), "coins"));
 		scoreboard.updateScore(player, new Score("§fJogadores: §b" + Bukkit.getOnlinePlayers().size(), "players"));

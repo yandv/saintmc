@@ -20,7 +20,7 @@ import net.md_5.bungee.event.EventHandler;
 import tk.yallandev.saintmc.CommonConst;
 import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.bungee.BungeeMain;
-import tk.yallandev.saintmc.common.account.Member;
+import tk.yallandev.saintmc.bungee.account.BungeeMember;
 import tk.yallandev.saintmc.common.permission.Group;
 import tk.yallandev.saintmc.common.server.ServerManager;
 import tk.yallandev.saintmc.common.server.ServerType;
@@ -29,7 +29,7 @@ import tk.yallandev.saintmc.common.utils.string.StringCenter;
 
 public class ConnectionListener implements Listener {
 
-	private String[] motdList = new String[] { "§bdiscord.saintmc.com.br", "§bsaintmc.com.br" };
+	private String[] motdList = new String[] { "§b" + CommonConst.DISCORD, "§b" + CommonConst.WEBSITE };
 	private ServerManager manager;
 
 	public ConnectionListener(ServerManager manager) {
@@ -61,9 +61,9 @@ public class ConnectionListener implements Listener {
 		 */
 
 		ProxiedServer fallbackServer = manager.getBalancer(kickedFrom.getServerType().getServerLobby()).next();
-		
+
 		if (kickedFrom.getServerType() == ServerType.HUNGERGAMES) {
-			
+
 		}
 
 		/*
@@ -75,18 +75,18 @@ public class ConnectionListener implements Listener {
 			event.getPlayer().disconnect(event.getKickReasonComponent());
 			return;
 		}
-		
+
 		if (kickedFrom.getServerType() == fallbackServer.getServerType()) {
 			player.disconnect(event.getKickReasonComponent());
 			return;
 		}
-		
+
 		String message = event.getKickReason();
 
 		for (String m : message.split("\n")) {
 			player.sendMessage(TextComponent.fromLegacyText(m.replace("\n", "")));
 		}
-		
+
 		event.setCancelled(true);
 
 		if (!fallbackServer.containsPlayer(player.getUniqueId())) {
@@ -121,33 +121,44 @@ public class ConnectionListener implements Listener {
 	/*
 	 * ServerConnectRequest
 	 */
-	
+
 	@EventHandler
 	public void onServerConnect(ServerConnectEvent event) {
-		Member player = CommonGeneral.getInstance().getMemberManager().getMember(event.getPlayer().getUniqueId());
+		BungeeMember player = (BungeeMember) CommonGeneral.getInstance().getMemberManager().getMember(event.getPlayer().getUniqueId());
 
 		if (player == null)
 			return;
 		
 		ProxiedServer server = manager.getServer(event.getTarget().getName());
+		
+		if (server.getServerType() == ServerType.SCREENSHARE) {
+			if (player.isScreensharing() || player.hasGroupPermission(Group.MODGC)) {
+				player.sendMessage("§aVocê foi enviado para S	creenshare!");
+			} else {
+				event.setCancelled(true);
+				player.sendMessage("§cVocê não pode entrar na §aScreenshare§f!");
+			}
+			
+			return;
+		}
 
 		if (!player.getLoginConfiguration().isLogged()) {
-			if (server.getServerType() == ServerType.LOGIN
-					|| (CommonGeneral.getInstance().isLoginServer() && server.getServerType() == ServerType.LOBBY)) {
+			if (CommonGeneral.getInstance().isLoginServer() ? server.getServerType() == ServerType.LOGIN
+					: server.getServerType() == ServerType.LOBBY) {
 				return;
 			}
 
 			event.setCancelled(true);
 			return;
 		}
-		
+
 		String message = "§aSucesso!";
-		
+
 		if (server.isFull() && !player.hasGroupPermission(Group.LIGHT)) {
 			event.setCancelled(true);
 			message = "§cO servidor está cheio!";
 		}
-		
+
 //		if (!server.canBeSelected() && !player.hasGroupPermission(Group.BUILDER)) {
 //			event.setCancelled(true);
 //			message = "§cO servidor está disponivel somente para a equipe!";

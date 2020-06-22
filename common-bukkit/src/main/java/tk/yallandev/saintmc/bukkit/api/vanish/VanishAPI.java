@@ -41,6 +41,7 @@ public class VanishAPI {
 			
 			if (group != null && onlineP.getServerGroup().ordinal() <= group.ordinal()) {
 				PlayerHideToPlayerEvent event = new PlayerHideToPlayerEvent(player, online);
+				
 				Bukkit.getPluginManager().callEvent(event);
 				
 				if (event.isCancelled()) {
@@ -54,6 +55,7 @@ public class VanishAPI {
 			
 			PlayerShowToPlayerEvent event = new PlayerShowToPlayerEvent(player, online);
 			Bukkit.getPluginManager().callEvent(event);
+			
 			if (event.isCancelled()) {
 				if (online.canSee(player))
 					online.hidePlayer(player);
@@ -86,6 +88,7 @@ public class VanishAPI {
 			}
 			
 			PlayerShowToPlayerEvent event = new PlayerShowToPlayerEvent(online, player);
+			
 			Bukkit.getPluginManager().callEvent(event);
 			
 			if (event.isCancelled()) {

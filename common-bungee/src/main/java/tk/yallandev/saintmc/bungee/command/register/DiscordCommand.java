@@ -29,7 +29,7 @@ import tk.yallandev.saintmc.discord.command.register.DiscordCommand.Invite;
 import tk.yallandev.saintmc.discord.guild.GuildConfiguration;
 import tk.yallandev.saintmc.discord.reaction.MessageReaction;
 import tk.yallandev.saintmc.discord.reaction.ReactionEnum;
-import tk.yallandev.saintmc.discord.reaction.ReactionInterface;
+import tk.yallandev.saintmc.discord.reaction.ReactionHandler;
 import tk.yallandev.saintmc.discord.utils.MessageUtils;
 
 public class DiscordCommand implements CommandClass {
@@ -101,13 +101,12 @@ public class DiscordCommand implements CommandClass {
 					member.sendMessage(" §c* §fO servidor não possui chat!");
 					return;
 				}
-
-				net.dv8tion.jda.api.entities.Member dMember = guild
-						.getMembersByEffectiveName(args[1].replace("#", ""), true).stream().findFirst().orElse(null);
+				
+				net.dv8tion.jda.api.entities.Member dMember = null;
 
 				if (dMember == null) {
 					try {
-						dMember = guild.getMemberById(args[1]);
+						dMember = guild.retrieveMemberById(Long.valueOf(args[1])).complete();
 					} catch (NumberFormatException ex) {
 						member.sendMessage(" §c* §fNão foi possível achar o seu discord!");
 						return;
@@ -118,6 +117,8 @@ public class DiscordCommand implements CommandClass {
 						return;
 					}
 				}
+				
+				member.sendMessage("§aFoi enviada uma mensagem no discord para você!");
 
 				net.dv8tion.jda.api.entities.Member discordMember = dMember;
 
@@ -150,10 +151,10 @@ public class DiscordCommand implements CommandClass {
 							}
 						}, 2, TimeUnit.MINUTES);
 
-				messageReaction.addReaction(ReactionEnum.COOKIE.getEmote(), new ReactionInterface() {
+				messageReaction.addReaction(ReactionEnum.COOKIE.getEmote(), new ReactionHandler() {
 
 					@Override
-					public void onClick(User user, Guild guild, TextChannel textChannel, ReactionEmote reaction) {
+					public void onClick(User user, Guild guild, TextChannel textChannel, ReactionEmote reaction, ReactionAction action) {
 						if (user.getIdLong() == discordMember.getIdLong()) {
 
 							member.setDiscordId(user.getIdLong(), user.getName() + "#" + user.getDiscriminator());
@@ -176,6 +177,7 @@ public class DiscordCommand implements CommandClass {
 				});
 
 				member.setCooldown("discord-sync-delay", System.currentTimeMillis() + (1000 * 60 * 30));
+				guild.unloadMember(discordMember.getIdLong());
 			}
 			break;
 		}
@@ -187,6 +189,7 @@ public class DiscordCommand implements CommandClass {
 					member.setDiscordId(0l, "");
 				} else {
 					member.sendMessage(" §c* §fPara desvincular o discord digite §c/discord desync§f novamente!");
+					member.setCooldown("discord-desync", System.currentTimeMillis() + 10000l);
 				}
 			} else {
 				member.sendMessage(" §c* §fSua conta ainda não é sincronizada com o discord!");
@@ -282,11 +285,11 @@ public class DiscordCommand implements CommandClass {
 										.setThumbnail("https://minotar.net/avatar/" + member.getPlayerName())
 										.setFooter("Enviado pela conta " + member.getPlayerName()).build(),
 								"<@" + invite.getUserId() + ">");
-
-						tk.yallandev.saintmc.discord.command.register.DiscordCommand.MAP.remove(member.getUniqueId());
 					} else {
 						member.sendMessage(" §c* §fO pedido de sincronização expirou!");
 					}
+					
+					tk.yallandev.saintmc.discord.command.register.DiscordCommand.MAP.remove(member.getUniqueId());
 				} else {
 					member.sendMessage(" §c* §fVocê não recebeu pedidos de sincronização desse discord!");
 				}

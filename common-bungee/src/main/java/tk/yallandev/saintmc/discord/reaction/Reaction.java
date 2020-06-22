@@ -15,26 +15,26 @@ import net.dv8tion.jda.api.entities.User;
 
 public class Reaction {
 
-    private ReactionInterface handler;
+    private ReactionHandler handler;
     private Emote emote;
 
     public Reaction(Emote emote) {
         this.emote = emote;
-        this.handler = new ReactionInterface() {
+        this.handler = new ReactionHandler() {
 
             @Override
-            public void onClick(User user, Guild guild, TextChannel textChannel, ReactionEmote reaction) {
+            public void onClick(User user, Guild guild, TextChannel textChannel, ReactionEmote reaction, ReactionAction action) {
 
             }
         };
     }
 
-    public Reaction(Emote emote, ReactionInterface handler) {
+    public Reaction(Emote emote, ReactionHandler handler) {
         this.emote = emote;
         this.handler = handler;
     }
 
-    public ReactionInterface getHandler() {
+    public ReactionHandler getHandler() {
         return handler;
     }
 

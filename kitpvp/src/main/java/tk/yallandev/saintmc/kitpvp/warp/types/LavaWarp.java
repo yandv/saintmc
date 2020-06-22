@@ -20,6 +20,7 @@ public class LavaWarp extends Warp {
 
 	public LavaWarp() {
 		super("Lava", BukkitMain.getInstance().getLocationFromConfig("lava"));
+		getWarpSettings().setWarpEnabled(false);
 	}
 
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

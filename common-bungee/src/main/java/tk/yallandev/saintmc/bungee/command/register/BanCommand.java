@@ -120,6 +120,19 @@ public class BanCommand implements CommandClass {
 				return;
 			}
 		}
+		
+		Group playerGroup = Group.MEMBRO;
+
+		if (cmdArgs.isPlayer())
+			playerGroup = Member.getGroup(cmdArgs.getPlayer().getUniqueId());
+		else 
+			playerGroup = Group.DONO;
+		
+		if (cmdArgs.isPlayer())
+			if (playerGroup.ordinal() < player.getGroup().ordinal()) {
+				sender.sendMessage(" §c* §fVocê não pode majenar o grupo desse jogador!");
+				return;
+			}
 
 		long expiresCheck;
 
@@ -234,6 +247,19 @@ public class BanCommand implements CommandClass {
 			}
 		}
 
+		Group playerGroup = Group.MEMBRO;
+
+		if (cmdArgs.isPlayer())
+			playerGroup = Member.getGroup(cmdArgs.getPlayer().getUniqueId());
+		else 
+			playerGroup = Group.DONO;
+		
+		if (cmdArgs.isPlayer())
+			if (playerGroup.ordinal() < player.getGroup().ordinal()) {
+				sender.sendMessage(" §c* §fVocê não pode majenar o grupo desse jogador!");
+				return;
+			}
+		
 		StringBuilder sb = new StringBuilder();
 
 		for (int i = 1; i < args.length; i++)
@@ -285,6 +311,19 @@ public class BanCommand implements CommandClass {
 				return;
 			}
 		}
+		
+		Group playerGroup = Group.MEMBRO;
+
+		if (cmdArgs.isPlayer())
+			playerGroup = Member.getGroup(cmdArgs.getPlayer().getUniqueId());
+		else 
+			playerGroup = Group.DONO;
+		
+		if (cmdArgs.isPlayer())
+			if (playerGroup.ordinal() < player.getGroup().ordinal()) {
+				sender.sendMessage(" §c* §fVocê não pode majenar o grupo desse jogador!");
+				return;
+			}
 
 		long expiresCheck;
 

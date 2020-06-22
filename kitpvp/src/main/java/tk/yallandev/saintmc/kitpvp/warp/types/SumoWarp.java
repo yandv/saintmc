@@ -25,6 +25,8 @@ import tk.yallandev.saintmc.bukkit.api.item.ActionItemStack.InteractType;
 import tk.yallandev.saintmc.bukkit.api.item.ItemBuilder;
 import tk.yallandev.saintmc.bukkit.api.scoreboard.Scoreboard;
 import tk.yallandev.saintmc.bukkit.event.player.PlayerDamagePlayerEvent;
+import tk.yallandev.saintmc.bukkit.event.vanish.PlayerHideToPlayerEvent;
+import tk.yallandev.saintmc.bukkit.event.vanish.PlayerShowToPlayerEvent;
 import tk.yallandev.saintmc.kitpvp.GameMain;
 import tk.yallandev.saintmc.kitpvp.event.warp.PlayerWarpDeathEvent;
 import tk.yallandev.saintmc.kitpvp.event.warp.PlayerWarpJoinEvent;
@@ -120,8 +122,6 @@ public class SumoWarp extends Warp implements DuelWarp {
 
 							@Override
 							public void finish(Player winner) {
-								super.finish(winner);
-
 								playersIn1v1.remove(getTarget());
 								playersIn1v1.remove(getPlayer());
 
@@ -130,6 +130,8 @@ public class SumoWarp extends Warp implements DuelWarp {
 
 								handleInventory(getPlayer());
 								handleInventory(getTarget());
+								
+								super.finish(winner);
 							}
 
 						});
@@ -195,8 +197,6 @@ public class SumoWarp extends Warp implements DuelWarp {
 
 								@Override
 								public void finish(Player winner) {
-									super.finish(winner);
-
 									playersIn1v1.remove(getTarget());
 									playersIn1v1.remove(getPlayer());
 
@@ -205,6 +205,8 @@ public class SumoWarp extends Warp implements DuelWarp {
 
 									handleInventory(getTarget());
 									handleInventory(getPlayer());
+									
+									super.finish(winner);
 								}
 
 							};
@@ -278,7 +280,7 @@ public class SumoWarp extends Warp implements DuelWarp {
 	}
 	
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-	public void drop(PlayerDropItemEvent event) {
+	public void onPlayerDropItem(PlayerDropItemEvent event) {
 		Player player = event.getPlayer();
 		
 		if (inWarp(player)) {
@@ -308,6 +310,30 @@ public class SumoWarp extends Warp implements DuelWarp {
 			return;
 
 		handleQuit(player);
+	}
+	
+	@EventHandler
+	public void onPlayerShowToPlayer(PlayerShowToPlayerEvent event) {
+		if (playersIn1v1.containsKey(event.getToPlayer())) {
+			Challenge challenge = playersIn1v1.get(event.getToPlayer());
+			
+			if (challenge.isInChallenge(event.getPlayer())) 
+				event.setCancelled(false);
+			else 
+				event.setCancelled(true);
+		}
+	}
+	
+	@EventHandler
+	public void onPlayerHideToPlayer(PlayerHideToPlayerEvent event) {
+		if (playersIn1v1.containsKey(event.getToPlayer())) {
+			Challenge challenge = playersIn1v1.get(event.getToPlayer());
+			
+			if (challenge.isInChallenge(event.getPlayer())) 
+				event.setCancelled(true);
+			else 
+				event.setCancelled(false);
+		}
 	}
 
 	public void handleInventory(Player player) {

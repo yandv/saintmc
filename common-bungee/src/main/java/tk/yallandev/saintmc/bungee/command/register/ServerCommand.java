@@ -109,7 +109,7 @@ public class ServerCommand implements CommandClass {
 		target.connect(server.getServerInfo());
 	}
 
-	@Command(name = "lobby", aliases = { "hub" }, usage = "/<command> <player> <server>")
+	@Command(name = "lobby", aliases = { "hub", "l" }, usage = "/<command> <player> <server>")
 	public void lobbyCommand(BungeeCommandArgs cmdArgs) {
 		if (!cmdArgs.isPlayer())
 			return;
@@ -222,14 +222,8 @@ public class ServerCommand implements CommandClass {
 		if (cmdArgs.getArgs().length == 1) {
 			List<String> tagList = new ArrayList<>();
 
-			if (cmdArgs.getArgs()[0].isEmpty()) {
-				for (ProxiedServer server : BungeeMain.getInstance().getServerManager().getServers())
-					tagList.add(server.getServerId());
-			} else {
-				for (ProxiedServer server : BungeeMain.getInstance().getServerManager().getServers())
-					if (server.getServerId().toLowerCase().startsWith(cmdArgs.getArgs()[0].toLowerCase()))
-						tagList.add(server.getServerId());
-			}
+			for (ProxiedServer server : BungeeMain.getInstance().getServerManager().getServers())
+				tagList.add(server.getServerId());
 
 			return tagList;
 		}

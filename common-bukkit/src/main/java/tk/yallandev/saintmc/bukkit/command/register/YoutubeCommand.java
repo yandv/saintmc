@@ -16,6 +16,7 @@ import tk.yallandev.saintmc.common.account.Member;
 import tk.yallandev.saintmc.common.command.CommandClass;
 import tk.yallandev.saintmc.common.command.CommandFramework.Command;
 import tk.yallandev.saintmc.common.permission.Group;
+import tk.yallandev.saintmc.common.tag.Tag;
 import tk.yallandev.saintmc.common.utils.DateUtils;
 
 public class YoutubeCommand implements CommandClass {
@@ -41,7 +42,7 @@ public class YoutubeCommand implements CommandClass {
 			return;
 		}
 
-		if (!member.hasGroupPermission(Group.MODPLUS) && !member.hasGroupPermission(Group.YOUTUBER) && !member.hasGroupPermission(Group.YOUTUBERPLUS))
+		if (!member.hasGroupPermission(Group.YOUTUBER))
 			if (member.isOnCooldown("fakeCommand") && !playerName.equals("#")
 					&& !playerName.equals(member.getPlayerName())) {
 				member.sendMessage(" §c* §fVocê precisa esperar §e"
@@ -80,27 +81,37 @@ public class YoutubeCommand implements CommandClass {
 					ScoreboardAPI.leaveCurrentTeamForOnlinePlayers(player);
 					FakePlayerAPI.changePlayerName(player, playerName);
 					FakePlayerAPI.removePlayerSkin(player);
-					member.setTag(member.getTag());
+					member.setTag(Tag.MEMBRO);
 					member.setFakeName(playerName);
 					player.sendMessage(" §a* §fSeu fake foi alterado para §a" + playerName + "§f!");
 					player.sendMessage(" §a* §fUse §a/fake #§f para remover seu fake!");
+					member.setCooldown("fakeCommand",
+							member.hasGroupPermission(Group.GERENTE) ? System.currentTimeMillis() + (1000)
+									: System.currentTimeMillis() + (1000 * 60));
 				}
-				member.setCooldown("fakeCommand",
-						member.hasGroupPermission(Group.GERENTE) ? System.currentTimeMillis() + (1000 * 60 * 1)
-								: System.currentTimeMillis() + (1000 * 60 * 5));
 			}
 
 		}.runTask(BukkitMain.getInstance());
 	}
 
-	@Command(name = "changeskin", aliases = { "skin" }, groupToUse = Group.LIGHT, runAsync = true)
+	@Command(name = "changeskin", aliases = { "skin" }, groupToUse = Group.MEMBRO, runAsync = true)
 	public void changeskinCommand(BukkitCommandArgs args) {
 		if (!args.isPlayer()) {
 			return;
 		}
 
-		Player p = args.getPlayer();
-		Member member = CommonGeneral.getInstance().getMemberManager().getMember(p.getUniqueId());
+		Player player = args.getPlayer();
+		Member member = CommonGeneral.getInstance().getMemberManager().getMember(player.getUniqueId());
+
+		if (args.getArgs().length != 1) {
+			player.sendMessage(" §e* §fUse §a/changeskin <player>§f para trocar de skin!");
+			if (member.isOnCooldown("changeskinCommand")) {
+				player.sendMessage(
+						" §e* §fVocê precisa esperar §c" + DateUtils.getTime(member.getCooldown("changeskinCommand"))
+								+ "§f para trocar de skin novamente!");
+			}
+			return;
+		}
 
 		if (!member.hasGroupPermission(Group.MODPLUS))
 			if (member.isOnCooldown("changeskinCommand")) {
@@ -110,22 +121,17 @@ public class YoutubeCommand implements CommandClass {
 				return;
 			}
 
-		if (args.getArgs().length != 1) {
-			p.sendMessage(" §e* §fUse §a/changeskin <player>§f para trocar de skin!");
-			return;
-		}
-
 		String playerName = args.getArgs()[0];
 
 		if (!FakePlayerAPI.validateName(playerName)) {
-			p.sendMessage(" §c* §fO nickname que você colocou está inválido!");
+			player.sendMessage(" §c* §fO nickname que você colocou está inválido!");
 			return;
 		}
 
 		UUID uuid = CommonGeneral.getInstance().getMojangFetcher().requestUuid(playerName);
 
 		if (uuid == null) {
-			p.sendMessage(" §c* §fO jogador não existe!");
+			player.sendMessage(" §c* §fO jogador não existe!");
 			return;
 		}
 
@@ -133,8 +139,8 @@ public class YoutubeCommand implements CommandClass {
 
 			@Override
 			public void run() {
-				WrappedSignedProperty property = FakePlayerAPI.changePlayerSkin(p, playerName, uuid, true);
-				p.sendMessage(" §a* §fSua skin foi alterada para a do §a" + playerName + "§f!");
+				WrappedSignedProperty property = FakePlayerAPI.changePlayerSkin(player, playerName, uuid, true);
+				player.sendMessage(" §a* §fSua skin foi alterada para a do §a" + playerName + "§f!");
 
 				if (playerName.equals("#") || member.getPlayerName().equals(playerName))
 					BukkitMain.getInstance().getSkinManager().deleteSkin(member);

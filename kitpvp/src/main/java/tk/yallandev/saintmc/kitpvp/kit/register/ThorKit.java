@@ -15,8 +15,6 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
-import tk.yallandev.saintmc.bukkit.api.cooldown.CooldownController;
-import tk.yallandev.saintmc.bukkit.api.cooldown.types.Cooldown;
 import tk.yallandev.saintmc.bukkit.api.item.ItemBuilder;
 import tk.yallandev.saintmc.kitpvp.kit.Kit;
 
@@ -48,31 +46,30 @@ public class ThorKit extends Kit {
 	}
 
 	@EventHandler
-	public void Thorzao(PlayerInteractEvent e) {
-		Player p = e.getPlayer();
+	public void onPlayerInteract(PlayerInteractEvent e) {
+		Player player = e.getPlayer();
 
-		if (p.getItemInHand() == null)
+		if (player.getItemInHand() == null)
 			return;
 
-		if (!isAbilityItem(p.getItemInHand()))
+		if (!isAbilityItem(player.getItemInHand()))
 			return;
 
 		if (!(e.getAction() == Action.RIGHT_CLICK_BLOCK || e.getAction() == Action.RIGHT_CLICK_AIR))
 			return;
 
-		if (hasAbility(p)) {
-			if (CooldownController.getInstance().hasCooldown(p, getName())) {
-//				p.sendMessage(GameMain.getPlugin().getCooldownManager().getCooldownFormated(p.getUniqueId(), getName()));
+		if (hasAbility(player)) {
+			if (isCooldown(player)) {
 				return;
 			}
 
-			Location loc = p.getTargetBlock((Set<Material>) null, 20).getLocation();
+			Location loc = player.getTargetBlock((Set<Material>) null, 20).getLocation();
 			loc = loc.getWorld().getHighestBlockAt(loc).getLocation();
 
-			damageRaio.put(p.getUniqueId(), System.currentTimeMillis() + 4000l);
-			p.getWorld().strikeLightning(loc);
+			damageRaio.put(player.getUniqueId(), System.currentTimeMillis() + 4000l);
+			player.getWorld().strikeLightning(loc);
 
-			CooldownController.getInstance().addCooldown(p, new Cooldown(getName(), 8l));
+			addCooldown(player, 8l);
 		}
 	}
 

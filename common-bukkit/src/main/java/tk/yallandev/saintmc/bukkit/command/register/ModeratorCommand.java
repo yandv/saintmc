@@ -1,7 +1,10 @@
 package tk.yallandev.saintmc.bukkit.command.register;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Difficulty;
@@ -19,6 +22,8 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import com.google.common.base.Joiner;
+
 import tk.yallandev.saintmc.CommonConst;
 import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.bukkit.BukkitMain;
@@ -26,6 +31,9 @@ import tk.yallandev.saintmc.bukkit.account.BukkitMember;
 import tk.yallandev.saintmc.bukkit.api.server.profile.Profile;
 import tk.yallandev.saintmc.bukkit.command.BukkitCommandArgs;
 import tk.yallandev.saintmc.bukkit.command.BukkitCommandSender;
+import tk.yallandev.saintmc.bukkit.event.restore.RestoreEvent;
+import tk.yallandev.saintmc.bukkit.event.restore.RestoreInitEvent;
+import tk.yallandev.saintmc.bukkit.event.restore.RestoreStopEvent;
 import tk.yallandev.saintmc.bukkit.event.teleport.PlayerTeleportCommandEvent;
 import tk.yallandev.saintmc.bukkit.event.teleport.PlayerTeleportCommandEvent.TeleportResult;
 import tk.yallandev.saintmc.common.account.Member;
@@ -33,29 +41,15 @@ import tk.yallandev.saintmc.common.command.CommandArgs;
 import tk.yallandev.saintmc.common.command.CommandClass;
 import tk.yallandev.saintmc.common.command.CommandFramework.Command;
 import tk.yallandev.saintmc.common.permission.Group;
+import tk.yallandev.saintmc.common.utils.DateUtils;
 
 @SuppressWarnings("deprecation")
 public class ModeratorCommand implements CommandClass {
 
 	private DecimalFormat locationFormater = new DecimalFormat("######.##");
-	
-	@Command(name = "build", groupToUse = Group.MODGC)
-	public void buildCommand(BukkitCommandArgs cmdArgs) {
-		if (!cmdArgs.isPlayer()) {
-			cmdArgs.getSender().sendMessage("§4§lERRO §fComando disponivel apenas §c§lin-game");
-			return;
-		}
 
-		BukkitMember member = (BukkitMember) CommonGeneral.getInstance().getMemberManager()
-				.getMember(cmdArgs.getPlayer().getUniqueId());
-
-		member.setBuildEnabled(!member.isBuildEnabled());
-		member.sendMessage(" §a* §fVocê " + (member.isBuildEnabled() ? "§aativou§f" : "§cdesativou§f")
-				+ "§f o modo de construção!");
-	}
-	
-	@Command(name = "gamemode", aliases = { "gm" }, groupToUse = Group.TRIAL)
-	public void gamemode(BukkitCommandArgs cmdArgs) {
+	@Command(name = "gamemode", aliases = { "gm" }, groupToUse = Group.MOD)
+	public void gamemodeCommand(BukkitCommandArgs cmdArgs) {
 		if (!cmdArgs.isPlayer()) {
 			cmdArgs.getSender().sendMessage("§4§lERRO §fComando disponivel apenas §c§lin-game");
 			return;
@@ -83,7 +77,8 @@ public class ModeratorCommand implements CommandClass {
 		}
 
 		String gamemodeName = gamemode == GameMode.SURVIVAL ? "Sobrevivência"
-				: gamemode == GameMode.ADVENTURE ? "Aventura" : gamemode == GameMode.SPECTATOR ? "Espectador" : "Criativo";
+				: gamemode == GameMode.ADVENTURE ? "Aventura"
+						: gamemode == GameMode.SPECTATOR ? "Espectador" : "Criativo";
 
 		if (args.length == 1) {
 			if (player.getGameMode() != gamemode) {
@@ -105,9 +100,29 @@ public class ModeratorCommand implements CommandClass {
 
 		if (target.getGameMode() != gamemode) {
 			target.setGameMode(gamemode);
-			player.sendMessage(" §a* §fVocê alterou gamemode de §a" + target.getName() + "§f para §a" + gamemodeName + "§f!");
+			player.sendMessage(
+					" §a* §fVocê alterou gamemode de §a" + target.getName() + "§f para §a" + gamemodeName + "§f!");
 		} else {
 			player.sendMessage(" §d* §fO §a" + target.getName() + "§f já está nesse gamemode§f!");
+		}
+	}
+
+	@Command(name = "restore", groupToUse = Group.MOD)
+	public void restoreCommand(BukkitCommandArgs cmdArgs) {
+		boolean restore = !BukkitMain.getInstance().getServerConfig().isRestoreMode();
+
+		RestoreEvent event = restore
+				? new RestoreInitEvent(CommonGeneral.getInstance().getMemberManager().getMembers().stream()
+						.map(member -> new Profile(((BukkitMember) member).getPlayerName(),
+								((BukkitMember) member).getUniqueId()))
+						.collect(Collectors.toList()))
+				: new RestoreStopEvent();
+		Bukkit.getPluginManager().callEvent(event);
+
+		if (!event.isCancelled()) {
+			BukkitMain.getInstance().getServerConfig().setRestoreMode(restore);
+			Bukkit.broadcastMessage(
+					restore ? "§aO modo restauração foi ativado!" : "§cO modo restauração foi desativado!");
 		}
 	}
 
@@ -217,10 +232,9 @@ public class ModeratorCommand implements CommandClass {
 		switch (args[0].toLowerCase()) {
 		case "on": {
 
-			if (!BukkitMain.getInstance().getServerConfig().isWhitelist()) {
+			if (BukkitMain.getInstance().getServerConfig().isWhitelist()) {
 				sender.sendMessage("§cO servidor já está com a whitelist ativada!");
 			} else {
-				Bukkit.setWhitelist(true);
 				BukkitMain.getInstance().getServerConfig().setWhitelist(true);
 				sender.sendMessage("§aVocê ativou a whitelist!");
 
@@ -238,7 +252,6 @@ public class ModeratorCommand implements CommandClass {
 			if (!BukkitMain.getInstance().getServerConfig().isWhitelist()) {
 				sender.sendMessage("§cO servidor já está com a whitelist desativada!");
 			} else {
-				Bukkit.setWhitelist(false);
 				BukkitMain.getInstance().getServerConfig().setWhitelist(false);
 				sender.sendMessage("§cVocê desativou a whitelist!");
 
@@ -257,6 +270,36 @@ public class ModeratorCommand implements CommandClass {
 			if (args.length == 1) {
 				sender.sendMessage(" §e*Use §f §a/whitelist <on:off:list:add:remove>§f ");
 				break;
+			}
+
+			if (args[1].equalsIgnoreCase("all")) {
+
+				List<Profile> profileList = new ArrayList<>();
+
+				if (args[0].equalsIgnoreCase("add"))
+					for (Member member : CommonGeneral.getInstance().getMemberManager().getMembers()) {
+						Profile profile = new Profile(member.getPlayerName(), member.getUniqueId());
+
+						if (BukkitMain.getInstance().getServerConfig().addWhitelist(profile))
+							profileList.add(profile);
+					}
+				else
+					for (Member member : CommonGeneral.getInstance().getMemberManager().getMembers()) {
+						Profile profile = new Profile(member.getPlayerName(), member.getUniqueId());
+
+						if (BukkitMain.getInstance().getServerConfig().removeWhitelist(profile))
+							profileList.add(profile);
+					}
+
+				sender.sendMessage(
+						(args[0].equalsIgnoreCase("add") ? "§aVocê adicionou " : "§cVocê removeu ")
+								+ (profileList.size() <= 5
+										? Joiner.on(", ")
+												.join(profileList.stream().map(Profile::getPlayerName)
+														.collect(Collectors.toList()))
+										: profileList.size() + " jogadores")
+								+ " na whitelist!");
+				return;
 			}
 
 			String playerName = args[1];
@@ -278,7 +321,55 @@ public class ModeratorCommand implements CommandClass {
 			break;
 		}
 		}
+	}
 
+	@Command(name = "blacklist", groupToUse = Group.MODPLUS, runAsync = true)
+	public void blacklistCommand(CommandArgs cmdArgs) {
+
+		tk.yallandev.saintmc.common.command.CommandSender sender = cmdArgs.getSender();
+		String[] args = cmdArgs.getArgs();
+
+		if (args.length == 0) {
+			sender.sendMessage(
+					" §e* §fUse §a/blacklist <add:remove>§f para um jogador não consegui mais entrar nesse servidor");
+			return;
+		}
+
+		// on/off/list/add/remove
+
+		switch (args[0].toLowerCase()) {
+		case "add":
+		case "remove": {
+			if (args.length == 1) {
+				sender.sendMessage(" §e*Use §f §a/whitelist <on:off:list:add:remove>§f ");
+				break;
+			}
+
+			String playerName = args[1];
+			UUID uniqueId = CommonGeneral.getInstance().getUuid(playerName);
+
+			Profile profile = new Profile(playerName, uniqueId);
+
+			if (args[0].equalsIgnoreCase("add")) {
+				long time = System.currentTimeMillis() + (1000 * 60 * 60 * 12);
+
+				if (args.length >= 3)
+					time = DateUtils.getTime(args[1]);
+
+				BukkitMain.getInstance().getServerConfig().blacklist(profile, time);
+				sender.sendMessage("§a" + args[1] + " adicionado na blacklist!");
+			} else {
+				BukkitMain.getInstance().getServerConfig().unblacklist(profile);
+				sender.sendMessage("§a" + args[1] + " removido na blacklist!");
+			}
+			break;
+		}
+		default: {
+			sender.sendMessage(
+					" §e* §fUse §a/blacklist <add:remove>§f para um jogador não consegui mais entrar nesse servidor");
+			break;
+		}
+		}
 	}
 
 	@Command(name = "effect", usage = "/<command> <effect> <duration> <amplifier>", groupToUse = Group.MOD)
@@ -606,7 +697,8 @@ public class ModeratorCommand implements CommandClass {
 					+ builder.toString() + "\n§c ");
 		}
 
-		target.kickPlayer("§4§l" + CommonConst.KICK_PREFIX + "\n§c\n§cSua conta foi expulsa do servidor!\n§f\n§f");
+		target.kickPlayer("§4§l" + CommonConst.KICK_PREFIX
+				+ "\n§c\n§cSua conta foi expulsa do servidor!\n§f\n§7Motivo: §f" + builder.toString().trim());
 	}
 
 	private Location getLocationBased(Location loc, String argX, String argY, String argZ) {

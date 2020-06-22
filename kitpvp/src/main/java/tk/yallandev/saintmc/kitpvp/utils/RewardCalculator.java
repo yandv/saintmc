@@ -10,10 +10,10 @@ public class RewardCalculator {
 	
 	public static int calculateReward(Player player, Status playerStatus, Player killer, Status killerStatus) {
 		int playerKd = playerStatus.getKills() / (playerStatus.getDeaths() == 0 ? 1 : playerStatus.getDeaths());
-		int playerXp = CommonGeneral.getInstance().getMemberManager().getMember(player.getUniqueId()).getTotalXp();
+		int playerXp = CommonGeneral.getInstance().getMemberManager().getMember(player.getUniqueId()).getXp();
 		
 		int killerKd = killerStatus.getKills() / (killerStatus.getDeaths() == 0 ? 1 : killerStatus.getDeaths());
-		int killerXp = CommonGeneral.getInstance().getMemberManager().getMember(player.getUniqueId()).getTotalXp();
+		int killerXp = CommonGeneral.getInstance().getMemberManager().getMember(player.getUniqueId()).getXp();
 		
 		int xp = CommonConst.RANDOM.nextInt(8) + 1;
 		

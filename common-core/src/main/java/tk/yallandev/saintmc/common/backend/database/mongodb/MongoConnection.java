@@ -10,6 +10,7 @@ import com.mongodb.Block;
 import com.mongodb.MongoClientURI;
 
 import lombok.Getter;
+import tk.yallandev.saintmc.CommonConst;
 import tk.yallandev.saintmc.common.backend.Database;
 
 @Getter
@@ -71,7 +72,7 @@ public class MongoConnection implements Database {
 
 	public static <T> void main(String[] args) {
 		MongoConnection mongo;
-		(mongo = new MongoConnection("mongodb+srv://root:kD2TqMzSyP78Keuk@cluster0-rcg3s.gcp.mongodb.net/test?retryWrites=true&w=majority"))
+		(mongo = new MongoConnection(CommonConst.MONGO_URL))
 						.connect();
 
 		mongo.getDb().getCollection("account").find().forEach(new Block<Document>() {

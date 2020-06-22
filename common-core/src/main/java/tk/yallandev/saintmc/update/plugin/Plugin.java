@@ -30,12 +30,12 @@ public class Plugin implements Updateable {
 	}
 
 	@Override
-	public boolean update() {
+	public boolean update(String key) {
 
 		String filePath = pluginInfo.getPluginFile().getAbsolutePath();
 
 		try {
-			HttpGet request = new HttpGet(CommonConst.API + "/plugin/download/?pluginName=" + pluginInfo.getPluginName() + "&key=kangaroo123");
+			HttpGet request = new HttpGet(CommonConst.API + "/plugin/download/?pluginName=" + pluginInfo.getPluginName() + "&key=" + key);
 
 			CloseableHttpResponse response = ((ApacheWebImpl) CommonConst.DEFAULT_WEB).getCloseableHttpClient()
 					.execute(request);
@@ -80,8 +80,9 @@ public class Plugin implements Updateable {
 		}
 		return false;
 	}
-
-	public boolean upload() {
+	
+	@Override
+	public boolean upload(String key) {
 		HttpPost httppost = new HttpPost(CommonConst.API + "/plugin/?pluginName=" + pluginInfo.getPluginName()
 				+ "&version=" + pluginInfo.getActualVersion() + "");
 

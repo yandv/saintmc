@@ -77,7 +77,6 @@ public abstract class Member {
 
 	private int money;
 	private int xp;
-	private int totalXp;
 	private League league;
 
 	private int reputation;
@@ -103,7 +102,7 @@ public abstract class Member {
 	protected String lastServerId;
 	protected ServerType lastServerType;
 
-	private transient boolean online = false;
+	private boolean online = false;
 
 	public Member(MemberModel memberModel) {
 		playerName = memberModel.getPlayerName();
@@ -128,7 +127,6 @@ public abstract class Member {
 
 		money = memberModel.getMoney();
 		xp = memberModel.getXp();
-		totalXp = memberModel.getTotalXp();
 		league = memberModel.getLeague();
 
 		reputation = memberModel.getReputation();
@@ -245,7 +243,7 @@ public abstract class Member {
 
 	public String getDiscordName() {
 		if (this.discordName.isEmpty() || this.discordName == null) {
-			return "Não tem";
+			return "Não vinculado";
 		}
 
 		return discordName;
@@ -300,12 +298,11 @@ public abstract class Member {
 
 	public boolean hasGroupPermission(Group groupToUse) {
 		if (getServerGroup() == Group.YOUTUBERPLUS)
-			return Group.MOD.ordinal() >= groupToUse.ordinal();
+			return Group.MODPLUS.ordinal() >= groupToUse.ordinal();
 		return getServerGroup().ordinal() >= groupToUse.ordinal();
 	}
 
 	public boolean hasRank(Group group) {
-
 		RankType rankType = null;
 
 		try {
@@ -352,6 +349,10 @@ public abstract class Member {
 
 	public void setXp(int xp) {
 		this.xp = xp;
+		
+		if (this.xp < 0)
+			this.xp = 0;
+		
 		CommonGeneral.getInstance().getPlayerData().updateMember(this, "xp");
 	}
 
@@ -359,7 +360,6 @@ public abstract class Member {
 		if (xp < 0)
 			xp = 0;
 
-		setTotalXp(getTotalXp() + xp);
 		setXp(getXp() + xp);
 		return xp;
 	}
@@ -368,14 +368,11 @@ public abstract class Member {
 		if (xp < 0)
 			xp = 0;
 
-		setTotalXp(getTotalXp() - xp);
-		setXp(getXp() - xp);
+		if (getXp() - xp < 0)
+			setXp(0);
+		else
+			setXp(getXp() - xp);
 		return xp;
-	}
-
-	public void setTotalXp(int xp) {
-		this.totalXp = xp;
-		CommonGeneral.getInstance().getPlayerData().updateMember(this, "totalXp");
 	}
 
 	public boolean hasPermission(String string) {
@@ -521,15 +518,15 @@ public abstract class Member {
 	public static Group getGroup(UUID uniqueId) {
 		return CommonGeneral.getInstance().getMemberManager().getMember(uniqueId).getGroup();
 	}
-	
+
 	@Override
 	public boolean equals(Object obj) {
 		if (obj instanceof Member) {
 			Member member = (Member) obj;
-			
+
 			return member.getPlayerName().equals(getPlayerName()) && member.getUniqueId().equals(getUniqueId());
 		}
-		
+
 		return super.equals(obj);
 	}
 

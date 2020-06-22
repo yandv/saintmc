@@ -15,6 +15,7 @@ import com.google.common.base.Joiner;
 
 import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.bukkit.BukkitMain;
+import tk.yallandev.saintmc.bukkit.account.BukkitMember;
 import tk.yallandev.saintmc.bukkit.api.worldedit.WorldeditController;
 import tk.yallandev.saintmc.bukkit.api.worldedit.arena.ArenaResponse;
 import tk.yallandev.saintmc.bukkit.api.worldedit.arena.ArenaType;
@@ -23,6 +24,7 @@ import tk.yallandev.saintmc.common.account.Member;
 import tk.yallandev.saintmc.common.command.CommandClass;
 import tk.yallandev.saintmc.common.command.CommandFramework.Command;
 import tk.yallandev.saintmc.common.permission.Group;
+import tk.yallandev.saintmc.common.server.ServerType;
 import tk.yallandev.saintmc.common.utils.string.NameUtils;
 
 @SuppressWarnings("deprecation")
@@ -32,6 +34,24 @@ public class WorldeditCommand implements CommandClass {
 
 	public WorldeditCommand() {
 		controller = BukkitMain.getInstance().getWorldeditController();
+	}
+	
+	@Command(name = "build")
+	public void buildCommand(BukkitCommandArgs cmdArgs) {
+		if (!cmdArgs.isPlayer()) {
+			cmdArgs.getSender().sendMessage("§4§lERRO §fComando disponivel apenas §c§lin-game");
+			return;
+		}
+
+		BukkitMember member = (BukkitMember) CommonGeneral.getInstance().getMemberManager()
+				.getMember(cmdArgs.getPlayer().getUniqueId());
+		
+		if (checkPermission(member))
+			return;
+
+		member.setBuildEnabled(!member.isBuildEnabled());
+		member.sendMessage(" §a* §fVocê " + (member.isBuildEnabled() ? "§aativou§f" : "§cdesativou§f")
+				+ "§f o modo de construção!");
 	}
 
 	@Command(name = "wand", groupToUse = Group.BUILDER)
@@ -163,6 +183,8 @@ public class WorldeditCommand implements CommandClass {
 				try {
 					blockMaterial = Material.getMaterial(Integer.valueOf(args[0].split(":")[0]));
 				} catch (NumberFormatException e) {
+					player.sendMessage("§cNão foi possível encontrar esse bloco!");
+					return;
 				}
 			}
 
@@ -179,8 +201,15 @@ public class WorldeditCommand implements CommandClass {
 				try {
 					blockMaterial = Material.getMaterial(Integer.valueOf(args[0]));
 				} catch (NumberFormatException e) {
+					player.sendMessage("§cNão foi possível encontrar esse bloco!");
+					return;
 				}
 			}
+		}
+
+		if (blockMaterial == null) {
+			player.sendMessage("§cNão foi possível encontrar o bloco " + args[0] + "!");
+			return;
 		}
 
 		if (!controller.hasFirstPosition(player)) {
@@ -208,12 +237,12 @@ public class WorldeditCommand implements CommandClass {
 				for (int y = (first.getBlockY() > second.getBlockY() ? second.getBlockY()
 						: first.getBlockY()); y <= (first.getBlockY() < second.getBlockY() ? second.getBlockY()
 								: first.getBlockY()); y++) {
-					Location l = new Location(first.getWorld(), x, y, z);
-					map.put(l.clone(), l.getBlock().getState());
+					Location location = new Location(first.getWorld(), x, y, z);
+					map.put(location.clone(), location.getBlock().getState());
 
-					if (l.getBlock().getType() != blockMaterial || l.getBlock().getData() != blockId) {
-						l.getBlock().setType(blockMaterial);
-						l.getBlock().setData(blockId);
+					if (location.getBlock().getType() != blockMaterial || location.getBlock().getData() != blockId) {
+						location.getBlock().setType(blockMaterial);
+						location.getBlock().setData(blockId);
 						amount++;
 					}
 				}
@@ -255,13 +284,17 @@ public class WorldeditCommand implements CommandClass {
 	}
 
 	public boolean checkPermission(Member member) {
-		if (!(member.isGroup(Group.BUILDER) || member.hasPermission("permission.build"))
-				&& !member.hasGroupPermission(Group.ADMIN)) {
-			member.sendMessage(" §c* §fVocê não tem §cpermissão§f para executar esse comando!");
-			return true;
-		}
 
-		return false;
+		if (member.isGroup(Group.BUILDER) || member.hasGroupPermission(Group.ADMIN)
+				|| member.hasPermission("permission.build"))
+			return false;
+
+		if (CommonGeneral.getInstance().getServerType() == ServerType.HUNGERGAMES
+				&& member.hasGroupPermission(Group.MODPLUS))
+			return false;
+
+		member.sendMessage(" §c* §fVocê não tem §cpermissão§f para executar esse comando!");
+		return true;
 	}
 
 }

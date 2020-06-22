@@ -31,6 +31,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import lombok.Getter;
 import lombok.Setter;
 import tk.yallandev.saintmc.CommonGeneral;
+import tk.yallandev.saintmc.bukkit.BukkitMain;
 import tk.yallandev.saintmc.common.account.Member;
 import tk.yallandev.saintmc.common.command.CommandArgs;
 import tk.yallandev.saintmc.common.command.CommandClass;
@@ -38,6 +39,8 @@ import tk.yallandev.saintmc.common.command.CommandFramework;
 import tk.yallandev.saintmc.common.permission.Group;
 
 public class BukkitCommandFramework implements CommandFramework {
+	
+	public static final BukkitCommandFramework INSTANCE = new BukkitCommandFramework(BukkitMain.getInstance());
 
 	private Plugin plugin;
 	private final Map<String, Entry<Method, Object>> commandMap = new HashMap<String, Entry<Method, Object>>();

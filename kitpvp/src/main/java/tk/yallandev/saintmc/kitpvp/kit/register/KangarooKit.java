@@ -20,7 +20,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
 import tk.yallandev.saintmc.bukkit.api.cooldown.CooldownController;
-import tk.yallandev.saintmc.bukkit.api.cooldown.types.Cooldown;
 import tk.yallandev.saintmc.bukkit.api.item.ItemBuilder;
 import tk.yallandev.saintmc.kitpvp.kit.Kit;
 
@@ -127,7 +126,7 @@ public class KangarooKit extends Kit {
 		if (!hasAbility(kangaroo))
 			return;
 		
-		CooldownController.getInstance().addCooldown(kangaroo, new Cooldown(getName(), 4l));
+		addCooldown(kangaroo, 4l);
 	}
 	
 	@EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)

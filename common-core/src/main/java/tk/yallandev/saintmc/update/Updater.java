@@ -35,7 +35,7 @@ public class Updater {
 		instance = this;
 		general = new CommonGeneral(Logger.getLogger("updater"));
 
-		updateType = UpdateType.DOWNLOAD;
+		updateType = UpdateType.UPDATE;
 		pluginList = new ArrayList<>();
 
 		JsonObject json = null;
@@ -94,7 +94,7 @@ public class Updater {
 			if (plugin.needUpdate()) {
 				debug("[Checker] The plugin " + plugin.getPluginName() + " need update!");
 
-				plugin.update();
+				plugin.update("kangaroo123");
 			}
 		}
 	}
@@ -103,7 +103,7 @@ public class Updater {
 		debug(" ");
 
 		for (PluginInfo plugin : pluginList) {
-			plugin.getPlugin().upload();
+			plugin.getPlugin().upload("kangaroo123");
 		}
 	}
 

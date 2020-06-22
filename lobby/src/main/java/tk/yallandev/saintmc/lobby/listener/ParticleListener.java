@@ -76,7 +76,6 @@ public class ParticleListener implements Listener {
 				.collect(Collectors.toList())) {
 
 			if (gamer.isUsingWing()) {
-				
 				if (event.getCurrentTick() % 5 == 0)
 					if (map.containsKey(gamer.getPlayer().getUniqueId()) && map.get(gamer.getPlayer().getUniqueId()) < System.currentTimeMillis()
 							|| !map.containsKey(gamer.getPlayer().getUniqueId())) {

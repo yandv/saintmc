@@ -1,0 +1,6 @@
+name: Screenshare
+version: 1.0.6
+main: tk.yallandev.saintmc.screenshare.ScreenshareMain
+author: yandv
+softdepend: [BukkitCommon]
+load: POSTWORLD

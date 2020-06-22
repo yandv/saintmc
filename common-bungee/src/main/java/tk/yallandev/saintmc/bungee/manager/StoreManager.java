@@ -62,7 +62,7 @@ public class StoreManager {
 						member.sendMessage("§a§l> §fO seu pedido de numero §a" + order.order_id + "§f acabou de ser executado!");
 						member.sendMessage(" ");
 						processedOrders.add(order.order_id);
-						CommonGeneral.getInstance().getMemberManager().broadcast("§a[DEBUG]WOOCommerce -> O pedido " + order.order_id + " acaba de ser executado!", Group.GERENTE);
+						CommonGeneral.getInstance().getMemberManager().broadcast("§a[DEBUG] WOOCommerce -> O pedido " + order.order_id + " acaba de ser executado!", Group.GERENTE);
 					}
 
 					if (processedOrders.isEmpty())

@@ -71,20 +71,16 @@ public class ItemBuilder {
 		return this;
 	}
 	
-	public ItemBuilder durability(int durability) {
-		return durability(durability, false);
-	}
-	
-	public ItemBuilder durability(int durability, boolean percent) {
-		int maxDurability = Math.max(15, material.getMaxDurability());
-		if (!percent && durability >= 0 && durability <= maxDurability) {
-			this.durability = (short) durability;
-		} else if (durability >= 1 && durability <= 100) {
-			this.durability = (short) (maxDurability - ((maxDurability * durability) / 100));
-		}
+	public ItemBuilder durability(short durability) {
+		this.durability = durability;
 		return this;
 	}
-
+	
+	public ItemBuilder durability(int durability) {
+		this.durability = (short)durability;
+		return this;
+	}
+	
 	public ItemBuilder name(String text) {
 		if (!useMeta) {
 			useMeta = true;
@@ -175,9 +171,7 @@ public class ItemBuilder {
 	}
 	
 	public ItemStack build() {
-		ItemStack stack = new ItemStack(material);
-		stack.setAmount(amount);
-		stack.setDurability(durability);
+		ItemStack stack = new ItemStack(material, amount, durability);
 		
 		if (enchantments != null && !enchantments.isEmpty()) {
 			for (Entry<Enchantment, Integer> entry : enchantments.entrySet()) {

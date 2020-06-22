@@ -20,10 +20,12 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.util.Vector;
 
 import tk.yallandev.saintmc.bukkit.api.cooldown.CooldownController;
 import tk.yallandev.saintmc.bukkit.api.cooldown.types.ItemCooldown;
 import tk.yallandev.saintmc.bukkit.api.vanish.AdminMode;
+import tk.yallandev.saintmc.bukkit.event.player.PlayerDamagePlayerEvent;
 import tk.yallandev.saintmc.kitpvp.GameMain;
 import tk.yallandev.saintmc.kitpvp.event.warp.PlayerWarpDeathEvent;
 import tk.yallandev.saintmc.kitpvp.event.warp.PlayerWarpRespawnEvent;
@@ -35,10 +37,7 @@ public class WarpListener implements Listener {
 
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent event) {
-		Player player = event.getPlayer();
-		Gamer gamer = GameMain.getInstance().getGamerManager().getGamer(player.getUniqueId());
-
-		GameMain.getInstance().getWarpManager().setWarp(gamer, "spawn", true);
+		GameMain.getInstance().getWarpManager().setWarp(event.getPlayer(), "spawn", true);
 
 		event.setJoinMessage(null);
 	}
@@ -80,10 +79,38 @@ public class WarpListener implements Listener {
 				entity.getWorld().dropItemNaturally(entity.getLocation(), item);
 			}
 		}
-
+		
 		event.getDrops().clear();
 
 		respawn(entity, warp);
+	}
+	
+	@EventHandler
+	public void onPlayerWarpDeath(PlayerWarpDeathEvent event) {
+		Player killer = event.getKiller();
+		
+		if (killer != null) {
+			for (ItemStack item : killer.getInventory().getArmorContents()) {
+				if (item == null || item.getType() == Material.AIR)
+					continue;
+				
+				item.setDurability((short) 0);
+			}
+		}
+	}
+	
+	@EventHandler
+	public void onPlayerWarpDeath(PlayerDamagePlayerEvent event) {
+		Player damager = event.getDamager();
+		
+		if (damager != null) {
+			ItemStack itemInHand = damager.getInventory().getItemInHand();
+			
+			if (itemInHand.getType().name().contains("SWORD") || itemInHand.getType().name().contains("AXE")) {
+				itemInHand.setDurability((short) 0);
+				damager.updateInventory();
+			}
+		}
 	}
 
 	@EventHandler(priority = EventPriority.LOWEST)
@@ -104,7 +131,13 @@ public class WarpListener implements Listener {
 	}
 
 	public void respawn(Player player, Warp warp) {
-		player.spigot().respawn();
+		player.setHealth(player.getMaxHealth());
+		player.setFoodLevel(20);
+		player.setSaturation(5);
+		player.setFireTicks(0);
+		player.setFallDistance(0);
+		player.getActivePotionEffects().clear();
+		player.setVelocity(new Vector(0, 0, 0));
 		player.teleport(warp.getSpawnLocation());
 
 		GameMain.getInstance().getGamerManager().getGamer(player.getUniqueId()).setSpawnProtection(true);

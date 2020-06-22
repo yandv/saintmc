@@ -13,6 +13,8 @@ public interface Challenge {
 	
 	void finish(Player player);
 	
+	boolean isInChallenge(Player player);
+	
 	ChallengeType getChallengeType();
 
 }

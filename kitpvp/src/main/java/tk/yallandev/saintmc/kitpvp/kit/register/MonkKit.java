@@ -9,8 +9,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.inventory.ItemStack;
 
-import tk.yallandev.saintmc.bukkit.api.cooldown.CooldownController;
-import tk.yallandev.saintmc.bukkit.api.cooldown.types.Cooldown;
 import tk.yallandev.saintmc.bukkit.api.item.ItemBuilder;
 import tk.yallandev.saintmc.kitpvp.GameMain;
 import tk.yallandev.saintmc.kitpvp.kit.Kit;
@@ -27,12 +25,12 @@ public class MonkKit extends Kit {
 		if (!(e.getRightClicked() instanceof Player))
 			return;
 
-		Player p = e.getPlayer();
+		Player player = e.getPlayer();
 
-		if (!hasAbility(p))
+		if (!hasAbility(player))
 			return;
 
-		ItemStack item = p.getItemInHand();
+		ItemStack item = player.getItemInHand();
 
 		if (!isAbilityItem(item))
 			return;
@@ -42,12 +40,11 @@ public class MonkKit extends Kit {
 		if (GameMain.getInstance().getGamerManager().getGamer(clicked.getUniqueId()).isSpawnProtection())
 			return;
 
-		if (CooldownController.getInstance().hasCooldown(p, getName())) {
-//			p.sendMessage(GameMain.getPlugin().getCooldownManager().getCooldownFormated(p.getUniqueId(), getName()));
+		if (isCooldown(player)) {
 			return;
 		}
 
-		CooldownController.getInstance().addCooldown(p, new Cooldown(getName(), 15l));
+		addCooldown(player, 15l);
 
 		int randomN = new Random().nextInt(36);
 

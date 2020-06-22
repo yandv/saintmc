@@ -6,6 +6,10 @@ import org.bukkit.entity.Player;
 
 import lombok.Getter;
 import lombok.Setter;
+import tk.yallandev.saintmc.CommonGeneral;
+import tk.yallandev.saintmc.common.account.Member;
+import tk.yallandev.saintmc.common.permission.Group;
+import tk.yallandev.saintmc.kitpvp.GameMain;
 import tk.yallandev.saintmc.kitpvp.kit.Kit;
 import tk.yallandev.saintmc.kitpvp.warp.Warp;
 
@@ -30,7 +34,6 @@ public class Gamer {
 		this.player = player;
 		
 		this.spawnProtection = true;
-		
 		this.combatStart = -1l;
 	}
 	
@@ -76,5 +79,28 @@ public class Gamer {
 
 	public UUID getUuid() {
 		return player.getUniqueId();
+	}
+
+	public boolean hasKitPermission(Kit kit) {
+		Member player = CommonGeneral.getInstance().getMemberManager().getMember(getUuid());
+
+		if (player == null)
+			return false;
+
+		if (player.hasPermission("kit." + kit.getName().toLowerCase()))
+			return true;
+
+		if (player.hasGroupPermission(Group.SAINT))
+			return true;
+
+		if (player.hasGroupPermission(Group.BLIZZARD))
+			if (GameMain.KITROTATE.get(Group.BLIZZARD).contains(kit.getName().toLowerCase()))
+				return true;
+
+		if (player.hasGroupPermission(Group.LIGHT))
+			if (GameMain.KITROTATE.get(Group.LIGHT).contains(kit.getName().toLowerCase()))
+				return true;
+
+		return GameMain.KITROTATE.get(Group.MEMBRO).contains(kit.getName().toLowerCase());
 	}
 }

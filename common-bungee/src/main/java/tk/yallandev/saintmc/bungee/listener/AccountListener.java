@@ -28,6 +28,7 @@ import tk.yallandev.saintmc.common.permission.Group;
 import tk.yallandev.saintmc.common.report.Report;
 import tk.yallandev.saintmc.common.server.ServerType;
 import tk.yallandev.saintmc.common.utils.string.NameUtils;
+import tk.yallandev.saintmc.common.utils.supertype.FutureCallback;
 
 public class AccountListener implements Listener {
 
@@ -35,45 +36,50 @@ public class AccountListener implements Listener {
 	 * Change the onlineMode status
 	 */
 
-//	@EventHandler(priority = EventPriority.NORMAL)
-//	public void onLogin(PreLoginEvent event) {
-//		if (event.isCancelled())
-//			return;
-//
-//		String playerName = event.getConnection().getName();
-//
-//		PendingConnection connection = event.getConnection();
-//
-//		event.registerIntent(BungeeMain.getPlugin());
-//		ProxyServer.getInstance().getScheduler().runAsync(BungeeMain.getPlugin(), new Runnable() {
-//			@Override
-//			public void run() {
-//				/*
-//				 * Verify if the player is cracked or premium
-//				 */
-//
-//				try {
-//					boolean cracked = CommonGeneral.getInstance().getMojangFetcher().isCracked(playerName);
-//
-//					/*
-//					 * Change the login status If the onlineMode equals false the cracked player
-//					 * will able to join or if equals true the cracked player wont able to join
-//					 */
-//
-//					connection.setOnlineMode(!cracked);
-//					CommonGeneral.getInstance().debug("The connection of " + event.getConnection().getName() + " is "
-//							+ (cracked ? "Cracked" : "Premium"));
-//				} catch (Exception ex) {
-//					event.setCancelled(true);
-//					event.setCancelReason("§4§l" + CommonConst.KICK_PREFIX
-//							+ "\n§f\n§fNão foi possível checar o seu nome!§f\n§6Mais informação em: §b"
-//							+ CommonConst.DISCORD);
-//				}
-//
-//				event.completeIntent(BungeeMain.getPlugin());
-//			}
-//		});
-//	}
+	@EventHandler(priority = EventPriority.NORMAL)
+	public void onLogin(PreLoginEvent event) {
+		if (event.isCancelled())
+			return;
+
+		String playerName = event.getConnection().getName();
+
+		PendingConnection connection = event.getConnection();
+
+		event.registerIntent(BungeeMain.getPlugin());
+		ProxyServer.getInstance().getScheduler().runAsync(BungeeMain.getPlugin(), new Runnable() {
+			@Override
+			public void run() {
+				/*
+				 * Verify if the player is cracked or premium
+				 */
+
+				CommonGeneral.getInstance().getMojangFetcher().isCracked(playerName, new FutureCallback<Boolean>() {
+
+					@Override
+					public void result(Boolean cracked, Throwable error) {
+
+						if (error == null) {
+							/*
+							 * Change the login status If the onlineMode equals false the cracked player
+							 * will able to join or if equals true the cracked player wont able to join
+							 */
+
+							connection.setOnlineMode(!cracked);
+						} else {
+							event.setCancelled(true);
+							event.setCancelReason("§4§l" + CommonConst.KICK_PREFIX
+									+ "\n§f\n§fNão foi possível checar o seu nome!§f\n§6Mais informação em: §b"
+									+ CommonConst.DISCORD);
+							error.printStackTrace();
+						}
+
+						event.completeIntent(BungeeMain.getPlugin());
+					}
+				});
+
+			}
+		});
+	}
 
 	/*
 	 * Load Member
@@ -111,19 +117,30 @@ public class AccountListener implements Listener {
 					 */
 
 					/*
-					 * Load Member by uniqueId to prevent account collision
+					 * Load Member by playerName to prevent account collision
 					 */
 
 					MemberModel basedName = CommonGeneral.getInstance().getPlayerData().loadMember(playerName);
 
-					if (basedName != null && !basedName.getPlayerName().equals(playerName)) {
-						event.setCancelled(true);
-						event.setCancelReason("§4§l" + CommonConst.KICK_PREFIX
-								+ "\n§f\n§fUma conta já está registrada no servidor com nickname \""
-								+ basedName.getPlayerName() + "\"!\n§f\n§6Mais informação em: §b"
-								+ CommonConst.DISCORD);
-						event.completeIntent(BungeeMain.getPlugin());
-						return;
+					if (basedName != null) {
+						if (!basedName.getPlayerName().equals(playerName)) {
+							event.setCancelled(true);
+							event.setCancelReason("§4§l" + CommonConst.KICK_PREFIX
+									+ "\n§f\n§fUma conta já está registrada no servidor com nickname \""
+									+ basedName.getPlayerName() + "\"!\n§f\n§6Mais informação em: §b"
+									+ CommonConst.DISCORD);
+							event.completeIntent(BungeeMain.getPlugin());
+							return;
+						}
+
+						if (!basedName.getUniqueId().equals(uniqueId)) {
+							event.setCancelled(true);
+							event.setCancelReason("§4§l" + CommonConst.KICK_PREFIX
+									+ "\n§f\n§fUma conta já está registrada no servidor com o mesmo nome mas com dados diferentes!\n§f\n§6Mais informação em: §b"
+									+ CommonConst.DISCORD);
+							event.completeIntent(BungeeMain.getPlugin());
+							return;
+						}
 					}
 
 					/*
@@ -132,8 +149,9 @@ public class AccountListener implements Listener {
 
 					MemberModel memberModel = CommonGeneral.getInstance().getPlayerData().loadMember(uniqueId);
 
-					if (basedName != null && basedName.getLoginConfiguration().getAccountType() != basedName
-							.getLoginConfiguration().getAccountType()) {
+					if (basedName != null && !basedName.getUniqueId().equals(memberModel.getUniqueId())
+							&& basedName.getLoginConfiguration().getAccountType() != basedName.getLoginConfiguration()
+									.getAccountType()) {
 						event.setCancelled(true);
 						event.setCancelReason("§4§l" + CommonConst.KICK_PREFIX + "\n§f\n§fUma conta "
 								+ NameUtils.formatString(memberModel.getLoginConfiguration().getAccountType().name())
@@ -188,23 +206,6 @@ public class AccountListener implements Listener {
 						.debug("The account of " + uniqueId + " (" + playerName + ") has been loaded!");
 
 				Member member = CommonGeneral.getInstance().getMemberManager().getMember(uniqueId);
-
-				/*
-				 * Check ban of player
-				 */
-
-				if (BungeeMain.getInstance().getPunishManager().isIpBanned(ipAddress.getHostString())) {
-					Ban ban = new Ban(member.getUniqueId(), "CONSOLE", UUID.randomUUID(), "Conta alternativa", -1l);
-
-					member.getPunishmentHistory().ban(ban);
-					CommonGeneral.getInstance().getMemberManager().getMembers().stream()
-							.filter(m -> m.hasGroupPermission(Group.TRIAL)).forEach(m -> {
-								m.sendMessage(" §4* §cO jogador " + member.getPlayerName() + " foi banido pelo §a"
-										+ ban.getBannedBy() + " por " + ban.getReason() + "!");
-							});
-
-					CommonGeneral.getInstance().getPlayerData().updateMember(member, "punishmentHistory");
-				}
 
 				Ban activeBan = null;
 
@@ -266,6 +267,26 @@ public class AccountListener implements Listener {
 				if (member.getLoginConfiguration().getAccountType() == AccountType.NONE)
 					member.getLoginConfiguration().setAccountType(cracked ? AccountType.CRACKED : AccountType.ORIGINAL);
 
+				/*
+				 * Check ban of player
+				 */
+
+				if (BungeeMain.getInstance().getPunishManager().isIpBanned(ipAddress.getHostString())) {
+					Ban ban = new Ban(member.getUniqueId(), "CONSOLE", UUID.randomUUID(), "Conta alternativa",
+							System.currentTimeMillis() + (1000 * 60 * 60 * 24
+									* (member.getLoginConfiguration().getAccountType() == AccountType.CRACKED ? 14
+											: 7)));
+
+					member.getPunishmentHistory().ban(ban);
+					CommonGeneral.getInstance().getMemberManager().getMembers().stream()
+							.filter(m -> m.hasGroupPermission(Group.TRIAL)).forEach(m -> {
+								m.sendMessage(" §4* §cO jogador " + member.getPlayerName() + " foi banido pelo §a"
+										+ ban.getBannedBy() + " por " + ban.getReason() + "!");
+							});
+
+					CommonGeneral.getInstance().getPlayerData().updateMember(member, "punishmentHistory");
+				}
+
 				Report report = CommonGeneral.getInstance().getReportManager().getReport(uniqueId);
 
 				/*
@@ -301,16 +322,16 @@ public class AccountListener implements Listener {
 				.getMember(event.getPlayer().getUniqueId());
 		member.setProxiedPlayer(event.getPlayer());
 	}
-	
+
 	@EventHandler
 	public void onPermissionCheck(PermissionCheckEvent event) {
 		CommandSender sender = event.getSender();
-		
+
 		if (sender instanceof ProxiedPlayer) {
 			ProxiedPlayer proxiedPlayer = (ProxiedPlayer) sender;
-			
+
 			Member member = CommonGeneral.getInstance().getMemberManager().getMember(proxiedPlayer.getUniqueId());
-			
+
 			if (member.hasGroupPermission(Group.DIRETOR))
 				event.setHasPermission(true);
 		}

@@ -6,16 +6,16 @@ import lombok.Getter;
 public enum League {
 	
 	UNRANKED("§f", "-", "Unranked", 500),
-    IRON("§8", "⚌", "Ferro", 1800),
-    BRONZE("§e", "\u2733", "Bronze", 2000),
-    SILVER("§f", "✠", "Silver", 2200),
-    GOLD("§6", "✜", "Gold", 2500),
-    PLATINUM("§3", "✥", "Platinum", 3000),
-    DIAMOND("§b", "✦", "Diamond", 3300),
-    EMERALD("§2", "✥", "Emerald", 4000),
-    CRYSTAL("§b", "❉", "Crystal", 4200),
-    MASTER("§5", "❁", "Master", 4500),
-    GRAND_MASTER("§c", "✹", "Grand Master", 5000),
+    IRON("§8", "⚌", "Ferro", 500+1800),
+    BRONZE("§e", "\u2733", "Bronze", 500+1800+2000),
+    SILVER("§f", "✠", "Silver", 500+1800+2000+2200),
+    GOLD("§6", "✜", "Gold", 500+1800+2000+2200+2500),
+    PLATINUM("§3", "✥", "Platinum", 500+1800+2000+2200+2500+3000),
+    DIAMOND("§b", "✦", "Diamond", 500+1800+2000+2200+2500+3000+3300),
+    EMERALD("§2", "✥", "Emerald", 500+1800+2000+2200+2500+3000+3300+4000),
+    CRYSTAL("§b", "❉", "Crystal", 500+1800+2000+2200+2500+3000+3300+4000+4200),
+    MASTER("§5", "❁", "Master", 500+1800+2000+2200+2500+3000+3300+4000+4200+4500),
+    GRAND_MASTER("§c", "✹", "Grand Master", 500+1800+2000+2200+2500+3000+3300+4000+4200+4500+5000),
     CHALLENGER("§4", "✫", "Challenger", Integer.MAX_VALUE);
 	
 	private String color;

@@ -43,34 +43,37 @@ public class SimpleScoreboard implements Scoreboard {
 	}
 
 	public void createScoreboard(Player player) {
-		org.bukkit.scoreboard.Scoreboard scoreboard = player.getScoreboard();
+		BukkitMember member = (BukkitMember)CommonGeneral.getInstance().getMemberManager().getMember(player.getUniqueId());
+		
+		if (member.getAccountConfiguration().isScoreboardEnabled()) {
+			org.bukkit.scoreboard.Scoreboard scoreboard = player.getScoreboard();
 
-		scoreboard.clearSlot(DisplaySlot.SIDEBAR);
+			scoreboard.clearSlot(DisplaySlot.SIDEBAR);
 
-		Objective objective = scoreboard.getObjective("mainScoreboard");
+			Objective objective = scoreboard.getObjective("mainScoreboard");
 
-		if (objective != null)
-			objective.unregister();
+			if (objective != null)
+				objective.unregister();
 
-		objective = scoreboard.registerNewObjective("mainScoreboard", "dummy");
+			objective = scoreboard.registerNewObjective("mainScoreboard", "dummy");
 
-		objective.setDisplayName(displayName);
-		objective.setDisplaySlot(DisplaySlot.SIDEBAR);
+			objective.setDisplayName(displayName);
+			objective.setDisplaySlot(DisplaySlot.SIDEBAR);
 
-		for (Entry<Integer, Score> entry : scoreList.entrySet()) {
-			Team team = scoreboard.getTeam(entry.getValue().getTeamName());
+			for (Entry<Integer, Score> entry : scoreList.entrySet()) {
+				Team team = scoreboard.getTeam(entry.getValue().getTeamName());
 
-			if (team == null)
-				team = scoreboard.registerNewTeam(entry.getValue().getTeamName());
-			
-			team.addEntry(entry.getValue().getScoreName());
-			team.setPrefix(entry.getValue().getPrefix());
-			team.setSuffix(entry.getValue().getSuffix());
+				if (team == null)
+					team = scoreboard.registerNewTeam(entry.getValue().getTeamName());
+				
+				team.addEntry(entry.getValue().getScoreName());
+				team.setPrefix(entry.getValue().getPrefix());
+				team.setSuffix(entry.getValue().getSuffix());
 
-			objective.getScore(entry.getValue().getScoreName()).setScore(entry.getKey());
+				objective.getScore(entry.getValue().getScoreName()).setScore(entry.getKey());
+			}
 		}
 		
-	    BukkitMember member = (BukkitMember)CommonGeneral.getInstance().getMemberManager().getMember(player.getUniqueId());
 	    member.setScoreboard(this);
 	    addViewer(member);
 	}

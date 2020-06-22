@@ -6,6 +6,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import tk.yallandev.saintmc.CommonConst;
 import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.bukkit.BukkitMain;
 import tk.yallandev.saintmc.bukkit.api.server.chat.ChatState;
@@ -17,6 +18,7 @@ import tk.yallandev.saintmc.common.command.CommandClass;
 import tk.yallandev.saintmc.common.command.CommandFramework.Command;
 import tk.yallandev.saintmc.common.command.CommandSender;
 import tk.yallandev.saintmc.common.permission.Group;
+import tk.yallandev.saintmc.common.server.ServerType;
 import tk.yallandev.saintmc.update.UpdatePlugin;
 
 public class StaffCommand implements CommandClass {
@@ -52,13 +54,8 @@ public class StaffCommand implements CommandClass {
 		p.sendMessage(" §a* §fVocê setou a warp §a" + configName + "§f!");
 	}
 
-	@Command(name = "update", groupToUse = Group.MODGC)
+	@Command(name = "update", groupToUse = Group.MODGC, runAsync = true)
 	public void updateCommand(BukkitCommandArgs cmdArgs) {
-		if (!cmdArgs.isPlayer()) {
-			cmdArgs.getSender().sendMessage("§4§lERRO §fComando disponivel apenas §c§lin-game");
-			return;
-		}
-
 		UpdatePlugin.Shutdown shutdown = new UpdatePlugin.Shutdown() {
 
 			@Override
@@ -70,7 +67,7 @@ public class StaffCommand implements CommandClass {
 
 		if (UpdatePlugin.update(
 				new File(BukkitMain.class.getProtectionDomain().getCodeSource().getLocation().getPath()),
-				"BukkitCommon", shutdown)) {
+				"BukkitCommon", CommonConst.DOWNLOAD_KEY, shutdown)) {
 			cmdArgs.getSender().sendMessage("§aAtualizando o plugin!");
 		} else
 			cmdArgs.getSender().sendMessage("§cNenhuma atualização disponível!");
@@ -200,31 +197,37 @@ public class StaffCommand implements CommandClass {
 	}
 
 	@Command(name = "chat", groupToUse = Group.MOD)
-	public void chat(BukkitCommandArgs args) {
+	public void chatCommand(BukkitCommandArgs args) {
 		if (!args.isPlayer())
 			return;
+		
+		CommandSender sender = args.getSender();
 
 		if (args.getArgs().length == 0) {
-			args.getPlayer().sendMessage(" §e* §fUse §a/chat <on:off>§f para ativar ou desativar o chat!");
+			sender.sendMessage(" §e* §fUse §a/chat <on:off>§f para ativar ou desativar o chat!");
 			return;
 		}
 
 		if (args.getArgs()[0].equalsIgnoreCase("on")) {
 			if (BukkitMain.getInstance().getServerConfig().getChatState() == ChatState.ENABLED) {
-				args.getPlayer().sendMessage(" §c* §fO chat já está §aativado§f!");
+				sender.sendMessage(" §c* §fO chat já está §aativado§f!");
 				return;
 			}
 			BukkitMain.getInstance().getServerConfig().setChatState(ChatState.ENABLED);
-			args.getPlayer().sendMessage(" §a* §fVocê §aativou§f o chat!");
+			sender.sendMessage(" §a* §fVocê §aativou§f o chat!");
 		} else if (args.getArgs()[0].equalsIgnoreCase("off")) {
-			if (BukkitMain.getInstance().getServerConfig().getChatState() == ChatState.YOUTUBER) {
-				args.getPlayer().sendMessage(" §c* §fO chat já está §cdesativado§f!");
+			if (BukkitMain.getInstance().getServerConfig().getChatState() == ChatState.YOUTUBER
+					|| BukkitMain.getInstance().getServerConfig().getChatState() == ChatState.DISABLED) {
+				sender.sendMessage(" §c* §fO chat já está §cdesativado§f!");
 				return;
 			}
-			BukkitMain.getInstance().getServerConfig().setChatState(ChatState.YOUTUBER);
-			args.getPlayer().sendMessage(" §a* §fVocê §cdesativou§f o chat!");
+			
+			BukkitMain.getInstance().getServerConfig().setChatState(
+					CommonGeneral.getInstance().getServerType() == ServerType.HUNGERGAMES ? ChatState.STAFF
+							: ChatState.YOUTUBER);
+			sender.sendMessage(" §a* §fVocê §cdesativou§f o chat!");
 		} else {
-			args.getPlayer().sendMessage(" §e* §fUse §a/chat <on:off>§f para ativar ou desativar o chat!");
+			sender.sendMessage(" §e* §fUse §a/chat <on:off>§f para ativar ou desativar o chat!");
 		}
 	}
 
@@ -235,72 +238,6 @@ public class StaffCommand implements CommandClass {
 				p.sendMessage("");
 
 			p.sendMessage(" §8* §fO chat foi limpo!\n§f");
-		}
-	}
-
-	@Command(name = "tell", usage = "/<command> <message>", aliases = { "msg" })
-	public void tell(BukkitCommandArgs cmdArgs) {
-		CommandSender sender = cmdArgs.getSender();
-		String[] args = cmdArgs.getArgs();
-		if (!cmdArgs.isPlayer()) {
-			sender.sendMessage(" §c §fVocê precisa ser um §ajogador §fpara executar este comando!");
-			return;
-		}
-		if (args.length == 0) {
-			sender.sendMessage(" §e* §fVocê deve utilizar §a/" + cmdArgs.getLabel()
-					+ " <mensagem>§f, para enviar uma mensagem privada!");
-		} else {
-
-			if (args.length == 1) {
-				if (args[0].equalsIgnoreCase("on")) {
-
-					Member member = CommonGeneral.getInstance().getMemberManager()
-							.getMember(cmdArgs.getPlayer().getUniqueId());
-
-					if (member.getAccountConfiguration().isTellEnabled()) {
-						sender.sendMessage(" §c* §fSeu tell já está §aativado§f!");
-						return;
-					}
-
-					member.getAccountConfiguration().setTellEnabled(!member.getAccountConfiguration().isTellEnabled());
-					sender.sendMessage(" §a* §fVocê §aativou fo seu tell!");
-				} else if (args[0].equalsIgnoreCase("off")) {
-
-					Member member = CommonGeneral.getInstance().getMemberManager()
-							.getMember(cmdArgs.getPlayer().getUniqueId());
-
-					if (!member.getAccountConfiguration().isTellEnabled()) {
-						sender.sendMessage(" §c* §fSeu tell já está §cdesativado§f!");
-						return;
-					}
-
-					member.getAccountConfiguration().setTellEnabled(!member.getAccountConfiguration().isTellEnabled());
-					sender.sendMessage(" §a* §fVocê §cdesativou fo seu tell!");
-				} else {
-					sender.sendMessage(" §e* §fVocê deve utilizar §a/" + cmdArgs.getLabel()
-							+ " <mensagem>§f, para enviar uma mensagem privada!");
-				}
-				return;
-
-			}
-
-			Player target = Bukkit.getPlayer(args[0]);
-
-			if (target == null) {
-				sender.sendMessage(" §c* §fO jogador §a" + args[0] + "§f está offline!");
-				return;
-			}
-
-			String msg = "";
-
-			StringBuilder sb = new StringBuilder();
-			for (int i = 1; i < args.length; i++)
-				sb.append(args[i]).append(" ");
-			msg = sb.toString();
-
-			sender.sendMessage("§7[§e" + cmdArgs.getPlayer().getName() + " §7» §e" + target.getName() + "§7] §f" + msg);
-			target.sendMessage("§7[§e" + cmdArgs.getPlayer().getName() + " §7» §e" + target.getName() + "§7] §f" + msg);
-
 		}
 	}
 

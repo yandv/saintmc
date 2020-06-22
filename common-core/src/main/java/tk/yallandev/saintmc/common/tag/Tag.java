@@ -32,12 +32,13 @@ public abstract class Tag {
 	public static final Tag MOD = TagWrapper.create("§5§lMOD§5", Group.MOD);
 	public static final Tag TRIAL = TagWrapper.create("§d§lTRIAL§d", Group.TRIAL);
 	public static final Tag YOUTUBERPLUS = TagWrapper.create("YOUTUBERPLUS", "§3§lYT+§3", Group.YOUTUBERPLUS, true);
+	public static final Tag HELPER = TagWrapper.create("§9§lHELPER§9", Group.HELPER);
 	public static final Tag BUILDER = TagWrapper.create("§e§lBUILDER§e", Group.BUILDER, true);
 	public static final Tag DESIGNER = TagWrapper.create("§2§lDESIGNER§2", Group.DESIGNER, true);
 	public static final Tag YOUTUBER = TagWrapper.create("YOUTUBER", "§b§lYT§b", Group.YOUTUBER, true);
 	public static final Tag BETA = TagWrapper.create("§1§lBETA§1", Group.BETA);
 	public static final Tag SAINT = TagWrapper.create("§d§lSAINT§d", Group.SAINT);
-	public static final Tag BLIZZARD = TagWrapper.create("§1§lBLIZZARD§1", Group.BLIZZARD);
+	public static final Tag BLIZZARD = TagWrapper.create("§b§lBLIZZARD§b", Group.BLIZZARD);
 	public static final Tag LIGHT = TagWrapper.create("§a§lLIGHT§a", Group.LIGHT);
 	public static final Tag DONATOR = TagWrapper.create("§d§lDONATOR§d", Group.DONATOR, true);
 	public static final Tag MEMBRO = TagWrapper.create("MEMBRO", "§7", Group.MEMBRO);

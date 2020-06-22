@@ -25,13 +25,14 @@ public class BukkitMember extends Member {
 	@Setter
 	private transient Player player;
 	private transient List<Tag> tags;
+	private transient Scoreboard scoreboard;
 	@Setter
 	private transient boolean buildEnabled;
 
 	@Setter
 	private transient boolean cacheOnQuit;
-
-	private transient Scoreboard scoreboard;
+	@Setter
+	private transient UUID lastTell;
 
 	public BukkitMember(MemberModel memberModel) {
 		super(memberModel);
@@ -98,27 +99,35 @@ public class BukkitMember extends Member {
 
 	@Override
 	public void setXp(int xp) {
-		League nextLeague = getLeague();
-
+//		League nextLeague = getLeague();
 		super.setXp(xp);
-
-		if (getXp() >= getLeague().getMaxXp()) {
-			xp = getXp() - getLeague().getMaxXp();
-			nextLeague = getLeague().getNextLeague();
-		} else if (getXp() < 0) {
-			nextLeague = getLeague().getPreviousLeague();
-
-			if (nextLeague == League.UNRANKED) {
-				xp = 0;
-				super.setXp(0);
-			} else
-				xp = nextLeague.getMaxXp() + getXp();
+		
+		
+		if (xp >= getLeague().getMaxXp()) {
+			setLeague(getLeague().getNextLeague());
+		} else if (getLeague() != League.UNRANKED) {
+			if (xp < getLeague().getPreviousLeague().getMaxXp()) {
+				setLeague(getLeague().getPreviousLeague());
+			}
 		}
-
-		if (nextLeague != getLeague()) {
-			setLeague(nextLeague);
-			setXp(xp);
-		}
+		
+//		if (getXp() >= getLeague().getMaxXp()) {
+//			xp = getXp() - getLeague().getMaxXp();
+//			nextLeague = getLeague().getNextLeague();
+//		} else if (getXp() < 0) {
+//			nextLeague = getLeague().getPreviousLeague();
+//
+//			if (nextLeague == League.UNRANKED) {
+//				xp = 0;
+//				super.setXp(0);
+//			} else
+//				xp = nextLeague.getMaxXp() + getXp();
+//		}
+//
+//		if (nextLeague != getLeague()) {
+//			setLeague(nextLeague);
+//			setXp(xp);
+//		}
 	}
 
 	@Override
@@ -134,24 +143,26 @@ public class BukkitMember extends Member {
 
 	public void loadTags() {
 		tags = new ArrayList<>();
-		for (Tag t : Tag.values()) {
+		for (Tag tag : Tag.values()) {
 
-			if (hasPermission("tag." + t.getName().toLowerCase())) {
-				tags.add(t);
+			if (hasPermission("tag." + tag.getName().toLowerCase())) {
+				tags.add(tag);
 				continue;
 			}
 
-			if (t.getGroupToUse() == null)
+			if (tag.getGroupToUse() == null)
 				continue;
 
-			if ((t.isExclusive() && (t.getGroupToUse() == getServerGroup() || hasRank(t.getGroupToUse())
-					|| getServerGroup().ordinal() >= Group.ADMIN.ordinal()))) {
-				tags.add(t);
+			if (tag.isExclusive()) {
+				if (tag.getGroupToUse() == getServerGroup() || hasRank(tag.getGroupToUse())
+						|| getServerGroup().ordinal() >= Group.ADMIN.ordinal()) {
+					tags.add(tag);
+				}
 				continue;
 			}
 
-			if (getServerGroup().ordinal() >= t.getGroupToUse().ordinal())
-				tags.add(t);
+			if (getServerGroup().ordinal() >= tag.getGroupToUse().ordinal())
+				tags.add(tag);
 		}
 
 	}

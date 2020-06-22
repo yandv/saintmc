@@ -63,22 +63,19 @@ public class LoginListener implements Listener {
 				.getMember(event.getPlayer().getUniqueId());
 
 		if (member.getLoginConfiguration().getAccountType() == AccountType.CRACKED) {
-			if (member.getLoginConfiguration().isLogged()) {
-				player.teleport(BukkitMain.getInstance().getLocationFromConfig("spawn"));
-			} else {
-				player.teleport(BukkitMain.getInstance().getLocationFromConfig("login"));
+			if (!member.getLoginConfiguration().isLogged()) {
 				member.setTag(Tag.LOGANDO, true);
 
 				member.sendMessage(
 						member.getLoginConfiguration().isRegistred() ? "§a§l> §aUse /login <senha> para se logar!"
-								: "§a§l> §aUse /register <senha> para se registrar!");
+								: "§a§l> §fUse §a/register <senha> <senha>§f para se registrar!");
 
 				Title.send(player, member.getLoginConfiguration().isRegistred() ? "§a§lLOGIN" : "§a§lREGISTER",
 						member.getLoginConfiguration().isRegistred() ? "§aUse /login <senha> para se logar!"
 								: "§aUse /register <senha> para se registrar!",
 						SimpleTitle.class);
 
-				playerList.put(member, System.currentTimeMillis() + 15000);
+				playerList.put(member, System.currentTimeMillis() + 30000);
 			}
 		} else
 			player.teleport(BukkitMain.getInstance().getLocationFromConfig("spawn"));

@@ -17,6 +17,8 @@
 		<module>gameapi-old</module>
 		<module>hungergames</module>
 		<module>gladiator</module>
+		<module>screenshare</module>
+		<module>anticheat</module>
 	</modules>
 
 	<build>

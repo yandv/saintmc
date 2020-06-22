@@ -14,11 +14,13 @@ import tk.yallandev.saintmc.common.command.CommandSender;
 public class DiscordCommandSender implements CommandSender {
 
 	private User user;
+	private Member member;
 	private MessageChannel messageChannel;
 	private Guild guild;
 
-	public DiscordCommandSender(User user, MessageChannel messageChannel, Guild guild) {
+	public DiscordCommandSender(User user, Member member, MessageChannel messageChannel, Guild guild) {
 		this.user = user;
+		this.member = member;
 		this.messageChannel = messageChannel;
 		this.guild = guild;
 	}
@@ -28,11 +30,16 @@ public class DiscordCommandSender implements CommandSender {
 	}
 
 	public Member getAsMember(Guild guild) {
-		return guild.getMember(getUser());
+		Member member = guild.getMember(getUser()); 
+		
+		if (member == null)
+			member = guild.retrieveMember(getUser()).complete();
+		
+		return member;
 	}
 
 	public Member getAsMember() {
-		return getGuild().getMember(getUser());
+		return member;
 	}
 
 	@Override

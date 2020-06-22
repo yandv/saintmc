@@ -1,3 +1,4 @@
+
 package tk.yallandev.saintmc.bukkit.command.register;
 
 import java.util.Arrays;
@@ -7,21 +8,30 @@ import java.util.UUID;
 
 import org.bukkit.entity.Player;
 
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
+import tk.yallandev.saintmc.CommonConst;
 import tk.yallandev.saintmc.CommonGeneral;
+import tk.yallandev.saintmc.bukkit.account.BukkitMember;
 import tk.yallandev.saintmc.bukkit.command.BukkitCommandArgs;
 import tk.yallandev.saintmc.bukkit.menu.account.AccountInventory;
 import tk.yallandev.saintmc.common.account.League;
 import tk.yallandev.saintmc.common.account.Member;
 import tk.yallandev.saintmc.common.account.MemberModel;
 import tk.yallandev.saintmc.common.account.MemberVoid;
+import tk.yallandev.saintmc.common.ban.constructor.Mute;
 import tk.yallandev.saintmc.common.command.CommandClass;
 import tk.yallandev.saintmc.common.command.CommandFramework.Command;
+import tk.yallandev.saintmc.common.command.CommandSender;
+import tk.yallandev.saintmc.common.permission.Group;
+import tk.yallandev.saintmc.common.utils.DateUtils;
+import tk.yallandev.saintmc.common.utils.string.MessageBuilder;
 
 public class AccountCommand implements CommandClass {
 
-	@Command(name = "account", aliases = { "acc", "info" })
+	@Command(name = "account", aliases = { "acc", "info" }, runAsync = true)
 	public void accountCommand(BukkitCommandArgs cmdArgs) {
 		if (!cmdArgs.isPlayer())
 			return;
@@ -105,6 +115,178 @@ public class AccountCommand implements CommandClass {
 			p.sendMessage(
 					"§a§l> §fXP necessário para o próximo rank §e" + (player.getLeague().getMaxXp() - player.getXp()));
 		}
+	}
+
+	@Command(name = "site", aliases = { "website", "discord" })
+	public void siteCommand(BukkitCommandArgs cmdArgs) {
+		cmdArgs.getSender()
+				.sendMessage(
+						new BaseComponent[] { new MessageBuilder("§aClique aqui para acessar o nosso site!")
+								.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, CommonConst.WEBSITE))
+								.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+										new BaseComponent[] { new MessageBuilder(CommonConst.WEBSITE).create() }))
+								.create() });
+		cmdArgs.getSender()
+				.sendMessage(
+						new BaseComponent[] { new MessageBuilder("§bClique aqui para entrar em nosso discord!")
+								.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, CommonConst.DISCORD))
+								.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+										new BaseComponent[] { new MessageBuilder(CommonConst.WEBSITE).create() }))
+								.create() });
+	}
+
+	@Command(name = "reply", usage = "/<command> <message>", aliases = { "r" })
+	public void replyCommand(BukkitCommandArgs cmdArgs) {
+		if (!cmdArgs.isPlayer()) {
+			cmdArgs.getSender().sendMessage(" §c §fVocê precisa ser um §ajogador §fpara executar este comando!");
+			return;
+		}
+
+		CommandSender sender = cmdArgs.getSender();
+		String[] args = cmdArgs.getArgs();
+
+		if (args.length == 0) {
+			sender.sendMessage(" §e* §fVocê deve utilizar §a/" + cmdArgs.getLabel()
+					+ " <mensagem>§f, para enviar uma mensagem privada!");
+			return;
+		}
+
+		BukkitMember player = (BukkitMember) CommonGeneral.getInstance().getMemberManager()
+				.getMember(cmdArgs.getSender().getUniqueId());
+
+		if (player.getLastTell() == null) {
+			sender.sendMessage(" §c* §fVocê não tem tell para responder!");
+			return;
+		}
+
+		Mute mute = player.getPunishmentHistory().getActiveMute();
+
+		if (mute != null) {
+			player.sendMessage("§4§l> §fVocê está mutado "
+					+ (mute.isPermanent() ? "permanentemente" : "temporariamente") + " do servidor!"
+					+ (mute.isPermanent() ? "" : "\n §4§l> §fExpira em §e" + DateUtils.getTime(mute.getMuteExpire())));
+			return;
+		}
+
+		Member member = CommonGeneral.getInstance().getMemberManager().getMember(player.getLastTell());
+
+		if (member == null) {
+			sender.sendMessage(" §c* §fO jogador §a" + args[0] + "§f está offline!");
+			return;
+		}
+
+		String message = "";
+
+		StringBuilder sb = new StringBuilder();
+
+		for (int i = 0; i < args.length; i++)
+			sb.append(args[i]).append(" ");
+
+		message = sb.toString();
+
+		sender.sendMessage("§7[§e" + cmdArgs.getPlayer().getName() + " §7» §e"
+				+ (member.isUsingFake() ? member.getFakeName() : member.getPlayerName()) + "§7] §f" + message);
+		member.sendMessage("§7[§e" + cmdArgs.getPlayer().getName() + " §7» §e"
+				+ (member.isUsingFake() ? member.getFakeName() : member.getPlayerName()) + "§7] §f" + message);
+	}
+
+	@Command(name = "tell", usage = "/<command> <message>", aliases = { "msg" })
+	public void tellCommand(BukkitCommandArgs cmdArgs) {
+		if (!cmdArgs.isPlayer()) {
+			cmdArgs.getSender().sendMessage(" §c §fVocê precisa ser um §ajogador §fpara executar este comando!");
+			return;
+		}
+
+		CommandSender sender = cmdArgs.getSender();
+		String[] args = cmdArgs.getArgs();
+
+		BukkitMember player = (BukkitMember) CommonGeneral.getInstance().getMemberManager()
+				.getMember(cmdArgs.getSender().getUniqueId());
+
+		Mute mute = player.getPunishmentHistory().getActiveMute();
+
+		if (mute != null) {
+			player.sendMessage("§4§l> §fVocê está mutado "
+					+ (mute.isPermanent() ? "permanentemente" : "temporariamente") + " do servidor!"
+					+ (mute.isPermanent() ? "" : "\n §4§l> §fExpira em §e" + DateUtils.getTime(mute.getMuteExpire())));
+			return;
+		}
+
+		if (args.length == 0) {
+			sender.sendMessage(" §e* §fVocê deve utilizar §a/" + cmdArgs.getLabel()
+					+ " <mensagem>§f, para enviar uma mensagem privada!");
+			return;
+		}
+
+		if (args.length == 1) {
+			if (args[0].equalsIgnoreCase("on")) {
+
+				Member member = CommonGeneral.getInstance().getMemberManager()
+						.getMember(cmdArgs.getPlayer().getUniqueId());
+
+				if (member.getAccountConfiguration().isTellEnabled()) {
+					sender.sendMessage(" §c* §fSeu tell já está §aativado§f!");
+					return;
+				}
+
+				member.getAccountConfiguration().setTellEnabled(!member.getAccountConfiguration().isTellEnabled());
+				sender.sendMessage(" §a* §fVocê §aativou fo seu tell!");
+			} else if (args[0].equalsIgnoreCase("off")) {
+
+				Member member = CommonGeneral.getInstance().getMemberManager()
+						.getMember(cmdArgs.getPlayer().getUniqueId());
+
+				if (!member.getAccountConfiguration().isTellEnabled()) {
+					sender.sendMessage(" §c* §fSeu tell já está §cdesativado§f!");
+					return;
+				}
+
+				member.getAccountConfiguration().setTellEnabled(!member.getAccountConfiguration().isTellEnabled());
+				sender.sendMessage(" §a* §fVocê §cdesativou fo seu tell!");
+			} else {
+				sender.sendMessage(" §e* §fVocê deve utilizar §a/" + cmdArgs.getLabel()
+						+ " <mensagem>§f, para enviar uma mensagem privada!");
+			}
+
+			return;
+		}
+
+		BukkitMember member = (BukkitMember) CommonGeneral.getInstance().getMemberManager().getMemberByFake(args[0]);
+
+		if (member == null) {
+			member = (BukkitMember) CommonGeneral.getInstance().getMemberManager().getMember(args[0]);
+
+			if (member != null && member.isUsingFake()
+					&& !Member.hasGroupPermission(sender.getUniqueId(), Group.TRIAL)) {
+				sender.sendMessage(" §c* §fO jogador §a" + args[0] + "§f está offline!");
+				return;
+			}
+		}
+
+		if (member == null) {
+			sender.sendMessage(" §c* §fO jogador §a" + args[0] + "§f está offline!");
+			return;
+		}
+
+		boolean fake = false;
+
+		if (member.isUsingFake())
+			fake = true;
+
+		String message = "";
+
+		StringBuilder sb = new StringBuilder();
+
+		for (int i = 1; i < args.length; i++)
+			sb.append(args[i]).append(" ");
+
+		message = sb.toString();
+
+		sender.sendMessage("§7[§e" + cmdArgs.getPlayer().getName() + " §7» §e"
+				+ (fake ? member.getFakeName() : member.getPlayerName()) + "§7] §f" + message);
+		member.sendMessage("§7[§e" + cmdArgs.getPlayer().getName() + " §7» §e"
+				+ (fake ? member.getFakeName() : member.getPlayerName()) + "§7] §f" + message);
+		member.setLastTell(sender.getUniqueId());
 	}
 
 }

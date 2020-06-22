@@ -68,7 +68,6 @@ public class MemberModel {
     
 	private int money;
 	private int xp;
-	private int totalXp;
 	private League league;
 	
 	private int reputation;
@@ -94,7 +93,7 @@ public class MemberModel {
 	protected String lastServerId;
 	protected ServerType lastServerType;
     
-    private transient boolean online;
+    private boolean online;
     
     public MemberModel(Member member) {
     	playerName = member.getPlayerName();
@@ -119,7 +118,6 @@ public class MemberModel {
     	
     	money = member.getMoney();
     	xp = member.getXp();
-    	totalXp = member.getTotalXp();
     	league = member.getLeague();
     	reputation = member.getReputation();
     	

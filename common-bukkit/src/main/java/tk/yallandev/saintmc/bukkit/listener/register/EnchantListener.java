@@ -22,30 +22,30 @@ import tk.yallandev.saintmc.bukkit.listener.Listener;
 
 public class EnchantListener extends Listener {
 	
-	private ItemStack itemBuilder = new ItemBuilder().name("§aLapis Lazuli").durability(4).type(Material.INK_SACK).amount(3).build();
+	public static final ItemStack LAPIS = new ItemBuilder().name("§aLapis Lazuli").durability(4).type(Material.INK_SACK).amount(3).build();
 	
-	@EventHandler
+	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onEnchantItem(EnchantItemEvent event) {
 		if (event.getInventory() instanceof EnchantingInventory)
-			((EnchantingInventory) event.getInventory()).setSecondary(itemBuilder);
+			((EnchantingInventory) event.getInventory()).setSecondary(LAPIS);
 		
 	}
 
-	@EventHandler
+	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onInventoryOpen(InventoryOpenEvent event) {
 		if (event.getInventory() instanceof EnchantingInventory)
-			((EnchantingInventory) event.getInventory()).setSecondary(itemBuilder);
+			((EnchantingInventory) event.getInventory()).setSecondary(LAPIS);
 	}
 
-	@EventHandler
+	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onInventoryClick(InventoryClickEvent event) {
 		if (event.getInventory() instanceof EnchantingInventory)
 			if (event.getRawSlot() == 1)
 				event.setCancelled(true);
 	}
 	
-	@EventHandler(priority = EventPriority.MONITOR)
-	public void asodk(ItemSpawnEvent event) {
+	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+	public void onItemSpawn(ItemSpawnEvent event) {
 		if (event.getEntity().getType() == EntityType.DROPPED_ITEM) {
 			Item item = event.getEntity();
 			
@@ -62,7 +62,7 @@ public class EnchantListener extends Listener {
 		}
 	}
 	
-	@EventHandler(priority = EventPriority.MONITOR)
+	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onPlayerDropItem(PlayerDropItemEvent event) {
 		if (event.getItemDrop().getType() == EntityType.DROPPED_ITEM) {
 			Item item = event.getItemDrop();
@@ -80,7 +80,7 @@ public class EnchantListener extends Listener {
 		}
 	}
 	
-	@EventHandler
+	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onPrepareItemEnchant(PrepareItemEnchantEvent event) {
         CraftInventoryView view = (CraftInventoryView)event.getView();
         ContainerEnchantTable table = (ContainerEnchantTable)view.getHandle();

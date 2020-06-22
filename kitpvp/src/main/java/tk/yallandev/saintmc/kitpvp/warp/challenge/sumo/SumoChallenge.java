@@ -42,18 +42,23 @@ public class SumoChallenge implements Challenge {
 
 	@Override
 	public void finish(Player player) {
-		Bukkit.getPluginManager().callEvent(new ShadowFightFinishEvent(getPlayer(), target, player, GameMain.getInstance().getWarpManager().getWarpByName("1v1")));
-		
 		VanishAPI.getInstance().getHideAllPlayers().remove(player.getUniqueId());
 		VanishAPI.getInstance().updateVanishToPlayer(player);
 
 		VanishAPI.getInstance().getHideAllPlayers().remove(target.getUniqueId());
 		VanishAPI.getInstance().updateVanishToPlayer(target);
+		
+		Bukkit.getPluginManager().callEvent(new ShadowFightFinishEvent(getPlayer(), target, player, GameMain.getInstance().getWarpManager().getWarpByName("1v1")));
 	}
 
 	@Override
 	public ChallengeType getChallengeType() {
 		return ChallengeType.SUMO_NORMAL;
+	}
+	
+	@Override
+	public boolean isInChallenge(Player player) {
+		return this.player == player || this.target == player;
 	}
 	
     public void createInventory(Player player) {

@@ -71,4 +71,9 @@ public class MemberManager extends StoreController<UUID, Member>{
 		return getStoreMap().values();
 	}
 
+	public Member getMemberByFake(String fakeName) {
+		return getStoreMap().values().stream().filter(member -> member.getFakeName().equals(fakeName)).findFirst()
+				.orElse(null);
+	}
+
 }

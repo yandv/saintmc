@@ -2,8 +2,8 @@ package tk.yallandev.saintmc.update.updater;
 
 public interface Updateable {
 
-	boolean update();
+	boolean update(String key);
 
-	boolean upload();
+	boolean upload(String key);
 
 }

@@ -15,7 +15,6 @@ import tk.yallandev.saintmc.common.command.CommandFramework.Command;
 import tk.yallandev.saintmc.common.command.CommandFramework.Completer;
 import tk.yallandev.saintmc.common.permission.Group;
 import tk.yallandev.saintmc.kitpvp.GameMain;
-import tk.yallandev.saintmc.kitpvp.gamer.Gamer;
 import tk.yallandev.saintmc.kitpvp.warp.DuelWarp;
 import tk.yallandev.saintmc.kitpvp.warp.Warp;
 import tk.yallandev.saintmc.kitpvp.warp.types.PartyWarp;
@@ -28,40 +27,38 @@ public class WarpCommand implements CommandClass {
 		if (!cmdArgs.isPlayer())
 			return;
 
-		Player p = cmdArgs.getPlayer();
-		String[] a = cmdArgs.getArgs();
+		Player player = cmdArgs.getPlayer();
+		String[] args = cmdArgs.getArgs();
 
-		if (a.length == 0) {
-			p.sendMessage(" §e* §fUse §a/warp <warpName>§f para ir até uma warp.");
+		if (args.length == 0) {
+			player.sendMessage(" §e* §fUse §a/warp <warpName>§f para ir até uma warp.");
 			return;
 		}
 
 		StringBuilder stringBuilder = new StringBuilder();
 
-		for (int x = 0; x < a.length; x++) {
-			stringBuilder.append(a[x]).append(" ");
+		for (int x = 0; x < args.length; x++) {
+			stringBuilder.append(args[x]).append(" ");
 		}
 
-		Warp warp = GameMain.getInstance().getWarpManager().getWarpByName(a[0]);
+		Warp warp = GameMain.getInstance().getWarpManager().getWarpByName(args[0]);
 
 		if (warp == null) {
-			p.sendMessage(" §c* §fA warp §c" + a[0] + "§f não existe!");
+			player.sendMessage(" §c* §fA warp §c" + args[0] + "§f não existe!");
 			return;
 		}
 
-		if (!warp.getWarpSettings().isWarpEnabled() && !Member.hasGroupPermission(p.getUniqueId(), Group.GERENTE)) {
-			p.sendMessage(" §c* §fA warp §c" + warp.getName() + "§f está §cdesativada§f!");
+		if (!warp.getWarpSettings().isWarpEnabled() && !Member.hasGroupPermission(player.getUniqueId(), Group.GERENTE)) {
+			player.sendMessage(" §c* §fA warp §c" + warp.getName() + "§f está §cdesativada§f!");
 			return;
 		}
 
-		Gamer gamer = GameMain.getInstance().getGamerManager().getGamer(p.getUniqueId());
-
-		if (warp == gamer.getWarp() && warp instanceof PartyWarp) {
-			p.sendMessage(" §c* §fVocê já está nessa warp§f!");
+		if (warp instanceof PartyWarp) {
+			player.sendMessage(" §c* §fUse §a/party§f para entrar nessa warp§f!");
 			return;
 		}
 
-		GameMain.getInstance().getWarpManager().teleport(gamer, warp, -1);
+		GameMain.getInstance().getWarpManager().teleport(player, warp, -1);
 	}
 
 	@Command(name = "pvp", aliases = { "togglepvp" }, groupToUse = Group.MODPLUS)
@@ -182,8 +179,7 @@ public class WarpCommand implements CommandClass {
 			return;
 
 		Player player = cmdArgs.getPlayer();
-		GameMain.getInstance().getWarpManager().teleport(
-				GameMain.getInstance().getGamerManager().getGamer(player.getUniqueId()),
+		GameMain.getInstance().getWarpManager().teleport(player,
 				GameMain.getInstance().getWarpManager().getWarpByName("Spawn"), 5);
 	}
 

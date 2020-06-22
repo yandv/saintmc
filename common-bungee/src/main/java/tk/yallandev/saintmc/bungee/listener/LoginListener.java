@@ -24,8 +24,8 @@ import tk.yallandev.saintmc.common.utils.web.WebHelper.Method;
 
 /**
  * 
- * Class created to prevent bot connection in the server
- * The focus is block ip and cancel using ClientConnectionEvent (from waterfall)
+ * Class created to prevent bot connection in the server The focus is block ip
+ * and cancel using ClientConnectionEvent (from waterfall)
  * 
  * Check the ip using javascript-coded backend, that made the dirty work and
  * requests the ip on a lot of ip checker
@@ -35,38 +35,38 @@ import tk.yallandev.saintmc.common.utils.web.WebHelper.Method;
  */
 
 public class LoginListener implements Listener {
-	
+
 	private Set<String> blockedAddress;
-	
+
 	public LoginListener() {
 		blockedAddress = new HashSet<>();
 	}
-	
+
 	/*
 	 * Block all ip addresses that are bots
 	 */
-	
+
 	@EventHandler
 	public void onClientConnect(ClientConnectEvent event) {
 		SocketAddress socket = event.getSocketAddress();
-		
+
 		if (socket instanceof InetSocketAddress) {
 			InetSocketAddress inetSocketAddress = (InetSocketAddress) socket;
-			
+
 			if (blockedAddress.contains(inetSocketAddress.getHostString()))
 				event.setCancelled(true);
 		}
 	}
-	
+
 	/*
 	 * Verify if the player is a bot
 	 */
-	
+
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onLogin(PreLoginEvent event) {
 		String playerName = event.getConnection().getName();
 		String ipAddress = event.getConnection().getAddress().getHostString();
-		
+
 		/*
 		 * Check username playerName startsWith "mcdrop"
 		 */
@@ -76,7 +76,7 @@ public class LoginListener implements Listener {
 			event.setCancelReason("§4§l" + CommonConst.KICK_PREFIX
 					+ "\n§f\n§fPara evitar §cataques de bot§f, bloqueamos todos os nicks que possuam §c\"mcdrop\"§f\n§6Mais informação em: §b"
 					+ CommonConst.DISCORD);
-			
+
 			blockAddress(ipAddress);
 			return;
 		}
@@ -85,37 +85,35 @@ public class LoginListener implements Listener {
 		ProxyServer.getInstance().getScheduler().runAsync(BungeeMain.getPlugin(), new Runnable() {
 			@Override
 			public void run() {
-				
-				/*
-				 * Old Code to verify the ip using BungeeCord HttpClient
-				 */
-				
-				try {
-					CommonConst.DEFAULT_WEB.doAsyncRequest(CommonConst.MOJANG_FETCHER + "session/?ip=" + URLEncoder.encode(ipAddress, "UTF-8"), Method.GET, new FutureCallback<JsonElement>() {
-						
-						@Override
-						public void result(JsonElement result, Throwable error) {
-							if (error == null) {
-								JsonObject jsonObject = (JsonObject) result;
 
-								if (!jsonObject.get("allow").getAsBoolean()) {
-									event.setCancelled(true);
-									event.setCancelReason("§4§l" + CommonConst.KICK_PREFIX
-											+ "\n§f\n§cSeu endereço de ip foi bloqueado!" + "\n\n§fMotivo: §7"
-											+ jsonObject.get("message").getAsString()
-											+ "\n§f\n§6Mais informação em: §b" + CommonConst.DISCORD);
-									blockAddress(ipAddress);
+				try {
+					CommonConst.DEFAULT_WEB.doAsyncRequest(
+							CommonConst.MOJANG_FETCHER + "session/?ip=" + URLEncoder.encode(ipAddress, "UTF-8"),
+							Method.GET, new FutureCallback<JsonElement>() {
+
+								@Override
+								public void result(JsonElement result, Throwable error) {
+									if (error == null) {
+										JsonObject jsonObject = (JsonObject) result;
+
+										if (!jsonObject.get("allow").getAsBoolean()) {
+											event.setCancelled(true);
+											event.setCancelReason("§4§l" + CommonConst.KICK_PREFIX
+													+ "\n§f\n§cSeu endereço de ip foi bloqueado!" + "\n\n§fMotivo: §7"
+													+ jsonObject.get("message").getAsString()
+													+ "\n§f\n§6Mais informação em: §b" + CommonConst.DISCORD);
+											blockAddress(ipAddress);
+										}
+									} else {
+										event.setCancelled(true);
+										event.setCancelReason("§4§l" + CommonConst.KICK_PREFIX
+												+ "\n§f\n§fNão foi possível verificar o seu ip!§f\n§6Mais informação em: §b"
+												+ CommonConst.DISCORD);
+									}
+
+									event.completeIntent(BungeeMain.getPlugin());
 								}
-							} else {
-								event.setCancelled(true);
-								event.setCancelReason("§4§l" + CommonConst.KICK_PREFIX
-										+ "\n§f\n§fNão foi possível verificar o seu ip!§f\n§6Mais informação em: §b"
-										+ CommonConst.DISCORD);
-							}
-							
-							event.completeIntent(BungeeMain.getPlugin());
-						}
-					});
+							});
 				} catch (UnsupportedEncodingException e) {
 					event.setCancelled(true);
 					event.setCancelReason("§4§l" + CommonConst.KICK_PREFIX
@@ -128,7 +126,7 @@ public class LoginListener implements Listener {
 			}
 		});
 	}
-	
+
 	public void blockAddress(String ipAddress) {
 		blockedAddress.add(ipAddress);
 		CommonGeneral.getInstance().debug("The address " + ipAddress + " has been blocked!");

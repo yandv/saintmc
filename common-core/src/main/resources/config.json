@@ -21,6 +21,10 @@
 		{
 			"pluginName":"SaintPvP",
 			"path":"C:\\Users\\Allan\\git\\saintmc\\kitpvp\\target\\SaintPvP.jar"
+		},
+		{
+			"pluginName":"Screenshare",
+			"path":"C:\\Users\\Allan\\git\\saintmc\\screenshare\\target\\Screenshare.jar"
 		}
 	]
 }

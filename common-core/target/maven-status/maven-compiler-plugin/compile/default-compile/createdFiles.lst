@@ -2,6 +2,7 @@ tk\yallandev\saintmc\common\backend\database\mongodb\MongoQuery$4.class
 tk\yallandev\saintmc\common\backend\data\StatusData.class
 tk\yallandev\saintmc\common\server\loadbalancer\element\NumberConnection.class
 tk\yallandev\saintmc\common\tag\Tag.class
+tk\yallandev\saintmc\common\utils\mojang\MojangFetcher$4.class
 tk\yallandev\saintmc\common\utils\reflection\Reflection.class
 tk\yallandev\saintmc\common\account\status\StatusType$Type.class
 tk\yallandev\saintmc\common\account\status\types\normal\NormalModel.class

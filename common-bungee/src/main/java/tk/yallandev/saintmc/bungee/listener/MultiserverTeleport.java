@@ -69,6 +69,6 @@ public class MultiserverTeleport implements Listener {
 			out.writeUTF("BungeeTeleport");
 			out.writeUTF(targetPlayer.getUniqueId().toString());
 			((ProxiedPlayer) event.getSender()).getServer().sendData("BungeeCord", out.toByteArray());
-		}, 1000, TimeUnit.MILLISECONDS);
+		}, 300, TimeUnit.MILLISECONDS);
 	}
 }

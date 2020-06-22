@@ -40,16 +40,16 @@ public class RankingHologram {
 			BukkitMain.getInstance().getHologramController().unregisterHologram(xpHologram);
 		}
 
-		xpHologram = new HologramBuilder("§b§lRANKING - XP", new Location(Bukkit.getWorld("world"), 5.5, 177, 5.5))
+		xpHologram = new HologramBuilder("§6§lRANKING - XP", new Location(Bukkit.getWorld("world"), 5.5, 177, 5.5))
 				.setHologramClass(SimpleHologram.class).build();
 		xpHologram.spawn();
 
 		int index = 1;
-		xpHologram.addLine("§6Jogadores com os maiores rank e maior");
-		xpHologram.addLine("§6quantidade de xp do servidor!");
+		xpHologram.addLine("§eJogadores com os maiores rank e maior");
+		xpHologram.addLine("§equantidade de xp do servidor!");
 		xpHologram.addLine("");
 
-		for (MemberModel memberModel : CommonGeneral.getInstance().getPlayerData().ranking("totalXp")) {
+		for (MemberModel memberModel : CommonGeneral.getInstance().getPlayerData().ranking("xp")) {
 			MemberVoid memberVoid = new MemberVoid(memberModel);
 
 			xpHologram.addLine("§a" + index + "° §7- "
@@ -68,12 +68,12 @@ public class RankingHologram {
 			BukkitMain.getInstance().getHologramController().unregisterHologram(killsHologram);
 		}
 
-		killsHologram = new HologramBuilder("§b§lRANKING - KILLS",
+		killsHologram = new HologramBuilder("§6§lRANKING - KILLS",
 				new Location(Bukkit.getWorld("world"), -5.5, 177, -5.5)).setHologramClass(SimpleHologram.class).build();
 		killsHologram.spawn();
 
-		killsHologram.addLine("§6Jogadores com as maiores quantidades de");
-		killsHologram.addLine("§6kills do servidor!");
+		killsHologram.addLine("§eJogadores com as maiores quantidades de");
+		killsHologram.addLine("§ekills do servidor!");
 		killsHologram.addLine("");
 
 		int index = 1;

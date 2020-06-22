@@ -1,13 +1,15 @@
 package tk.yallandev.saintmc.bukkit.listener.register;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent.Result;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -16,17 +18,35 @@ import tk.yallandev.saintmc.CommonConst;
 import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.bukkit.BukkitMain;
 import tk.yallandev.saintmc.bukkit.account.BukkitMember;
+import tk.yallandev.saintmc.bukkit.api.server.profile.Profile;
 import tk.yallandev.saintmc.bukkit.event.account.PlayerChangeGroupEvent;
 import tk.yallandev.saintmc.bukkit.event.account.PlayerUpdateFieldEvent;
 import tk.yallandev.saintmc.bukkit.event.account.PlayerUpdatedFieldEvent;
+import tk.yallandev.saintmc.bukkit.event.restore.RestoreInitEvent;
+import tk.yallandev.saintmc.bukkit.event.restore.RestoreStopEvent;
 import tk.yallandev.saintmc.bukkit.listener.Listener;
 import tk.yallandev.saintmc.common.account.League;
 import tk.yallandev.saintmc.common.account.MemberModel;
 
 public class AccountListener extends Listener {
 
+	private List<Profile> restoreProfile = new ArrayList<>();
+
+	/**
+	 * modo restauração somente qem ja estava no servidor pode entrar
+	 * 
+	 * @param event
+	 */
+
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onAsyncPlayerPreLogin(AsyncPlayerPreLoginEvent event) {
+		if (BukkitMain.getInstance().getServerConfig().isRestoreMode()
+				&& !restoreProfile.contains(new Profile(event.getName(), event.getUniqueId()))) {
+			event.disallow(Result.KICK_OTHER,
+					"§cO servidor está em modo restauração, somente jogadores que já estavam no servidor podem entrar!");
+			return;
+		}
+
 		if (event.getAddress().getAddress().toString().startsWith("0.0")) {
 			event.disallow(Result.KICK_OTHER, "§4§l" + CommonConst.KICK_PREFIX + "\n\n§fEndereço de host inválido!");
 			return;
@@ -46,16 +66,37 @@ public class AccountListener extends Listener {
 		try {
 
 			MemberModel memberModel = CommonGeneral.getInstance().getPlayerData().loadMember(uniqueId);
+			boolean create = true;
+
+			{
+				MemberModel member = CommonGeneral.getInstance().getPlayerData().loadMember(playerName);
+
+				if (memberModel != null && member != null) {
+					if (!memberModel.getPlayerName().equals(member.getPlayerName())) {
+						event.setKickMessage("§4§l" + CommonConst.KICK_PREFIX
+								+ "\n§f\n§fNão foi possível carregar sua conta!\n§fNome diferente!");
+						return;
+					}
+
+					if (!memberModel.getUniqueId().equals(member.getUniqueId())) {
+						event.setKickMessage("§4§l" + CommonConst.KICK_PREFIX
+								+ "\n§f\n§fNão foi possível carregar sua conta!\n§fID diferentes!");
+						return;
+					}
+				}
+			}
+
 			BukkitMember member = null;
 
 			if (memberModel == null) {
 				member = new BukkitMember(playerName, uniqueId);
-				CommonGeneral.getInstance().getPlayerData().createMember(member);
-				member.setCacheOnQuit(true);
-			} else {
+
+				if (create)
+					CommonGeneral.getInstance().getPlayerData().createMember(member);
+			} else
 				member = new BukkitMember(memberModel);
-				member.setCacheOnQuit(true);
-			}
+
+			member.setCacheOnQuit(true);
 
 			member.setJoinData(playerName, event.getAddress().getHostAddress());
 			CommonGeneral.getInstance().getMemberManager().loadMember(member);
@@ -91,6 +132,15 @@ public class AccountListener extends Listener {
 		member.connect(CommonGeneral.getInstance().getServerId(), CommonGeneral.getInstance().getServerType());
 	}
 
+	@EventHandler(priority = EventPriority.MONITOR)
+	public void onPlayerLoginMonitor(PlayerLoginEvent event) {
+		if (event.getResult() == PlayerLoginEvent.Result.ALLOWED)
+			return;
+
+		if (CommonGeneral.getInstance().getMemberManager().containsKey(event.getPlayer().getUniqueId()))
+			CommonGeneral.getInstance().getMemberManager().unload(event.getPlayer().getUniqueId());
+	}
+
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		new BukkitRunnable() {
@@ -108,6 +158,16 @@ public class AccountListener extends Listener {
 		Bukkit.getScheduler().runTaskAsynchronously(BukkitMain.getInstance(),
 				() -> removePlayer(event.getPlayer().getUniqueId()));
 		event.setQuitMessage(null);
+	}
+
+	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+	public void onRestoreInit(RestoreInitEvent event) {
+		restoreProfile = event.getProfileList();
+	}
+
+	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+	public void onRestoreStop(RestoreStopEvent event) {
+		restoreProfile.clear();
 	}
 
 	@EventHandler

@@ -14,7 +14,6 @@ import tk.yallandev.saintmc.common.utils.web.WebHelper.Method;
 public class SkinController {
 
 	public void saveSkin(Member member, WrappedSignedProperty property) {
-
 		JsonObject jsonObject = new JsonObject();
 
 		jsonObject.addProperty("name", member.getPlayerName());
@@ -44,7 +43,7 @@ public class SkinController {
 	}
 
 	public void deleteSkin(Member member) {
-		CommonConst.DEFAULT_WEB.doAsyncRequest(CommonConst.SKIN_URL + "?name=" + member.getPlayerName(), Method.DELETE,
+		CommonConst.DEFAULT_WEB.doAsyncRequest(CommonConst.SKIN_URL + member.getPlayerName(), Method.DELETE,
 				null, new FutureCallback<JsonElement>() {
 
 					@Override

@@ -10,8 +10,6 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import tk.yallandev.saintmc.bukkit.api.cooldown.CooldownController;
-import tk.yallandev.saintmc.bukkit.api.cooldown.types.Cooldown;
 import tk.yallandev.saintmc.bukkit.api.item.ItemBuilder;
 import tk.yallandev.saintmc.bukkit.api.vanish.AdminMode;
 import tk.yallandev.saintmc.kitpvp.GameMain;
@@ -34,11 +32,10 @@ public class TimelordKit extends Kit {
 		
 		Player player = event.getPlayer();
 		
-		if (isAbilityItem(player.getItemInHand()))
+		if (!isAbilityItem(player.getItemInHand()))
 			return;
 		
-		if (CooldownController.getInstance().hasCooldown(player, getName())) {
-//			p.sendMessage(CooldownAPI.getCooldownFormated(p, getName()));
+		if (isCooldown(player)) {
 			return;
 		}
 
@@ -57,8 +54,9 @@ public class TimelordKit extends Kit {
 			((Player) entity).addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 20 * 6, 250), true);
 		}
 		
+		player.sendMessage("§aVocê usou o Timelord!");
 		event.setCancelled(true);
-		CooldownController.getInstance().addCooldown(player, new Cooldown(getName(), 25l));
+		addCooldown(player, 25l);
 	}
 
 }

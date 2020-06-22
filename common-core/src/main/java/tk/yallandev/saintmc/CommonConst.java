@@ -28,12 +28,15 @@ public class CommonConst {
 	public static final String SERVER_NAME = "SaintMC";
 	public static final String KICK_PREFIX = "SaintMC";
 
-	public static final String WEBSITE = "http://saintmc.com.br/";
-	public static final String SITE = "saintmc.com.br";
-	public static final String STORE = "loja.saintmc.com.br";
-	public static final String DISCORD = "http://discord.saintmc.com.br/";
+	public static final String WEBSITE = "http://saintmc.net/";
+	public static final String SITE = "saintmc.net";
+	public static final String STORE = "loja.saintmc.net";
+	public static final String DISCORD = "http://discord.saintmc.net";
 	
-	public static final String API = "http://api.saintmc.com.br";
+	public static final String TRIAL_FORM = "http://trial.saintmc.net/";
+	
+	public static final String API = "http://34.95.248.117";
+	public static final String DOWNLOAD_KEY = "kangaroo123";
 
 	public static final String SKIN_URL = API + "/skin/";
 	public static final String MOJANG_FETCHER = API + "/mojang/";
@@ -42,6 +45,10 @@ public class CommonConst {
 	
 	public static final String STORE_URL = "https://" + STORE + "/wp-json/wmc/v1/server/"
 			+ "H0x062i7rnjyx6zj9qur2i4nrf0jcs";
-	public static final String MONGO_URL = "mongodb://localhost/saintmc-common?retryWrites=true&w=majority";
+	
+	public static final String MONGO_URL = "mongodb://yandv:YBOfXYL2IBjEKAkE@34.95.248.117/saintmc-common?retryWrites=true&w=majority";
+	
+	public static final String REDIS_HOSTNAME = "34.95.248.117";
+	public static final String REDIS_PASSWORD = "EMJhKKLONg8IuZ@G";
 
 }

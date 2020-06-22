@@ -8,7 +8,7 @@ import tk.yallandev.saintmc.update.plugin.PluginInfo;
 
 public class UpdatePlugin {
 
-	public static boolean update(File file, String pluginName, Shutdown shutdown) {
+	public static boolean update(File file, String pluginName, String key, Shutdown shutdown) {
 		PluginInfo pluginInfo = new PluginInfo(pluginName, file.getAbsolutePath().replace("%20", " "));
 
 		CommonGeneral.getInstance().debug(" ");
@@ -22,7 +22,7 @@ public class UpdatePlugin {
 		if (pluginInfo.needUpdate()) {
 			CommonGeneral.getInstance().debug("[Common] The plugin " + pluginInfo.getPluginName() + " need update!");
 
-			if (pluginInfo.update()) {
+			if (pluginInfo.update(key)) {
 				shutdown.stop();
 				return true;
 			}
