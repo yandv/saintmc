@@ -114,8 +114,8 @@ public class Report {
 						if (memberModel == null)
 							continue;
 						
-						memberModel = null;
 						member = new MemberVoid(memberModel);
+						memberModel = null;
 					}
 					
 					member.sendMessage("§a§l> §fO jogador §a" + getPlayerName() + "§f foi banido do servidor!");
@@ -133,7 +133,6 @@ public class Report {
 	}
 	
 	public void mutePlayer() {
-		
 		CommonGeneral.getInstance().getCommonPlatform().runAsync(new Runnable() {
 			
 			@Override
@@ -148,11 +147,11 @@ public class Report {
 						if (memberModel == null)
 							continue;
 						
-						memberModel = null;
 						member = new MemberVoid(memberModel);
+						memberModel = null;
 					}
 					
-					member.sendMessage("§a§l> §fO jogador §a" + getPlayerName() + "§f foi banido do servidor!");
+					member.sendMessage("§a§l> §fO jogador §a" + getPlayerName() + "§f foi punido do servidor!");
 					member.sendMessage("§a§l> §fVocê ganhou §a20 xp§f, §a50 money§f e §d1 ponto de reputação§f por ter reportado ele!");
 					member.sendMessage("§a§l> §fObrigado por ajudar a comunidade do §aSaintMC§f!");
 					member.setReputation(member.getReputation() + 1);

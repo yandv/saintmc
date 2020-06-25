@@ -34,7 +34,7 @@ public class CompleterCommand implements CommandClass {
 	}
 
 	@Command(name = "groupset", aliases = { "removevip", "tempgroup", "givevip", "removervip", "unban", "unmute",
-			"glist", "broadcast" }, groupToUse = Group.GERENTE)
+			"glist", "broadcast", "setargroup" }, groupToUse = Group.GERENTE)
 	public void managerCommand(CommandArgs cmdArgs) {
 
 	}

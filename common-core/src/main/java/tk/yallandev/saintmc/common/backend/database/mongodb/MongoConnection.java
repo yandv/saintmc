@@ -1,9 +1,7 @@
 package tk.yallandev.saintmc.common.backend.database.mongodb;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.net.URLEncoder;
+import java.util.Map.Entry;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
@@ -12,11 +10,21 @@ import org.bson.Document;
 
 import com.mongodb.Block;
 import com.mongodb.MongoClientURI;
+import com.mongodb.client.model.Filters;
 
 import lombok.Getter;
 import tk.yallandev.saintmc.CommonConst;
+import tk.yallandev.saintmc.CommonGeneral;
+import tk.yallandev.saintmc.CommonPlatform;
+import tk.yallandev.saintmc.common.account.MemberModel;
+import tk.yallandev.saintmc.common.account.MemberVoid;
 import tk.yallandev.saintmc.common.backend.Database;
-import tk.yallandev.saintmc.common.utils.web.WebHelper.Method;
+import tk.yallandev.saintmc.common.backend.data.PlayerData;
+import tk.yallandev.saintmc.common.backend.database.redis.RedisDatabase;
+import tk.yallandev.saintmc.common.data.impl.PlayerDataImpl;
+import tk.yallandev.saintmc.common.permission.RankType;
+import tk.yallandev.saintmc.common.server.ServerType;
+import tk.yallandev.saintmc.common.utils.DateUtils;
 
 @Getter
 public class MongoConnection implements Database {
@@ -78,43 +86,90 @@ public class MongoConnection implements Database {
 	}
 
 	public static <T> void main(String[] args) {
-		MongoConnection mongo;
-		(mongo = new MongoConnection(CommonConst.MONGO_URL)).connect();
-
-		mongo.getDb().getCollection("account").find(new Document("firstLogin", new Document("$lt", 1592784930420l)))
-				.filter(new Document("serverType", "LOBBY")).forEach(new Block<Document>() {
-
-					@Override
-					public void apply(Document t) {
-						System.out.print(t.get("playerName") + ", ");
-					}
-
-				});
+		MongoConnection mongoConnection = new MongoConnection(CommonConst.MONGO_URL.replace("localhost", "35.198.32.68"));
+		RedisDatabase redisDatabase = new RedisDatabase(CommonConst.REDIS_HOSTNAME.replace("localhost", "35.198.32.68"),
+				CommonConst.REDIS_PASSWORD, 6379);
 		
-		BufferedReader reader;
-		try {
-			reader = new BufferedReader(new FileReader(
-					"C:\\Users\\Allan\\Desktop\\proxy.txt"));
-			String line = reader.readLine();
-			while (line != null) {
-				line = reader.readLine();
-				
-				System.out.println(line);
-				
-				try {
-					CommonConst.DEFAULT_WEB.doRequest(
-								CommonConst.API + "/ip/?ip=" + URLEncoder.encode(line.replace(" ", ""), "UTF-8") + "&allowed=false",
-								Method.POST);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
+		redisDatabase.connect();
+		mongoConnection.connect();
+		
+		PlayerData playerData = new PlayerDataImpl(mongoConnection, redisDatabase);
+		
+		CommonGeneral general = new CommonGeneral(Logger.getLogger("OI"));
+		
+		general.setServerId("saintmc.net");
+		general.setServerType(ServerType.HUNGERGAMES);
+		general.setServerAddress("0.0.0.0:25565");
+		
+		general.setCommonPlatform(new CommonPlatform() {
+			
+			@Override
+			public void runAsync(Runnable runnable) {
+				runnable.run();
 			}
-			reader.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+			
+			@Override
+			public UUID getUuid(String playerName) {
+				// TODO Auto-generated method stub
+				return null;
+			}
+			
+			@Override
+			public <T> T getPlayerByUuid(UUID uniqueId, Class<T> clazz) {
+				// TODO Auto-generated method stub
+				return null;
+			}
+			
+			@Override
+			public <T> T getPlayerByName(String playerName, Class<T> clazz) {
+				// TODO Auto-generated method stub
+				return null;
+			}
+			
+			@Override
+			public <T> T getExactPlayerByName(String playerName, Class<T> clazz) {
+				// TODO Auto-generated method stub
+				return null;
+			}
+		});
 		
+		general.setPlayerData(playerData);
 		
+		mongoConnection.getDb().getCollection("account").find(Filters.eq("playerName", "LNooT")).forEach(new Block<Document>() {
+
+			@Override
+			public void apply(Document t) {
+				MemberModel memberModel = CommonConst.GSON.fromJson(CommonConst.GSON.toJson(t), MemberModel.class);
+				MemberVoid memberVoid = new MemberVoid(memberModel);
+
+				memberVoid.addPermission("tag.estrela");
+			}
+
+		});
+
+//		BufferedReader reader;
+//		try {
+//			reader = new BufferedReader(new FileReader(
+//					"C:\\Users\\Allan\\Desktop\\proxy.txt"));
+//			String line = reader.readLine();
+//			while (line != null) {
+//				line = reader.readLine();
+//				
+//				System.out.println(line);
+//				
+//				try {
+//					CommonConst.DEFAULT_WEB.doRequest(
+//								CommonConst.API + "/ip/?ip=" + URLEncoder.encode(line.replace(" ", ""), "UTF-8") + "&allowed=false",
+//								Method.POST);
+//				} catch (Exception e) {
+//					e.printStackTrace();
+//				}
+//			}
+//			reader.close();
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
+
 	}
 
 }

@@ -10,6 +10,8 @@ public enum ServerType {
 
     HUNGERGAMES("HG"),
     GLADIATOR("Gladiator"),
+    CLANXCLAN("ClanXClan"),
+    PRIVATE_SERVER("Private Server"),
     FULLIRON("PvP FullIron"),
     SIMULATOR("PvP Simulator"),
     LOBBY("Lobby"), 

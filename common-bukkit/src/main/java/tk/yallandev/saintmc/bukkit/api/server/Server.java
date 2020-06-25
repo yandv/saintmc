@@ -6,7 +6,7 @@ import java.util.List;
 import com.github.juliarn.npc.NPCPool;
 
 import tk.yallandev.saintmc.bukkit.api.server.chat.ChatState;
-import tk.yallandev.saintmc.bukkit.api.server.profile.Profile;
+import tk.yallandev.saintmc.common.profile.Profile;
 
 /**
  * 

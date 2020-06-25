@@ -9,10 +9,12 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import net.md_5.bungee.api.ProxyServer;
-import net.md_5.bungee.api.connection.ProxiedPlayer;
 import tk.yallandev.saintmc.CommonConst;
 import tk.yallandev.saintmc.CommonGeneral;
+import tk.yallandev.saintmc.bungee.BungeeMain;
 import tk.yallandev.saintmc.common.account.Member;
+import tk.yallandev.saintmc.common.account.MemberModel;
+import tk.yallandev.saintmc.common.account.MemberVoid;
 import tk.yallandev.saintmc.common.permission.Group;
 import tk.yallandev.saintmc.common.utils.supertype.FutureCallback;
 import tk.yallandev.saintmc.common.utils.web.WebHelper;
@@ -20,56 +22,77 @@ import tk.yallandev.saintmc.common.utils.web.WebHelper.Method;
 import tk.yallandev.saintmc.common.utils.web.http.ApacheWebImpl;
 
 public class StoreManager {
-	
+
 	private WebHelper web = new ApacheWebImpl();
 
 	public void check() {
-		CommonConst.DEFAULT_WEB.doAsyncRequest(CommonConst.STORE_URL, Method.GET, new FutureCallback<JsonElement>() {
-			
+		ProxyServer.getInstance().getScheduler().runAsync(BungeeMain.getPlugin(), new Runnable() {
+
 			@Override
-			public void result(JsonElement result, Throwable error) {
-				if (error == null) {
-					if (!result.isJsonObject())
-						return;
-					
-					JsonObject jsonObject = (JsonObject) result;
+			public void run() {
+				CommonConst.DEFAULT_WEB.doAsyncRequest(CommonConst.STORE_URL, Method.GET,
+						new FutureCallback<JsonElement>() {
 
-					if (!jsonObject.has("orders"))
-						return;
-					
-					List<Order> orderList = new ArrayList<>();
+							@Override
+							public void result(JsonElement result, Throwable error) {
+								if (error == null) {
+									if (!result.isJsonObject())
+										return;
 
-					for (int x = 0; x < jsonObject.get("orders").getAsJsonArray().size(); x++) {
-						orderList.add(CommonConst.GSON.fromJson(jsonObject.get("orders").getAsJsonArray().get(x), Order.class));
-					}
+									JsonObject jsonObject = (JsonObject) result;
 
-					List<Integer> processedOrders = new ArrayList<>();
+									if (!jsonObject.has("orders"))
+										return;
 
-					for (Order order : orderList) {
-						ProxiedPlayer proxiedPlayer = ProxyServer.getInstance().getPlayer(order.player);
+									List<Order> orderList = new ArrayList<>();
 
-						if (proxiedPlayer == null)
-							continue;
+									for (int x = 0; x < jsonObject.get("orders").getAsJsonArray().size(); x++) {
+										orderList.add(CommonConst.GSON.fromJson(
+												jsonObject.get("orders").getAsJsonArray().get(x), Order.class));
+									}
 
-						Member member = CommonGeneral.getInstance().getMemberManager().getMember(proxiedPlayer.getUniqueId());
+									List<Integer> processedOrders = new ArrayList<>();
 
-						for (String command : order.commands) {
-							ProxyServer.getInstance().getPluginManager().dispatchCommand(ProxyServer.getInstance().getConsole(),
-									command);
-						}
+									for (Order order : orderList) {
+										Member member = CommonGeneral.getInstance().getMemberManager()
+												.getMember(order.player);
 
-						member.sendMessage(" ");
-						member.sendMessage("§a§l> §fO seu pedido de numero §a" + order.order_id + "§f acabou de ser executado!");
-						member.sendMessage(" ");
-						processedOrders.add(order.order_id);
-						CommonGeneral.getInstance().getMemberManager().broadcast("§a[DEBUG] WOOCommerce -> O pedido " + order.order_id + " acaba de ser executado!", Group.GERENTE);
-					}
+										if (member == null) {
+											MemberModel memberModel = CommonGeneral.getInstance().getPlayerData()
+													.loadMember(order.player);
 
-					if (processedOrders.isEmpty())
-						return;
+											if (memberModel == null)
+												continue;
 
-					sendProcessedOrders(processedOrders);
-				}
+											member = new MemberVoid(memberModel);
+										}
+
+										for (String command : order.commands) {
+											ProxyServer.getInstance().getPluginManager()
+													.dispatchCommand(ProxyServer.getInstance().getConsole(), command);
+										}
+										
+										if (member.hasDiscord()) {
+											
+										}
+										
+										member.sendMessage(" ");
+										member.sendMessage("§a§l> §fO seu pedido de numero §a" + order.order_id
+												+ "§f acabou de ser executado!");
+										member.sendMessage(" ");
+										processedOrders.add(order.order_id);
+										CommonGeneral.getInstance().getMemberManager()
+												.broadcast("§a[DEBUG] WOOCommerce -> O pedido " + order.order_id
+														+ " acaba de ser executado!", Group.GERENTE);
+									}
+
+									if (processedOrders.isEmpty())
+										return;
+
+									sendProcessedOrders(processedOrders);
+								}
+							}
+						});
 			}
 		});
 	}
@@ -77,11 +100,11 @@ public class StoreManager {
 	private boolean sendProcessedOrders(List<Integer> processedOrders) {
 		try {
 			JsonElement json = web.doRequest(CommonConst.STORE_URL, Method.POST, "{\"processedOrders\":["
-							+ processedOrders.stream().map(Object::toString).collect(Collectors.joining(",")) + "]}");
-			
+					+ processedOrders.stream().map(Object::toString).collect(Collectors.joining(",")) + "]}");
+
 			if (!json.isJsonObject())
 				return false;
-			
+
 			JsonObject bodyResponse = (JsonObject) json;
 
 			if (bodyResponse.get("code") != null) {
@@ -89,7 +112,7 @@ public class StoreManager {
 						.debug("Received error when trying to send post data:" + bodyResponse.get("code"));
 				throw new Exception(bodyResponse.get("message").getAsString());
 			}
-			
+
 			return true;
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
@@ -101,13 +124,13 @@ public class StoreManager {
 	}
 
 	public JsonElement getPendingOrders() {
-		
+
 		try {
 			return web.doRequest(CommonConst.STORE_URL, Method.GET);
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
-		
+
 		return new JsonObject();
 	}
 

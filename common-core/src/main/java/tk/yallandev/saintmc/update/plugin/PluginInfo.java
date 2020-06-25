@@ -70,7 +70,7 @@ public class PluginInfo {
 		}
 
 		try {
-			JsonElement json = CommonConst.DEFAULT_WEB.doRequest(CommonConst.API + "/plugin/?pluginName=" + pluginName,
+			JsonElement json = CommonConst.DEFAULT_WEB.doRequest("http://apidata.saintmc.net/plugin/?pluginName=" + pluginName,
 					Method.GET);
 
 			JsonObject jsonObject = (JsonObject) json;
@@ -88,7 +88,7 @@ public class PluginInfo {
 
 	public PluginInfo(String pluginName, String path) {
 		try {
-			JsonElement json = CommonConst.DEFAULT_WEB.doRequest(CommonConst.API + "/plugin/?pluginName=" + pluginName,
+			JsonElement json = CommonConst.DEFAULT_WEB.doRequest("http://apidata.saintmc.net/plugin/?pluginName=" + pluginName,
 					Method.GET);
 
 			JsonObject jsonObject = (JsonObject) json;

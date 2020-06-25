@@ -67,10 +67,10 @@ import tk.yallandev.saintmc.common.backend.database.mongodb.MongoConnection;
 import tk.yallandev.saintmc.common.backend.database.redis.RedisDatabase;
 import tk.yallandev.saintmc.common.backend.database.redis.RedisDatabase.PubSubListener;
 import tk.yallandev.saintmc.common.command.CommandLoader;
-import tk.yallandev.saintmc.common.data.PlayerDataImpl;
-import tk.yallandev.saintmc.common.data.ReportDataImpl;
-import tk.yallandev.saintmc.common.data.ServerDataImpl;
-import tk.yallandev.saintmc.common.data.StatusDataImpl;
+import tk.yallandev.saintmc.common.data.impl.PlayerDataImpl;
+import tk.yallandev.saintmc.common.data.impl.ReportDataImpl;
+import tk.yallandev.saintmc.common.data.impl.ServerDataImpl;
+import tk.yallandev.saintmc.common.data.impl.StatusDataImpl;
 import tk.yallandev.saintmc.common.permission.Group;
 import tk.yallandev.saintmc.common.report.Report;
 import tk.yallandev.saintmc.common.server.ServerManager;
@@ -82,7 +82,7 @@ import tk.yallandev.saintmc.update.UpdatePlugin;
 @Getter
 @SuppressWarnings("deprecation")
 public class BukkitMain extends JavaPlugin {
-	
+
 	public static final boolean BUNGEECORD = true;
 	public static final boolean IP_WHITELIST = true;
 
@@ -136,11 +136,15 @@ public class BukkitMain extends JavaPlugin {
 				new File(BukkitMain.class.getProtectionDomain().getCodeSource().getLocation().getPath()),
 				"BukkitCommon", CommonConst.DOWNLOAD_KEY, shutdown))
 			return;
-		
+
 		try {
 
-			MongoConnection mongo = new MongoConnection(CommonConst.MONGO_URL);
-			RedisDatabase redis = new RedisDatabase(CommonConst.REDIS_HOSTNAME, CommonConst.REDIS_PASSWORD, 6379);
+			MongoConnection mongo = new MongoConnection(Bukkit.getIp().equals("0.0.0.0") ? CommonConst.MONGO_URL
+					: CommonConst.MONGO_URL.replace("localhost", "35.198.32.68"));
+			RedisDatabase redis = new RedisDatabase(
+					Bukkit.getIp().equals("0.0.0.0") ? CommonConst.REDIS_HOSTNAME
+							: CommonConst.REDIS_HOSTNAME.replace("localhost", "35.198.32.68"),
+					CommonConst.REDIS_PASSWORD, 6379);
 
 			mongo.connect();
 			redis.connect();
@@ -155,8 +159,10 @@ public class BukkitMain extends JavaPlugin {
 			general.setReportData(reportData);
 			general.setStatusData(statusData);
 
-			getServer().getScheduler().runTaskAsynchronously(getInstance(), pubSubListener = new PubSubListener(redis,
-					new BukkitPubSubHandler(), "account-field", "report-field", "report-action", "server-info"));
+			if (general.getServerType() != ServerType.PRIVATE_SERVER)
+				getServer().getScheduler().runTaskAsynchronously(getInstance(),
+						pubSubListener = new PubSubListener(redis, new BukkitPubSubHandler(), "account-field",
+								"report-field", "report-action", "server-info"));
 
 		} catch (Exception ex) {
 			ex.printStackTrace();
@@ -168,16 +174,17 @@ public class BukkitMain extends JavaPlugin {
 		 * Server Info
 		 */
 
-		general.setServerAddress(
-				(Bukkit.getIp().equals("127.0.0.1") ? "186.221.185.74" : "127.0.0.1") + ":" + Bukkit.getPort());
-		general.setServerId(general.getServerData().getServerId(general.getServerAddress()));
-		general.setServerType(general.getServerData().getServerType(general.getServerAddress()));
+		saveDefaultConfig();
+
+		general.setServerAddress(getConfig().getString("serverAddress", "0.0.0.0") + ":" + Bukkit.getPort());
+		general.setServerId(general.getServerData().getServerId("127.0.0.1:" + Bukkit.getPort()));
+		general.setServerType(general.getServerData().getServerType("127.0.0.1:" + Bukkit.getPort()));
 
 		general.debug("The server has been loaded " + general.getServerAddress() + " (" + general.getServerId() + " - "
 				+ general.getServerType().toString() + ")");
 
 		general.getServerData().startServer(Bukkit.getMaxPlayers());
-		
+
 		if (general.getServerType() == ServerType.HUNGERGAMES)
 			general.getServerData().updateStatus(MinigameState.NONE, 300);
 
@@ -315,7 +322,7 @@ public class BukkitMain extends JavaPlugin {
 				}
 			}
 		}
-		
+
 		pm.registerEvents(new ActionItemListener(), getInstance());
 		pm.registerEvents(new CharacterListener(), getInstance());
 		pm.registerEvents(new MenuListener(), getInstance());

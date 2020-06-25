@@ -32,7 +32,7 @@ public class ReportCommand implements CommandClass {
 
 		CommandSender sender = cmdArgs.getSender();
 		String[] args = cmdArgs.getArgs();
-		
+
 		Member player = CommonGeneral.getInstance().getMemberManager().getMember(sender.getUniqueId());
 
 		if (args.length >= 1) {
@@ -76,11 +76,11 @@ public class ReportCommand implements CommandClass {
 		}
 
 		if (player.isOnCooldown("report-command")) {
-			sender.sendMessage(" §c* §fVocê precisa esperar §e" + DateUtils.getTime(player.getCooldown("report-command"))
-					+ "§f para reportar novamente!");
+			sender.sendMessage(" §c* §fVocê precisa esperar §e"
+					+ DateUtils.getTime(player.getCooldown("report-command")) + "§f para reportar novamente!");
 			return;
 		}
-		
+
 		player.setCooldown("report-command", System.currentTimeMillis() + 120000l);
 
 		UUID uuid = CommonGeneral.getInstance().getUuid(args[0]);
@@ -108,7 +108,7 @@ public class ReportCommand implements CommandClass {
 				return;
 			}
 		}
-		
+
 		if (sender.getUniqueId().equals(m.getUniqueId())) {
 			sender.sendMessage(" §c* §fVocê não pode se reportar!");
 			return;
@@ -155,7 +155,7 @@ public class ReportCommand implements CommandClass {
 					new ComponentBuilder("§aClique para se teletransportar!").create()));
 
 			CommonGeneral.getInstance().getMemberManager().getMembers().stream()
-					.filter(member -> member.hasGroupPermission(Group.YOUTUBERPLUS)
+					.filter(member -> member.hasGroupPermission(Group.HELPER)
 							&& member.getAccountConfiguration().isReportEnabled())
 					.forEach(member -> {
 						member.sendMessage("§c§lREPORT");

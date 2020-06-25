@@ -19,6 +19,7 @@
 		<module>gladiator</module>
 		<module>screenshare</module>
 		<module>anticheat</module>
+		<module>login</module>
 	</modules>
 
 	<build>

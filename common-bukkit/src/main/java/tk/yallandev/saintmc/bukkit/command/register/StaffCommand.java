@@ -198,9 +198,6 @@ public class StaffCommand implements CommandClass {
 
 	@Command(name = "chat", groupToUse = Group.MOD)
 	public void chatCommand(BukkitCommandArgs args) {
-		if (!args.isPlayer())
-			return;
-		
 		CommandSender sender = args.getSender();
 
 		if (args.getArgs().length == 0) {
@@ -209,24 +206,49 @@ public class StaffCommand implements CommandClass {
 		}
 
 		if (args.getArgs()[0].equalsIgnoreCase("on")) {
-			if (BukkitMain.getInstance().getServerConfig().getChatState() == ChatState.ENABLED) {
+			if (BukkitMain.getInstance().getServerConfig().getChatState().isEnabled()) {
 				sender.sendMessage(" §c* §fO chat já está §aativado§f!");
 				return;
 			}
+
 			BukkitMain.getInstance().getServerConfig().setChatState(ChatState.ENABLED);
-			sender.sendMessage(" §a* §fVocê §aativou§f o chat!");
+			sender.sendMessage(" §a* §fO chat está disponível para todos!");
+			CommonGeneral.getInstance().getMemberManager().broadcast("§7" + sender.getName() + " ativou o chat!",
+					Group.TRIAL);
 		} else if (args.getArgs()[0].equalsIgnoreCase("off")) {
-			if (BukkitMain.getInstance().getServerConfig().getChatState() == ChatState.YOUTUBER
-					|| BukkitMain.getInstance().getServerConfig().getChatState() == ChatState.DISABLED) {
+			if (!BukkitMain.getInstance().getServerConfig().getChatState().isEnabled()) {
 				sender.sendMessage(" §c* §fO chat já está §cdesativado§f!");
 				return;
 			}
-			
+
 			BukkitMain.getInstance().getServerConfig().setChatState(
 					CommonGeneral.getInstance().getServerType() == ServerType.HUNGERGAMES ? ChatState.STAFF
 							: ChatState.YOUTUBER);
-			sender.sendMessage(" §a* §fVocê §cdesativou§f o chat!");
+			sender.sendMessage(" §a* §fO chat agora está disponível somente para §a"
+					+ BukkitMain.getInstance().getServerConfig().getChatState().name() + "§f!");
+			CommonGeneral.getInstance().getMemberManager().broadcast("§7" + sender.getName() + " desativou o chat!",
+					Group.TRIAL);
 		} else {
+			if (args.getArgs().length >= 2) {
+				ChatState chatState = null;
+
+				try {
+					chatState = ChatState.valueOf(args.getArgs()[1]);
+				} catch (Exception ex) {
+				}
+
+				if (chatState == null) {
+					sender.sendMessage(" §e* §fUse §a/chat <on:off>§f para ativar ou desativar o chat!");
+					return;
+				}
+				
+				BukkitMain.getInstance().getServerConfig().setChatState(chatState);
+				sender.sendMessage(chatState == ChatState.ENABLED ? " §a* §fO chat está disponível para todos!"
+						: " §a* §fO chat agora está disponível somente para §a"
+								+ BukkitMain.getInstance().getServerConfig().getChatState().getAvailableTo() + "§f!");
+				return;
+			}
+
 			sender.sendMessage(" §e* §fUse §a/chat <on:off>§f para ativar ou desativar o chat!");
 		}
 	}

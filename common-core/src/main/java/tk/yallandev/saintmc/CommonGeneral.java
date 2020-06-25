@@ -105,7 +105,7 @@ public class CommonGeneral {
 
 	@Getter
 	@Setter
-	private boolean loginServer = false;
+	private boolean loginServer = true;
 	
 	@Setter
 	private boolean debug = true;

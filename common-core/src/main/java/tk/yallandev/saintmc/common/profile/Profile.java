@@ -1,8 +1,6 @@
-package tk.yallandev.saintmc.bukkit.api.server.profile;
+package tk.yallandev.saintmc.common.profile;
 
 import java.util.UUID;
-
-import org.bukkit.entity.Player;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -15,12 +13,16 @@ public class Profile {
 	private String playerName;
 	private UUID uniqueId;
 	
-	public static Profile fromPlayer(Player player) {
-		return new Profile(player.getName(), player.getUniqueId());
-	}
-	
 	public static Profile fromMember(Member member) {
 		return new Profile(member.getPlayerName(), member.getUniqueId());
+	}
+	
+	public boolean equals(String playerName) {
+		return this.playerName.equals(playerName);
+	}
+	
+	public boolean equals(UUID uniqueId) {
+		return this.uniqueId.equals(uniqueId);
 	}
 	
 	@Override

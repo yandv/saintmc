@@ -143,4 +143,19 @@ public class DateUtils {
         return c.getTimeInMillis();
     }
     
+    public static boolean isForever(long time) {
+    	return time - System.currentTimeMillis() >= (1000l * 60l * 60l * 24l * 300l);
+    }
+    
+    public static void main(String[] args) {
+		long time = System.currentTimeMillis() + (1000l * 60l * 60l * 24l * 350l);
+		
+		System.out.println(time);
+		System.out.println(getTime(time));
+		
+		System.out.println(time - System.currentTimeMillis());
+		System.out.println(1000 * 60 * 60 * 24 * 300);
+		System.out.println(isForever(time));
+	}
+    
 }

@@ -4,6 +4,8 @@ import java.io.File;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import lombok.Getter;
 import net.md_5.bungee.BungeeCord;
@@ -37,10 +39,10 @@ import tk.yallandev.saintmc.common.backend.database.redis.RedisDatabase.PubSubLi
 import tk.yallandev.saintmc.common.command.CommandLoader;
 import tk.yallandev.saintmc.common.controller.PacketController;
 import tk.yallandev.saintmc.common.controller.PunishManager;
-import tk.yallandev.saintmc.common.data.PlayerDataImpl;
-import tk.yallandev.saintmc.common.data.PunishDataImpl;
-import tk.yallandev.saintmc.common.data.ReportDataImpl;
-import tk.yallandev.saintmc.common.data.ServerDataImpl;
+import tk.yallandev.saintmc.common.data.impl.PlayerDataImpl;
+import tk.yallandev.saintmc.common.data.impl.PunishDataImpl;
+import tk.yallandev.saintmc.common.data.impl.ReportDataImpl;
+import tk.yallandev.saintmc.common.data.impl.ServerDataImpl;
 import tk.yallandev.saintmc.common.report.Report;
 import tk.yallandev.saintmc.common.server.ServerManager;
 import tk.yallandev.saintmc.common.server.ServerType;
@@ -98,8 +100,8 @@ public class BungeeMain extends Plugin {
 			 * Backend Initialize
 			 */
 
-			MongoConnection mongo = new MongoConnection(CommonConst.MONGO_URL);
-			RedisDatabase redis = new RedisDatabase(CommonConst.REDIS_HOSTNAME, CommonConst.REDIS_PASSWORD, 6379);
+			MongoConnection mongo = new MongoConnection(BungeeConst.MONGO_URL);
+			RedisDatabase redis = new RedisDatabase(BungeeConst.REDIS_HOSTNAME, BungeeConst.REDIS_PASSWORD, 6379);
 
 			mongo.connect();
 			redis.connect();
@@ -124,6 +126,18 @@ public class BungeeMain extends Plugin {
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
+
+		Logger logger = ProxyServer.getInstance().getLogger();
+		Logger newLogger = new Logger("BungeeCord", null) {
+			public void log(Level level, String msg, Object param1) {
+				if (msg.contains("<->") || msg.contains("->"))
+					return;
+
+				super.log(level, msg, param1);
+			}
+		};
+
+		newLogger.setParent(logger);
 
 		/**
 		 * Initializing Constructor
@@ -224,7 +238,7 @@ public class BungeeMain extends Plugin {
 					}
 				});
 			}
-		}, 0, 5, TimeUnit.MINUTES);
+		}, 10, 10, TimeUnit.MINUTES);
 
 		discord = new DiscordMain();
 

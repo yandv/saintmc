@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import lombok.Getter;
 import lombok.Setter;
+import tk.yallandev.saintmc.common.profile.Profile;
 import tk.yallandev.saintmc.common.server.ServerType;
 
 @Getter
@@ -15,8 +16,8 @@ public abstract class MinigameServer extends ProxiedServer {
     private String map;
     private MinigameState state;
 
-    public MinigameServer(String serverId, ServerType type, Set<UUID> onlinePlayers, int maxPlayers, boolean joinEnabled) {
-        super(serverId, type, onlinePlayers, 100, joinEnabled);
+    public MinigameServer(String serverId, ServerType type, Set<UUID> players, Set<Profile> profile, int maxPlayers, boolean joinEnabled) {
+        super(serverId, type, players, profile, 100, joinEnabled);
         this.state = MinigameState.WAITING;
     }
 

@@ -25,6 +25,14 @@
 		{
 			"pluginName":"Screenshare",
 			"path":"C:\\Users\\Allan\\git\\saintmc\\screenshare\\target\\Screenshare.jar"
+		},
+		{
+			"pluginName":"Gladiator",
+			"path":"C:\\Users\\Allan\\git\\saintmc\\gladiator\\target\\Gladiator.jar"
+		},
+		{
+			"pluginName":"Login",
+			"path":"C:\\Users\\Allan\\git\\saintmc\\login\\target\\Login.jar"
 		}
 	]
 }

@@ -1,4 +1,4 @@
-package tk.yallandev.saintmc.common.data;
+package tk.yallandev.saintmc.common.data.impl;
 
 import java.util.ArrayList;
 import java.util.Collection;

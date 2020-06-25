@@ -3,12 +3,13 @@ package tk.yallandev.saintmc.common.server.loadbalancer.server;
 import java.util.Set;
 import java.util.UUID;
 
+import tk.yallandev.saintmc.common.profile.Profile;
 import tk.yallandev.saintmc.common.server.ServerType;
 
 public class HungerGamesServer extends MinigameServer {
 
-    public HungerGamesServer(String serverId, ServerType type, Set<UUID> onlinePlayers, boolean joinEnabled) {
-        super(serverId, type, onlinePlayers, 100, joinEnabled);
+    public HungerGamesServer(String serverId, ServerType type, Set<UUID> players, Set<Profile> profile, boolean joinEnabled) {
+        super(serverId, type, players, profile, 100, joinEnabled);
         setState(MinigameState.WAITING);
     }
 

@@ -7,6 +7,7 @@ import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import tk.yallandev.saintmc.bungee.BungeeMain;
 import tk.yallandev.saintmc.bungee.command.BungeeCommandArgs;
+import tk.yallandev.saintmc.bungee.event.BlockAddressEvent;
 import tk.yallandev.saintmc.bungee.event.UnblockAddressEvent;
 import tk.yallandev.saintmc.common.command.CommandArgs;
 import tk.yallandev.saintmc.common.command.CommandClass;
@@ -49,13 +50,18 @@ public class ServerCommand implements CommandClass {
 			CommandSender sender = cmdArgs.getSender();
 			String[] args = cmdArgs.getArgs();
 			
-			if (args.length == 0) {
+			if (args.length <= 1) {
 				sender.sendMessage(" §e* §fUse §a/" + cmdArgs.getLabel() + " <ip>§f para desbloquear um ip.");
 				return;
 			}
 			
-			ProxyServer.getInstance().getPluginManager().callEvent(new UnblockAddressEvent(args[0]));
-			sender.sendMessage("§aO ip " + args[0] + " foi desbloqueado!");
+			if (args[0].equalsIgnoreCase("add")) {
+				ProxyServer.getInstance().getPluginManager().callEvent(new BlockAddressEvent(args[0]));
+				sender.sendMessage("§aO ip " + args[0] + " foi bloqueado!");
+			} else if (args[0].equalsIgnoreCase("remove")) {
+				ProxyServer.getInstance().getPluginManager().callEvent(new UnblockAddressEvent(args[0]));
+				sender.sendMessage("§aO ip " + args[0] + " foi desbloqueado!");
+			}
 		}
 	}
 
@@ -197,6 +203,17 @@ public class ServerCommand implements CommandClass {
 
 			if (server == null || server.getServerInfo() == null) {
 				sender.sendMessage("§cNenhum servidor de lobby disponivel!");
+				return;
+			}
+
+			cmdArgs.getPlayer().connect(server.getServerInfo());
+			break;
+		}
+		case "peak": {
+			ProxiedServer server = BungeeMain.getInstance().getServerManager().getBalancer(ServerType.PRIVATE_SERVER).next();
+
+			if (server == null || server.getServerInfo() == null) {
+				sender.sendMessage("§cNenhum servidor de hungergames disponivel!");
 				return;
 			}
 

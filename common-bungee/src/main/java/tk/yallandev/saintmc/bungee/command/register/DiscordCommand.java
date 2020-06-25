@@ -45,17 +45,7 @@ public class DiscordCommand implements CommandClass {
 		Member member = CommonGeneral.getInstance().getMemberManager().getMember(sender.getUniqueId());
 
 		if (args.length == 0) {
-			sender.sendMessage(" §e* §fUse §a/discord sync <discordId>§f para sincronizar o discord com o servidor!");
-			sender.sendMessage(
-					" §e* §fUse §a/discord accept <discordId>§f para aceitar a sincronização com o discord!");
-			sender.sendMessage(" §e* §fUse §a/discord desync <discordId>§f para sincronizar o discord com o servidor!");
-			sender.sendMessage(
-					" §e* §fUse §a/discord update <server/discord/booster>§f para sincronizar o discord com o servidor!");
-
-			if (member.hasDiscord()) {
-				sender.sendMessage(
-						" §e* §fUse §a/discord info§f para ver as informações sobre a sincronização com o discord!");
-			}
+			handleUsage(sender, member);
 
 			return;
 		}
@@ -67,7 +57,11 @@ public class DiscordCommand implements CommandClass {
 				member.sendMessage(
 						" §e* §a/discord desync <discordId>§f para dessincronizar o discord com o servidor!");
 			} else {
-
+				if (args.length == 1) {
+					handleUsage(sender, member);
+					return;
+				}
+				
 				if (member.isOnCooldown("discord-sync-delay")) {
 					member.sendMessage(" §c* §fVocê precisa esperar §e"
 							+ DateUtils.getTime(member.getCooldown("discord-sync-delay"))
@@ -242,6 +236,11 @@ public class DiscordCommand implements CommandClass {
 
 				return;
 			}
+			
+			if (args.length == 1) {
+				handleUsage(sender, member);
+				return;
+			}
 
 			Long discordId = null;
 
@@ -299,6 +298,20 @@ public class DiscordCommand implements CommandClass {
 
 			break;
 		}
+		}
+	}
+
+	private void handleUsage(CommandSender sender, Member member) {
+		sender.sendMessage(" §e* §fUse §a/discord sync <discordId>§f para sincronizar o discord com o servidor!");
+		sender.sendMessage(
+				" §e* §fUse §a/discord accept <discordId>§f para aceitar a sincronização com o discord!");
+		sender.sendMessage(" §e* §fUse §a/discord desync <discordId>§f para sincronizar o discord com o servidor!");
+		sender.sendMessage(
+				" §e* §fUse §a/discord update <server/discord/booster>§f para sincronizar o discord com o servidor!");
+
+		if (member.hasDiscord()) {
+			sender.sendMessage(
+					" §e* §fUse §a/discord info§f para ver as informações sobre a sincronização com o discord!");
 		}
 	}
 

@@ -4,7 +4,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import lombok.Getter;
+import tk.yallandev.saintmc.gladiator.listener.GladiatorListener;
 import tk.yallandev.saintmc.gladiator.listener.PlayerListener;
+import tk.yallandev.saintmc.gladiator.listener.WorldListener;
 
 public class GameMain extends JavaPlugin {
 	
@@ -42,6 +44,8 @@ public class GameMain extends JavaPlugin {
 	
 	public void loadListener() {
 		Bukkit.getPluginManager().registerEvents(new PlayerListener(), this);
+		Bukkit.getPluginManager().registerEvents(new GladiatorListener(), this);
+		Bukkit.getPluginManager().registerEvents(new WorldListener(), this);
 	}
 	
 }

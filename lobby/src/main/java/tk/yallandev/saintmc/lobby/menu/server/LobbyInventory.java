@@ -13,94 +13,68 @@ import tk.yallandev.saintmc.bukkit.api.menu.MenuInventory;
 import tk.yallandev.saintmc.bukkit.api.menu.MenuUpdateHandler;
 import tk.yallandev.saintmc.common.account.Member;
 import tk.yallandev.saintmc.common.permission.Group;
+import tk.yallandev.saintmc.common.profile.Profile;
 import tk.yallandev.saintmc.common.server.ServerType;
 import tk.yallandev.saintmc.common.server.loadbalancer.server.ProxiedServer;
 import tk.yallandev.saintmc.lobby.menu.server.ServerInventory.SendClick;
 
 public class LobbyInventory {
-	
+
 	public LobbyInventory(Player player) {
 		Member member = CommonGeneral.getInstance().getMemberManager().getMember(player.getUniqueId());
+		List<ProxiedServer> serverList = new ArrayList<>(
+				BukkitMain.getInstance().getServerManager().getBalancer(ServerType.LOBBY).getList());
+
+		MenuInventory menu = new MenuInventory("§7Servidores de Lobby",
+				2 + (serverList.size() == 0 ? 1 : (serverList.size() / 7) + 1));
+
+		serverList.sort((o1, o2) -> Integer.valueOf(o1.getOnlinePlayers()).compareTo(o2.getOnlinePlayers()));
+
+		create(serverList, member, menu);
+
+		menu.setUpdateHandler(new MenuUpdateHandler() {
+
+			@Override
+			public void onUpdate(Player player, MenuInventory menu) {
+				create(serverList, member, menu);
+			}
+		});
+
+		menu.open(player);
+	}
+
+	private void create(List<ProxiedServer> serverList, Member member, MenuInventory menu) {
 		int w = 10;
-		
-		List<ProxiedServer> battleServer = new ArrayList<>(BukkitMain.getInstance().getServerManager().getBalancer(ServerType.LOBBY).getList());
-		
-		MenuInventory menu = new MenuInventory("§7Servidores de Lobby", 2 + (battleServer.size() == 0 ? 1 : (battleServer.size() / 7) + 1));
-		
-		battleServer.sort((o1, o2) -> Integer.valueOf(o1.getOnlinePlayers()).compareTo(o2.getOnlinePlayers()));
-		
-		for (ProxiedServer server : battleServer) {
-			if (!server.isJoinEnabled() && !member.hasGroupPermission(Group.DEV))
+
+		for (ProxiedServer server : serverList) {
+			if (!server.isJoinEnabled() && !member.hasGroupPermission(Group.DEV)
+					&& !server.isInWhitelist(Profile.fromMember(member)))
 				continue;
-			
+
 			ItemBuilder builder = new ItemBuilder();
 			builder.type(Material.INK_SACK);
-			
-			String lobbyName = server.getServerId().substring(1, 2);
-			
+
 			if (CommonGeneral.getInstance().getServerId().equalsIgnoreCase(server.getServerId()))
 				builder.glow();
-			
+
 			if (server.isFull()) {
-				builder.name("§9§l> §cLobby " + lobbyName + " §9§l<");
+				builder.name("§c§l" + server.getServerId().substring(0, 2).toUpperCase());
 				builder.durability(8);
 				builder.lore("\n§a" + server.getOnlinePlayers() + " jogadores online\n§cEsse servidor está lotado!");
 			} else {
-				builder.name("§9§l> §aLobby " + lobbyName + " §9§l<");		
+				builder.name("§a§l" + server.getServerId().substring(0, 2).toUpperCase());
 				builder.durability(10);
 				builder.lore("\n§a" + server.getOnlinePlayers() + " jogadores online");
 			}
-			
+
 			builder.amount(server.getOnlinePlayers());
-			
+
 			if (w % 9 == 8) {
-				w+=2;
+				w += 2;
 			}
-			
 			menu.setItem(w, builder.build(), new SendClick(server.getServerId()));
 			w++;
 		}
-		
-		menu.setUpdateHandler(new MenuUpdateHandler() {
-			
-			@Override
-			public void onUpdate(Player player, MenuInventory menu) {
-				int w = 10;
-				
-				for (ProxiedServer server : battleServer) {
-					if (!server.isJoinEnabled() && !member.hasGroupPermission(Group.DEV))
-						continue;
-					
-					ItemBuilder builder = new ItemBuilder();
-					builder.type(Material.INK_SACK);
-					
-					String lobbyName = server.getServerId().substring(1, 2);
-					
-					if (CommonGeneral.getInstance().getServerId().equalsIgnoreCase(server.getServerId()))
-						builder.glow();
-					
-					if (server.isFull()) {
-						builder.name("§9§l> §cLobby " + lobbyName + " §9§l<");
-						builder.durability(8);
-						builder.lore("\n§a" + server.getOnlinePlayers() + " jogadores online\n§cEsse servidor está lotado!");
-					} else {
-						builder.name("§9§l> §aLobby " + lobbyName + " §9§l<");		
-						builder.durability(10);
-						builder.lore("\n§a" + server.getOnlinePlayers() + " jogadores online");
-					}
-					
-					builder.amount(server.getOnlinePlayers());
-					
-					if (w % 9 == 8) {
-						w+=2;
-					}
-					menu.setItem(w, builder.build(), new SendClick(server.getServerId()));
-					w++;
-				}
-			}
-		});
-		
-		menu.open(player);
 	}
 
 }

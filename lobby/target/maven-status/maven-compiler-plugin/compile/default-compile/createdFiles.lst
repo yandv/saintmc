@@ -8,6 +8,7 @@ tk\yallandev\saintmc\lobby\menu\server\HungergamesInventory$3.class
 tk\yallandev\saintmc\lobby\menu\server\ServerInventory$2.class
 tk\yallandev\saintmc\lobby\listener\HologramListener.class
 tk\yallandev\saintmc\lobby\listener\ScoreboardListener$3.class
+tk\yallandev\saintmc\lobby\menu\server\GladiatorInventory$2.class
 tk\yallandev\saintmc\lobby\listener\PlayerListener$1.class
 tk\yallandev\saintmc\lobby\listener\ScoreboardListener.class
 tk\yallandev\saintmc\lobby\menu\server\GladiatorInventory.class
@@ -60,6 +61,7 @@ tk\yallandev\saintmc\lobby\listener\CharacterListener.class
 tk\yallandev\saintmc\lobby\menu\collectable\CollectableInventory.class
 tk\yallandev\saintmc\lobby\listener\PlayerListener$10.class
 tk\yallandev\saintmc\lobby\menu\collectable\ParticleInventory$1.class
+tk\yallandev\saintmc\lobby\menu\server\GladiatorInventory$1.class
 tk\yallandev\saintmc\lobby\listener\PlayerListener$2.class
 tk\yallandev\saintmc\lobby\listener\PlayerListener$9.class
 tk\yallandev\saintmc\lobby\menu\profile\ProfileInventory$2.class

@@ -16,7 +16,7 @@
 				<artifactId>maven-jar-plugin</artifactId>
 				<version>2.3.2</version>
 				<configuration>
-					<finalName>SaintPvP</finalName>
+					<finalName>Gladiator</finalName>
 				</configuration>
 			</plugin>
 		</plugins>

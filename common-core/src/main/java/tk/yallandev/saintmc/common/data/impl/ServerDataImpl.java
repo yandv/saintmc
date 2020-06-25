@@ -1,4 +1,4 @@
-package tk.yallandev.saintmc.common.data;
+package tk.yallandev.saintmc.common.data.impl;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -26,9 +26,12 @@ import tk.yallandev.saintmc.common.data.payload.DataServerMessage.LeavePayload;
 import tk.yallandev.saintmc.common.data.payload.DataServerMessage.StartPayload;
 import tk.yallandev.saintmc.common.data.payload.DataServerMessage.StopPayload;
 import tk.yallandev.saintmc.common.data.payload.DataServerMessage.UpdatePayload;
+import tk.yallandev.saintmc.common.data.payload.DataServerMessage.WhitelistAddPayload;
+import tk.yallandev.saintmc.common.data.payload.DataServerMessage.WhitelistRemovePayload;
+import tk.yallandev.saintmc.common.profile.Profile;
 import tk.yallandev.saintmc.common.server.ServerType;
-import tk.yallandev.saintmc.common.server.loadbalancer.server.ProxiedServer;
 import tk.yallandev.saintmc.common.server.loadbalancer.server.MinigameState;
+import tk.yallandev.saintmc.common.server.loadbalancer.server.ProxiedServer;
 
 public class ServerDataImpl implements ServerData {
 	
@@ -122,7 +125,7 @@ public class ServerDataImpl implements ServerData {
             map.put("address", CommonGeneral.getInstance().getServerAddress());
             pipe.hmset("server:" + CommonGeneral.getInstance().getServerId(), map);
             pipe.del("server:" + CommonGeneral.getInstance().getServerId() + ":players");
-            ProxiedServer server = new ProxiedServer(CommonGeneral.getInstance().getServerId(), CommonGeneral.getInstance().getServerType(), new HashSet<>(), maxPlayers, true);
+            ProxiedServer server = new ProxiedServer(CommonGeneral.getInstance().getServerId(), CommonGeneral.getInstance().getServerType(), new HashSet<>(), new HashSet<>(), maxPlayers, true);
             pipe.publish("server-info", CommonConst.GSON.toJson(new DataServerMessage<StartPayload>(CommonGeneral.getInstance().getServerId(), CommonGeneral.getInstance().getServerType(), Action.START, new StartPayload(CommonGeneral.getInstance().getServerAddress(), server))));
             pipe.sync();
         }
@@ -176,6 +179,16 @@ public class ServerDataImpl implements ServerData {
             pipe.sync();
         }
 	}
+	
+	@Override
+	public void addWhitelist(Profile profile) {
+        try (Jedis jedis = redisDatabase.getPool().getResource()) {
+            Pipeline pipe = jedis.pipelined();
+            pipe.sadd("server:" + CommonGeneral.getInstance().getServerId() + ":whitelist", CommonConst.GSON.toJson(profile));
+            pipe.publish("server-info", CommonConst.GSON.toJson(new DataServerMessage<WhitelistAddPayload>(CommonGeneral.getInstance().getServerId(), CommonGeneral.getInstance().getServerType(), Action.WHITELIST_ADD, new WhitelistAddPayload(profile))));
+            pipe.sync();
+        }
+	}
 
 	@Override
 	public void leavePlayer(UUID uuid) {
@@ -183,6 +196,16 @@ public class ServerDataImpl implements ServerData {
             Pipeline pipe = jedis.pipelined();
             pipe.srem("server:" + CommonGeneral.getInstance().getServerId() + ":players", uuid.toString());
             pipe.publish("server-info", CommonConst.GSON.toJson(new DataServerMessage<LeavePayload>(CommonGeneral.getInstance().getServerId(), CommonGeneral.getInstance().getServerType(), Action.LEAVE, new LeavePayload(uuid))));
+            pipe.sync();
+        }
+	}
+	
+	@Override
+	public void removeWhitelist(Profile profile) {
+        try (Jedis jedis = redisDatabase.getPool().getResource()) {
+            Pipeline pipe = jedis.pipelined();
+            pipe.srem("server:" + CommonGeneral.getInstance().getServerId() + ":whitelist", CommonConst.GSON.toJson(profile));
+            pipe.publish("server-info", CommonConst.GSON.toJson(new DataServerMessage<WhitelistRemovePayload>(CommonGeneral.getInstance().getServerId(), CommonGeneral.getInstance().getServerType(), Action.WHITELIST_REMOVE, new WhitelistRemovePayload(profile))));
             pipe.sync();
         }
 	}
@@ -218,5 +241,5 @@ public class ServerDataImpl implements ServerData {
 	public static Query<JsonElement> createDefault(MongoConnection mongoConnection) {
 		return new MongoQuery(mongoConnection, "serverId");
 	}
-	
+
 }

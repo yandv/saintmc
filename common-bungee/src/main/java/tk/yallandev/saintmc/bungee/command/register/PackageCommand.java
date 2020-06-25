@@ -87,7 +87,7 @@ public class PackageCommand implements CommandClass {
 		player.saveRanks();
 
 		sender.sendMessage(" §a* §fVocê deu o vip §a§l" + rank.name() + "§f para o " + player.getPlayerName() + "("
-				+ player.getUniqueId().toString().replace("-", "") + ")" + " com a dura§§o de "
+				+ player.getUniqueId().toString().replace("-", "") + ")" + " com a duração de "
 				+ DateUtils.formatDifference(expiresCheck / 1000) + "!");
 //        
 //        BungeeMain.getPlugin().getDiscordManager().sendMessage(new EmbedBuilder().setTitle("LonneMC - " + (cmdArgs.isPlayer() ? cmdArgs.getPlayer().getName() : "CONSOLE")).appendDescription("\nO jogador " + player.getName() + " teve seu cargo atualizado (" + rank.name() + " de " + DateUtils.formatDifference(language, expiresCheck / 1000) + ")").setColor(Color.YELLOW).build(), BungeeMain.getPlugin().getDiscordManager().getTextChannel("logs", true));

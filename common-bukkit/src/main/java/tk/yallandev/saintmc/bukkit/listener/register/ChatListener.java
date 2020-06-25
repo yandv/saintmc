@@ -82,14 +82,9 @@ public class ChatListener extends Listener {
 			text.addExtra("§f!");
 
 			member.sendMessage(text);
+			return;
 		}
-	}
-
-	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
-	public void onAsyncPlayerEvent(AsyncPlayerChatEvent event) {
-		Player player = event.getPlayer();
-		Member member = CommonGeneral.getInstance().getMemberManager().getMember(player.getUniqueId());
-
+		
 		if (member.getLoginConfiguration().getAccountType() != AccountType.ORIGINAL) {
 			if (member.getOnlineTime() + member.getSessionTime() <= 1000 * 60 * 10) {
 				member.sendMessage("§cVocê precisa ficar online por mais "
@@ -97,12 +92,26 @@ public class ChatListener extends Listener {
 								+ ((1000 * 60 * 10) - (member.getOnlineTime() + member.getSessionTime())))
 						+ " para ter o chat liberado!");
 				event.setCancelled(true);
+				return;
 			}
+		}
+		
+		if (CommonGeneral.getInstance().getServerType() != ServerType.SCREENSHARE) {
+			Mute activeMute = member.getPunishmentHistory().getActiveMute();
+
+			if (activeMute == null)
+				return;
+
+			member.sendMessage(
+					"§4§l> §fVocê está mutado " + (activeMute.isPermanent() ? "permanentemente" : "temporariamente")
+							+ " do servidor!" + (activeMute.isPermanent() ? ""
+									: "\n §4§l> §fExpira em §e" + DateUtils.getTime(activeMute.getMuteExpire())));
+			event.setCancelled(true);
 		}
 	}
 
 	@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
-	public void onAsyncPlayer(AsyncPlayerChatEvent event) {
+	public void onSwearWord(AsyncPlayerChatEvent event) {
 		if (CommonGeneral.getInstance().getServerType() == ServerType.SCREENSHARE)
 			return;
 		
@@ -121,13 +130,14 @@ public class ChatListener extends Listener {
 		event.setCancelled(true);
 	}
 
-	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+	
+	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onChat(AsyncPlayerChatEvent event) {
 		event.setCancelled(true);
 		BukkitMember player = (BukkitMember) CommonGeneral.getInstance().getMemberManager()
 				.getMember(event.getPlayer().getUniqueId());
 
-		if (!player.hasGroupPermission(Group.MOD)) {
+		if (!player.hasGroupPermission(Group.HELPER)) {
 			if (player.isOnCooldown("chat-delay")) {
 				event.setCancelled(true);
 				player.sendMessage("§4§l> §fAguarde §e" + DateUtils.getTime(player.getCooldown("chat-delay"))

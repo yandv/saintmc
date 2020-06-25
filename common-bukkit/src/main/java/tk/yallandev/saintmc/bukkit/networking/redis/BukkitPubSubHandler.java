@@ -27,10 +27,12 @@ import tk.yallandev.saintmc.common.data.payload.DataServerMessage.LeavePayload;
 import tk.yallandev.saintmc.common.data.payload.DataServerMessage.StartPayload;
 import tk.yallandev.saintmc.common.data.payload.DataServerMessage.StopPayload;
 import tk.yallandev.saintmc.common.data.payload.DataServerMessage.UpdatePayload;
+import tk.yallandev.saintmc.common.data.payload.DataServerMessage.WhitelistAddPayload;
+import tk.yallandev.saintmc.common.data.payload.DataServerMessage.WhitelistRemovePayload;
 import tk.yallandev.saintmc.common.report.Report;
 import tk.yallandev.saintmc.common.server.ServerType;
-import tk.yallandev.saintmc.common.server.loadbalancer.server.ProxiedServer;
 import tk.yallandev.saintmc.common.server.loadbalancer.server.MinigameServer;
+import tk.yallandev.saintmc.common.server.loadbalancer.server.ProxiedServer;
 import tk.yallandev.saintmc.common.utils.reflection.Reflection;
 
 public class BukkitPubSubHandler extends JedisPubSub {
@@ -109,6 +111,30 @@ public class BukkitPubSubHandler extends JedisPubSub {
 					((MinigameServer) server).setState(payload.getPayload().getState());
 					((MinigameServer) server).setTime(payload.getPayload().getTime());
 				}
+				break;
+			}
+			case WHITELIST_ADD: {
+				DataServerMessage<WhitelistAddPayload> payload = CommonConst.GSON.fromJson(jsonObject,
+						new TypeToken<DataServerMessage<WhitelistAddPayload>>() {
+						}.getType());
+				
+				if (sourceType == ServerType.NETWORK) {
+					break;
+				}
+				
+				BukkitMain.getInstance().getServerManager().getServer(source).addWhitelist(payload.getPayload().getProfile());;
+				break;
+			}
+			case WHITELIST_REMOVE: {
+				DataServerMessage<WhitelistRemovePayload> payload = CommonConst.GSON.fromJson(jsonObject,
+						new TypeToken<DataServerMessage<WhitelistRemovePayload>>() {
+						}.getType());
+				
+				if (sourceType == ServerType.NETWORK) {
+					break;
+				}
+				
+				BukkitMain.getInstance().getServerManager().getServer(source).removeWhitelist(payload.getPayload().getProfile());;
 				break;
 			}
 			default:

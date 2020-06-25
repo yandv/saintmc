@@ -1,18 +1,133 @@
 package tk.yallandev.saintmc.gladiator.challenge;
 
-import org.bukkit.Location;
-import org.bukkit.entity.Player;
+import java.util.HashMap;
+import java.util.Map;
 
-public interface Challenge {
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffect;
+
+import lombok.Getter;
+import tk.yallandev.saintmc.bukkit.api.item.ItemBuilder;
+import tk.yallandev.saintmc.bukkit.api.vanish.VanishAPI;
+import tk.yallandev.saintmc.gladiator.event.shadow.ShadowFightFinishEvent;
+import tk.yallandev.saintmc.gladiator.event.shadow.ShadowFightStartEvent;
+
+@Getter
+public class Challenge {
 	
-	boolean isExpired();
-	
-	long getExpire();
-	
-	void start(Location firstLocation, Location secondLocation);
-	
-	void finish(Player player);
-	
-	ChallengeType getChallengeType();
+	private Player player;
+	private Player target;
+
+	private ItemStack sword;
+	private ArmorType armorType;
+
+	private Map<Enchantment, Integer> armorEnchantments;
+	private ChallengeType challengeType;
+
+	private boolean refil;
+	private boolean recraft;
+	private boolean speed;
+	private boolean strenght;
+
+	private long expire;
+
+	public Challenge(Player player, Player target, ChallengeType challengeType) {
+		this.player = player;
+		this.target = target;
+
+		this.sword = new ItemBuilder().name("§aEspada de Diamante!").type(Material.DIAMOND_SWORD)
+				.enchantment(Enchantment.DAMAGE_ALL).build();
+		this.armorType = ArmorType.IRON;
+		this.armorEnchantments = new HashMap<>();
+		this.challengeType = challengeType;
+
+		this.expire = System.currentTimeMillis() + 30000l;
+	}
+
+	public void setRecraft(boolean recraft) {
+		this.recraft = recraft;
+		this.challengeType = ChallengeType.SHADOW_CUSTOM;
+	}
+
+	public void setRefil(boolean refil) {
+		this.refil = refil;
+		this.challengeType = ChallengeType.SHADOW_CUSTOM;
+	}
+
+	public void setSpeed(boolean speed) {
+		this.speed = speed;
+		this.challengeType = ChallengeType.SHADOW_CUSTOM;
+	}
+
+	public void setStrenght(boolean strenght) {
+		this.strenght = strenght;
+		this.challengeType = ChallengeType.SHADOW_CUSTOM;
+	}
+
+	public void createInventory(Player player) {
+		player.getInventory().clear();
+		player.getInventory().setArmorContents(new ItemStack[4]);
+
+		player.setHealth(20D);
+		player.setLevel(0);
+
+		for (PotionEffect pot : player.getActivePotionEffects())
+			player.removePotionEffect(pot.getType());
+
+		player.getInventory().setItem(0, getSword());
+
+		if (armorType != ArmorType.NONE) {
+			player.getInventory()
+					.setArmorContents(new ItemStack[] { new ItemStack(Material.valueOf(armorType.name() + "_BOOTS")),
+							new ItemStack(Material.valueOf(armorType.name() + "_LEGGINGS")),
+							new ItemStack(Material.valueOf(armorType.name() + "_CHESTPLATE")),
+							new ItemStack(Material.valueOf(armorType.name() + "_HELMET")) });
+		}
+
+		for (int x = 0; x < (isRefil() ? player.getInventory().getSize() : 8); x++) {
+			player.getInventory().addItem(new ItemStack(Material.MUSHROOM_SOUP));
+		}
+
+		if (isRecraft()) {
+			player.getInventory().setItem(13, new ItemStack(Material.RED_MUSHROOM, 64));
+			player.getInventory().setItem(14, new ItemStack(Material.BROWN_MUSHROOM, 64));
+			player.getInventory().setItem(15, new ItemStack(Material.BOWL, 64));
+		}
+	}
+
+	public boolean isExpired() {
+		return expire < System.currentTimeMillis();
+	}
+
+	public void start(Location firstLocation, Location secondLocation) {
+		player.teleport(firstLocation);
+		target.teleport(secondLocation);
+
+		createInventory(player);
+		createInventory(target);
+
+		VanishAPI.getInstance().hideAllPlayers(player);
+		VanishAPI.getInstance().hideAllPlayers(target);
+
+		player.showPlayer(target);
+		target.showPlayer(player);
+		
+		Bukkit.getPluginManager().callEvent(new ShadowFightStartEvent(player, target, getChallengeType()));
+	}
+
+	public void finish(Player player) {
+		VanishAPI.getInstance().getHideAllPlayers().remove(getPlayer().getUniqueId());
+		VanishAPI.getInstance().updateVanishToPlayer(getPlayer());
+
+		VanishAPI.getInstance().getHideAllPlayers().remove(target.getUniqueId());
+		VanishAPI.getInstance().updateVanishToPlayer(target);
+		
+		Bukkit.getPluginManager().callEvent(new ShadowFightFinishEvent(getPlayer(), target, player));
+	}
 
 }

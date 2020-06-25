@@ -35,7 +35,7 @@ public class CommonConst {
 	
 	public static final String TRIAL_FORM = "http://trial.saintmc.net/";
 	
-	public static final String API = "http://34.95.248.117";
+	public static final String API = "http://apidata.saintmc.net";
 	public static final String DOWNLOAD_KEY = "kangaroo123";
 
 	public static final String SKIN_URL = API + "/skin/";

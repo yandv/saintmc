@@ -95,8 +95,4 @@ public class RedisDatabase implements Database {
 			jpsh.unsubscribe();
 		}
 	}
-	
-	public static void main(String[] args) {
-		
-	}
 }

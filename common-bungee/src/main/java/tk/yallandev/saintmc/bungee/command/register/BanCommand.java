@@ -217,7 +217,7 @@ public class BanCommand implements CommandClass {
 		String[] args = cmdArgs.getArgs();
 
 		if (args.length == 0) {
-			sender.sendMessage(" §c* §fUse §a/ban <player> <motivo>§f para banir um jogador!");
+			sender.sendMessage(" §c* §fUse §a/" + cmdArgs.getLabel() + " <player> <motivo>§f para banir um jogador!");
 			return;
 		}
 

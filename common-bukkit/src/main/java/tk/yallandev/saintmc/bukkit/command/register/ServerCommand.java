@@ -10,20 +10,22 @@ import java.lang.management.ManagementFactory;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.DecimalFormat;
+import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.SimplePluginManager;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.spigotmc.CustomTimingsHandler;
 
+import com.google.common.base.Joiner;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
@@ -58,8 +60,9 @@ public class ServerCommand implements CommandClass {
 		Member member = CommonGeneral.getInstance().getMemberManager().getMember(player.getUniqueId());
 
 		member.getAccountConfiguration().setScoreboardEnabled(!member.getAccountConfiguration().isScoreboardEnabled());
-		Bukkit.getServer().getPluginManager().callEvent(new PlayerScoreboardStateEvent(player, member.getAccountConfiguration().isScoreboardEnabled()));
-		
+		Bukkit.getServer().getPluginManager().callEvent(
+				new PlayerScoreboardStateEvent(player, member.getAccountConfiguration().isScoreboardEnabled()));
+
 		if (member.getAccountConfiguration().isScoreboardEnabled()) {
 			Scoreboard score = ((BukkitMember) member).getScoreboard();
 
@@ -73,7 +76,7 @@ public class ServerCommand implements CommandClass {
 
 			objective.setDisplaySlot(DisplaySlot.SIDEBAR);
 		}
-		
+
 		player.sendMessage(" §a* §fSua scoreboard foi "
 				+ (member.getAccountConfiguration().isScoreboardEnabled() ? "§aativada" : "§cdesativada") + "§f!");
 	}
@@ -216,23 +219,6 @@ public class ServerCommand implements CommandClass {
 								sender.sendMessage(ChatColor.GREEN
 										+ "Timings results can be viewed at https://www.spigotmc.org/go/timings?url="
 										+ pasteID);
-
-//								HttpURLConnection con = (HttpURLConnection) (new URL("https://timings.spigotmc.org/paste"))
-//										.openConnection();
-//								con.setDoOutput(true);
-//								con.setRequestMethod("POST");
-//								con.setInstanceFollowRedirects(false);
-//								OutputStream out = con.getOutputStream();
-//								out.write("poster=Spigot&syntax=text&content=".getBytes("UTF-8"));
-//								out.write(URLEncoder.encode(bout.toString("UTF-8"), "UTF-8").getBytes("UTF-8"));
-//								out.close();
-//								con.getInputStream().close();
-//								String location = con.getHeaderField("Location");
-//								String pasteID = location.substring("http://paste.ubuntu.com/".length(),
-//										location.length() - 1);
-//								sender.sendMessage(ChatColor.GREEN
-//										+ "Timings results can be viewed at http://www.spigotmc.org/go/timings?url="
-//										+ pasteID);
 							} catch (IOException ex) {
 								sender.sendMessage(ChatColor.RED
 										+ "Error pasting timings, check your console for more information");
@@ -370,21 +356,11 @@ public class ServerCommand implements CommandClass {
 
 	@Command(name = "plugins", aliases = { "pl", "plugin" }, groupToUse = Group.LIGHT)
 	public void pluginCommand(CommandArgs cmdArgs) {
-		StringBuilder pluginList = new StringBuilder();
-
-		for (Plugin plugin : Bukkit.getPluginManager().getPlugins()) {
-			if (pluginList.length() > 0) {
-				pluginList.append(ChatColor.WHITE);
-				pluginList.append(", ");
-			}
-
-			pluginList.append(plugin.isEnabled() ? ChatColor.GREEN : ChatColor.RED);
-			pluginList.append(plugin.getDescription().getName());
-		}
-
-		cmdArgs.getSender().sendMessage(
-				"Plugins (" + Bukkit.getPluginManager().getPlugins().length + "): " + pluginList.toString());
-		pluginList = null;
+		cmdArgs.getSender()
+		.sendMessage("Plugins (" + Bukkit.getPluginManager().getPlugins().length + "): "
+				+ Joiner.on("§f, ").join(Arrays.asList(Bukkit.getPluginManager().getPlugins()).stream().map(
+						plugin -> (plugin.isEnabled() ? ChatColor.GREEN : ChatColor.RED) + plugin.getName())
+						.collect(Collectors.toList())));
 	}
 
 	private String format(double tps) {

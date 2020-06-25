@@ -99,8 +99,8 @@ public abstract class Member {
 	private String serverId;
 	private ServerType serverType;
 
-	protected String lastServerId;
-	protected ServerType lastServerType;
+	private String lastServerId;
+	private ServerType lastServerType;
 
 	private boolean online = false;
 
@@ -110,7 +110,7 @@ public abstract class Member {
 
 		fakeName = memberModel.getFakeName();
 		cooldown = memberModel.getCooldown();
-		
+
 		lastIpAddress = memberModel.getLastIpAddress();
 
 		accountConfiguration = memberModel.getAccountConfiguration();
@@ -351,10 +351,10 @@ public abstract class Member {
 
 	public void setXp(int xp) {
 		this.xp = xp;
-		
+
 		if (this.xp < 0)
 			this.xp = 0;
-		
+
 		CommonGeneral.getInstance().getPlayerData().updateMember(this, "xp");
 	}
 
@@ -391,6 +391,7 @@ public abstract class Member {
 
 	public void addPermission(String string) {
 		permissions.put(string.toLowerCase(), -1l);
+		CommonGeneral.getInstance().getPlayerData().updateMember(this, "permissions");
 	}
 
 	public void addMoney(int money) {
@@ -428,7 +429,10 @@ public abstract class Member {
 	 */
 
 	public long getSessionTime() {
-		return System.currentTimeMillis() - joinTime;
+		if (isOnline())
+			return System.currentTimeMillis() - joinTime;
+		else
+			return 1500l;
 	}
 
 	public long getOnlineTime() {

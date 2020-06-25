@@ -28,8 +28,11 @@ import tk.yallandev.saintmc.common.account.Member;
 import tk.yallandev.saintmc.common.account.configuration.LoginConfiguration.AccountType;
 import tk.yallandev.saintmc.common.permission.Group;
 import tk.yallandev.saintmc.common.tag.Tag;
+import tk.yallandev.saintmc.common.tag.TagWrapper;
 
 public class LoginListener implements Listener {
+	
+	public static final Tag LOGGING_TAG = TagWrapper.create("§8§lLOGANDO§8", null);
 
 	private static final int MAX_PLAYERS = 8;
 
@@ -64,7 +67,7 @@ public class LoginListener implements Listener {
 
 		if (member.getLoginConfiguration().getAccountType() == AccountType.CRACKED) {
 			if (!member.getLoginConfiguration().isLogged()) {
-				member.setTag(Tag.LOGANDO, true);
+				member.setTag(LOGGING_TAG, true);
 
 				member.sendMessage(
 						member.getLoginConfiguration().isRegistred() ? "§a§l> §aUse /login <senha> para se logar!"

@@ -92,7 +92,7 @@ public class MojangFetcher {
 		try {
 			JsonObject jsonObject = (JsonObject) CommonConst.DEFAULT_WEB
 					.doRequest(CommonConst.MOJANG_FETCHER + "?name=" + playerName, Method.GET);
-			
+
 			if (jsonObject == null)
 				return null;
 
@@ -129,24 +129,22 @@ public class MojangFetcher {
 			}
 			return;
 		}
-		
-		FutureCallback<JsonElement> future = new FutureCallback<JsonElement>() {
 
-			@Override
-			public void result(JsonElement result, Throwable error) {
-				if (error == null) {
-					boolean cracked = result.getAsJsonObject().get("cracked").getAsBoolean();
-					futureCallback.result(cracked, error);
-					cache.put(playerName, cracked);
-				} else {
-					futureCallback.result(false, error);
-				}
-			}
-			
-		};
-		
 		CommonConst.DEFAULT_WEB.doAsyncRequest(CommonConst.MOJANG_FETCHER + "?name=" + playerName, Method.GET,
-				future);
+				new FutureCallback<JsonElement>() {
+
+					@Override
+					public void result(JsonElement result, Throwable error) {
+						if (error == null) {
+							boolean cracked = result.getAsJsonObject().get("cracked").getAsBoolean();
+							futureCallback.result(cracked, error);
+							cache.put(playerName, cracked);
+						} else {
+							futureCallback.result(false, error);
+						}
+					}
+
+				});
 	}
 
 }

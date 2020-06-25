@@ -4,6 +4,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+import tk.yallandev.saintmc.common.profile.Profile;
 import tk.yallandev.saintmc.common.server.ServerType;
 import tk.yallandev.saintmc.common.server.loadbalancer.server.MinigameState;
 
@@ -45,7 +46,11 @@ public interface ServerData {
 	
 	void joinPlayer(UUID uuid);
 	
+	void addWhitelist(Profile profile);
+	
 	void leavePlayer(UUID uuid);
+	
+	void removeWhitelist(Profile profile);
 	
 	/*
 	 * Player Server Info

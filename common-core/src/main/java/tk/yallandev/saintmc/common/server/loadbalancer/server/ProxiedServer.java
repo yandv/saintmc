@@ -1,11 +1,13 @@
 package tk.yallandev.saintmc.common.server.loadbalancer.server;
 
+import java.util.Iterator;
 import java.util.Set;
 import java.util.UUID;
 
 import lombok.Getter;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.config.ServerInfo;
+import tk.yallandev.saintmc.common.profile.Profile;
 import tk.yallandev.saintmc.common.server.ServerType;
 import tk.yallandev.saintmc.common.server.loadbalancer.element.LoadBalancerObject;
 import tk.yallandev.saintmc.common.server.loadbalancer.element.NumberConnection;
@@ -15,20 +17,23 @@ public class ProxiedServer implements LoadBalancerObject, NumberConnection {
 
 	private String serverId;
 	private ServerType serverType;
+	
 	private Set<UUID> players;
+	private Set<Profile> profile;
 	
 	private int maxPlayers;
 	
 	private boolean joinEnabled;
 
-	public ProxiedServer(String serverId, ServerType serverType, Set<UUID> onlinePlayers, int maxPlayers, boolean joinEnabled) {
+	public ProxiedServer(String serverId, ServerType serverType, Set<UUID> players, Set<Profile> profile, int maxPlayers, boolean joinEnabled) {
 		this.serverId = serverId.toLowerCase();
 		this.serverType = serverType;
-		this.players = onlinePlayers;
+		this.players = players;
+		this.profile = profile;
 		this.maxPlayers = maxPlayers;
 		this.joinEnabled = joinEnabled;
 	}
-
+	
 	public void setOnlinePlayers(Set<UUID> onlinePlayers) {
 		this.players = onlinePlayers;
 	}
@@ -41,8 +46,27 @@ public class ProxiedServer implements LoadBalancerObject, NumberConnection {
 		players.remove(uuid);
 	}
 	
-	public boolean containsPlayer(UUID uuid) {
-		return players.contains(uuid);
+	public void addWhitelist(Profile profile) {
+		this.profile.add(profile);
+	}
+	
+	public void removeWhitelist(Profile profile) {
+		Iterator<Profile> iterator = this.profile.iterator();
+		
+		while (iterator.hasNext()) {
+			Profile prof = iterator.next();
+			
+			if (prof.equals(profile.getUniqueId()) || prof.equals(profile.getPlayerName()))
+				iterator.remove();
+		}
+	}
+	
+	public boolean isInWhitelist(String playerName) {
+		return this.profile.stream().filter(profile -> profile.getPlayerName().equals(playerName)).findFirst().isPresent();
+	}
+	
+	public boolean isInWhitelist(Profile profile) {
+		return this.profile.contains(profile);
 	}
 
 	public int getOnlinePlayers() {

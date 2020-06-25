@@ -13,7 +13,6 @@ import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.bukkit.BukkitMain;
 import tk.yallandev.saintmc.bukkit.command.BukkitCommandFramework;
 import tk.yallandev.saintmc.bukkit.listener.register.MoveListener;
-import tk.yallandev.saintmc.common.backend.database.redis.RedisDatabase;
 import tk.yallandev.saintmc.common.backend.database.redis.RedisDatabase.PubSubListener;
 import tk.yallandev.saintmc.common.command.CommandLoader;
 import tk.yallandev.saintmc.common.server.ServerType;
@@ -62,28 +61,16 @@ public class LobbyMain extends JavaPlugin {
 				"Lobby", CommonConst.DOWNLOAD_KEY, shutdown))
 			return;
 
-		try {
-
-			/*
-			 * Backend Initialize
-			 */
-
-			RedisDatabase redis = new RedisDatabase("localhost", "", 6379);
-
-			redis.connect();
-
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
-
 		Bukkit.getPluginManager().registerEvents(new PlayerListener(), getInstance());
 		Bukkit.getPluginManager().registerEvents(new ParticleListener(), getInstance());
 		Bukkit.getPluginManager().registerEvents(new MoveListener(), getInstance());
-		Bukkit.getPluginManager().registerEvents(new LoginListener(), getInstance());
 		Bukkit.getPluginManager().registerEvents(new ScoreboardListener(), getInstance());
 		Bukkit.getPluginManager().registerEvents(new CharacterListener(), getInstance());
 		Bukkit.getPluginManager().registerEvents(new HologramListener(), getInstance());
 
+		if (CommonGeneral.getInstance().isLoginServer())
+			Bukkit.getPluginManager().registerEvents(new LoginListener(), getInstance());
+		
 		for (Entry<String, Map<String, String>> entry : CommonGeneral.getInstance().getServerData().loadServers()
 				.entrySet()) {
 			try {

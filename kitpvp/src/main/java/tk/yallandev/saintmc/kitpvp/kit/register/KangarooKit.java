@@ -19,7 +19,6 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
-import tk.yallandev.saintmc.bukkit.api.cooldown.CooldownController;
 import tk.yallandev.saintmc.bukkit.api.item.ItemBuilder;
 import tk.yallandev.saintmc.kitpvp.kit.Kit;
 
@@ -33,59 +32,58 @@ public class KangarooKit extends Kit {
 
 	@EventHandler
 	public void onInteract(PlayerInteractEvent event) {
-		final Player p = event.getPlayer();
-		Action a = event.getAction();
-		ItemStack item = p.getItemInHand();
+		Player player = event.getPlayer();
+		Action action = event.getAction();
+		ItemStack item = player.getItemInHand();
 		
-		if (!a.name().contains("RIGHT") && !a.name().contains("LEFT"))
+		if (!action.name().contains("RIGHT") && !action.name().contains("LEFT"))
 			return;
 		
-		if (!hasAbility(p))
+		if (!hasAbility(player))
 			return;
 		
 		if (!isAbilityItem(item))
 			return;
 		
-		if (a.name().contains("RIGHT")) {
+		if (action.name().contains("RIGHT")) {
 			event.setCancelled(true);
 		}
 		
-		if (CooldownController.getInstance().hasCooldown(p, getName())) {
+		if (isCooldown(player))
 			return;
-		}
 		
-		if (((Entity)p).isOnGround()) {
-			if (!p.isSneaking()) {
-				Vector vector = p.getEyeLocation().getDirection();
+		if (((Entity)player).isOnGround()) {
+			if (!player.isSneaking()) {
+				Vector vector = player.getEyeLocation().getDirection();
 				vector.multiply(0.6F);
 				vector.setY(1.0F);
-				p.setVelocity(vector);
-				if (kangaroodj.contains(p)) {
-					kangaroodj.remove(p);
+				player.setVelocity(vector);
+				if (kangaroodj.contains(player)) {
+					kangaroodj.remove(player);
 				}
 			} else {
-				Vector vector = p.getEyeLocation().getDirection();
+				Vector vector = player.getEyeLocation().getDirection();
 				vector.multiply(1.5D);
 				vector.setY(0.55F);
-				p.setVelocity(vector);
-				if (kangaroodj.contains(p)) {
-					kangaroodj.remove(p);
+				player.setVelocity(vector);
+				if (kangaroodj.contains(player)) {
+					kangaroodj.remove(player);
 				}
 			}
 		} else {
-			if (!kangaroodj.contains(p)) {
-				if (!p.isSneaking()) {
-					Vector vector = p.getEyeLocation().getDirection();
+			if (!kangaroodj.contains(player)) {
+				if (!player.isSneaking()) {
+					Vector vector = player.getEyeLocation().getDirection();
 					vector.multiply(0.6F);
 					vector.setY(1.0F);
-					p.setVelocity(vector);
-					kangaroodj.add(p);
+					player.setVelocity(vector);
+					kangaroodj.add(player);
 				} else {
-					Vector vector = p.getEyeLocation().getDirection();
+					Vector vector = player.getEyeLocation().getDirection();
 					vector.multiply(1.5D);
 					vector.setY(0.55F);
-					p.setVelocity(vector);
-					kangaroodj.add(p);
+					player.setVelocity(vector);
+					kangaroodj.add(player);
 				}
 			}
 		}

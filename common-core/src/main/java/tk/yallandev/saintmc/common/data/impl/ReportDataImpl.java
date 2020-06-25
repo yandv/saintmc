@@ -1,4 +1,4 @@
-package tk.yallandev.saintmc.common.data;
+package tk.yallandev.saintmc.common.data.impl;
 
 import static tk.yallandev.saintmc.common.utils.json.JsonUtils.elementToBson;
 import static tk.yallandev.saintmc.common.utils.json.JsonUtils.jsonTree;
@@ -25,6 +25,7 @@ import tk.yallandev.saintmc.common.backend.data.ReportData;
 import tk.yallandev.saintmc.common.backend.database.mongodb.MongoConnection;
 import tk.yallandev.saintmc.common.backend.database.redis.RedisDatabase;
 import tk.yallandev.saintmc.common.report.Report;
+import tk.yallandev.saintmc.common.server.ServerType;
 import tk.yallandev.saintmc.common.utils.supertype.Callback;
 
 public class ReportDataImpl implements ReportData {
@@ -60,73 +61,76 @@ public class ReportDataImpl implements ReportData {
 
 		return CommonConst.GSON.fromJson(CommonConst.GSON.toJson(document), Report.class);
 	}
-	
+
 	@Override
 	public void saveReport(Report report) {
 		CommonGeneral.getInstance().getCommonPlatform().runAsync(() -> {
 			if (reportCollection.find(Filters.eq("uniqueId", report.getPlayerUniqueId().toString())).first() == null)
 				reportCollection.insertOne(Document.parse(CommonConst.GSON.toJson(report)));
-			
-	        try (Jedis jedis = redisDatabase.getPool().getResource()) {
-	            Pipeline pipeline = jedis.pipelined();
-	            JsonObject publish = new JsonObject();
-	            publish.addProperty("uniqueId", report.getPlayerUniqueId().toString());
-	            publish.add("value", jsonTree(report));
-	            publish.addProperty("action", "create");
-	            publish.addProperty("source", CommonGeneral.getInstance().getServerId());
-	            pipeline.publish("report-action", publish.toString());
-	            jedis.sync();
-	        }
+
+			if (CommonGeneral.getInstance().getServerType() != ServerType.PRIVATE_SERVER)
+				try (Jedis jedis = redisDatabase.getPool().getResource()) {
+					Pipeline pipeline = jedis.pipelined();
+					JsonObject publish = new JsonObject();
+					publish.addProperty("uniqueId", report.getPlayerUniqueId().toString());
+					publish.add("value", jsonTree(report));
+					publish.addProperty("action", "create");
+					publish.addProperty("source", CommonGeneral.getInstance().getServerId());
+					pipeline.publish("report-action", publish.toString());
+					jedis.sync();
+				}
 		});
 	}
 
 	@Override
 	public void saveReport(Report report, Callback<Report> callback) {
 		CommonGeneral.getInstance().getCommonPlatform().runAsync(() -> {
-			Document document = reportCollection.find(Filters.eq("uniqueId", report.getPlayerUniqueId().toString())).first();
-			
+			Document document = reportCollection.find(Filters.eq("uniqueId", report.getPlayerUniqueId().toString()))
+					.first();
+
 			if (document == null) {
 				reportCollection.insertOne(Document.parse(CommonConst.GSON.toJson(report)));
 				callback.callback(null);
 			} else
 				callback.callback(CommonConst.GSON.fromJson(CommonConst.GSON.toJson(document), Report.class));
-			
-	        try (Jedis jedis = redisDatabase.getPool().getResource()) {
-	            Pipeline pipeline = jedis.pipelined();
-	            JsonObject publish = new JsonObject();
-	            publish.addProperty("uniqueId", report.getPlayerUniqueId().toString());
-	            publish.add("value", jsonTree(report));
-	            publish.addProperty("action", "create");
-	            publish.addProperty("source", CommonGeneral.getInstance().getServerId());
-	            pipeline.publish("report-action", publish.toString());
-	            jedis.sync();
-	        }
+
+			if (CommonGeneral.getInstance().getServerType() != ServerType.PRIVATE_SERVER)
+				try (Jedis jedis = redisDatabase.getPool().getResource()) {
+					Pipeline pipeline = jedis.pipelined();
+					JsonObject publish = new JsonObject();
+					publish.addProperty("uniqueId", report.getPlayerUniqueId().toString());
+					publish.add("value", jsonTree(report));
+					publish.addProperty("action", "create");
+					publish.addProperty("source", CommonGeneral.getInstance().getServerId());
+					pipeline.publish("report-action", publish.toString());
+					jedis.sync();
+				}
 		});
 	}
-	
+
 	@Override
 	public void deleteReport(UUID uniqueId) {
-        CommonGeneral.getInstance().getCommonPlatform().runAsync(() -> {
-        	
-        	reportCollection.deleteOne(Filters.eq("uniqueId", uniqueId.toString()));
-        	
-        	try (Jedis jedis = redisDatabase.getPool().getResource()) {
-                Pipeline pipeline = jedis.pipelined();
-                JsonObject publish = new JsonObject();
-                publish.addProperty("uniqueId", uniqueId.toString());
-                publish.addProperty("action", "remove");
-                publish.addProperty("source", CommonGeneral.getInstance().getServerId());
-                pipeline.publish("report-action", publish.toString());
-                jedis.sync();
-            }
-        });
+		CommonGeneral.getInstance().getCommonPlatform().runAsync(() -> {
+			reportCollection.deleteOne(Filters.eq("uniqueId", uniqueId.toString()));
+
+			if (CommonGeneral.getInstance().getServerType() != ServerType.PRIVATE_SERVER)
+				try (Jedis jedis = redisDatabase.getPool().getResource()) {
+					Pipeline pipeline = jedis.pipelined();
+					JsonObject publish = new JsonObject();
+					publish.addProperty("uniqueId", uniqueId.toString());
+					publish.addProperty("action", "remove");
+					publish.addProperty("source", CommonGeneral.getInstance().getServerId());
+					pipeline.publish("report-action", publish.toString());
+					jedis.sync();
+				}
+		});
 	}
 
 	@Override
 	public void updateReport(Report report, String fieldName) {
 		CommonGeneral.getInstance().getCommonPlatform().runAsync(() -> {
 			JsonObject object = jsonTree(report);
-			
+
 			try {
 
 				if (object.has(fieldName)) {
@@ -137,22 +141,23 @@ public class ReportDataImpl implements ReportData {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			
-            try (Jedis jedis = redisDatabase.getPool().getResource()) {
-            	JsonElement element = object.get(fieldName);
-                Pipeline pipe = jedis.pipelined();
 
-                JsonObject json = new JsonObject();
-                json.add("uniqueId", new JsonPrimitive(report.getPlayerUniqueId().toString()));
-                json.add("source", new JsonPrimitive(CommonGeneral.getInstance().getServerId()));
-                json.add("field", new JsonPrimitive(fieldName));
-                json.add("value", element);
-                pipe.publish("report-field", json.toString());
+			if (CommonGeneral.getInstance().getServerType() != ServerType.PRIVATE_SERVER)
+				try (Jedis jedis = redisDatabase.getPool().getResource()) {
+					JsonElement element = object.get(fieldName);
+					Pipeline pipe = jedis.pipelined();
 
-                pipe.sync();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+					JsonObject json = new JsonObject();
+					json.add("uniqueId", new JsonPrimitive(report.getPlayerUniqueId().toString()));
+					json.add("source", new JsonPrimitive(CommonGeneral.getInstance().getServerId()));
+					json.add("field", new JsonPrimitive(fieldName));
+					json.add("value", element);
+					pipe.publish("report-field", json.toString());
+
+					pipe.sync();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 		});
 	}
 
@@ -160,7 +165,7 @@ public class ReportDataImpl implements ReportData {
 	public void updateName(UUID uniqueId, String playerName) {
 		CommonGeneral.getInstance().getCommonPlatform().runAsync(() -> {
 			reportCollection.updateOne(Filters.eq("uniqueId", uniqueId.toString()),
-							new Document("$set", new Document("playerName", playerName)));
+					new Document("$set", new Document("playerName", playerName)));
 		});
 	}
 

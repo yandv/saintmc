@@ -15,10 +15,10 @@ import tk.yallandev.saintmc.common.backend.data.ServerData;
 import tk.yallandev.saintmc.common.backend.data.StatusData;
 import tk.yallandev.saintmc.common.backend.database.mongodb.MongoConnection;
 import tk.yallandev.saintmc.common.backend.database.redis.RedisDatabase;
-import tk.yallandev.saintmc.common.data.PlayerDataImpl;
-import tk.yallandev.saintmc.common.data.ReportDataImpl;
-import tk.yallandev.saintmc.common.data.ServerDataImpl;
-import tk.yallandev.saintmc.common.data.StatusDataImpl;
+import tk.yallandev.saintmc.common.data.impl.PlayerDataImpl;
+import tk.yallandev.saintmc.common.data.impl.ReportDataImpl;
+import tk.yallandev.saintmc.common.data.impl.ServerDataImpl;
+import tk.yallandev.saintmc.common.data.impl.StatusDataImpl;
 import tk.yallandev.saintmc.common.tag.Tag;
 
 public class Test {

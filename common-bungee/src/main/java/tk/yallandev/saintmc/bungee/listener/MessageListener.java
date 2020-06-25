@@ -88,6 +88,13 @@ public class MessageListener implements Listener {
 					player.sendMessage("§cNenhum servidor encontrado!");
 			break;
 		}
+		case "Gladiator": {
+			event.setCancelled(true);
+
+			if (!searchServer(player, proxiedPlayer, ServerType.GLADIATOR))
+					player.sendMessage("§cNenhum servidor encontrado!");
+			break;
+		}
 		case "Lobby": {
 			event.setCancelled(true);
 

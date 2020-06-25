@@ -1,4 +1,4 @@
-package tk.yallandev.saintmc.common.data;
+package tk.yallandev.saintmc.common.data.impl;
 
 import static tk.yallandev.saintmc.common.utils.json.JsonUtils.elementToBson;
 import static tk.yallandev.saintmc.common.utils.json.JsonUtils.jsonTree;

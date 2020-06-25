@@ -28,7 +28,6 @@ import tk.yallandev.saintmc.CommonConst;
 import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.bukkit.BukkitMain;
 import tk.yallandev.saintmc.bukkit.account.BukkitMember;
-import tk.yallandev.saintmc.bukkit.api.server.profile.Profile;
 import tk.yallandev.saintmc.bukkit.command.BukkitCommandArgs;
 import tk.yallandev.saintmc.bukkit.command.BukkitCommandSender;
 import tk.yallandev.saintmc.bukkit.event.restore.RestoreEvent;
@@ -41,6 +40,7 @@ import tk.yallandev.saintmc.common.command.CommandArgs;
 import tk.yallandev.saintmc.common.command.CommandClass;
 import tk.yallandev.saintmc.common.command.CommandFramework.Command;
 import tk.yallandev.saintmc.common.permission.Group;
+import tk.yallandev.saintmc.common.profile.Profile;
 import tk.yallandev.saintmc.common.utils.DateUtils;
 
 @SuppressWarnings("deprecation")
@@ -309,9 +309,11 @@ public class ModeratorCommand implements CommandClass {
 
 			if (args[0].equalsIgnoreCase("add")) {
 				BukkitMain.getInstance().getServerConfig().addWhitelist(profile);
+				CommonGeneral.getInstance().getServerData().addWhitelist(profile);
 				sender.sendMessage("§a" + args[1] + " adicionado na whitelist!");
 			} else {
 				BukkitMain.getInstance().getServerConfig().removeWhitelist(profile);
+				CommonGeneral.getInstance().getServerData().removeWhitelist(profile);
 				sender.sendMessage("§a" + args[1] + " removido na whitelist!");
 			}
 			break;

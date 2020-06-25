@@ -1,4 +1,4 @@
-package tk.yallandev.saintmc.common.data;
+package tk.yallandev.saintmc.common.data.impl;
 
 import static tk.yallandev.saintmc.common.utils.json.JsonUtils.elementToString;
 import static tk.yallandev.saintmc.common.utils.json.JsonUtils.mapToObject;
@@ -25,6 +25,7 @@ import tk.yallandev.saintmc.common.backend.data.PlayerData;
 import tk.yallandev.saintmc.common.backend.database.mongodb.MongoConnection;
 import tk.yallandev.saintmc.common.backend.database.mongodb.MongoQuery;
 import tk.yallandev.saintmc.common.backend.database.redis.RedisDatabase;
+import tk.yallandev.saintmc.common.server.ServerType;
 import tk.yallandev.saintmc.common.utils.json.JsonBuilder;
 import tk.yallandev.saintmc.common.utils.json.JsonUtils;
 
@@ -97,15 +98,17 @@ public class PlayerDataImpl implements PlayerData {
 		if (needCreate)
 			query.create(new String[] { CommonConst.GSON.toJson(memberModel) });
 
-		CommonGeneral.getInstance().getCommonPlatform().runAsync(new Runnable() {
+		if (CommonGeneral.getInstance().getServerType() != ServerType.PRIVATE_SERVER)
+			CommonGeneral.getInstance().getCommonPlatform().runAsync(new Runnable() {
 
-			@Override
-			public void run() {
-				try (Jedis jedis = redisDatabase.getPool().getResource()) {
-					jedis.hmset("account:" + memberModel.getUniqueId().toString(), JsonUtils.objectToMap(memberModel));
+				@Override
+				public void run() {
+					try (Jedis jedis = redisDatabase.getPool().getResource()) {
+						jedis.hmset("account:" + memberModel.getUniqueId().toString(),
+								JsonUtils.objectToMap(memberModel));
+					}
 				}
-			}
-		});
+			});
 	}
 
 	@Override
@@ -116,15 +119,17 @@ public class PlayerDataImpl implements PlayerData {
 		if (needCreate)
 			query.create(new String[] { CommonConst.GSON.toJson(memberModel) });
 
-		CommonGeneral.getInstance().getCommonPlatform().runAsync(new Runnable() {
+		if (CommonGeneral.getInstance().getServerType() != ServerType.PRIVATE_SERVER)
+			CommonGeneral.getInstance().getCommonPlatform().runAsync(new Runnable() {
 
-			@Override
-			public void run() {
-				try (Jedis jedis = redisDatabase.getPool().getResource()) {
-					jedis.hmset("account:" + memberModel.getUniqueId().toString(), JsonUtils.objectToMap(memberModel));
+				@Override
+				public void run() {
+					try (Jedis jedis = redisDatabase.getPool().getResource()) {
+						jedis.hmset("account:" + memberModel.getUniqueId().toString(),
+								JsonUtils.objectToMap(memberModel));
+					}
 				}
-			}
-		});
+			});
 
 	}
 
@@ -132,38 +137,40 @@ public class PlayerDataImpl implements PlayerData {
 	public void updateMember(Member member, String fieldName) {
 		MemberModel memberModel = new MemberModel(member);
 		JsonObject object = JsonUtils.jsonTree(memberModel);
-		
+
 		if (object.has(fieldName)) {
 			query.updateOne("uniqueId", member.getUniqueId().toString(),
 					new JsonBuilder().addProperty("fieldName", fieldName).add("value", object.get(fieldName)).build());
 		}
 
-		CommonGeneral.getInstance().getCommonPlatform().runAsync(new Runnable() {
+		if (CommonGeneral.getInstance().getServerType() != ServerType.PRIVATE_SERVER)
+			CommonGeneral.getInstance().getCommonPlatform().runAsync(new Runnable() {
 
-			@Override
-			public void run() {
-				JsonObject tree = CommonConst.GSON.toJsonTree(member).getAsJsonObject();
-				
-				if (tree.has(fieldName)) {
-					JsonElement element = tree.get(fieldName);
-					try (Jedis jedis = redisDatabase.getPool().getResource()) {
-						Pipeline pipe = jedis.pipelined();
-						jedis.hset("account:" + member.getUniqueId().toString(), fieldName, elementToString(element));
+				@Override
+				public void run() {
+					JsonObject tree = CommonConst.GSON.toJsonTree(member).getAsJsonObject();
 
-						JsonObject json = new JsonObject();
-						json.add("uniqueId", new JsonPrimitive(member.getUniqueId().toString()));
-						json.add("source", new JsonPrimitive(CommonGeneral.getInstance().getServerId()));
-						json.add("field", new JsonPrimitive(fieldName));
-						json.add("value", element);
-						pipe.publish("account-field", json.toString());
+					if (tree.has(fieldName)) {
+						JsonElement element = tree.get(fieldName);
+						try (Jedis jedis = redisDatabase.getPool().getResource()) {
+							Pipeline pipe = jedis.pipelined();
+							jedis.hset("account:" + member.getUniqueId().toString(), fieldName,
+									elementToString(element));
 
-						pipe.sync();
-					} catch (Exception e) {
-						e.printStackTrace();
+							JsonObject json = new JsonObject();
+							json.add("uniqueId", new JsonPrimitive(member.getUniqueId().toString()));
+							json.add("source", new JsonPrimitive(CommonGeneral.getInstance().getServerId()));
+							json.add("field", new JsonPrimitive(fieldName));
+							json.add("value", element);
+							pipe.publish("account-field", json.toString());
+
+							pipe.sync();
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
 					}
 				}
-			}
-		});
+			});
 	}
 
 	@Override
@@ -194,10 +201,11 @@ public class PlayerDataImpl implements PlayerData {
 
 	@Override
 	public void cacheMember(UUID uniqueId) {
-		try (Jedis jedis = redisDatabase.getPool().getResource()) {
-			CommonGeneral.getInstance().debug(uniqueId + "");
-			jedis.expire("account:" + uniqueId.toString(), 300);
-		}
+		if (CommonGeneral.getInstance().getServerType() != ServerType.PRIVATE_SERVER)
+			try (Jedis jedis = redisDatabase.getPool().getResource()) {
+				CommonGeneral.getInstance().debug(uniqueId + "");
+				jedis.expire("account:" + uniqueId.toString(), 300);
+			}
 	}
 
 	@Override

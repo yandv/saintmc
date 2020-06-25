@@ -88,34 +88,53 @@ public class ConnectionListener implements Listener {
 		}
 
 		event.setCancelled(true);
-
-		if (!fallbackServer.containsPlayer(player.getUniqueId())) {
-			event.setCancelServer(fallbackServer.getServerInfo());
-		}
+//
+//		if (!fallbackServer.containsPlayer(player.getUniqueId())) {
+//			event.setCancelServer(fallbackServer.getServerInfo());
+//		}
 	}
 
 	@EventHandler
 	public void onSearchServer(SearchServerEvent event) {
-		String serverId = getServerIp(event.getPlayer().getPendingConnection());
-
-		AccountType accountType = event.getPlayer().getAccountType();
-		ProxiedServer server = manager.getServer(serverId) == null ? manager.getBalancer(
-				accountType == AccountType.CRACKED && CommonGeneral.getInstance().isLoginServer() ? ServerType.LOGIN
-						: ServerType.LOBBY)
-				.next() : manager.getServer(serverId);
+		ProxiedServer server = searchServer(event.getPlayer());
 
 		if (server == null || server.getServerInfo() == null) {
 			event.setCancelled(true);
-			event.setCancelMessage(accountType == AccountType.CRACKED ? "§4§l" + CommonConst.KICK_PREFIX
-					+ "\n§f\n§fO servidor de §alogin§f está cheio no momento!\n§f\n§6Acesse nosso discord para mais informações:\n§b"
-					+ CommonConst.DISCORD
-					: "§4§l" + CommonConst.KICK_PREFIX
-							+ "\n\n§fNenhum servidor de §alobby§f está disponível no momento!\n§f\n§6Acesse nosso discord para mais informações:\n§b"
-							+ CommonConst.DISCORD);
+			event.setCancelMessage("§4§l" + CommonConst.KICK_PREFIX
+					+ (event.getPlayer().getAccountType() == AccountType.CRACKED ? "§4§l"
+							+ "\n§f\n§fNenhum servidor de §alogin§f está disponível no momento!\n§f\n§6Acesse nosso discord para mais informações:\n§b"
+							+ CommonConst.DISCORD
+							: "\n\n§fNenhum servidor de §alobby§f está disponível no momento!\n§f\n§6Acesse nosso discord para mais informações:\n§b"
+									+ CommonConst.DISCORD));
 			return;
 		}
 
+		if (server.getServerType() == ServerType.LOGIN)
+			if (server.isFull()) {
+				event.setCancelled(true);
+				event.setCancelMessage("§4§l" + CommonConst.KICK_PREFIX
+						+ "\n§f\n§fO servidor de §alogin§f está cheio no momento!\n§f\n§6Acesse nosso discord para mais informações:\n§b"
+						+ CommonConst.DISCORD);
+				return;
+			}
+
 		event.setServer(server.getServerInfo());
+	}
+
+	private ProxiedServer searchServer(ProxiedPlayer player) {
+		String serverId = getServerIp(player.getPendingConnection());
+
+		AccountType accountType = player.getAccountType();
+
+		if (accountType == AccountType.CRACKED)
+			return manager
+					.getBalancer(CommonGeneral.getInstance().isLoginServer() ? ServerType.LOGIN : ServerType.LOBBY)
+					.next();
+
+		if (serverId.toLowerCase().toLowerCase().contains("hg"))
+			return manager.getBalancer(ServerType.HUNGERGAMES).next();
+
+		return manager.getServer(serverId) == null ? manager.getBalancer(ServerType.LOBBY).next() : manager.getServer(serverId);
 	}
 
 	/*
@@ -124,19 +143,25 @@ public class ConnectionListener implements Listener {
 
 	@EventHandler
 	public void onServerConnect(ServerConnectEvent event) {
-		BungeeMember player = (BungeeMember) CommonGeneral.getInstance().getMemberManager().getMember(event.getPlayer().getUniqueId());
+		BungeeMember player = (BungeeMember) CommonGeneral.getInstance().getMemberManager()
+				.getMember(event.getPlayer().getUniqueId());
 
 		if (player == null)
 			return;
-		
+
 		ProxiedServer server = manager.getServer(event.getTarget().getName());
-		
+
 		if (server.getServerType() == ServerType.SCREENSHARE) {
 			if (player.isScreensharing() || player.hasGroupPermission(Group.MODGC))
 				player.sendMessage("§aVocê foi enviado para Screenshare!");
 			else
 				event.setCancelled(true);
-			
+
+			return;
+		} else if (server.getServerType() == ServerType.LOGIN) {
+			if (!(player.getLoginConfiguration().isLogged() || player.hasGroupPermission(Group.MODGC)))
+				event.setCancelled(true);
+
 			return;
 		}
 
@@ -197,7 +222,7 @@ public class ConnectionListener implements Listener {
 					serverPing.getPlayers().setMax(ProxyServer.getInstance().getOnlineCount() + 1);
 					serverPing.getPlayers().setOnline(ProxyServer.getInstance().getOnlineCount());
 					serverPing.getPlayers().setSample(
-							new PlayerInfo[] { new PlayerInfo("§cServidor não encontrado!", UUID.randomUUID()) });
+							new PlayerInfo[] { new PlayerInfo("§e" + CommonConst.WEBSITE, UUID.randomUUID()) });
 					serverPing.setDescription("    §f﹄ §6§lSaint§f§lMC §f| §eMinecraft Network §7(1.7-.12) §f﹃\n"
 							+ StringCenter.centered("§4§nServidor não encontrado!", 127));
 				}
@@ -212,15 +237,7 @@ public class ConnectionListener implements Listener {
 		if (con == null || con.getVirtualHost() == null)
 			return "";
 
-		String s = con.getVirtualHost().getHostName().toLowerCase();
-
-		if (s.isEmpty())
-			return "";
-
-		for (String str : new String[] { "proxy." })
-			s = s.replace(str, "");
-
-		return s;
+		return con.getVirtualHost().getHostName().toLowerCase();
 	}
 
 }

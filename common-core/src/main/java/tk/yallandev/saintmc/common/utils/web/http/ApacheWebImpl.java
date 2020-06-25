@@ -56,14 +56,15 @@ public class ApacheWebImpl implements WebHelper {
 		ApacheWebImpl apache = new ApacheWebImpl();
 
 		try {
-			apache.doAsyncRequest("http://localhost:3333/mojang/session/?ip=186.221.185.74", Method.GET, new FutureCallback<JsonElement>() {
-				
-				@Override
-				public void result(JsonElement result, Throwable error) {
-					System.out.println(result);
-				}
-				
-			});
+			apache.doAsyncRequest("http://localhost:3333/mojang/session/?ip=186.221.185.74", Method.GET,
+					new FutureCallback<JsonElement>() {
+
+						@Override
+						public void result(JsonElement result, Throwable error) {
+							System.out.println(result);
+						}
+
+					});
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -108,48 +109,53 @@ public class ApacheWebImpl implements WebHelper {
 
 	@Override
 	public void doAsyncRequest(String url, Method method, String jsonEntity, FutureCallback<JsonElement> callback) {
-		closeableHttpAsyncClient.execute(createRequestBase(url, method, jsonEntity),
-				new org.apache.http.concurrent.FutureCallback<HttpResponse>() {
+		try {
+			closeableHttpAsyncClient.execute(createRequestBase(url, method, jsonEntity),
+					new org.apache.http.concurrent.FutureCallback<HttpResponse>() {
+				
+						public void completed(HttpResponse response) {
 
-					public void completed(HttpResponse response) {
+							HttpEntity entity = response.getEntity();
+							String json;
 
-						HttpEntity entity = response.getEntity();
-						String json;
+							try {
+								json = EntityUtils.toString(entity);
+							} catch (ParseException | IOException e) {
+								failed(e);
+								return;
+							}
 
-						try {
-							json = EntityUtils.toString(entity);
-						} catch (ParseException | IOException e) {
-							failed(e);
-							return;
+							if (json == null) {
+								failed(new Exception("Received empty response from your server, check connections."));
+								return;
+							}
+
+							JsonElement jsonElement = new JsonObject();
+
+							try {
+								jsonElement = JsonParser.parseString(json);
+							} catch (Exception ex) {
+								callback.result(jsonElement, ex);
+								return;
+							}
+
+							callback.result(jsonElement, null);
 						}
 
-						if (json == null) {
-							failed(new Exception("Received empty response from your server, check connections."));
-							return;
+						public void failed(Exception ex) {
+							callback.result(new JsonObject(), ex);
 						}
 
-						JsonElement jsonElement = new JsonObject();
-
-						try {
-							jsonElement = JsonParser.parseString(json);
-						} catch (Exception ex) {
-							CommonGeneral.getInstance().getLogger().warning(json);
+						public void cancelled() {
+							callback.result(new JsonObject(), new Exception("The request has been cancelled!"));
 						}
 
-						callback.result(jsonElement, null);
-					}
-
-					public void failed(Exception ex) {
-						callback.result(new JsonObject(), ex);
-					}
-
-					public void cancelled() {
-						callback.result(new JsonObject(), new Exception("The request has been cancelled!"));
-					}
-
-				});
+					});
+		} catch (Exception ex) {
+			callback.result(null, ex);
+		}
 	}
-	
+
 	public JsonElement doRequest(HttpRequestBase requestBase) throws Exception {
 		CloseableHttpResponse response = closeableHttpClient.execute(requestBase);
 

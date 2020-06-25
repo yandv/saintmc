@@ -42,6 +42,8 @@ public class ServerManager {
         balancers.put(ServerType.GLADIATOR, new MostConnection<>());
 
         balancers.put(ServerType.HUNGERGAMES, new MostConnection<>());
+        balancers.put(ServerType.PRIVATE_SERVER, new MostConnection<>());
+        balancers.put(ServerType.CLANXCLAN, new MostConnection<>());
 
         activeServers = new HashMap<>();
     }
@@ -67,9 +69,9 @@ public class ServerManager {
         
         if (server == null) {
             if (type == ServerType.HUNGERGAMES) {
-                server = new HungerGamesServer(serverId, type, onlinePlayers, true);
+                server = new HungerGamesServer(serverId, type, onlinePlayers, new HashSet<>(), true);
             } else {
-                server = new ProxiedServer(serverId, type, onlinePlayers, maxPlayers, true);
+                server = new ProxiedServer(serverId, type, onlinePlayers, new HashSet<>(), maxPlayers, true);
             }
             activeServers.put(serverId.toLowerCase(), server);
         }

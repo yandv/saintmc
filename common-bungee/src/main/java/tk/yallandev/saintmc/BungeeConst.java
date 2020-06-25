@@ -2,6 +2,11 @@ package tk.yallandev.saintmc;
 
 public class BungeeConst {
 	
+	public static final String MONGO_URL = "mongodb://yandv:YBOfXYL2IBjEKAkE@35.198.32.68/saintmc-common?retryWrites=true&w=majority";
+	
+	public static final String REDIS_HOSTNAME = "35.198.32.68";
+	public static final String REDIS_PASSWORD = "EMJhKKLONg8IuZ@G";
+	
 	public static final String[] BROADCAST_MESSAGES = new String[] {
 			"&e&lDICA&f: &7Viu um player suspeito? Use o &a/report &7para reportá-lo",
 			"&e&lDICA&f: &7Se você é um &dNitro Booster&7 em nosso discord use o &a/discord&7 para ganhar beneficios no servidor",

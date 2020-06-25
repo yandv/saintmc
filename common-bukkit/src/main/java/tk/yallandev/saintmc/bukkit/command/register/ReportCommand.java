@@ -17,20 +17,20 @@ import tk.yallandev.saintmc.common.permission.Group;
 import tk.yallandev.saintmc.common.report.Report;
 
 public class ReportCommand implements CommandClass {
-	
+
 	@Command(name = "report", aliases = { "reports", "reportar" })
-	public void reports(BukkitCommandArgs cmdArgs) {
+	public void reportComman(BukkitCommandArgs cmdArgs) {
 		if (!cmdArgs.isPlayer())
 			return;
-		
+
 		Player sender = cmdArgs.getPlayer();
 		String[] args = cmdArgs.getArgs();
-		
+
 		Member member = CommonGeneral.getInstance().getMemberManager().getMember(sender.getUniqueId());
-		
-		if (!member.hasGroupPermission(Group.TRIAL))
+
+		if (!member.hasGroupPermission(Group.HELPER))
 			return;
-		
+
 		if (args.length == 0) {
 			new ReportListInventory(cmdArgs.getPlayer(), 1);
 			return;
@@ -61,14 +61,14 @@ public class ReportCommand implements CommandClass {
 				return;
 			}
 		}
-		
+
 		Report report = CommonGeneral.getInstance().getReportManager().getReport(player.getUniqueId());
-		
+
 		if (report == null) {
 			sender.sendMessage(" §c* §fO jogador §a" + args[0] + "§f não foi reportado!");
 			return;
 		}
-		
+
 		new ReportInventory(sender, report);
 	}
 

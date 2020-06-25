@@ -19,7 +19,6 @@ import tk.yallandev.saintmc.bukkit.api.tag.Chroma;
 import tk.yallandev.saintmc.bukkit.event.account.PlayerChangeTagEvent;
 import tk.yallandev.saintmc.common.account.League;
 import tk.yallandev.saintmc.common.account.Member;
-import tk.yallandev.saintmc.common.tag.Tag;
 
 public class TagListener implements Listener {
 
@@ -56,7 +55,7 @@ public class TagListener implements Listener {
 	}
 
 	@EventHandler(priority = EventPriority.MONITOR)
-	public void onPlayerJoinListener(PlayerJoinEvent e) {
+	public void onPlayerJoin(PlayerJoinEvent e) {
 		Player p = e.getPlayer();
 
 		BukkitMember player = (BukkitMember) CommonGeneral.getInstance().getMemberManager()
@@ -65,8 +64,8 @@ public class TagListener implements Listener {
 		if (!main.isTagControl())
 			return;
 
-		player.setTag(player.getTag() == Tag.LOGANDO ? player.getDefaultTag() : player.getTag());
-
+		player.setTag(player.getTag() == null ? player.getDefaultTag() : player.getTag());
+		
 		for (Player o : Bukkit.getOnlinePlayers()) {
 			if (!o.getUniqueId().equals(p.getUniqueId())) {
 				BukkitMember bp = (BukkitMember) CommonGeneral.getInstance().getMemberManager()
@@ -98,7 +97,7 @@ public class TagListener implements Listener {
 
 		if (player == null)
 			return;
-
+		
 		String id = ScoreboardAPI.getTeamName(e.getNewTag(), player.getLeague(),
 				e.getNewTag().isChroma() || player.isChroma());
 		String oldId = ScoreboardAPI.getTeamName(e.getOldTag(), player.getLeague(),
@@ -119,7 +118,7 @@ public class TagListener implements Listener {
 			if (!listener.getChromaList().contains(e.getNewTag())) {
 				listener.getChromaList().add(new Chroma(id, tag, league));
 			}
-		
+
 		/**
 		 * TICKs++
 		 */

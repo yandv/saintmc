@@ -16,7 +16,7 @@ import lombok.Setter;
 import tk.yallandev.saintmc.bukkit.BukkitMain;
 import tk.yallandev.saintmc.bukkit.api.server.Server;
 import tk.yallandev.saintmc.bukkit.api.server.chat.ChatState;
-import tk.yallandev.saintmc.bukkit.api.server.profile.Profile;
+import tk.yallandev.saintmc.common.profile.Profile;
 
 public class ServerImpl implements Server {
 	

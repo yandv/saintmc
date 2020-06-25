@@ -92,8 +92,8 @@ public class MemberModel {
 	private String serverId = "";
 	private ServerType serverType;
 	
-	protected String lastServerId;
-	protected ServerType lastServerType;
+	private String lastServerId;
+	private ServerType lastServerType;
     
     private boolean online;
     

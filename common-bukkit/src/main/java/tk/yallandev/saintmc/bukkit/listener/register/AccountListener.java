@@ -18,7 +18,6 @@ import tk.yallandev.saintmc.CommonConst;
 import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.bukkit.BukkitMain;
 import tk.yallandev.saintmc.bukkit.account.BukkitMember;
-import tk.yallandev.saintmc.bukkit.api.server.profile.Profile;
 import tk.yallandev.saintmc.bukkit.event.account.PlayerChangeGroupEvent;
 import tk.yallandev.saintmc.bukkit.event.account.PlayerUpdateFieldEvent;
 import tk.yallandev.saintmc.bukkit.event.account.PlayerUpdatedFieldEvent;
@@ -27,6 +26,7 @@ import tk.yallandev.saintmc.bukkit.event.restore.RestoreStopEvent;
 import tk.yallandev.saintmc.bukkit.listener.Listener;
 import tk.yallandev.saintmc.common.account.League;
 import tk.yallandev.saintmc.common.account.MemberModel;
+import tk.yallandev.saintmc.common.profile.Profile;
 
 public class AccountListener extends Listener {
 

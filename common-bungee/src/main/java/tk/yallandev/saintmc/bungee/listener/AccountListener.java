@@ -1,6 +1,8 @@
 package tk.yallandev.saintmc.bungee.listener;
 
 import java.net.InetSocketAddress;
+import java.util.Iterator;
+import java.util.Map.Entry;
 import java.util.UUID;
 
 import net.md_5.bungee.api.CommandSender;
@@ -25,8 +27,11 @@ import tk.yallandev.saintmc.common.account.MemberModel;
 import tk.yallandev.saintmc.common.account.configuration.LoginConfiguration.AccountType;
 import tk.yallandev.saintmc.common.ban.constructor.Ban;
 import tk.yallandev.saintmc.common.permission.Group;
+import tk.yallandev.saintmc.common.permission.RankType;
 import tk.yallandev.saintmc.common.report.Report;
 import tk.yallandev.saintmc.common.server.ServerType;
+import tk.yallandev.saintmc.common.tag.Tag;
+import tk.yallandev.saintmc.common.utils.DateUtils;
 import tk.yallandev.saintmc.common.utils.string.NameUtils;
 import tk.yallandev.saintmc.common.utils.supertype.FutureCallback;
 
@@ -63,7 +68,7 @@ public class AccountListener implements Listener {
 							 * Change the login status If the onlineMode equals false the cracked player
 							 * will able to join or if equals true the cracked player wont able to join
 							 */
-
+							
 							connection.setOnlineMode(!cracked);
 						} else {
 							event.setCancelled(true);
@@ -304,6 +309,10 @@ public class AccountListener implements Listener {
 			}
 		});
 	}
+	
+	public static void main(String[] args) {
+		System.out.println(System.currentTimeMillis() + (1000l * 60l * 60l * 24l * 3l));
+	}
 
 	@EventHandler(priority = -127)
 	public void onPostLoginCheck(PostLoginEvent event) {
@@ -323,6 +332,29 @@ public class AccountListener implements Listener {
 		BungeeMember member = (BungeeMember) CommonGeneral.getInstance().getMemberManager()
 				.getMember(event.getPlayer().getUniqueId());
 		member.setProxiedPlayer(event.getPlayer());
+		
+		if (!member.isOnCooldown("default-vip")) {
+			Iterator<Entry<RankType, Long>> iterator = member.getRanks().entrySet().iterator();
+
+			while (iterator.hasNext()) {
+				Entry<RankType, Long> entry = iterator.next();
+
+				if (!DateUtils.isForever(entry.getValue())) {
+					entry.setValue(entry.getValue() + (1000l * 60l * 60l * 24l * 3l));
+					member.sendMessage("§a§l> §fVocê ganhou mais 3 dias de "
+							+ Tag.valueOf(entry.getKey().name()).getPrefix() + "§f!");
+				}
+			}
+
+			if (!member.getRanks().containsKey(RankType.SAINT)) {
+				member.getRanks().put(RankType.SAINT, 1593298791761l);
+				member.saveRanks();
+			}
+			
+			member.sendMessage("§a§l> §fVocê recebeu vip " + Tag.SAINT.getPrefix() + "§f por §a"
+					+ DateUtils.getTime(1593298791761l) + "§f!");
+			member.setCooldown("default-vip", System.currentTimeMillis() + (1000 * 60 * 60 * 24 * 300));
+		}
 	}
 
 	@EventHandler

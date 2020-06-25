@@ -71,7 +71,7 @@ public class TagCommand implements CommandClass {
 		}
 		
 		if (args[0].equalsIgnoreCase("default")) {
-			if (member.setTag(member.getDefaultTag(), true)) {
+			if (member.setTag(member.getDefaultTag())) {
 				player.sendMessage(" §a* §fVocê voltou para sua tag padrão!");
 			}
 			return;

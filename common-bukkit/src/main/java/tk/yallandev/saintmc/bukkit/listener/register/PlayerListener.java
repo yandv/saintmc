@@ -19,7 +19,6 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
 import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.bukkit.BukkitMain;
-import tk.yallandev.saintmc.bukkit.api.server.profile.Profile;
 import tk.yallandev.saintmc.bukkit.api.title.Title;
 import tk.yallandev.saintmc.bukkit.api.title.types.SimpleTitle;
 import tk.yallandev.saintmc.bukkit.api.vanish.AdminMode;
@@ -31,6 +30,7 @@ import tk.yallandev.saintmc.bukkit.listener.Listener;
 import tk.yallandev.saintmc.common.account.League;
 import tk.yallandev.saintmc.common.account.Member;
 import tk.yallandev.saintmc.common.permission.Group;
+import tk.yallandev.saintmc.common.profile.Profile;
 import tk.yallandev.saintmc.common.utils.DateUtils;
 
 public class PlayerListener extends Listener {
@@ -38,27 +38,28 @@ public class PlayerListener extends Listener {
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onLogin(PlayerLoginEvent event) {
 		if (event.getResult() != PlayerLoginEvent.Result.ALLOWED)
-            return;
-		
+			return;
+
 		Member player = CommonGeneral.getInstance().getMemberManager().getMember(event.getPlayer().getUniqueId());
 
 		if (player == null) {
 			event.disallow(Result.KICK_OTHER, ChatColor.RED + "Ocorreu um erro!");
 			return;
 		}
-		
+
 		if (getServerConfig().isWhitelist()) {
-			if (player.hasGroupPermission(Group.BUILDER) || getServerConfig().hasWhitelist(new Profile(player.getPlayerName(), player.getUniqueId()))) {
+			if (player.hasGroupPermission(Group.BUILDER)
+					|| getServerConfig().hasWhitelist(new Profile(player.getPlayerName(), player.getUniqueId())))
 				event.allow();
-			} else {
+			else
 				event.disallow(Result.KICK_OTHER, "§cO servidor está disponivel somente para a equipe!");
-			}
 		} else
 			event.allow();
 
-		if (getServerConfig().isBlackedlist(Profile.fromMember(player)))
-			event.disallow(Result.KICK_OTHER, "§cVocê está bloqueado de entrar nesse servidor! Expire em " + DateUtils
-					.getTime(getServerConfig().getBlacklistTime(Profile.fromMember(player))));
+		if (getServerConfig().isBlackedlist(new Profile(player.getPlayerName(), player.getUniqueId())))
+			event.disallow(Result.KICK_OTHER,
+					"§cVocê está bloqueado de entrar nesse servidor! Expire em " + DateUtils.getTime(getServerConfig()
+							.getBlacklistTime(new Profile(player.getPlayerName(), player.getUniqueId()))));
 	}
 
 	@EventHandler(priority = EventPriority.LOWEST)
@@ -129,7 +130,7 @@ public class PlayerListener extends Listener {
 		if (getMain().isRemovePlayerDat())
 			removePlayerFile(event.getPlayer().getUniqueId());
 	}
-	
+
 	@EventHandler
 	public void onPlayerQuit(PlayerAchievementAwardedEvent event) {
 		event.setCancelled(true);

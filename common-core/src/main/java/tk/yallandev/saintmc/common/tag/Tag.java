@@ -42,7 +42,6 @@ public abstract class Tag {
 	public static final Tag LIGHT = TagWrapper.create("§a§lLIGHT§a", Group.LIGHT);
 	public static final Tag DONATOR = TagWrapper.create("§d§lDONATOR§d", Group.DONATOR, true);
 	public static final Tag MEMBRO = TagWrapper.create("MEMBRO", "§7", Group.MEMBRO);
-	public static final Tag LOGANDO = TagWrapper.create("§8§lLOGANDO§8", null);
 	public static final Tag RDM = TagWrapper.create("§6§lRDM§6", null);
 
 	public int ordinal() {
