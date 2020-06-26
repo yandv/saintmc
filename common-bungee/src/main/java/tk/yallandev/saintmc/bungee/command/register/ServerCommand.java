@@ -1,14 +1,17 @@
 package tk.yallandev.saintmc.bungee.command.register;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
+import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.bungee.BungeeMain;
 import tk.yallandev.saintmc.bungee.command.BungeeCommandArgs;
 import tk.yallandev.saintmc.bungee.event.BlockAddressEvent;
 import tk.yallandev.saintmc.bungee.event.UnblockAddressEvent;
+import tk.yallandev.saintmc.common.account.Member;
 import tk.yallandev.saintmc.common.command.CommandArgs;
 import tk.yallandev.saintmc.common.command.CommandClass;
 import tk.yallandev.saintmc.common.command.CommandFramework.Command;
@@ -17,8 +20,11 @@ import tk.yallandev.saintmc.common.command.CommandSender;
 import tk.yallandev.saintmc.common.permission.Group;
 import tk.yallandev.saintmc.common.server.ServerType;
 import tk.yallandev.saintmc.common.server.loadbalancer.server.ProxiedServer;
+import tk.yallandev.saintmc.common.utils.DateUtils;
 
 public class ServerCommand implements CommandClass {
+
+	private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.##");
 
 	@Command(name = "ping")
 	public void pingCommand(BungeeCommandArgs cmdArgs) {
@@ -45,16 +51,17 @@ public class ServerCommand implements CommandClass {
 	@Command(name = "ip")
 	public void ipCommand(BungeeCommandArgs cmdArgs) {
 		if (cmdArgs.isPlayer()) {
-			cmdArgs.getSender().sendMessage("§aVocê está no servidor " + cmdArgs.getPlayer().getServer().getInfo().getName());
+			cmdArgs.getSender()
+					.sendMessage("§aVocê está no servidor " + cmdArgs.getPlayer().getServer().getInfo().getName());
 		} else {
 			CommandSender sender = cmdArgs.getSender();
 			String[] args = cmdArgs.getArgs();
-			
+
 			if (args.length <= 1) {
 				sender.sendMessage(" §e* §fUse §a/" + cmdArgs.getLabel() + " <ip>§f para desbloquear um ip.");
 				return;
 			}
-			
+
 			if (args[0].equalsIgnoreCase("add")) {
 				ProxyServer.getInstance().getPluginManager().callEvent(new BlockAddressEvent(args[0]));
 				sender.sendMessage("§aO ip " + args[0] + " foi bloqueado!");
@@ -132,7 +139,15 @@ public class ServerCommand implements CommandClass {
 		if (!cmdArgs.isPlayer())
 			return;
 
-		CommandSender sender = cmdArgs.getSender();
+		Member sender = CommonGeneral.getInstance().getMemberManager().getMember(cmdArgs.getSender().getUniqueId());
+
+		if (sender.isOnCooldown("connect-command")) {
+			sender.sendMessage(
+					"§cEspere mais " + DateUtils.formatTime(sender.getCooldown("connect-command"), DECIMAL_FORMAT)
+							+ " para se conectar novamente!");
+			return;
+		}
+
 		ProxiedServer server = BungeeMain.getInstance().getServerManager().getBalancer(ServerType.LOBBY).next();
 
 		if (server == null || server.getServerInfo() == null) {
@@ -141,11 +156,27 @@ public class ServerCommand implements CommandClass {
 		}
 
 		cmdArgs.getPlayer().connect(server.getServerInfo());
+		sender.setCooldown("connect-command", 4);
 	}
 
 	@Command(name = "server", usage = "/<command> <player> <server>", aliases = { "go", "connect", "ir" })
 	public void serverCommand(BungeeCommandArgs cmdArgs) {
-		CommandSender sender = cmdArgs.getSender();
+		Member sender = CommonGeneral.getInstance().getMemberManager().getMember(cmdArgs.getSender().getUniqueId());
+
+		if (sender.isOnCooldown("connect-command")) {
+			sender.sendMessage(
+					"§cEspere mais " + DateUtils.formatTime(sender.getCooldown("connect-command"), DECIMAL_FORMAT)
+							+ " para se conectar novamente!");
+			return;
+		}
+		
+		if (sender.isOnCooldown("connect-command")) {
+			sender.sendMessage(
+					"§cEspere mais " + DateUtils.formatTime(sender.getCooldown("connect-command"), DECIMAL_FORMAT)
+							+ " para se conectar novamente!");
+			return;
+		}
+		
 		String[] args = cmdArgs.getArgs();
 
 		if (!cmdArgs.isPlayer()) {
@@ -167,11 +198,20 @@ public class ServerCommand implements CommandClass {
 		}
 
 		cmdArgs.getPlayer().connect(server.getServerInfo());
+		sender.setCooldown("connect-command", 2);
 	}
 
 	@Command(name = "play", usage = "/<command> <player> <server>", aliases = { "jogar" })
 	public void playCommand(BungeeCommandArgs cmdArgs) {
-		CommandSender sender = cmdArgs.getSender();
+		Member sender = CommonGeneral.getInstance().getMemberManager().getMember(cmdArgs.getSender().getUniqueId());
+
+		if (sender.isOnCooldown("connect-command")) {
+			sender.sendMessage(
+					"§cEspere mais " + DateUtils.formatTime(sender.getCooldown("connect-command"), DECIMAL_FORMAT)
+							+ " para se conectar novamente!");
+			return;
+		}
+		
 		String[] args = cmdArgs.getArgs();
 
 		if (!cmdArgs.isPlayer()) {
@@ -183,7 +223,9 @@ public class ServerCommand implements CommandClass {
 			sender.sendMessage(" §e* §fUse §a/" + cmdArgs.getLabel() + " <type>§f para entrar em algum servidor.");
 			return;
 		}
-
+		
+		sender.setCooldown("connect-command", 4);
+		
 		switch (args[0].toLowerCase()) {
 		case "hg":
 		case "hungergames": {
@@ -210,7 +252,8 @@ public class ServerCommand implements CommandClass {
 			break;
 		}
 		case "peak": {
-			ProxiedServer server = BungeeMain.getInstance().getServerManager().getBalancer(ServerType.PRIVATE_SERVER).next();
+			ProxiedServer server = BungeeMain.getInstance().getServerManager().getBalancer(ServerType.PRIVATE_SERVER)
+					.next();
 
 			if (server == null || server.getServerInfo() == null) {
 				sender.sendMessage("§cNenhum servidor de hungergames disponivel!");
@@ -241,6 +284,10 @@ public class ServerCommand implements CommandClass {
 			}
 
 			cmdArgs.getPlayer().connect(server.getServerInfo());
+			break;
+		}
+		default: {
+			sender.setCooldown("connect-command", 2);
 			break;
 		}
 		}

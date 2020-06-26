@@ -9,7 +9,7 @@ import net.md_5.bungee.api.chat.TextComponent;
 import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.bukkit.BukkitMain;
 import tk.yallandev.saintmc.bukkit.account.BukkitMember;
-import tk.yallandev.saintmc.bukkit.command.BukkitCommandArgs;
+import tk.yallandev.saintmc.common.command.CommandArgs;
 import tk.yallandev.saintmc.common.command.CommandClass;
 import tk.yallandev.saintmc.common.command.CommandFramework.Command;
 import tk.yallandev.saintmc.common.permission.Group;
@@ -19,16 +19,14 @@ import tk.yallandev.saintmc.common.utils.string.MessageBuilder;
 public class TagCommand implements CommandClass {
 
 	@Command(name = "tag", runAsync = true)
-	public void tag(BukkitCommandArgs cmdArgs) {
-		if (!cmdArgs.isPlayer()) {
-			cmdArgs.getSender().sendMessage("§4§lERRO §fComando disponivel apenas §c§lin-game");
+	public void tagCommand(CommandArgs cmdArgs) {
+		if (!cmdArgs.isPlayer())
 			return;
-		}
 
-		Player player = cmdArgs.getPlayer();
-		String[] args = cmdArgs.getArgs();
 		BukkitMember member = (BukkitMember) CommonGeneral.getInstance().getMemberManager()
-				.getMember(player.getUniqueId());
+				.getMember(cmdArgs.getSender().getUniqueId());
+		Player player = member.getPlayer();
+		String[] args = cmdArgs.getArgs();
 
 		if (!BukkitMain.getInstance().isTagControl()) {
 			player.sendMessage(" §a* §fO comando não está ativado nesse servidor!");
@@ -59,7 +57,7 @@ public class TagCommand implements CommandClass {
 			player.spigot().sendMessage(message);
 			return;
 		}
-		
+
 		if (args[0].equalsIgnoreCase("chroma")) {
 			if (member.hasGroupPermission(Group.ADMIN)) {
 				member.setChroma(!member.isChroma());
@@ -69,7 +67,7 @@ public class TagCommand implements CommandClass {
 				return;
 			}
 		}
-		
+
 		if (args[0].equalsIgnoreCase("default")) {
 			if (member.setTag(member.getDefaultTag())) {
 				player.sendMessage(" §a* §fVocê voltou para sua tag padrão!");

@@ -9,6 +9,7 @@ tk\yallandev\saintmc\common\account\status\StatusType$Type.class
 tk\yallandev\saintmc\common\account\status\types\normal\NormalModel.class
 tk\yallandev\saintmc\common\backend\Query.class
 tk\yallandev\saintmc\common\server\loadbalancer\LoadBalancer.class
+tk\yallandev\saintmc\common\giftcode\types\KitGiftcode.class
 tk\yallandev\saintmc\common\permission\RankType.class
 tk\yallandev\saintmc\common\backend\database\mongodb\MongoQuery$1.class
 tk\yallandev\saintmc\common\utils\supertype\FutureCallback.class
@@ -97,6 +98,7 @@ tk\yallandev\saintmc\common\controller\MemberManager.class
 tk\yallandev\saintmc\common\controller\ReportManager.class
 tk\yallandev\saintmc\common\data\payload\DataServerMessage$StopPayload.class
 tk\yallandev\saintmc\common\utils\DateUtils.class
+tk\yallandev\saintmc\common\giftcode\types\RankGiftcode.class
 tk\yallandev\saintmc\common\utils\mojang\UUIDParser.class
 tk\yallandev\saintmc\common\utils\supertype\Response.class
 tk\yallandev\saintmc\common\permission\group\ModeratorGroup.class
@@ -131,8 +133,10 @@ tk\yallandev\saintmc\common\backend\Database.class
 tk\yallandev\saintmc\test\Test$1.class
 tk\yallandev\saintmc\common\command\CommandArgs.class
 tk\yallandev\saintmc\common\command\CommandFramework$Completer.class
+tk\yallandev\saintmc\common\controller\GiftcodeController$ExecutionResponse.class
 tk\yallandev\saintmc\common\server\loadbalancer\server\ProxiedServer.class
 tk\yallandev\saintmc\common\utils\mojang\UUIDFetcher.class
+tk\yallandev\saintmc\common\controller\GiftcodeController.class
 tk\yallandev\saintmc\common\account\DiscordType.class
 tk\yallandev\saintmc\common\command\CommandClass.class
 tk\yallandev\saintmc\common\utils\mojang\MojangFetcher$3.class
@@ -140,6 +144,7 @@ tk\yallandev\saintmc\common\backend\database\mongodb\MongoQuery$3.class
 tk\yallandev\saintmc\common\command\CommandFramework$Command.class
 tk\yallandev\saintmc\common\account\League.class
 tk\yallandev\saintmc\common\backend\database\mongodb\MongoConnection$1.class
+tk\yallandev\saintmc\common\giftcode\Giftcode.class
 tk\yallandev\saintmc\common\permission\group\GroupInterface.class
 tk\yallandev\saintmc\common\networking\packet\AnticheatBanPacket.class
 tk\yallandev\saintmc\CommonGeneral.class

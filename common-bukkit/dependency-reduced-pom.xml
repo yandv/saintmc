@@ -213,7 +213,7 @@
       <artifactId>spigot</artifactId>
       <version>1.8.8-R0.1-SNAPSHOT</version>
       <scope>system</scope>
-      <systemPath>C:/Users/Allan/Desktop/Coisas do Allan/Aula/libraries/PaperSpigot.jar</systemPath>
+      <systemPath>C:/Users/Allan/Desktop/Coisas do Allan/Aula/libraries/PaperSpigot-1.8.8-R0.1-SNAPSHOT-latest.jar</systemPath>
     </dependency>
   </dependencies>
 </project>

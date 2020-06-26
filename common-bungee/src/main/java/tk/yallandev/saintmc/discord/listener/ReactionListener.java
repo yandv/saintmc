@@ -20,7 +20,6 @@ import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.MessageDeleteEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
-import net.dv8tion.jda.api.events.message.react.MessageReactionRemoveEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import tk.yallandev.saintmc.CommonConst;
 import tk.yallandev.saintmc.discord.DiscordMain;
@@ -45,7 +44,7 @@ public class ReactionListener extends ListenerAdapter {
 
 			user.openPrivateChannel().complete().sendMessage(new EmbedBuilder().setColor(Color.YELLOW)
 					.appendDescription(ReactionEnum.PENCIL.getEmote()
-							+ " Para se ingressar na equipe é necessário que você demonstre habilidades em moderar um servidor, então seja sempre"
+							+ " Para ingressar na equipe é necessário que você demonstre habilidades em moderar um servidor, então seja sempre"
 							+ " ativo no servidor e faça o formulario " + CommonConst.TRIAL_FORM)
 					.setColor(Color.YELLOW).build()).complete();
 
@@ -73,7 +72,7 @@ public class ReactionListener extends ListenerAdapter {
 						+ "⋅ Nosso bot enviará uma mensagem em seu privado com todas as informações necessárias, mas caso tenha alguma duvida contate um membro da equipe.")
 				.build()), handlers, true);
 
-		handlers.clear();
+		handlers = new HashMap<>();
 
 		handlers.put(ReactionEnum.RIGHT_POINTING_MAGNIFYING_GLASS, (user, guild, textChannel, reaction, action) -> {
 
@@ -88,7 +87,7 @@ public class ReactionListener extends ListenerAdapter {
 					.complete();
 
 		});
-		
+
 		createMessage(708356151301111890l, new MessageBuilder().setEmbed(new EmbedBuilder().setColor(Color.YELLOW)
 				.appendDescription(ReactionEnum.STAR.getEmote() + " Selecione a melhor opção pra você\r\n" + "\r\n"
 						+ ReactionEnum.WRENCH.getEmote() + " Denuncie um bug\r\n"
@@ -96,7 +95,7 @@ public class ReactionListener extends ListenerAdapter {
 						+ "⋅ Nosso bot adicionará/removerá o role <@&708384460776931329> para que você seja notificado em nosso discord!")
 				.build()), handlers, true);
 
-		handlers.clear();
+		handlers = new HashMap<>();
 
 		handlers.put(ReactionEnum.WRENCH, (user, guild, textChannel, reaction, action) -> {
 			Member member = guild.retrieveMember(user).complete();
@@ -110,7 +109,7 @@ public class ReactionListener extends ListenerAdapter {
 					break;
 				}
 			}
-			
+
 			if (notify)
 				guild.removeRoleFromMember(member, notifyRole).complete();
 			else
@@ -146,10 +145,9 @@ public class ReactionListener extends ListenerAdapter {
 
 		if (theMessage == null)
 			theMessage = textChannel.sendMessage(messageBuilder.build()).complete();
-		else
-			if (removeReaction)
-				for (net.dv8tion.jda.api.entities.MessageReaction reaction : theMessage.getReactions())
-					reaction.clearReactions().queue();
+		else if (removeReaction)
+			for (net.dv8tion.jda.api.entities.MessageReaction reaction : theMessage.getReactions())
+				reaction.clearReactions().queue();
 
 		MessageReaction messageReaction = new MessageReaction(theMessage, removeReaction);
 
@@ -192,27 +190,28 @@ public class ReactionListener extends ListenerAdapter {
 			 */
 		}
 	}
-	
-	@Override
-	public void onMessageReactionRemove(MessageReactionRemoveEvent event) {
-		try {
-			if (!REACTIONS.containsKey(event.getMessageId()))
-				return;
 
-			User user = event.getUser();
-
-			MessageReaction message = REACTIONS.get(event.getMessageId());
-			ReactionEmote reaction = event.getReactionEmote();
-
-			if (message.getReactions().containsKey(reaction.getName()))
-				message.getReactions().get(reaction.getName()).onClick(user, event.getGuild(), event.getTextChannel(),
-						reaction, ReactionAction.REMOVE);
-		} catch (Exception ex) {
-			/*
-			 * This error occurs out of nowhere http://prntscr.com/otpqbu
-			 */
-		}
-	}
+//	@Override
+//	public void onMessageReactionRemove(MessageReactionRemoveEvent event) {
+//		try {
+//			if (!REACTIONS.containsKey(event.getMessageId()))
+//				return;
+//
+//			User user = event.getUser();
+//			
+//
+//			MessageReaction message = REACTIONS.get(event.getMessageId());
+//			ReactionEmote reaction = event.getReactionEmote();
+//
+//			if (message.getReactions().containsKey(reaction.getName()))
+//				message.getReactions().get(reaction.getName()).onClick(user, event.getGuild(), event.getTextChannel(),
+//						reaction, ReactionAction.REMOVE);
+//		} catch (Exception ex) {
+//			/*
+//			 * This error occurs out of nowhere http://prntscr.com/otpqbu
+//			 */
+//		}
+//	}
 
 	public static HashMap<String, MessageReaction> getMessageReactions() {
 		return REACTIONS;

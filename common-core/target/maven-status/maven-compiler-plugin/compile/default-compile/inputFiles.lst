@@ -36,6 +36,7 @@ C:\Users\Allan\git\saintmc\common-core\src\main\java\tk\yallandev\saintmc\update
 C:\Users\Allan\git\saintmc\common-core\src\main\java\tk\yallandev\saintmc\update\UpdatePlugin.java
 C:\Users\Allan\git\saintmc\common-core\src\main\java\tk\yallandev\saintmc\common\account\status\types\game\GameStatus.java
 C:\Users\Allan\git\saintmc\common-core\src\main\java\tk\yallandev\saintmc\common\backend\data\PlayerData.java
+C:\Users\Allan\git\saintmc\common-core\src\main\java\tk\yallandev\saintmc\common\controller\GiftcodeController.java
 C:\Users\Allan\git\saintmc\common-core\src\main\java\tk\yallandev\saintmc\common\controller\StatusManager.java
 C:\Users\Allan\git\saintmc\common-core\src\main\java\tk\yallandev\saintmc\common\permission\RankType.java
 C:\Users\Allan\git\saintmc\common-core\src\main\java\tk\yallandev\saintmc\common\server\loadbalancer\element\Server.java
@@ -58,6 +59,7 @@ C:\Users\Allan\git\saintmc\common-core\src\main\java\tk\yallandev\saintmc\common
 C:\Users\Allan\git\saintmc\common-core\src\main\java\tk\yallandev\saintmc\common\utils\DateUtils.java
 C:\Users\Allan\git\saintmc\common-core\src\main\java\tk\yallandev\saintmc\common\account\status\types\normal\NormalStatus.java
 C:\Users\Allan\git\saintmc\common-core\src\main\java\tk\yallandev\saintmc\common\server\loadbalancer\LoadBalancer.java
+C:\Users\Allan\git\saintmc\common-core\src\main\java\tk\yallandev\saintmc\common\giftcode\types\RankGiftcode.java
 C:\Users\Allan\git\saintmc\common-core\src\main\java\tk\yallandev\saintmc\update\Updater.java
 C:\Users\Allan\git\saintmc\common-core\src\main\java\tk\yallandev\saintmc\common\utils\string\MessageBuilder.java
 C:\Users\Allan\git\saintmc\common-core\src\main\java\tk\yallandev\saintmc\common\utils\supertype\Response.java
@@ -73,6 +75,7 @@ C:\Users\Allan\git\saintmc\common-core\src\main\java\tk\yallandev\saintmc\update
 C:\Users\Allan\git\saintmc\common-core\src\main\java\tk\yallandev\saintmc\common\permission\group\StreamerGroup.java
 C:\Users\Allan\git\saintmc\common-core\src\main\java\tk\yallandev\saintmc\common\tag\Tag.java
 C:\Users\Allan\git\saintmc\common-core\src\main\java\tk\yallandev\saintmc\common\profile\Profile.java
+C:\Users\Allan\git\saintmc\common-core\src\main\java\tk\yallandev\saintmc\common\giftcode\Giftcode.java
 C:\Users\Allan\git\saintmc\common-core\src\main\java\tk\yallandev\saintmc\common\networking\Packet.java
 C:\Users\Allan\git\saintmc\common-core\src\main\java\tk\yallandev\saintmc\common\utils\supertype\FutureCallback.java
 C:\Users\Allan\git\saintmc\common-core\src\main\java\tk\yallandev\saintmc\common\backend\data\ReportData.java
@@ -91,6 +94,7 @@ C:\Users\Allan\git\saintmc\common-core\src\test\java\tk\yallandev\saintmc\test\T
 C:\Users\Allan\git\saintmc\common-core\src\main\java\tk\yallandev\saintmc\common\report\Report.java
 C:\Users\Allan\git\saintmc\common-core\src\main\java\tk\yallandev\saintmc\common\server\ServerManager.java
 C:\Users\Allan\git\saintmc\common-core\src\main\java\tk\yallandev\saintmc\update\updater\UpdateType.java
+C:\Users\Allan\git\saintmc\common-core\src\main\java\tk\yallandev\saintmc\common\giftcode\types\KitGiftcode.java
 C:\Users\Allan\git\saintmc\common-core\src\main\java\tk\yallandev\saintmc\common\backend\data\PunishData.java
 C:\Users\Allan\git\saintmc\common-core\src\main\java\tk\yallandev\saintmc\common\utils\ClassGetter.java
 C:\Users\Allan\git\saintmc\common-core\src\main\java\tk\yallandev\saintmc\common\server\loadbalancer\server\MinigameServer.java

@@ -12,7 +12,7 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import tk.yallandev.saintmc.bungee.BungeeMain;
+import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.common.command.CommandClass;
 import tk.yallandev.saintmc.common.command.CommandFramework;
 import tk.yallandev.saintmc.discord.DiscordMain;
@@ -52,27 +52,25 @@ public class DiscordCommandFramework implements CommandFramework {
 				if (config.getChatMap().containsKey("command")) {
 					if (config.getChatMap().get("command") != textChannel.getIdLong()) {
 						MessageUtils.sendMessage(textChannel,
-								"Você não só pode executar comandos no canal ``" + textChannel.getName() + "``.", 5);
+								"Você não pode executar comandos no canal ``" + textChannel.getName() + "``.", 5);
 						return true;
 					}
 				}
 
 				if (command.runAsync()) {
-					BungeeMain.getInstance().getProxy().getScheduler().runAsync(BungeeMain.getInstance(),
-							new Runnable() {
+					CommonGeneral.getInstance().getCommonPlatform().runAsync(new Runnable() {
 
-								@Override
-								public void run() {
-									try {
-										entry.getKey().invoke(entry.getValue(), new DiscordCommandArgs(sender, label,
-												args, cmdLabel.split("\\.").length - 1, textChannel, guild));
-									} catch (IllegalArgumentException | InvocationTargetException
-											| IllegalAccessException e) {
-										e.printStackTrace();
-									}
-								}
+						@Override
+						public void run() {
+							try {
+								entry.getKey().invoke(entry.getValue(), new DiscordCommandArgs(sender, label, args,
+										cmdLabel.split("\\.").length - 1, textChannel, guild));
+							} catch (IllegalArgumentException | InvocationTargetException | IllegalAccessException e) {
+								e.printStackTrace();
+							}
+						}
 
-							});
+					});
 				} else {
 					try {
 						entry.getKey().invoke(entry.getValue(), new DiscordCommandArgs(sender, label, args,
@@ -142,8 +140,8 @@ public class DiscordCommandFramework implements CommandFramework {
 				args[i - 1] = txt[i];
 			}
 
-			handleCommand(new DiscordCommandSender(event.getAuthor(), event.getMember(), event.getTextChannel(), event.getGuild()), txt[0],
-					args, event.getTextChannel(), event.getGuild());
+			handleCommand(new DiscordCommandSender(event.getAuthor(), event.getMember(), event.getTextChannel(),
+					event.getGuild()), txt[0], args, event.getTextChannel(), event.getGuild());
 			super.onMessageReceived(event);
 		}
 	}

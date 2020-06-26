@@ -1,4 +1,4 @@
-package tk.yallandev.saintmc.bungee.manager;
+package tk.yallandev.saintmc.bungee.controller;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
@@ -21,7 +21,7 @@ import tk.yallandev.saintmc.common.utils.web.WebHelper;
 import tk.yallandev.saintmc.common.utils.web.WebHelper.Method;
 import tk.yallandev.saintmc.common.utils.web.http.ApacheWebImpl;
 
-public class StoreManager {
+public class StoreController {
 
 	private WebHelper web = new ApacheWebImpl();
 
@@ -30,7 +30,7 @@ public class StoreManager {
 
 			@Override
 			public void run() {
-				CommonConst.DEFAULT_WEB.doAsyncRequest(CommonConst.STORE_URL, Method.GET,
+				CommonConst.DEFAULT_WEB.doAsyncRequest(CommonConst.STORE_API, Method.GET,
 						new FutureCallback<JsonElement>() {
 
 							@Override
@@ -99,7 +99,7 @@ public class StoreManager {
 
 	private boolean sendProcessedOrders(List<Integer> processedOrders) {
 		try {
-			JsonElement json = web.doRequest(CommonConst.STORE_URL, Method.POST, "{\"processedOrders\":["
+			JsonElement json = web.doRequest(CommonConst.STORE_API, Method.POST, "{\"processedOrders\":["
 					+ processedOrders.stream().map(Object::toString).collect(Collectors.joining(",")) + "]}");
 
 			if (!json.isJsonObject())
@@ -126,7 +126,7 @@ public class StoreManager {
 	public JsonElement getPendingOrders() {
 
 		try {
-			return web.doRequest(CommonConst.STORE_URL, Method.GET);
+			return web.doRequest(CommonConst.STORE_API, Method.GET);
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}

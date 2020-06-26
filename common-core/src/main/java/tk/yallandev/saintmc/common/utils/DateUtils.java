@@ -1,5 +1,6 @@
 package tk.yallandev.saintmc.common.utils;
 
+import java.text.DecimalFormat;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.concurrent.TimeUnit;
@@ -14,6 +15,11 @@ public class DateUtils {
 			string = "0 segundo";
 		}
 		return string;
+	}
+	
+	public static String formatTime(long time, DecimalFormat decimalFormat) {
+		long seconds = (time - System.currentTimeMillis()) / 1000l;
+		return decimalFormat.format(seconds);
 	}
 
 	public static String formatDifference(long time) {

@@ -2,6 +2,7 @@ package tk.yallandev.saintmc.bukkit.command.register;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -171,7 +172,7 @@ public class ModeratorCommand implements CommandClass {
 		String[] args = cmdArgs.getArgs();
 
 		if (args.length == 0) {
-			player.sendMessage(" §e* §fUtilize §a/enchant <encantamento> <level>§f para alterar seu gamemode!");
+			player.sendMessage(" §e* §fUtilize §a/enchant <encantamento> <level>§f para encantar algum item!");
 			return;
 		}
 
@@ -639,22 +640,30 @@ public class ModeratorCommand implements CommandClass {
 			player.sendMessage(" §c* §fO jogador §a\"" + args[0] + "\"§f não existe!");
 			return;
 		}
-		int i = 0;
-
-		for (Player on : Bukkit.getOnlinePlayers()) {
-			if (on != null && on.isOnline() && on.getUniqueId() != target.getUniqueId()
-					&& on.getUniqueId() != player.getUniqueId()) {
-				on.teleport(target.getLocation());
-				on.setFallDistance(0.0F);
-				on.sendMessage(" §a* §fVocê foi teletransportado até o §a" + target.getName() + "§f!");
-				i++;
+		
+		Iterator<? extends Player> iterator = Bukkit.getOnlinePlayers().iterator();
+		
+		new BukkitRunnable() {
+			
+			@Override
+			public void run() {
+				if (iterator.hasNext()) {
+					
+					Player on = iterator.next();
+					
+					on.teleport(target.getLocation());
+					on.setFallDistance(0.0F);
+					on.sendMessage(" §a* §fVocê foi teletransportado até o §a" + target.getName() + "§f!");
+					
+				} else {
+					cancel();
+				}
 			}
-		}
+			
+		}.runTaskTimer(BukkitMain.getInstance(), 0, 10);
 
-		player.sendMessage(" §aVocê levou todos os " + i + " jogadores até " + target.getName() + "!");
+		player.sendMessage(" §aVocê levou todos os " + Bukkit.getOnlinePlayers().size() + " jogadores até " + target.getName() + "!");
 		return;
-
-		// TODO: ALERT STAFFS
 	}
 
 	@Command(name = "kick", aliases = { "kickar" }, groupToUse = Group.TRIAL)

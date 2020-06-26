@@ -1,6 +1,7 @@
 package tk.yallandev.saintmc.bukkit.command.register;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.bukkit.Bukkit;
@@ -27,10 +28,15 @@ public class CompleterCommand implements CommandClass {
 	 * 
 	 * @since 1.2
 	 */
+	
+	@Command(name = "giftcode", aliases = { "resgatar", "codigo" }, groupToUse = Group.DIRETOR)
+	public void principalCommand(CommandArgs cmdArgs) {
+		
+	}
 
 	@Command(name = "send", aliases = { "groupset", "setargrupo" }, groupToUse = Group.ADMIN)
 	public void adminCommand(CommandArgs cmdArgs) {
-
+		
 	}
 
 	@Command(name = "groupset", aliases = { "removevip", "tempgroup", "givevip", "removervip", "unban", "unmute",
@@ -50,9 +56,99 @@ public class CompleterCommand implements CommandClass {
 
 	}
 
-	@Command(name = "lobby", aliases = { "server", "connect", "ir", "go", "discord", "hub", "ping" })
+	@Command(name = "lobby", aliases = { "server", "connect", "ir", "go", "discord", "hub", "ping", "play" })
 	public void memberCommand(CommandArgs cmdArgs) {
+		
+	}
+	
+	@Completer(name = "giftcode", aliases = { "resgatar", "codigo" })
+	public List<String> giftcodeCompleter(CommandArgs cmdArgs) {
+		if (cmdArgs.getArgs().length == 1) {
+			List<String> argList = new ArrayList<>();
 
+			if (cmdArgs.getArgs()[0].isEmpty())
+				for (String arg : Arrays.asList("criar"))
+					argList.add(arg);
+			else {
+				for (String arg : Arrays.asList("criar"))
+					if (arg.toLowerCase().startsWith(cmdArgs.getArgs()[0].toLowerCase()))
+						argList.add(arg);
+			}
+
+			return argList;
+		} else if (cmdArgs.getArgs().length == 2) {
+			List<String> argList = new ArrayList<>();
+
+			if (cmdArgs.getArgs()[0].equalsIgnoreCase("criar")) {
+				if (cmdArgs.getArgs()[1].isEmpty())
+					for (String arg : Arrays.asList("rank", "kit"))
+						argList.add(arg);
+				else {
+					for (String arg : Arrays.asList("rank", "kit"))
+						if (arg.toLowerCase().startsWith(cmdArgs.getArgs()[1].toLowerCase()))
+							argList.add(arg);
+				}
+			} else {
+				if (cmdArgs.getArgs()[1].isEmpty())
+					for (String arg : Arrays.asList("deletar"))
+						argList.add(arg);
+				else {
+					for (String arg : Arrays.asList("deletar"))
+						if (arg.toLowerCase().startsWith(cmdArgs.getArgs()[1].toLowerCase()))
+							argList.add(arg);
+				}
+			}
+
+			return argList;
+		} else if (cmdArgs.getArgs().length == 3) {
+			List<String> argList = new ArrayList<>();
+
+			if (cmdArgs.getArgs()[1].equalsIgnoreCase("rank")) {
+				if (cmdArgs.getArgs()[2].isEmpty()) {
+					for (RankType rankType : RankType.values())
+						argList.add(rankType.toString());
+				} else {
+					for (RankType rankType : RankType.values())
+						if (rankType.toString().toLowerCase().startsWith(cmdArgs.getArgs()[2].toLowerCase()))
+							argList.add(rankType.toString());
+				}
+			} else if (cmdArgs.getArgs()[1].equalsIgnoreCase("kit")) {
+				if (cmdArgs.getArgs()[2].isEmpty())
+					for (String arg : Arrays.asList("kangaroo", "grappler"))
+						argList.add(arg);
+				else {
+					for (String arg : Arrays.asList("kangaroo", "grappler"))
+						if (arg.toLowerCase().startsWith(cmdArgs.getArgs()[2].toLowerCase()))
+							argList.add(arg);
+				}
+			}
+
+			return argList;
+		}
+
+		return new ArrayList<>();
+	}
+	
+	@Completer(name = "send")
+	public List<String> sendCompleter(CommandArgs cmdArgs) {
+		if (cmdArgs.getArgs().length == 1) {
+			List<String> argList = new ArrayList<>();
+			List<String> avaiableArg = Arrays.asList("current", "all");
+			avaiableArg.addAll(getPlayerList(cmdArgs.getArgs()));
+
+			if (cmdArgs.getArgs()[0].isEmpty())
+				for (String arg : avaiableArg)
+					argList.add(arg);
+			else {
+				for (String arg : avaiableArg)
+					if (arg.toLowerCase().startsWith(cmdArgs.getArgs()[0].toLowerCase()))
+						argList.add(arg);
+			}
+
+			return argList;
+		}
+
+		return new ArrayList<>();
 	}
 
 	@Completer(name = "tempgroup", aliases = { "givevip" })

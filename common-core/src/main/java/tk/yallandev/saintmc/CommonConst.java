@@ -28,12 +28,12 @@ public class CommonConst {
 	public static final String SERVER_NAME = "SaintMC";
 	public static final String KICK_PREFIX = "SaintMC";
 
-	public static final String WEBSITE = "http://saintmc.net/";
+	public static final String WEBSITE = "https://saintmc.net/";
 	public static final String SITE = "www.saintmc.net";
 	public static final String STORE = "loja.saintmc.net";
-	public static final String DISCORD = "http://discord.saintmc.net";
+	public static final String DISCORD = "https://discord.saintmc.net";
 	
-	public static final String TRIAL_FORM = "http://trial.saintmc.net/";
+	public static final String TRIAL_FORM = "https://trial.saintmc.net/";
 	
 	public static final String API = "http://apidata.saintmc.net";
 	public static final String DOWNLOAD_KEY = "kangaroo123";
@@ -43,7 +43,7 @@ public class CommonConst {
 	public static final String CRACKED_FETCHER = API + "/mojang/cracked/";
 	public static final String DISCORD_URL = API + "/discord/configuration/";
 	
-	public static final String STORE_URL = "https://" + STORE + "/wp-json/wmc/v1/server/"
+	public static final String STORE_API = "https://" + STORE + "/wp-json/wmc/v1/server/"
 			+ "H0x062i7rnjyx6zj9qur2i4nrf0jcs";
 	
 	public static final String MONGO_URL = "mongodb://yandv:YBOfXYL2IBjEKAkE@localhost/saintmc-common?retryWrites=true&w=majority";

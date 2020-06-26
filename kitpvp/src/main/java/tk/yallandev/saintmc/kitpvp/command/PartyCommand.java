@@ -13,7 +13,7 @@ import tk.yallandev.saintmc.kitpvp.warp.types.party.PartyType;
 
 public class PartyCommand implements CommandClass {
 
-	@Command(name = "party", aliases = { "evento" })
+	@Command(name = "evento")
 	public void partyCommand(BukkitCommandArgs cmdArgs) {
 		String[] args = cmdArgs.getArgs();
 		CommandSender sender = cmdArgs.getSender();

@@ -28,6 +28,7 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.SimplePluginManager;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import co.aikar.timings.TimingsManager;
 import lombok.Getter;
 import lombok.Setter;
 import tk.yallandev.saintmc.CommonGeneral;
@@ -182,7 +183,7 @@ public class BukkitCommandFramework implements CommandFramework {
 		String cmdLabel = label.replace(".", ",").split(",")[0].toLowerCase();
 
 		if (map.getCommand(cmdLabel) == null) {
-			org.bukkit.command.Command cmd = new BukkitCommand(cmdLabel, plugin, command.groupToUse());
+			org.bukkit.command.Command cmd = new BukkitCommand(command.name(), cmdLabel, plugin, command.groupToUse());
 			knownCommands.put(cmdLabel, cmd);
 		} else {
 
@@ -210,7 +211,7 @@ public class BukkitCommandFramework implements CommandFramework {
 		String cmdLabel = label.replace(".", ",").split(",")[0].toLowerCase();
 
 		if (map.getCommand(cmdLabel) == null) {
-			org.bukkit.command.Command command = new BukkitCommand(cmdLabel, plugin, Group.MEMBRO);
+			org.bukkit.command.Command command = new BukkitCommand(cmdLabel, cmdLabel, plugin, Group.MEMBRO);
 			knownCommands.put(cmdLabel, command);
 		}
 
@@ -261,12 +262,13 @@ public class BukkitCommandFramework implements CommandFramework {
 		@Setter
 		private Group group;
 
-		public BukkitCommand(String label, Plugin owner, Group group) {
+		public BukkitCommand(String fallbackPrefix, String label, Plugin owner, Group group) {
 			super(label);
 			this.executor = owner;
 			this.owningPlugin = owner;
 			this.usageMessage = "";
 			this.group = group;
+			this.timings = TimingsManager.getCommandTiming(fallbackPrefix, this);
 		}
 
 		@Override

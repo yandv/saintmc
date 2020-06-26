@@ -34,6 +34,7 @@ public interface CommandFramework {
 		String usage() default "";
 
 		boolean runAsync() default false;
+		
 	}
 
 	@Target(ElementType.METHOD)

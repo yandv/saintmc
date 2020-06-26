@@ -1,7 +1,7 @@
 package tk.yallandev.saintmc.kitpvp.warp.types.party.register;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import org.bukkit.Bukkit;
@@ -43,10 +43,10 @@ public class RdmParty implements Party {
 	private int time;
 	private MinigameState minigameState;
 
-	private List<Player> playerList;
-	private List<Player> spectateList;
+	private Set<Player> playerList;
+	private Set<Player> spectateList;
 
-	private List<Player> playerInCombat;
+	private Set<Player> playerInCombat;
 
 	private int maxPlayers;
 
@@ -54,10 +54,10 @@ public class RdmParty implements Party {
 		time = 300;
 		minigameState = MinigameState.STARTING;
 
-		playerList = new ArrayList<>();
-		spectateList = new ArrayList<>();
+		playerList = new HashSet<>();
+		spectateList = new HashSet<>();
 
-		playerInCombat = new ArrayList<>();
+		playerInCombat = new HashSet<>();
 		maxPlayers = 80;
 	}
 
@@ -223,7 +223,7 @@ public class RdmParty implements Party {
 	private void killPlayer(Player player, Player k) {
 		if (playerList.contains(player))
 			playerList.remove(player);
-		
+
 		if (playerInCombat.contains(player))
 			playerInCombat.remove(player);
 		else {
@@ -237,7 +237,7 @@ public class RdmParty implements Party {
 						.findFirst().orElse(null);
 
 			} else {
-				k = playerInCombat.get(0);
+				k = playerInCombat.stream().findFirst().orElse(null);
 			}
 		}
 
@@ -248,7 +248,7 @@ public class RdmParty implements Party {
 		else
 			broadcast("§6§lRDM §fO jogador §c" + player.getName() + "§f foi eliminado pelo §a" + killer.getName()
 					+ "§f!");
-		
+
 		broadcast("§6§lRDM §fAinda há " + playerList.size() + " jogadores vivos!");
 
 		VanishAPI.getInstance().getHideAllPlayers().remove(player.getUniqueId());
@@ -309,8 +309,12 @@ public class RdmParty implements Party {
 
 	@Override
 	public boolean join(Gamer gamer) {
-
 		Player player = gamer.getPlayer();
+
+		if (playerList.contains(player) || spectateList.contains(player)) {
+			player.sendMessage("§cVocê já está no evento");
+			return false;
+		}
 
 		if (hasStarted()) {
 			if (Member.hasGroupPermission(gamer.getUuid(), Group.TRIAL)) {
@@ -340,6 +344,10 @@ public class RdmParty implements Party {
 
 	@Override
 	public boolean spectate(Gamer gamer) {
+		
+		if (playerList.contains(gamer.getPlayer()))
+			playerList.remove(gamer.getPlayer());
+		
 		spectateList.add(gamer.getPlayer());
 		return false;
 	}

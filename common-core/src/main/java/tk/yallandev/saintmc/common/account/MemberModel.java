@@ -131,6 +131,9 @@ public class MemberModel {
     	serverId = member.getServerId();
     	serverType = member.getServerType();
     	
+    	lastServerId = member.getServerId();
+    	lastServerType = member.getServerType();
+    	
     	online = member.isOnline();
 	}
 

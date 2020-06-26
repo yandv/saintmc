@@ -126,7 +126,7 @@ public class ConnectionListener implements Listener {
 
 		AccountType accountType = player.getAccountType();
 
-		if (accountType == AccountType.CRACKED)
+		if (accountType != AccountType.PREMIUM)
 			return manager
 					.getBalancer(CommonGeneral.getInstance().isLoginServer() ? ServerType.LOGIN : ServerType.LOBBY)
 					.next();
@@ -134,7 +134,8 @@ public class ConnectionListener implements Listener {
 		if (serverId.toLowerCase().toLowerCase().contains("hg"))
 			return manager.getBalancer(ServerType.HUNGERGAMES).next();
 
-		return manager.getServer(serverId) == null ? manager.getBalancer(ServerType.LOBBY).next() : manager.getServer(serverId);
+		return manager.getServer(serverId) == null ? manager.getBalancer(ServerType.LOBBY).next()
+				: manager.getServer(serverId);
 	}
 
 	/*
@@ -159,7 +160,9 @@ public class ConnectionListener implements Listener {
 
 			return;
 		} else if (server.getServerType() == ServerType.LOGIN) {
-			if (!(player.getLoginConfiguration().isLogged() || player.hasGroupPermission(Group.MODGC)))
+			if (player.getLoginConfiguration()
+					.getAccountType() == tk.yallandev.saintmc.common.account.configuration.LoginConfiguration.AccountType.ORIGINAL
+					&& !player.hasGroupPermission(Group.MODGC))
 				event.setCancelled(true);
 
 			return;

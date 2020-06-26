@@ -1,4 +1,4 @@
-package tk.yallandev.saintmc.bungee.manager;
+package tk.yallandev.saintmc.bungee.controller;
 
 import java.net.InetSocketAddress;
 

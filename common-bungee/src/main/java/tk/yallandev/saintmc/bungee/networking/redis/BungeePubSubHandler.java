@@ -1,4 +1,4 @@
-package tk.yallandev.saintmc.bungee.redis;
+package tk.yallandev.saintmc.bungee.networking.redis;
 
 import java.lang.reflect.Field;
 import java.util.UUID;

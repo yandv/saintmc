@@ -1,4 +1,4 @@
-package tk.yallandev.saintmc.bungee.packet;
+package tk.yallandev.saintmc.bungee.networking.packet;
 
 import java.util.UUID;
 

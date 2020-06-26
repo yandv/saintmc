@@ -38,10 +38,11 @@ public class TagSerializer implements JsonDeserializer<Tag>, JsonSerializer<Tag>
 			tag = Tag.valueOf(json.getAsJsonPrimitive().getAsString());
 		}
 
-		if (chroma)
-			tag.setChroma(chroma);
+		if (tag != null)
+			if (chroma)
+				tag.setChroma(chroma);
 
-		return tag;
+		return tag == null ? Tag.MEMBRO : tag;
 	}
 
 }

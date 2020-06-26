@@ -1,18 +1,9 @@
 package tk.yallandev.saintmc.bukkit.command.register;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.PrintStream;
 import java.lang.management.ManagementFactory;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
@@ -23,12 +14,10 @@ import org.bukkit.plugin.SimplePluginManager;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
-import org.spigotmc.CustomTimingsHandler;
 
 import com.google.common.base.Joiner;
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 
+import co.aikar.timings.Timings;
 import net.md_5.bungee.api.ChatColor;
 import net.minecraft.server.v1_8_R3.MinecraftServer;
 import tk.yallandev.saintmc.CommonGeneral;
@@ -151,94 +140,32 @@ public class ServerCommand implements CommandClass {
 
 		if (args[0].equalsIgnoreCase("on")) {
 			((SimplePluginManager) Bukkit.getPluginManager()).useTimings(true);
-			CustomTimingsHandler.reload();
+			Timings.setTimingsEnabled(true);
 			sender.sendMessage("Enabled Timings & Reset");
 			return;
 		}
 
 		if (args[0].equalsIgnoreCase("off")) {
 			((SimplePluginManager) Bukkit.getPluginManager()).useTimings(false);
+			Timings.setTimingsEnabled(false);
 			sender.sendMessage("Disabled Timings");
 			return;
 		}
 
-		if (!Bukkit.getPluginManager().useTimings()) {
+		if (!Timings.isTimingsEnabled()) {
 			sender.sendMessage("Please enable timings by typing /timings on");
 			return;
 		}
 
 		if (args[0].equals("reset")) {
-			CustomTimingsHandler.reload();
+			Timings.reset();
 			sender.sendMessage("Timings reset");
 			return;
 		}
 
 		if (args[0].equalsIgnoreCase("merged") || args[0].equalsIgnoreCase("report")
 				|| args[0].equalsIgnoreCase("paste")) {
-			long sampleTime = System.nanoTime() - timingStart;
-
-			File timingFolder = new File("timings");
-			timingFolder.mkdirs();
-
-			File timings = new File(timingFolder, "timings.txt");
-			ByteArrayOutputStream bout = args[0].equals("paste") ? new ByteArrayOutputStream() : null;
-
-			int index = 0;
-
-			while (timings.exists())
-				timings = new File(timingFolder, "timings" + ++index + ".txt");
-
-			PrintStream fileTimings = null;
-
-			try {
-				fileTimings = args[0].equalsIgnoreCase("paste") ? new PrintStream(bout) : new PrintStream(timings);
-				CustomTimingsHandler.printTimings(fileTimings);
-				fileTimings.println("Sample time " + sampleTime + " (" + (sampleTime / 1.0E9D) + "s)");
-				fileTimings.println("<spigotConfig>");
-				fileTimings.println(Bukkit.spigot().getConfig().saveToString());
-				fileTimings.println("</spigotConfig>");
-
-				if (args[0].equalsIgnoreCase("paste")) {
-					new Thread(new Runnable() {
-
-						@Override
-						public void run() {
-							try {
-								HttpURLConnection con = (HttpURLConnection) (new URL(
-										"https://timings.spigotmc.org/paste")).openConnection();
-								con.setDoOutput(true);
-								con.setRequestMethod("POST");
-								con.setInstanceFollowRedirects(false);
-								OutputStream out = con.getOutputStream();
-								out.write(bout.toByteArray());
-								out.close();
-								JsonObject location = (JsonObject) (new Gson())
-										.fromJson(new InputStreamReader(con.getInputStream()), JsonObject.class);
-								con.getInputStream().close();
-								String pasteID = location.get("key").getAsString();
-								sender.sendMessage(ChatColor.GREEN
-										+ "Timings results can be viewed at https://www.spigotmc.org/go/timings?url="
-										+ pasteID);
-							} catch (IOException ex) {
-								sender.sendMessage(ChatColor.RED
-										+ "Error pasting timings, check your console for more information");
-								Bukkit.getServer().getLogger().log(Level.WARNING, "Could not paste timings", ex);
-							}
-						}
-					}).start();
-					return;
-				}
-
-				sender.sendMessage("Timings written to " + timings.getPath());
-			} catch (IOException iOException) {
-
-			} finally {
-				if (fileTimings != null)
-					fileTimings.close();
-			}
-
-			if (fileTimings != null)
-				fileTimings.close();
+			Timings.generateReport(((BukkitCommandSender)sender).getSender());
 		}
 	}
 

@@ -222,6 +222,11 @@ public abstract class Member {
 		cooldown.put(cooldownKey.toLowerCase(), cooldownTime);
 		CommonGeneral.getInstance().getPlayerData().updateMember(this, "cooldown");
 	}
+	
+	public void setCooldown(String cooldownKey, int cooldownTime) {
+		cooldown.put(cooldownKey.toLowerCase(), System.currentTimeMillis() + (1000 * cooldownTime));
+		CommonGeneral.getInstance().getPlayerData().updateMember(this, "cooldown");
+	}
 
 	/*
 	 * Social Midia
@@ -269,6 +274,10 @@ public abstract class Member {
 	public void setChroma(boolean chroma) {
 		this.chroma = chroma;
 		CommonGeneral.getInstance().getPlayerData().updateMember(this, "chroma");
+	}
+	
+	public boolean isLastServer(ServerType serverType) {
+		return this.serverType == serverType;
 	}
 
 	public Group getServerGroup() {
@@ -461,10 +470,20 @@ public abstract class Member {
 
 	public void connect(String serverId, ServerType type) {
 		checkRanks();
+		
+		if (this.serverId != null && !this.serverId.isEmpty())
+			this.lastServerId = this.serverId;
+		
+		if (this.serverType != null)
+			this.lastServerType = this.serverType;
+		
 		this.serverId = serverId;
 		this.serverType = type;
+		
 		CommonGeneral.getInstance().getPlayerData().updateMember(this, "serverId");
 		CommonGeneral.getInstance().getPlayerData().updateMember(this, "serverType");
+		CommonGeneral.getInstance().getPlayerData().updateMember(this, "lastServerId");
+		CommonGeneral.getInstance().getPlayerData().updateMember(this, "lastServerType");
 	}
 
 	public void setLeaveData() {

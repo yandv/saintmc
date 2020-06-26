@@ -141,7 +141,6 @@ tk\yallandev\saintmc\bukkit\command\register\ModeratorCommand.class
 tk\yallandev\saintmc\bukkit\menu\report\ReportInventory$3.class
 tk\yallandev\saintmc\bukkit\command\register\YoutubeCommand.class
 tk\yallandev\saintmc\bukkit\permission\injector\loader\LoaderNetUtil.class
-tk\yallandev\saintmc\bukkit\command\register\ServerCommand$2.class
 tk\yallandev\saintmc\bukkit\menu\account\AccountInventory$1.class
 tk\yallandev\saintmc\bukkit\api\cooldown\event\CooldownFinishEvent.class
 tk\yallandev\saintmc\bukkit\api\player\FakePlayerAPI$1.class

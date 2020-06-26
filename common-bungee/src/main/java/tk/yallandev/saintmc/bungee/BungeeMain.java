@@ -17,6 +17,10 @@ import tk.yallandev.saintmc.BungeeConst;
 import tk.yallandev.saintmc.CommonConst;
 import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.bungee.command.BungeeCommandFramework;
+import tk.yallandev.saintmc.bungee.controller.BungeePunishManager;
+import tk.yallandev.saintmc.bungee.controller.BungeeServerManager;
+import tk.yallandev.saintmc.bungee.controller.GiftcodeController;
+import tk.yallandev.saintmc.bungee.controller.StoreController;
 import tk.yallandev.saintmc.bungee.listener.AccountListener;
 import tk.yallandev.saintmc.bungee.listener.ChatListener;
 import tk.yallandev.saintmc.bungee.listener.ConnectionListener;
@@ -24,11 +28,8 @@ import tk.yallandev.saintmc.bungee.listener.LoginListener;
 import tk.yallandev.saintmc.bungee.listener.MessageListener;
 import tk.yallandev.saintmc.bungee.listener.MultiserverTeleport;
 import tk.yallandev.saintmc.bungee.listener.PacketListener;
-import tk.yallandev.saintmc.bungee.manager.BungeePunishManager;
-import tk.yallandev.saintmc.bungee.manager.BungeeServerManager;
-import tk.yallandev.saintmc.bungee.manager.StoreManager;
-import tk.yallandev.saintmc.bungee.packet.BungeePacketHandler;
-import tk.yallandev.saintmc.bungee.redis.BungeePubSubHandler;
+import tk.yallandev.saintmc.bungee.networking.packet.BungeePacketHandler;
+import tk.yallandev.saintmc.bungee.networking.redis.BungeePubSubHandler;
 import tk.yallandev.saintmc.common.backend.data.PlayerData;
 import tk.yallandev.saintmc.common.backend.data.PunishData;
 import tk.yallandev.saintmc.common.backend.data.ReportData;
@@ -59,8 +60,9 @@ public class BungeeMain extends Plugin {
 
 	private PunishManager punishManager;
 	private ServerManager serverManager;
-	private StoreManager storeManager;
+	private StoreController storeManager;
 	private PacketController packetController;
+	private GiftcodeController giftcodeController;
 
 	private DiscordMain discord;
 
@@ -154,7 +156,8 @@ public class BungeeMain extends Plugin {
 
 		punishManager = new BungeePunishManager();
 		serverManager = new BungeeServerManager();
-		storeManager = new StoreManager();
+		storeManager = new StoreController();
+		giftcodeController = new GiftcodeController();
 
 		packetController = new PacketController();
 		packetController.registerHandler(new BungeePacketHandler());

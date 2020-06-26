@@ -13,6 +13,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
+import tk.yallandev.saintmc.BukkitConst;
 import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.bukkit.account.BukkitMember;
 import tk.yallandev.saintmc.bukkit.listener.Listener;
@@ -118,16 +119,18 @@ public class ChatListener extends Listener {
 		Player player = event.getPlayer();
 		Member member = CommonGeneral.getInstance().getMemberManager().getMember(player.getUniqueId());
 
-		Mute activeMute = member.getPunishmentHistory().getActiveMute();
+		if (!member.hasGroupPermission(Group.MODPLUS)) {
+			for (String string : event.getMessage().split(" ")) {
+				if (BukkitConst.SWEAR_WORDS.contains(string.toLowerCase())) {
+					StringBuilder stringBuilder = new StringBuilder();
 
-		if (activeMute == null)
-			return;
+					for (int x = 0; x < string.length(); x++)
+						stringBuilder.append('*');
 
-		member.sendMessage(
-				"§4§l> §fVocê está mutado " + (activeMute.isPermanent() ? "permanentemente" : "temporariamente")
-						+ " do servidor!" + (activeMute.isPermanent() ? ""
-								: "\n §4§l> §fExpira em §e" + DateUtils.getTime(activeMute.getMuteExpire())));
-		event.setCancelled(true);
+					event.setMessage(event.getMessage().replace(string, stringBuilder.toString().trim()));
+				}
+			}
+		}
 	}
 
 	

@@ -149,8 +149,8 @@ public class YoutubeCommand implements CommandClass {
 
 				member.setCooldown("changeskinCommand",
 						member.hasGroupPermission(Group.TRIAL) ? System.currentTimeMillis() + (1000 * 60 * 2)
-								: member.hasGroupPermission(Group.SAINT) ? System.currentTimeMillis() + (1000 * 60 * 10)
-										: System.currentTimeMillis() + (1000 * 60 * 30));
+								: member.hasGroupPermission(Group.SAINT) ? System.currentTimeMillis() + (1000 * 60 * 2)
+										: System.currentTimeMillis() + (1000 * 60 * 5));
 			}
 
 		}.runTask(BukkitMain.getInstance());
