@@ -1,0 +1,13 @@
+serverAddress: '0.0.0.0'
+serverId: test
+serverType: NONE
+
+mongodb:
+  hostname: '127.0.0.1'
+  username: ''
+  database: 'pentamc'
+  password: ''
+  
+redis:
+  hostname: '127.0.0.1'
+  username: ''
