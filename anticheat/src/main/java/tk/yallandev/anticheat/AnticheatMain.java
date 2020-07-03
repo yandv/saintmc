@@ -4,7 +4,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import lombok.Getter;
 import tk.yallandev.saintmc.bukkit.command.BukkitCommandFramework;
-import tk.yallandev.saintmc.common.command.CommandLoader;
 
 @Getter
 public class AnticheatMain extends JavaPlugin {
@@ -26,8 +25,7 @@ public class AnticheatMain extends JavaPlugin {
 		controller = new AnticheatController(this);
 		controller.registerModules();
 
-		new CommandLoader(new BukkitCommandFramework(getInstance()))
-				.loadCommandsFromPackage("tk.yallandev.anticheat.command");
+		BukkitCommandFramework.INSTANCE.loadCommands(this.getClass(), "tk.yallandev.anticheat.command");
 
 		super.onEnable();
 	}

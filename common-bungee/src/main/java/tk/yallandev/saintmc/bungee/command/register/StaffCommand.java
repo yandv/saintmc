@@ -8,9 +8,10 @@ import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.bungee.BungeeMain;
-import tk.yallandev.saintmc.bungee.account.BungeeMember;
+import tk.yallandev.saintmc.bungee.bungee.BungeeMember;
 import tk.yallandev.saintmc.bungee.command.BungeeCommandArgs;
 import tk.yallandev.saintmc.common.account.Member;
+import tk.yallandev.saintmc.common.command.CommandArgs;
 import tk.yallandev.saintmc.common.command.CommandClass;
 import tk.yallandev.saintmc.common.command.CommandFramework.Command;
 import tk.yallandev.saintmc.common.command.CommandSender;
@@ -22,19 +23,18 @@ import tk.yallandev.saintmc.common.tag.Tag;
 public class StaffCommand implements CommandClass {
 
 	@Command(name = "glist", groupToUse = Group.GERENTE, usage = "/<command>", aliases = { "onlines", "online" })
-	public void glist(BungeeCommandArgs cmdArgs) {
-		CommandSender sender = cmdArgs.getSender();
-		sender.sendMessage(" §a* §fJogadores online no servidor: §a" + ProxyServer.getInstance().getOnlineCount()
-				+ " jogadores! §7(No total)");
-		sender.sendMessage("");
-		ProxyServer.getInstance().getServers().forEach((map, info) -> sender
+	public void glistCommand(CommandArgs cmdArgs) {
+		cmdArgs.getSender().sendMessage(" §a* §fJogadores online no servidor: §a"
+				+ ProxyServer.getInstance().getOnlineCount() + " jogadores! §7(No total)");
+		cmdArgs.getSender().sendMessage("");
+		ProxyServer.getInstance().getServers().forEach((map, info) -> cmdArgs.getSender()
 				.sendMessage(" §a * §f" + info.getName() + " -§a " + info.getPlayers().size() + " jogadores"));
-		sender.sendMessage("");
+		cmdArgs.getSender().sendMessage("");
 	}
 
 	@Command(name = "broadcast", groupToUse = Group.GERENTE, usage = "/<command> <mesage>", aliases = { "bc", "aviso",
 			"alert" })
-	public void broadcast(BungeeCommandArgs cmdArgs) {
+	public void broadcastCommand(CommandArgs cmdArgs) {
 		CommandSender sender = cmdArgs.getSender();
 		String[] args = cmdArgs.getArgs();
 
@@ -59,25 +59,26 @@ public class StaffCommand implements CommandClass {
 	}
 
 	@Command(name = "staffchat", groupToUse = Group.HELPER, usage = "/<command>", aliases = { "sc" })
-	public void staffchat(BungeeCommandArgs cmdArgs) {
+	public void staffchatCommand(CommandArgs cmdArgs) {
 		if (!cmdArgs.isPlayer())
 			return;
 
 		CommandSender sender = cmdArgs.getSender();
-		Member member = CommonGeneral.getInstance().getMemberManager().getMember(cmdArgs.getPlayer().getUniqueId());
-		
+		Member member = CommonGeneral.getInstance().getMemberManager().getMember(sender.getUniqueId());
+
 		if (cmdArgs.getArgs().length == 0) {
-			member.getAccountConfiguration().setStaffChatEnabled(!member.getAccountConfiguration().isStaffChatEnabled());
+			member.getAccountConfiguration()
+					.setStaffChatEnabled(!member.getAccountConfiguration().isStaffChatEnabled());
 			sender.sendMessage(
 					" §a* §fVocê " + (member.getAccountConfiguration().isStaffChatEnabled() ? "entrou no" : "saiu do")
 							+ " §astaff-chat§f!");
-			
+
 			if (member.getAccountConfiguration().isStaffChatEnabled())
 				if (!member.getAccountConfiguration().isSeeingStaffchat())
 					member.getAccountConfiguration().setSeeingStaffchat(true);
 			return;
 		}
-		
+
 		if (cmdArgs.getArgs()[0].equalsIgnoreCase("on")) {
 			if (member.getAccountConfiguration().isSeeingStaffchat()) {
 				member.sendMessage("§cO staffchat já está ativado!");
@@ -95,8 +96,24 @@ public class StaffCommand implements CommandClass {
 		}
 	}
 
+	@Command(name = "stafflog", groupToUse = Group.HELPER, usage = "/<command>", aliases = { "sl" })
+	public void stafflogCommand(CommandArgs cmdArgs) {
+		if (!cmdArgs.isPlayer())
+			return;
+
+		Member member = CommonGeneral.getInstance().getMemberManager().getMember(cmdArgs.getSender().getUniqueId());
+
+		if (cmdArgs.getArgs().length == 0) {
+			member.getAccountConfiguration().setSeeingStafflog(!member.getAccountConfiguration().isSeeingStafflog());
+			member.sendMessage(
+					" §a* §fAgora você " + (member.getAccountConfiguration().isSeeingStafflog() ? "vê" : "não vê mais")
+							+ " §aas logs dos staffs§f!");
+			return;
+		}
+	}
+
 	@Command(name = "fakelist", runAsync = true, groupToUse = Group.TRIAL, usage = "/<command> <player> <server>")
-	public void fakelistCommand(BungeeCommandArgs cmdArgs) {
+	public void fakelistCommand(CommandArgs cmdArgs) {
 		CommandSender sender = cmdArgs.getSender();
 
 		sender.sendMessage("§aJogadores usando fake: ");
@@ -108,12 +125,12 @@ public class StaffCommand implements CommandClass {
 	}
 
 	@Command(name = "stafflist", runAsync = true, groupToUse = Group.MOD, usage = "/<command> <player> <server>")
-	public void stafflistCommand(BungeeCommandArgs cmdArgs) {
+	public void stafflistCommand(CommandArgs cmdArgs) {
 		CommandSender sender = cmdArgs.getSender();
 
 		sender.sendMessage("§aStaff online: ");
 		sender.sendMessage(" ");
-		
+
 		CommonGeneral.getInstance().getMemberManager().getMembers().stream()
 				.filter(member -> member.hasGroupPermission(Group.TRIAL))
 				.forEach(member -> sender.sendMessage("§7" + member.getPlayerName() + " §8- §f"
@@ -121,7 +138,7 @@ public class StaffCommand implements CommandClass {
 	}
 
 	@Command(name = "find", groupToUse = Group.TRIAL, usage = "/<command> <player>")
-	public void findCommand(BungeeCommandArgs cmdArgs) {
+	public void findCommand(CommandArgs cmdArgs) {
 		CommandSender sender = cmdArgs.getSender();
 		String[] args = cmdArgs.getArgs();
 
@@ -147,7 +164,7 @@ public class StaffCommand implements CommandClass {
 		sender.sendMessage(new BaseComponent[] { txt, text });
 	}
 
-	@Command(name = "screenshare", groupToUse = Group.MODGC, usage = "/<command> <player> <server>")
+	@Command(name = "screenshare", aliases = { "ss" }, groupToUse = Group.MODGC, usage = "/<command> <player> <server>")
 	public void screenshareCommand(BungeeCommandArgs cmdArgs) {
 		if (!cmdArgs.isPlayer())
 			return;

@@ -17,7 +17,7 @@ public class MessageUtils {
 	public static void sendMessage(MessageChannel messageChannel, String message, int time) {
 		Message msg = messageChannel.sendMessage(message).complete();
 		
-//		ProxyServer.getInstance().getScheduler().schedule(BungeeMain.getInstance(), () -> msg.delete().complete(), time, TimeUnit.SECONDS);
+		ProxyServer.getInstance().getScheduler().schedule(BungeeMain.getInstance(), () -> msg.delete().complete(), time, TimeUnit.SECONDS);
 	}
 	
 	public static void sendMessage(MessageChannel messageChannel, String message) {

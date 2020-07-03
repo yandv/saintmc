@@ -31,6 +31,8 @@ public abstract class Tag {
 	public static final Tag MODGC = TagWrapper.create("§5§lMODGC§5", Group.MODGC);
 	public static final Tag MOD = TagWrapper.create("§5§lMOD§5", Group.MOD);
 	public static final Tag TRIAL = TagWrapper.create("§d§lTRIAL§d", Group.TRIAL);
+	public static final Tag INVESTIDOR = TagWrapper.create("§6§lINVST§6", null, true);
+	public static final Tag STREAMER = TagWrapper.create("§e§lSTREAMER§e", Group.STREAMER, true);
 	public static final Tag YOUTUBERPLUS = TagWrapper.create("YOUTUBERPLUS", "§3§lYT+§3", Group.YOUTUBERPLUS, true);
 	public static final Tag HELPER = TagWrapper.create("§9§lHELPER§9", Group.HELPER);
 	public static final Tag BUILDER = TagWrapper.create("§e§lBUILDER§e", Group.BUILDER, true);
@@ -38,6 +40,7 @@ public abstract class Tag {
 	public static final Tag YOUTUBER = TagWrapper.create("YOUTUBER", "§b§lYT§b", Group.YOUTUBER, true);
 	public static final Tag BETA = TagWrapper.create("§1§lBETA§1", Group.BETA);
 	public static final Tag SAINT = TagWrapper.create("§d§lSAINT§d", Group.SAINT);
+	public static final Tag CREATOR = TagWrapper.create("§9§lCREATOR§9", Group.CREATOR, true);
 	public static final Tag BLIZZARD = TagWrapper.create("§b§lBLIZZARD§b", Group.BLIZZARD);
 	public static final Tag LIGHT = TagWrapper.create("§a§lLIGHT§a", Group.LIGHT);
 	public static final Tag DONATOR = TagWrapper.create("§d§lDONATOR§d", Group.DONATOR, true);
@@ -47,7 +50,7 @@ public abstract class Tag {
 	public int ordinal() {
 		return getId();
 	}
-	
+
 	public abstract String getPrefix();
 
 	public abstract Group getGroupToUse();
@@ -63,16 +66,16 @@ public abstract class Tag {
 	public abstract Tag setChroma(boolean chroma);
 
 	public abstract Tag clone();
-	
+
 	/*
 	 * Static
 	 */
 
 	private static final Map<String, Tag> TAG_MAP;
-	
+
 	static {
 		Map<String, Tag> map = new LinkedHashMap<>();
-		
+
 		int ordinal = 0;
 
 		for (Field field : Tag.class.getFields()) {
@@ -80,15 +83,15 @@ public abstract class Tag {
 				try {
 					Tag tag = (Tag) field.get(null);
 					map.put(tag.getName().toLowerCase(), tag);
-					
+
 					String prefix = ChatColor.stripColor(tag.getPrefix());
 
 					if (!map.containsKey(prefix.toLowerCase()))
 						map.put(prefix.toLowerCase(), tag);
-					
+
 					if (tag instanceof TagWrapper)
 						((TagWrapper) tag).setId(ordinal);
-					
+
 					ordinal++;
 				} catch (IllegalArgumentException | IllegalAccessException e) {
 					e.printStackTrace();

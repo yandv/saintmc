@@ -12,8 +12,9 @@ import tk.yallandev.saintmc.bukkit.BukkitMain;
 import tk.yallandev.saintmc.bukkit.api.server.chat.ChatState;
 import tk.yallandev.saintmc.bukkit.api.vanish.AdminMode;
 import tk.yallandev.saintmc.bukkit.api.vanish.VanishAPI;
-import tk.yallandev.saintmc.bukkit.command.BukkitCommandArgs;
+import tk.yallandev.saintmc.bukkit.bukkit.BukkitMember;
 import tk.yallandev.saintmc.common.account.Member;
+import tk.yallandev.saintmc.common.command.CommandArgs;
 import tk.yallandev.saintmc.common.command.CommandClass;
 import tk.yallandev.saintmc.common.command.CommandFramework.Command;
 import tk.yallandev.saintmc.common.command.CommandSender;
@@ -24,11 +25,11 @@ import tk.yallandev.saintmc.update.UpdatePlugin;
 public class StaffCommand implements CommandClass {
 
 	@Command(name = "setspawn", groupToUse = Group.BUILDER)
-	public void setspawnCommand(BukkitCommandArgs cmdArgs) {
+	public void setspawnCommand(CommandArgs cmdArgs) {
 		if (!cmdArgs.isPlayer())
 			return;
 
-		Player p = cmdArgs.getPlayer();
+		Player p = ((BukkitMember)cmdArgs.getSender()).getPlayer();
 
 		if (!Member.hasGroupPermission(p.getUniqueId(), Group.GERENTE)
 				&& !Member.isGroup(p.getUniqueId(), Group.BUILDER)) {
@@ -55,7 +56,7 @@ public class StaffCommand implements CommandClass {
 	}
 
 	@Command(name = "update", groupToUse = Group.MODGC, runAsync = true)
-	public void updateCommand(BukkitCommandArgs cmdArgs) {
+	public void updateCommand(CommandArgs cmdArgs) {
 		UpdatePlugin.Shutdown shutdown = new UpdatePlugin.Shutdown() {
 
 			@Override
@@ -74,11 +75,11 @@ public class StaffCommand implements CommandClass {
 	}
 
 	@Command(name = "admin", aliases = { "adm" }, groupToUse = Group.TRIAL)
-	public void admin(BukkitCommandArgs cmdArgs) {
+	public void admin(CommandArgs cmdArgs) {
 		if (!cmdArgs.isPlayer())
 			return;
 
-		Player p = cmdArgs.getPlayer();
+		Player p = ((BukkitMember)cmdArgs.getSender()).getPlayer();
 		String[] args = cmdArgs.getArgs();
 		Member member = CommonGeneral.getInstance().getMemberManager().getMember(p.getUniqueId());
 
@@ -128,30 +129,29 @@ public class StaffCommand implements CommandClass {
 	}
 
 	@Command(name = "updatevanish", groupToUse = Group.TRIAL)
-	public void updatevanish(BukkitCommandArgs args) {
+	public void updatevanish(CommandArgs args) {
 		if (args.isPlayer()) {
-			Player p = args.getPlayer();
-			VanishAPI.getInstance().updateVanishToPlayer(p);
+			VanishAPI.getInstance().updateVanishToPlayer(((BukkitMember)args.getSender()).getPlayer());
 		}
 	}
 
 	@Command(name = "visible", aliases = { "vis", "visivel" }, groupToUse = Group.TRIAL)
-	public void visible(BukkitCommandArgs args) {
+	public void visibleCommand(CommandArgs args) {
 		if (!args.isPlayer())
 			return;
 
-		Player p = args.getPlayer();
+		Player p = ((BukkitMember)args.getSender()).getPlayer();
 		VanishAPI.getInstance().showPlayer(p);
 		p.sendMessage("\n §a* §fVocê está visível para todos os jogadores!\n§f");
 	}
 
 	@Command(name = "invisible", aliases = { "invis", "invisivel" }, groupToUse = Group.TRIAL)
-	public void invisible(BukkitCommandArgs args) {
+	public void invisibleCommand(CommandArgs args) {
 		if (!args.isPlayer()) {
 			return;
 		}
 
-		Player p = args.getPlayer();
+		Player p = ((BukkitMember)args.getSender()).getPlayer();
 		Member bP = CommonGeneral.getInstance().getMemberManager().getMember(p.getUniqueId());
 		Group group = Group.MEMBRO;
 
@@ -174,11 +174,11 @@ public class StaffCommand implements CommandClass {
 	}
 
 	@Command(name = "inventorysee", aliases = { "invsee", "inv" }, groupToUse = Group.TRIAL)
-	public void inventorysee(BukkitCommandArgs args) {
+	public void inventorysee(CommandArgs args) {
 		if (!args.isPlayer())
 			return;
 
-		Player p = args.getPlayer();
+		Player p = ((BukkitMember)args.getSender()).getPlayer();
 
 		if (args.getArgs().length == 0) {
 			p.sendMessage(" §e* §fUse §a/" + args.getLabel() + " <player>§f para abrir o inventário de alguém!");
@@ -197,7 +197,7 @@ public class StaffCommand implements CommandClass {
 	}
 
 	@Command(name = "chat", groupToUse = Group.MOD)
-	public void chatCommand(BukkitCommandArgs args) {
+	public void chatCommand(CommandArgs args) {
 		CommandSender sender = args.getSender();
 
 		if (args.getArgs().length == 0) {
@@ -254,7 +254,7 @@ public class StaffCommand implements CommandClass {
 	}
 
 	@Command(name = "clearchat", aliases = { "limparchat", "cc" }, groupToUse = Group.TRIAL)
-	public void clearchat(BukkitCommandArgs args) {
+	public void clearchat(CommandArgs args) {
 		for (Player p : Bukkit.getOnlinePlayers()) {
 			for (int i = 0; i < 100; i++)
 				p.sendMessage("");

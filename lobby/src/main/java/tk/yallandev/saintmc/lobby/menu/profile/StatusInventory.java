@@ -30,9 +30,8 @@ public class StatusInventory {
 
 		inv.setItem(29, createItem(player.getUniqueId(), StatusType.PVP));
 		inv.setItem(30, createItem(player.getUniqueId(), StatusType.SHADOW));
-		inv.setItem(31, createItem(player.getUniqueId(), StatusType.HG));
-		inv.setItem(32, new ItemBuilder().type(Material.IRON_FENCE).name("§3§lGladiator")
-				.lore("", "§fKills: §70", "§fMortes: §70", "").build());
+		inv.setItem(31, createItem(player.getUniqueId(), StatusType.GLADIATOR));
+		inv.setItem(32, createItem(player.getUniqueId(), StatusType.HG));
 
 		CommonGeneral.getInstance().getStatusManager().unloadStatus(player.getUniqueId());
 
@@ -57,7 +56,8 @@ public class StatusInventory {
 		case SHADOW: {
 			name = "§9§l1v1";
 			lore = "\n§fPartidas: §7" + (status.getKills() + status.getDeaths()) + "\n§fKills: §7" + status.getKills()
-					+ "\n§fDeaths: §7" + status.getDeaths() + "\n§fMaior killstreak: §7" + status.getMaxKillstreak();
+					+ "\n§fDeaths: §7" + status.getDeaths() + "\n§fKillstreak: §7" + status.getKillstreak()
+					+ "\n§fMaior killstreak: §7" + status.getMaxKillstreak();
 			type = Material.BLAZE_ROD;
 			break;
 		}
@@ -67,17 +67,18 @@ public class StatusInventory {
 					+ status.getDeaths() + "\n§fWins: §7" + status.getWins() + "\n§fMaior killstreak: §7"
 					+ status.getMaxKillstreak();
 			type = Material.MUSHROOM_SOUP;
-//			inv.setItem(31, new ItemBuilder().type(Material.MUSHROOM_SOUP).name("§a§lHungerGames")
-//					.lore("", "§fPartidas: §7", "§fSKills: §70", "§fortes: §70", "").build());
 			break;
 		}
 		case GLADIATOR:
+			name = "§3§lGladiator";
+			lore = "\n§fPartidas: §7" + (status.getKills() + status.getDeaths()) + "\n§fKills: §7" + status.getKills()
+					+ "\n§fDeaths: §7" + status.getDeaths() + "\n§fWins: §7" + status.getWins() + "\n§fKillstreak: §7"
+					+ status.getKillstreak() + "\n§fMaior killstreak: §7" + status.getMaxKillstreak();
+			type = Material.IRON_FENCE;
 			break;
 		case LOBBY:
 			break;
 		}
-
-		status = null;
 
 		return new ItemBuilder().name(name).lore(lore).type(type).build();
 	}

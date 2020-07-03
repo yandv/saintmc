@@ -47,12 +47,6 @@ public class StatusListener implements Listener {
 		Status killerStatus = CommonGeneral.getInstance().getStatusManager().loadStatus(killer.getUniqueId(),
 				statusType);
 
-		if (playerStatus.getKillstreak() >= 10)
-			Bukkit.broadcastMessage("");
-		
-		if (killerStatus.getKillstreak() % 5 == 0)
-			Bukkit.broadcastMessage("§c");
-		
 		int winnerXp = RewardCalculator.calculateReward(player, playerStatus, killer, killerStatus);
 
 		if (duels)
@@ -63,6 +57,11 @@ public class StatusListener implements Listener {
 		player.sendMessage("§c§l> §fVocê §cmorreu§f para o §c" + killer.getName() + "§f!");
 		player.sendMessage("§c§l> §fVocê perdeu §c" + lostXp + "§f!");
 
+		if (playerStatus.getKillstreak() >= 10)
+			Bukkit.broadcastMessage(
+					"§9KillStreak> §fO jogador §a" + player.getName() + "§f perdeu o seu §6Killstreak de "
+							+ playerStatus.getKillstreak() + "§f para o §c" + killer.getName() + "§f!");
+
 		playerStatus.addDeath();
 		playerStatus.resetKillstreak();
 
@@ -71,6 +70,10 @@ public class StatusListener implements Listener {
 
 		killerStatus.addKill();
 		killerStatus.addKillstreak();
+
+		if (killerStatus.getKillstreak() % 5 == 0)
+			Bukkit.broadcastMessage("§9KillStreak> §fO jogador §a" + killer.getName() + "§f está com §6Killstreak de "
+					+ killerStatus.getKillstreak() + "§f!");
 
 		CommonGeneral.getInstance().getMemberManager().getMember(killer.getUniqueId()).addXp(winnerXp);
 		CommonGeneral.getInstance().getMemberManager().getMember(player.getUniqueId()).removeXp(lostXp);

@@ -15,7 +15,6 @@ import tk.yallandev.saintmc.CommonConst;
 import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.bukkit.BukkitMain;
 import tk.yallandev.saintmc.bukkit.command.BukkitCommandFramework;
-import tk.yallandev.saintmc.common.command.CommandLoader;
 import tk.yallandev.saintmc.common.permission.Group;
 import tk.yallandev.saintmc.common.server.ServerType;
 import tk.yallandev.saintmc.common.utils.ClassGetter;
@@ -35,15 +34,16 @@ public class GameMain extends JavaPlugin {
 	private WarpManager warpManager;
 
 	private RankingHologram rankingHologram;
-	
+
 	public static final Map<Group, List<String>> KITROTATE;
-	
+
 	static {
 		KITROTATE = new HashMap<>();
 		KITROTATE.put(Group.MEMBRO, Arrays.asList("pvp", "monk", "viper", "snail", "ninja"));
 		KITROTATE.put(Group.DONATOR, Arrays.asList("hulk", "anchor", "thor", "gladiator", "timelord"));
 		KITROTATE.put(Group.LIGHT, Arrays.asList("switcher", "boxer", "stomper", "endermage", "ultimato"));
-		KITROTATE.put(Group.BLIZZARD, Arrays.asList("viper", "grappler", "viking", "hotpotato", "timelord", "launcher"));
+		KITROTATE.put(Group.BLIZZARD,
+				Arrays.asList("viper", "grappler", "viking", "hotpotato", "timelord", "launcher"));
 	}
 
 	@Override
@@ -73,8 +73,7 @@ public class GameMain extends JavaPlugin {
 		warpManager.load();
 		rankingHologram = new RankingHologram();
 
-		new CommandLoader(new BukkitCommandFramework(getInstance()))
-				.loadCommandsFromPackage("tk.yallandev.saintmc.kitpvp.command");
+		BukkitCommandFramework.INSTANCE.loadCommands(this.getClass(), "tk.yallandev.saintmc.kitpvp.command");
 
 		for (Class<?> classes : ClassGetter.getClassesForPackage(getClass(), "tk.yallandev.saintmc.kitpvp.listener")) {
 			if (Listener.class.isAssignableFrom(classes)) {

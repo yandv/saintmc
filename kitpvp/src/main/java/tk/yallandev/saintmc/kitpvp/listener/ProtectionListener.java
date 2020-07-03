@@ -23,9 +23,9 @@ public class ProtectionListener implements Listener {
 	public void onPlayerWarpJoin(PlayerWarpJoinEvent event) {
 		Player player = event.getPlayer();
 		Gamer gamer = GameMain.getInstance().getGamerManager().getGamer(player.getUniqueId());
-		
+
 		gamer.setSpawnProtection(true);
-		
+
 		if (event.getWarp().getWarpSettings().isSpawnProtection())
 			player.sendMessage("§a§l> §fVocê §arecebeu§f a proteção do spawn!");
 	}
@@ -38,6 +38,11 @@ public class ProtectionListener implements Listener {
 		Player player = (Player) event.getEntity();
 		Gamer gamer = GameMain.getInstance().getGamerManager().getGamer(player.getUniqueId());
 
+		if (!gamer.getWarp().getWarpSettings().isDamageEnabled()) {
+			event.setCancelled(true);
+			return;
+		}
+
 		if (gamer.getWarp().getWarpSettings().isSpawnProtection() && gamer.isSpawnProtection())
 			event.setCancelled(true);
 	}
@@ -46,6 +51,11 @@ public class ProtectionListener implements Listener {
 	public void onPlayerDamage(PlayerDamagePlayerEvent event) {
 		Gamer gamer = GameMain.getInstance().getGamerManager().getGamer(event.getPlayer().getUniqueId());
 
+		if (!gamer.getWarp().getWarpSettings().isPvpEnabled()) {
+			event.setCancelled(true);
+			return;
+		}
+		
 		if (gamer.getWarp().getWarpSettings().isSpawnProtection() && (gamer.isSpawnProtection() || GameMain
 				.getInstance().getGamerManager().getGamer(event.getDamager().getUniqueId()).isSpawnProtection()))
 			event.setCancelled(true);
@@ -54,10 +64,10 @@ public class ProtectionListener implements Listener {
 	@EventHandler
 	public void onRealMove(PlayerMoveUpdateEvent event) {
 		Player player = event.getPlayer();
-		
+
 		if (AdminMode.getInstance().isAdmin(player))
 			return;
-		
+
 		Gamer gamer = GameMain.getInstance().getGamerManager().getGamer(player.getUniqueId());
 
 		if (!gamer.isSpawnProtection())
@@ -81,5 +91,5 @@ public class ProtectionListener implements Listener {
 			Bukkit.getPluginManager().callEvent(new PlayerLostProtectionEvent(player, warp));
 		}
 	}
-	
+
 }

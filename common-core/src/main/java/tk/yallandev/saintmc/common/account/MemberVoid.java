@@ -16,7 +16,7 @@ public class MemberVoid extends Member {
 
 	@Override
 	public void sendMessage(String message) {
-		
+		System.out.println("VOID -> " + message);
 	}
 
 	@Override

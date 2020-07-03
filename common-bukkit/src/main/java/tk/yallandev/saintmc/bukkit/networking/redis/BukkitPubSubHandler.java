@@ -1,3 +1,4 @@
+
 package tk.yallandev.saintmc.bukkit.networking.redis;
 
 import java.lang.reflect.Field;
@@ -14,11 +15,12 @@ import redis.clients.jedis.JedisPubSub;
 import tk.yallandev.saintmc.CommonConst;
 import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.bukkit.BukkitMain;
-import tk.yallandev.saintmc.bukkit.account.BukkitMember;
+import tk.yallandev.saintmc.bukkit.bukkit.BukkitMember;
 import tk.yallandev.saintmc.bukkit.event.account.PlayerUpdateFieldEvent;
 import tk.yallandev.saintmc.bukkit.event.account.PlayerUpdatedFieldEvent;
 import tk.yallandev.saintmc.bukkit.event.report.ReportReceiveEvent;
 import tk.yallandev.saintmc.common.account.Member;
+import tk.yallandev.saintmc.common.clan.Clan;
 import tk.yallandev.saintmc.common.data.payload.DataServerMessage;
 import tk.yallandev.saintmc.common.data.payload.DataServerMessage.Action;
 import tk.yallandev.saintmc.common.data.payload.DataServerMessage.JoinEnablePayload;
@@ -117,28 +119,47 @@ public class BukkitPubSubHandler extends JedisPubSub {
 				DataServerMessage<WhitelistAddPayload> payload = CommonConst.GSON.fromJson(jsonObject,
 						new TypeToken<DataServerMessage<WhitelistAddPayload>>() {
 						}.getType());
-				
+
 				if (sourceType == ServerType.NETWORK) {
 					break;
 				}
-				
-				BukkitMain.getInstance().getServerManager().getServer(source).addWhitelist(payload.getPayload().getProfile());;
+
+				BukkitMain.getInstance().getServerManager().getServer(source)
+						.addWhitelist(payload.getPayload().getProfile());
 				break;
 			}
 			case WHITELIST_REMOVE: {
 				DataServerMessage<WhitelistRemovePayload> payload = CommonConst.GSON.fromJson(jsonObject,
 						new TypeToken<DataServerMessage<WhitelistRemovePayload>>() {
 						}.getType());
-				
+
 				if (sourceType == ServerType.NETWORK) {
 					break;
 				}
-				
-				BukkitMain.getInstance().getServerManager().getServer(source).removeWhitelist(payload.getPayload().getProfile());;
+
+				BukkitMain.getInstance().getServerManager().getServer(source)
+						.removeWhitelist(payload.getPayload().getProfile());
 				break;
 			}
 			default:
 				break;
+			}
+			break;
+		}
+		case "clan-field": {
+			UUID uuid = UUID.fromString(jsonObject.get("uniqueId").getAsString());
+			Clan report = CommonGeneral.getInstance().getClanManager().getClan(uuid);
+
+			if (report == null)
+				break;
+
+			try {
+				Field field = Reflection.getField(Clan.class, jsonObject.get("field").getAsString());
+				field.setAccessible(true);
+				Object object = CommonConst.GSON.fromJson(jsonObject.get("value"), field.getGenericType());
+				field.set(report, object);
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
 			break;
 		}
@@ -175,7 +196,7 @@ public class BukkitPubSubHandler extends JedisPubSub {
 				if (CommonGeneral.getInstance().getReportManager().getReport(playerUuid) == null) {
 					CommonGeneral.getInstance().getReportManager().loadReport(report);
 					CommonGeneral.getInstance().debug("The report of " + report.getPlayerName() + " has been loaded!");
-					
+
 					Bukkit.getPluginManager().callEvent(new ReportReceiveEvent(report));
 				}
 			}
@@ -190,14 +211,16 @@ public class BukkitPubSubHandler extends JedisPubSub {
 			if (p != null && player != null) {
 				try {
 					Field field = getField(Member.class, jsonObject.get("field").getAsString());
+					Object oldObject = field.get(player);
 					Object object = CommonConst.GSON.fromJson(jsonObject.get("value"), field.getGenericType());
-					PlayerUpdateFieldEvent event = new PlayerUpdateFieldEvent(p, player, field.getName(), object);
+					PlayerUpdateFieldEvent event = new PlayerUpdateFieldEvent(p, player, field.getName(), oldObject,
+							object);
 					Bukkit.getPluginManager().callEvent(event);
 
 					if (!event.isCancelled()) {
 						field.set(player, event.getObject());
 						PlayerUpdatedFieldEvent event2 = new PlayerUpdatedFieldEvent(p, player, field.getName(),
-								object);
+								oldObject, object);
 						Bukkit.getPluginManager().callEvent(event2);
 					}
 				} catch (Exception e) {

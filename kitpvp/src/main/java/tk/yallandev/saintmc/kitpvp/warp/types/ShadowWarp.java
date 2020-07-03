@@ -155,7 +155,7 @@ public class ShadowWarp extends Warp implements DuelWarp {
 
 								handleInventory(getPlayer());
 								handleInventory(getTarget());
-								
+
 								super.finish(winner);
 							}
 
@@ -250,7 +250,7 @@ public class ShadowWarp extends Warp implements DuelWarp {
 
 									handleInventory(getTarget());
 									handleInventory(getPlayer());
-									
+
 									super.finish(winner);
 								}
 
@@ -364,22 +364,22 @@ public class ShadowWarp extends Warp implements DuelWarp {
 	public void onPlayerShowToPlayer(PlayerShowToPlayerEvent event) {
 		if (playersIn1v1.containsKey(event.getToPlayer())) {
 			Challenge challenge = playersIn1v1.get(event.getToPlayer());
-			
-			if (challenge.isInChallenge(event.getPlayer())) 
+
+			if (challenge.isInChallenge(event.getPlayer()))
 				event.setCancelled(false);
-			else 
+			else
 				event.setCancelled(true);
 		}
 	}
-	
+
 	@EventHandler
 	public void onPlayerHideToPlayer(PlayerHideToPlayerEvent event) {
 		if (playersIn1v1.containsKey(event.getToPlayer())) {
 			Challenge challenge = playersIn1v1.get(event.getToPlayer());
-			
-			if (challenge.isInChallenge(event.getPlayer())) 
+
+			if (challenge.isInChallenge(event.getPlayer()))
 				event.setCancelled(true);
-			else 
+			else
 				event.setCancelled(false);
 		}
 	}

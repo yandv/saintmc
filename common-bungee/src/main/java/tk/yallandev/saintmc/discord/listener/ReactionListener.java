@@ -45,7 +45,9 @@ public class ReactionListener extends ListenerAdapter {
 			user.openPrivateChannel().complete().sendMessage(new EmbedBuilder().setColor(Color.YELLOW)
 					.appendDescription(ReactionEnum.PENCIL.getEmote()
 							+ " Para ingressar na equipe é necessário que você demonstre habilidades em moderar um servidor, então seja sempre"
-							+ " ativo no servidor e faça o formulario " + CommonConst.TRIAL_FORM)
+							+ " ativo no servidor e faça o formulario:"
+							+ "\nTrial-Moderador: " + CommonConst.TRIAL_FORM
+							+ "\nHelper: " + CommonConst.HELPER_FORM)
 					.setColor(Color.YELLOW).build()).complete();
 
 		});
@@ -53,13 +55,17 @@ public class ReactionListener extends ListenerAdapter {
 		handlers.put(ReactionEnum.PROJECTOR, (user, guild, textChannel, reaction, action) -> {
 
 			user.openPrivateChannel().complete().sendMessage(new EmbedBuilder().setColor(Color.YELLOW)
-					.appendDescription(ReactionEnum.PROJECTOR.getEmote()
-							+ " Para receber a tag Youtuber no servidor, você precisa "
-							+ "\n- Ter 50 likes 300 views por video **no servidor**"
-							+ "\n- Ou ter 1500 views em 1 semana com video no servidor"
-							+ "\n Para receber a tag Saint no servidor, você precisa "
-							+ "\n- Ter 30 likes 150 views por video **no servidor**"
-							+ "\n- Ou ter 700 views em 1 semana com video no servidor")
+					.appendDescription(
+							ReactionEnum.PROJECTOR.getEmote() + " Preencha o formulário " + CommonConst.YOUTUBER_FORM)
+					.setColor(Color.YELLOW).build()).complete();
+
+		});
+
+		handlers.put(ReactionEnum.LINK, (user, guild, textChannel, reaction, action) -> {
+
+			user.openPrivateChannel().complete().sendMessage(new EmbedBuilder().setColor(Color.YELLOW)
+					.appendDescription(ReactionEnum.LINK.getEmote()
+							+ " Se você foi banido injustamente, preencha o formulário: " + CommonConst.APPEAL_FORM)
 					.setColor(Color.YELLOW).build()).complete();
 
 		});

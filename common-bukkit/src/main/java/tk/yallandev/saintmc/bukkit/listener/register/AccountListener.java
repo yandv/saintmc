@@ -17,7 +17,8 @@ import org.bukkit.scheduler.BukkitRunnable;
 import tk.yallandev.saintmc.CommonConst;
 import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.bukkit.BukkitMain;
-import tk.yallandev.saintmc.bukkit.account.BukkitMember;
+import tk.yallandev.saintmc.bukkit.bukkit.BukkitClan;
+import tk.yallandev.saintmc.bukkit.bukkit.BukkitMember;
 import tk.yallandev.saintmc.bukkit.event.account.PlayerChangeGroupEvent;
 import tk.yallandev.saintmc.bukkit.event.account.PlayerUpdateFieldEvent;
 import tk.yallandev.saintmc.bukkit.event.account.PlayerUpdatedFieldEvent;
@@ -25,7 +26,11 @@ import tk.yallandev.saintmc.bukkit.event.restore.RestoreInitEvent;
 import tk.yallandev.saintmc.bukkit.event.restore.RestoreStopEvent;
 import tk.yallandev.saintmc.bukkit.listener.Listener;
 import tk.yallandev.saintmc.common.account.League;
+import tk.yallandev.saintmc.common.account.Member;
 import tk.yallandev.saintmc.common.account.MemberModel;
+import tk.yallandev.saintmc.common.clan.Clan;
+import tk.yallandev.saintmc.common.clan.ClanModel;
+import tk.yallandev.saintmc.common.clan.enums.ClanHierarchy;
 import tk.yallandev.saintmc.common.profile.Profile;
 
 public class AccountListener extends Listener {
@@ -100,6 +105,24 @@ public class AccountListener extends Listener {
 
 			member.setJoinData(playerName, event.getAddress().getHostAddress());
 			CommonGeneral.getInstance().getMemberManager().loadMember(member);
+
+			if (member.getClanUniqueId() != null) {
+				Clan clan = CommonGeneral.getInstance().getClanManager().getClan(member.getClanUniqueId());
+
+				if (clan == null) {
+					ClanModel clanModel = CommonGeneral.getInstance().getClanData().loadClan(member.getClanUniqueId());
+
+					if (clanModel == null) {
+						member.setClanUniqueId(null);
+					} else {
+
+						clan = new BukkitClan(clanModel);
+						CommonGeneral.getInstance().getClanManager().load(member.getClanUniqueId(), clan);
+						CommonGeneral.getInstance().debug("Clan " + clan.getClanName() + " has been loaded!");
+					}
+				}
+			}
+
 		} catch (Exception ex) {
 			event.setKickMessage("§4§l" + CommonConst.KICK_PREFIX + "\n§f\n§fNão foi possível carregar sua conta!");
 			ex.printStackTrace();
@@ -129,13 +152,15 @@ public class AccountListener extends Listener {
 				.getMember(event.getPlayer().getUniqueId());
 
 		member.setPlayer(event.getPlayer());
-		member.connect(CommonGeneral.getInstance().getServerId(), CommonGeneral.getInstance().getServerType());
 	}
 
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onPlayerLoginMonitor(PlayerLoginEvent event) {
-		if (event.getResult() == PlayerLoginEvent.Result.ALLOWED)
+		if (event.getResult() == PlayerLoginEvent.Result.ALLOWED) {
+			Member member = CommonGeneral.getInstance().getMemberManager().getMember(event.getPlayer().getUniqueId());
+			member.connect(CommonGeneral.getInstance().getServerId(), CommonGeneral.getInstance().getServerType());
 			return;
+		}
 
 		if (CommonGeneral.getInstance().getMemberManager().containsKey(event.getPlayer().getUniqueId()))
 			CommonGeneral.getInstance().getMemberManager().unload(event.getPlayer().getUniqueId());
@@ -178,8 +203,6 @@ public class AccountListener extends Listener {
 			player.setLeague((League) event.getObject());
 			event.setCancelled(true);
 			break;
-		default:
-			break;
 		}
 	}
 
@@ -188,14 +211,45 @@ public class AccountListener extends Listener {
 		BukkitMember player = event.getBukkitMember();
 		switch (event.getField()) {
 		case "group":
-		case "ranks": {
+		case "ranks":
 			player.loadTags();
 			player.setTag(player.getDefaultTag());
 			Bukkit.getPluginManager()
 					.callEvent(new PlayerChangeGroupEvent(event.getPlayer(), player, player.getServerGroup()));
 			break;
-		}
-		default:
+		case "clanUniqueId":
+			if (event.getObject() == null) {
+				UUID uuid = (UUID) event.getOldObject();
+
+				if (uuid == null) {
+					return;
+				}
+
+				Clan clan = CommonGeneral.getInstance().getClanManager().getClan(uuid);
+
+				if (clan == null)
+					return;
+				
+				if (clan.isGroup(player.getUniqueId(), ClanHierarchy.OWNER)) {
+					CommonGeneral.getInstance().getClanManager().unload(clan.getUniqueId());
+				} else {
+					clan.removeMember(player);
+					handleUnload(clan);
+				}
+			} else {
+				Clan clan = CommonGeneral.getInstance().getClanManager().getClan((UUID) event.getObject());
+
+				if (clan == null) {
+					ClanModel clanModel = CommonGeneral.getInstance().getClanData().loadClan((UUID) event.getObject());
+
+					if (clanModel == null) {
+						player.sendMessage("§cNão foi possível carregar seu clan!");
+						return;
+					}
+
+					clan = new BukkitClan(clanModel);
+				}
+			}
 			break;
 		}
 	}
@@ -211,6 +265,18 @@ public class AccountListener extends Listener {
 
 		CommonGeneral.getInstance().getServerData().leavePlayer(uniqueId);
 		CommonGeneral.getInstance().getMemberManager().unloadMember(uniqueId);
+
+		Clan clan = CommonGeneral.getInstance().getClanManager().getClan(player.getClanUniqueId());
+
+		if (clan != null)
+			handleUnload(clan);
+	}
+
+	private void handleUnload(Clan clan) {
+		if (clan.getOnlineMembers().size() == 0) {
+			CommonGeneral.getInstance().debug("Clan " + clan.getClanName() + " has been unloaded!");
+			CommonGeneral.getInstance().getClanManager().unload(clan.getUniqueId());
+		}
 	}
 
 }

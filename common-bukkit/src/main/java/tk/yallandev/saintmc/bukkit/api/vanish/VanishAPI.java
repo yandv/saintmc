@@ -116,7 +116,7 @@ public class VanishAPI {
 		}
 	}
 	
-	public void playerJoin(Player p) {
+	public void handleJoin(Player p) {
 		for (UUID id : this.hideAllPlayers) {
 			Player hide = Bukkit.getPlayer(id);
 			

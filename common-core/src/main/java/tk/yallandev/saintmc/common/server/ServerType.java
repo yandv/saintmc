@@ -8,15 +8,20 @@ import tk.yallandev.saintmc.common.utils.string.NameUtils;
 @AllArgsConstructor
 public enum ServerType {
 
+	LOGIN("Login"),
+    LOBBY("Lobby"), 
+    
     HUNGERGAMES("HG"),
-    GLADIATOR("Gladiator"),
-    CLANXCLAN("ClanXClan"),
-    PRIVATE_SERVER("Private Server"),
     FULLIRON("PvP FullIron"),
     SIMULATOR("PvP Simulator"),
-    LOBBY("Lobby"), 
-    LOGIN("Login"),
+    GLADIATOR("Gladiator"),
+    
+    CLANXCLAN("ClanXClan"),
+    PEAK("Peak"),
+    
+    PRIVATE_SERVER("Private Server"),
     SCREENSHARE("Screenshare"),
+    
     NETWORK(),
     NONE;
 	

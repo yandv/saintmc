@@ -16,9 +16,9 @@ public class GroupCommand implements CommandClass {
 
 	@Command(name = "groupset", usage = "/<command> <player> <group>", groupToUse = Group.GERENTE, aliases = {
 			"setargrupo" }, runAsync = true)
-	public void groupset(BungeeCommandArgs cmdArgs) {
-		final CommandSender sender = cmdArgs.getSender();
-		final String[] args = cmdArgs.getArgs();
+	public void groupsetCommand(BungeeCommandArgs cmdArgs) {
+		CommandSender sender = cmdArgs.getSender();
+		String[] args = cmdArgs.getArgs();
 
 		if (args.length != 2) {
 			sender.sendMessage(" §e* §fUse §a/groupset <player> <group>§f para setar um grupo.");
@@ -34,7 +34,7 @@ public class GroupCommand implements CommandClass {
 			return;
 		}
 
-		final Group group = grupo;
+		Group group = grupo;
 		Group playerGroup = Group.MEMBRO;
 
 		if (cmdArgs.isPlayer()) {
@@ -128,6 +128,18 @@ public class GroupCommand implements CommandClass {
 		player.setGroup(group);
 		sender.sendMessage(" §a* §fVocê alterou o grupo do §a" + player.getPlayerName() + "("
 				+ player.getUniqueId().toString().replace("-", "") + ")" + "§f para §a" + group.name() + "§f!");
+	}
+
+	@Command(name = "permission", usage = "/<command> <player> <group>", groupToUse = Group.GERENTE, aliases = {
+			"setargrupo" }, runAsync = true)
+	public void addpermissionCommand(BungeeCommandArgs cmdArgs) {
+		CommandSender sender = cmdArgs.getSender();
+		String[] args = cmdArgs.getArgs();
+
+		if (args.length != 2) {
+			sender.sendMessage(" §e* §fUse §a/groupset <player> <group>§f para setar um grupo.");
+			return;
+		}
 	}
 
 }

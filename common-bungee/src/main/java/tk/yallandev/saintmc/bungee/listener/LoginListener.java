@@ -38,7 +38,10 @@ import tk.yallandev.saintmc.common.utils.web.WebHelper.Method;
 
 public class LoginListener implements Listener {
 
+	private static final int MAX_VERIFY = 15;
+
 	private Set<String> blockedAddress;
+	private int verifyingAddresses;
 
 	public LoginListener() {
 		blockedAddress = new HashSet<>();
@@ -83,13 +86,23 @@ public class LoginListener implements Listener {
 			return;
 		}
 
+		if (verifyingAddresses >= MAX_VERIFY) {
+			event.setCancelled(true);
+			event.setCancelReason("§4§l" + CommonConst.KICK_PREFIX
+					+ "\n§f\n§fEstamos verificando vários ips ao mesmo tempo§f, por favor aguarde para entrar§f\n§6Mais informação em: §b"
+					+ CommonConst.DISCORD);
+			return;
+		}
+
 		event.registerIntent(BungeeMain.getPlugin());
 		ProxyServer.getInstance().getScheduler().runAsync(BungeeMain.getPlugin(), new Runnable() {
 			@Override
 			public void run() {
 
+				verifyingAddresses++;
+
 				try {
-					CommonConst.DEFAULT_WEB.doAsyncRequest(
+					CommonConst.DEFAULT_WEB.doRequest(
 							CommonConst.MOJANG_FETCHER + "session/?ip=" + URLEncoder.encode(ipAddress, "UTF-8"),
 							Method.GET, new FutureCallback<JsonElement>() {
 
@@ -114,6 +127,7 @@ public class LoginListener implements Listener {
 									}
 
 									event.completeIntent(BungeeMain.getPlugin());
+									verifyingAddresses--;
 								}
 							});
 				} catch (UnsupportedEncodingException e) {
@@ -124,16 +138,17 @@ public class LoginListener implements Listener {
 					event.completeIntent(BungeeMain.getPlugin());
 
 					e.printStackTrace();
+					verifyingAddresses--;
 				}
 			}
 		});
 	}
-	
+
 	@EventHandler
 	public void onUnblockAddress(UnblockAddressEvent event) {
 		blockedAddress.remove(event.getIpAddress());
 	}
-	
+
 	@EventHandler
 	public void onBlockAddress(BlockAddressEvent event) {
 		if (!blockedAddress.contains(event.getIpAddress()))
@@ -143,7 +158,7 @@ public class LoginListener implements Listener {
 	public void blockAddress(String ipAddress) {
 		blockedAddress.add(ipAddress);
 		CommonGeneral.getInstance().debug("The address " + ipAddress + " has been blocked!");
-		
+
 		ProxyServer.getInstance().getScheduler().runAsync(BungeeMain.getInstance(), new Runnable() {
 
 			@Override
@@ -156,7 +171,7 @@ public class LoginListener implements Listener {
 					e.printStackTrace();
 				}
 			}
-			
+
 		});
 	}
 

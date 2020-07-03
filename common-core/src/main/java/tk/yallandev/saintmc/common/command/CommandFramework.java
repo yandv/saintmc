@@ -5,16 +5,17 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.common.permission.Group;
+import tk.yallandev.saintmc.common.utils.ClassGetter;
 
 /*
  * Forked from https://github.com/mcardy/CommandFramework
- * Took from https://github.com/Battlebits
  * 
  */
 
 public interface CommandFramework {
-
+	
 	Class<?> getJarClass();
 
 	void registerCommands(CommandClass commandClass);
@@ -34,30 +35,47 @@ public interface CommandFramework {
 		String usage() default "";
 
 		boolean runAsync() default false;
-		
+
 	}
 
 	@Target(ElementType.METHOD)
 	@Retention(RetentionPolicy.RUNTIME)
 	public @interface Completer {
 
-		/**
-		 * The command that this completer completes. If it is a sub command then its
-		 * values would be separated by periods. ie. a command that would be a
-		 * subcommand of test would be 'test.subcommandname'
-		 *
-		 * @return String
-		 */
 		String name();
 
-		/**
-		 * A list of alternate names that the completer is executed under. See name()
-		 * for details on how names work
-		 *
-		 * @return String
-		 */
 		String[] aliases() default {};
 
+	}
+	
+	default CommandFramework loadCommands(String packageName) {
+		for (Class<?> commandClass : ClassGetter.getClassesForPackage(getJarClass(), packageName))
+			if (CommandClass.class.isAssignableFrom(commandClass)) {
+				try {
+					registerCommands((CommandClass) commandClass.newInstance());
+				} catch (Exception ex) {
+					CommonGeneral.getInstance().getLogger()
+							.warning("Error when loading command from " + commandClass.getSimpleName() + "!");
+					ex.printStackTrace();
+				}
+			}
+
+		return this;
+	}
+
+	default CommandFramework loadCommands(Class<?> jarClass, String packageName) {
+		for (Class<?> commandClass : ClassGetter.getClassesForPackage(jarClass, packageName))
+			if (CommandClass.class.isAssignableFrom(commandClass)) {
+				try {
+					registerCommands((CommandClass) commandClass.newInstance());
+				} catch (Exception e) {
+					CommonGeneral.getInstance().getLogger()
+							.warning("Error when loading command from " + commandClass.getSimpleName() + "!");
+					e.printStackTrace();
+				}
+			}
+
+		return this;
 	}
 
 }

@@ -27,6 +27,8 @@ public class CommonConst {
 
 	public static final String SERVER_NAME = "SaintMC";
 	public static final String KICK_PREFIX = "SaintMC";
+	
+	public static final String IP_END = "saintmc.net";
 
 	public static final String WEBSITE = "https://saintmc.net/";
 	public static final String SITE = "www.saintmc.net";
@@ -34,8 +36,11 @@ public class CommonConst {
 	public static final String DISCORD = "https://discord.saintmc.net";
 	
 	public static final String TRIAL_FORM = "https://trial.saintmc.net/";
+	public static final String HELPER_FORM = "https://helper.saintmc.net/";
+	public static final String YOUTUBER_FORM = "https://youtuber.saintmc.net/";
+	public static final String APPEAL_FORM = "https://appeal.saintmc.net/";
 	
-	public static final String API = "http://apidata.saintmc.net";
+	public static final String API = "http://api.saintmc.yallandev.tk";
 	public static final String DOWNLOAD_KEY = "kangaroo123";
 
 	public static final String SKIN_URL = API + "/skin/";

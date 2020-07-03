@@ -8,11 +8,13 @@ import com.google.common.base.Charsets;
 
 import lombok.Getter;
 import lombok.Setter;
+import tk.yallandev.saintmc.common.backend.data.ClanData;
 import tk.yallandev.saintmc.common.backend.data.PlayerData;
 import tk.yallandev.saintmc.common.backend.data.PunishData;
 import tk.yallandev.saintmc.common.backend.data.ReportData;
 import tk.yallandev.saintmc.common.backend.data.ServerData;
 import tk.yallandev.saintmc.common.backend.data.StatusData;
+import tk.yallandev.saintmc.common.controller.ClanManager;
 import tk.yallandev.saintmc.common.controller.MemberManager;
 import tk.yallandev.saintmc.common.controller.ReportManager;
 import tk.yallandev.saintmc.common.controller.StatusManager;
@@ -33,6 +35,10 @@ public class CommonGeneral {
 	@Getter
 	@Setter
 	private PlayerData playerData;
+
+	@Getter
+	@Setter
+	private ClanData clanData;
 
 	@Getter
 	@Setter
@@ -62,6 +68,9 @@ public class CommonGeneral {
 
 	@Getter
 	private MemberManager memberManager = new MemberManager();
+	
+	@Getter
+	private ClanManager clanManager = new ClanManager();
 
 	@Getter
 	private StatusManager statusManager = new StatusManager();
@@ -106,7 +115,7 @@ public class CommonGeneral {
 	@Getter
 	@Setter
 	private boolean loginServer = true;
-	
+
 	@Setter
 	private boolean debug = true;
 

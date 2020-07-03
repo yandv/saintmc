@@ -3,6 +3,7 @@ package tk.yallandev.saintmc.bukkit.listener.register;
 import java.io.File;
 import java.util.UUID;
 
+import org.bukkit.Achievement;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
@@ -19,11 +20,8 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
 import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.bukkit.BukkitMain;
-import tk.yallandev.saintmc.bukkit.api.title.Title;
-import tk.yallandev.saintmc.bukkit.api.title.types.SimpleTitle;
 import tk.yallandev.saintmc.bukkit.api.vanish.AdminMode;
 import tk.yallandev.saintmc.bukkit.api.vanish.VanishAPI;
-import tk.yallandev.saintmc.bukkit.event.account.PlayerChangeGroupEvent;
 import tk.yallandev.saintmc.bukkit.event.account.PlayerChangeLeagueEvent;
 import tk.yallandev.saintmc.bukkit.event.vanish.PlayerShowToPlayerEvent;
 import tk.yallandev.saintmc.bukkit.listener.Listener;
@@ -80,8 +78,10 @@ public class PlayerListener extends Listener {
 			} else if (!online.canSee(player))
 				online.showPlayer(player);
 		}
+		
+		player.awardAchievement(Achievement.OPEN_INVENTORY);
 
-		VanishAPI.getInstance().playerJoin(player);
+		VanishAPI.getInstance().handleJoin(player);
 	}
 
 	@EventHandler
@@ -104,12 +104,6 @@ public class PlayerListener extends Listener {
 			event.getPlayer().sendMessage("§c§l> §fVocê desceu para o rank §c" + event.getNewLeague().getColor()
 					+ event.getNewLeague().getSymbol() + " " + event.getNewLeague().getName());
 		}
-	}
-
-	@EventHandler
-	public void onPlayerChangeGroup(PlayerChangeGroupEvent event) {
-		Title.send(event.getPlayer(), "§a§l" + event.getGroup().name(), "§fSeu grupo foi atualizado!",
-				SimpleTitle.class);
 	}
 
 	@EventHandler(priority = EventPriority.MONITOR)

@@ -15,7 +15,7 @@ import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import tk.yallandev.saintmc.BukkitConst;
 import tk.yallandev.saintmc.CommonGeneral;
-import tk.yallandev.saintmc.bukkit.account.BukkitMember;
+import tk.yallandev.saintmc.bukkit.bukkit.BukkitMember;
 import tk.yallandev.saintmc.bukkit.listener.Listener;
 import tk.yallandev.saintmc.common.account.League;
 import tk.yallandev.saintmc.common.account.Member;
@@ -24,6 +24,7 @@ import tk.yallandev.saintmc.common.ban.constructor.Mute;
 import tk.yallandev.saintmc.common.permission.Group;
 import tk.yallandev.saintmc.common.server.ServerType;
 import tk.yallandev.saintmc.common.utils.DateUtils;
+import tk.yallandev.saintmc.common.utils.string.MessageBuilder;
 import tk.yallandev.saintmc.common.utils.string.StringURLUtils;
 
 public class ChatListener extends Listener {
@@ -32,7 +33,7 @@ public class ChatListener extends Listener {
 	public void onAsyncPlayerChat(AsyncPlayerChatEvent event) {
 		Player player = event.getPlayer();
 		Member member = CommonGeneral.getInstance().getMemberManager().getMember(player.getUniqueId());
-		
+
 		if (!member.getLoginConfiguration().isLogged()) {
 			event.setCancelled(true);
 
@@ -85,7 +86,7 @@ public class ChatListener extends Listener {
 			member.sendMessage(text);
 			return;
 		}
-		
+
 		if (member.getLoginConfiguration().getAccountType() != AccountType.ORIGINAL) {
 			if (member.getOnlineTime() + member.getSessionTime() <= 1000 * 60 * 10) {
 				member.sendMessage("§cVocê precisa ficar online por mais "
@@ -96,7 +97,7 @@ public class ChatListener extends Listener {
 				return;
 			}
 		}
-		
+
 		if (CommonGeneral.getInstance().getServerType() != ServerType.SCREENSHARE) {
 			Mute activeMute = member.getPunishmentHistory().getActiveMute();
 
@@ -115,7 +116,7 @@ public class ChatListener extends Listener {
 	public void onSwearWord(AsyncPlayerChatEvent event) {
 		if (CommonGeneral.getInstance().getServerType() == ServerType.SCREENSHARE)
 			return;
-		
+
 		Player player = event.getPlayer();
 		Member member = CommonGeneral.getInstance().getMemberManager().getMember(player.getUniqueId());
 
@@ -133,7 +134,6 @@ public class ChatListener extends Listener {
 		}
 	}
 
-	
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onChat(AsyncPlayerChatEvent event) {
 		event.setCancelled(true);
@@ -155,58 +155,71 @@ public class ChatListener extends Listener {
 		if (player.hasGroupPermission(Group.LIGHT))
 			event.setMessage(event.getMessage().replace("&", "§"));
 
-		TextComponent league = null;
-		int text = 2;
+		TextComponent textComponent = player.getMedal() != null
+				? new MessageBuilder("" + player.getMedal().getChatColor() + player.getMedal().getMedalIcon() + " ")
+						.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+								TextComponent.fromLegacyText(player.getMedal().getMedalDescription())))
+						.create()
+				: new TextComponent("");
 
-		if (player.isUsingFake()) {
-			league = new TextComponent(ChatColor.GRAY + "(" + League.UNRANKED.getSymbol() + ChatColor.GRAY + ") ");
-			league.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(
-					ChatColor.BOLD + League.UNRANKED.getSymbol() + " " + ChatColor.BOLD + League.UNRANKED.name())));
-			text += 1;
-		} else {
-			league = new TextComponent(ChatColor.GRAY + "(" + player.getLeague().getColor()
-					+ player.getLeague().getSymbol() + ChatColor.GRAY + ") ");
-			league.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
-					TextComponent.fromLegacyText(ChatColor.BOLD + player.getLeague().getColor()
-							+ player.getLeague().getSymbol() + " " + ChatColor.BOLD + player.getLeague().name())));
-			text += 1;
-		}
+		textComponent.addExtra(player.isUsingFake()
+				? new MessageBuilder(ChatColor.GRAY + "(" + League.UNRANKED.getSymbol() + ChatColor.GRAY + ") ")
+						.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+								TextComponent.fromLegacyText(ChatColor.BOLD + League.UNRANKED.getSymbol() + " "
+										+ ChatColor.BOLD + League.UNRANKED.name())))
+						.create()
+				: new MessageBuilder(ChatColor.GRAY + "(" + player.getLeague().getColor()
+						+ player.getLeague().getSymbol() + ChatColor.GRAY + ") ")
+								.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+										TextComponent.fromLegacyText(ChatColor.BOLD + player.getLeague().getColor()
+												+ player.getLeague().getSymbol() + " " + ChatColor.BOLD
+												+ player.getLeague().name())))
+								.create());
 
-		TextComponent[] textTo = new TextComponent[text + event.getMessage().split(" ").length];
 		String tag = player.getTag().getPrefix();
-		TextComponent account = new TextComponent(
-				tag + (ChatColor.stripColor(tag).trim().length() > 0 ? " " : "") + event.getPlayer().getName());
-		account.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/account " + player.getPlayerName()));
-		account.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
-				TextComponent.fromLegacyText("§aInformações do player \n\n§fXp: §a" + player.getXp()
-						+ "\n§fReputação: §a" + player.getReputation())));
+
+		textComponent.addExtra(new MessageBuilder(
+				tag + (ChatColor.stripColor(tag).trim().length() > 0 ? " " : "") + event.getPlayer().getName())
+						.setClickEvent(
+								new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/account " + player.getPlayerName()))
+						.setHoverEvent(
+								new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+										TextComponent.fromLegacyText("§aInformações do player \n\n§fXp: §a"
+												+ player.getXp() + "\n§fReputação: §a" + player.getReputation())))
+						.create());
+
+		textComponent.addExtra(new TextComponent(" §7»§f"));
+
+		TextComponent[] textTo = new TextComponent[event.getMessage().split(" ").length];
+
 		int i = 0;
-
-		if (league != null) {
-			textTo[i] = league;
-			++i;
-		}
-
-		textTo[i] = account;
-		++i;
-
-		textTo[i] = new TextComponent(" §7»§f");
-		++i;
-
 		for (String msg : event.getMessage().split(" ")) {
 			msg = " " + msg;
-			TextComponent text2 = new TextComponent(ChatColor.getLastColors(textTo[i - 1].getText()) + msg);
+
+			TextComponent txt = new TextComponent(
+					(i == 0 ? "§f" : ChatColor.getLastColors(textTo[i - 1].getText())) + msg);
 			List<String> url = StringURLUtils.extractUrls(msg);
 
 			if (player.hasGroupPermission(Group.SAINT)) {
 				if (url.size() > 0) {
-					text2.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, url.get(0)));
-				}
-			}
+					txt.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, url.get(0)));
 
-			textTo[i] = text2;
+					if (player.hasGroupPermission(Group.SAINT))
+						txt.setHoverEvent(
+								new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(url.get(0))));
+					else
+						txt.setHoverEvent(null);
+				} else
+					txt.setHoverEvent(null);
+			} else
+				txt.setHoverEvent(null);
+
+			textTo[i] = txt;
 			++i;
 		}
+
+		for (TextComponent txt : textTo)
+			textComponent.addExtra(txt);
 
 		for (Player r : event.getRecipients()) {
 			try {
@@ -233,7 +246,7 @@ public class ChatListener extends Listener {
 					continue;
 				}
 
-				r.spigot().sendMessage(textTo);
+				r.spigot().sendMessage(textComponent);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

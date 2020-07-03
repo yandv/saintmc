@@ -4,7 +4,7 @@ import org.bukkit.entity.Player;
 
 import lombok.Getter;
 import lombok.Setter;
-import tk.yallandev.saintmc.bukkit.account.BukkitMember;
+import tk.yallandev.saintmc.bukkit.bukkit.BukkitMember;
 import tk.yallandev.saintmc.bukkit.event.PlayerCancellableEvent;
 
 @Getter

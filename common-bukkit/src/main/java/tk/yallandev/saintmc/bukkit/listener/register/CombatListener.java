@@ -70,6 +70,51 @@ public class CombatListener extends Listener {
 		event.setDamage(playerDamagePlayerEvent.getDamage());
 	}
 
+//	@EventHandler
+//	public void onPlayerVelocity(PlayerVelocityEvent event) {
+//		Player player = event.getPlayer();
+//
+//		if (player.hasMetadata("knockback"))
+//			if (player.getMetadata("knockback").stream().findFirst().orElse(null).asLong() > System.currentTimeMillis())
+//				event.setCancelled(true);
+//	}
+//
+//	@SuppressWarnings("deprecation")
+//	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+//	public void onEntityDamageByEntitya(EntityDamageByEntityEvent event) {
+//		if (!(event.getEntity() instanceof Player) || !(event.getDamager() instanceof Player))
+//			return;
+//
+//		Player damaged = (Player) event.getEntity();
+//		Player damager = (Player) event.getDamager();
+//
+//		if (damaged.getNoDamageTicks() > damaged.getMaximumNoDamageTicks() / 2D)
+//			return;
+//
+//		double horMultiplier = 1.0;
+//		double verMultiplier = 1.0;
+//		double sprintMultiplier = damager.isSprinting() ? damaged.isSprinting() ? 0.4D : 0.8D : 0.6D;
+//		double kbMultiplier = damager.getItemInHand() == null ? 0
+//				: damager.getItemInHand().getEnchantmentLevel(Enchantment.KNOCKBACK) * 0.2D;
+//		double airMultiplier = damaged.isOnGround() ? 1 : 0.5;
+//
+//		Vector knockback = damaged.getLocation().toVector().subtract(damager.getLocation().toVector()).normalize();
+//		knockback.setX((knockback.getX() * sprintMultiplier + kbMultiplier) * horMultiplier);
+//		knockback.setY(0.44d * airMultiplier);
+//		knockback.setZ((knockback.getZ() * sprintMultiplier + kbMultiplier) * horMultiplier);
+//
+//		PlayerKnockbackEvent e = new PlayerKnockbackEvent(damaged, damager, horMultiplier, verMultiplier,
+//				sprintMultiplier, kbMultiplier, airMultiplier, knockback);
+//		Bukkit.getPluginManager().callEvent(e);
+//
+//		if (!e.isCancelled()) {
+//			damaged.setMetadata("knockback",
+//					new FixedMetadataValue(BukkitMain.getInstance(), System.currentTimeMillis() + 100));
+//			((CraftPlayer) damaged).getHandle().playerConnection.sendPacket(new PacketPlayOutEntityVelocity(
+//					damaged.getEntityId(), e.getKnockback().getX(), e.getKnockback().getY(), e.getKnockback().getZ()));
+//		}
+//	}
+
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onEntityDamageEvent(EntityDamageByEntityEvent event) {
 		if (!(event.getDamager() instanceof Player))

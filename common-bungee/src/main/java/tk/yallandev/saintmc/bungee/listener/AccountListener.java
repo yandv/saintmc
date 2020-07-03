@@ -1,8 +1,6 @@
 package tk.yallandev.saintmc.bungee.listener;
 
 import java.net.InetSocketAddress;
-import java.util.Iterator;
-import java.util.Map.Entry;
 import java.util.UUID;
 
 import net.md_5.bungee.api.CommandSender;
@@ -21,17 +19,18 @@ import net.md_5.bungee.event.EventPriority;
 import tk.yallandev.saintmc.CommonConst;
 import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.bungee.BungeeMain;
-import tk.yallandev.saintmc.bungee.account.BungeeMember;
+import tk.yallandev.saintmc.bungee.bungee.BungeeClan;
+import tk.yallandev.saintmc.bungee.bungee.BungeeMember;
 import tk.yallandev.saintmc.common.account.Member;
 import tk.yallandev.saintmc.common.account.MemberModel;
 import tk.yallandev.saintmc.common.account.configuration.LoginConfiguration.AccountType;
 import tk.yallandev.saintmc.common.ban.constructor.Ban;
+import tk.yallandev.saintmc.common.clan.Clan;
+import tk.yallandev.saintmc.common.clan.ClanModel;
+import tk.yallandev.saintmc.common.clan.event.member.MemberOnlineEvent;
 import tk.yallandev.saintmc.common.permission.Group;
-import tk.yallandev.saintmc.common.permission.RankType;
 import tk.yallandev.saintmc.common.report.Report;
 import tk.yallandev.saintmc.common.server.ServerType;
-import tk.yallandev.saintmc.common.tag.Tag;
-import tk.yallandev.saintmc.common.utils.DateUtils;
 import tk.yallandev.saintmc.common.utils.string.NameUtils;
 import tk.yallandev.saintmc.common.utils.supertype.FutureCallback;
 
@@ -68,7 +67,7 @@ public class AccountListener implements Listener {
 							 * Change the login status If the onlineMode equals false the cracked player
 							 * will able to join or if equals true the cracked player wont able to join
 							 */
-							
+
 							connection.setOnlineMode(!cracked);
 						} else {
 							event.setCancelled(true);
@@ -128,23 +127,25 @@ public class AccountListener implements Listener {
 					MemberModel basedName = CommonGeneral.getInstance().getPlayerData().loadMember(playerName);
 
 					if (basedName != null) {
-						if (!basedName.getPlayerName().equals(playerName)) {
-							event.setCancelled(true);
-							event.setCancelReason("§4§l" + CommonConst.KICK_PREFIX
-									+ "\n§f\n§fUma conta já está registrada no servidor com nickname \""
-									+ basedName.getPlayerName() + "\"!\n§f\n§6Mais informação em: §b"
-									+ CommonConst.DISCORD);
-							event.completeIntent(BungeeMain.getPlugin());
-							return;
-						}
+						if (basedName.getLoginConfiguration().getAccountType() != AccountType.ORIGINAL) {
+							if (!basedName.getPlayerName().equals(playerName)) {
+								event.setCancelled(true);
+								event.setCancelReason("§4§l" + CommonConst.KICK_PREFIX
+										+ "\n§f\n§fUma conta já está registrada no servidor com nickname \""
+										+ basedName.getPlayerName() + "\"!\n§f\n§6Mais informação em: §b"
+										+ CommonConst.DISCORD);
+								event.completeIntent(BungeeMain.getPlugin());
+								return;
+							}
 
-						if (!basedName.getUniqueId().equals(uniqueId)) {
-							event.setCancelled(true);
-							event.setCancelReason("§4§l" + CommonConst.KICK_PREFIX
-									+ "\n§f\n§fUma conta já está registrada no servidor com o mesmo nome mas com dados diferentes!\n§f\n§6Mais informação em: §b"
-									+ CommonConst.DISCORD);
-							event.completeIntent(BungeeMain.getPlugin());
-							return;
+							if (!basedName.getUniqueId().equals(uniqueId)) {
+								event.setCancelled(true);
+								event.setCancelReason("§4§l" + CommonConst.KICK_PREFIX
+										+ "\n§f\n§fUma conta já está registrada no servidor com o mesmo nome mas com dados diferentes!\n§f\n§6Mais informação em: §b"
+										+ CommonConst.DISCORD);
+								event.completeIntent(BungeeMain.getPlugin());
+								return;
+							}
 						}
 					}
 
@@ -221,6 +222,7 @@ public class AccountListener implements Listener {
 					event.setCancelled(true);
 					event.setCancelReason(BungeeMain.getInstance().getPunishManager().getBanMessage(activeBan));
 					event.completeIntent(BungeeMain.getPlugin());
+					CommonGeneral.getInstance().getMemberManager().unloadMember(member.getUniqueId());
 					return;
 				}
 
@@ -261,6 +263,7 @@ public class AccountListener implements Listener {
 						event.setCancelled(true);
 						event.setCancelReason("§4§lMOJANG\n\n§fNão foi possível salvar seu id pirata!");
 						event.completeIntent(BungeeMain.getPlugin());
+						CommonGeneral.getInstance().getMemberManager().unloadMember(member.getUniqueId());
 						return;
 					}
 				}
@@ -292,6 +295,32 @@ public class AccountListener implements Listener {
 					CommonGeneral.getInstance().getPlayerData().updateMember(member, "punishmentHistory");
 					event.setCancelled(true);
 					event.setCancelReason(BungeeMain.getInstance().getPunishManager().getBanMessage(ban));
+					event.completeIntent(BungeeMain.getPlugin());
+					CommonGeneral.getInstance().getMemberManager().unloadMember(member.getUniqueId());
+					return;
+				}
+
+				if (member.getClanUniqueId() != null) {
+					Clan clan = CommonGeneral.getInstance().getClanManager().getClan(member.getClanUniqueId());
+
+					if (clan == null) {
+						ClanModel clanModel = CommonGeneral.getInstance().getClanData()
+								.loadClan(member.getClanUniqueId());
+
+						if (clanModel == null) {
+							member.setClanUniqueId(null);
+						} else {
+							clan = new BungeeClan(clanModel);
+							CommonGeneral.getInstance().getClanManager().load(member.getClanUniqueId(), clan);
+							CommonGeneral.getInstance().debug("Clan " + clan.getClanName() + " has been loaded!");
+						}
+					}
+
+					if (clan != null) {
+						clan.updateMember(member);
+
+						clan.callEvent(new MemberOnlineEvent(clan, member, true));
+					}
 				}
 
 				Report report = CommonGeneral.getInstance().getReportManager().getReport(uniqueId);
@@ -308,10 +337,6 @@ public class AccountListener implements Listener {
 				event.completeIntent(BungeeMain.getPlugin());
 			}
 		});
-	}
-	
-	public static void main(String[] args) {
-		System.out.println(System.currentTimeMillis() + (1000l * 60l * 60l * 24l * 3l));
 	}
 
 	@EventHandler(priority = -127)
@@ -332,29 +357,6 @@ public class AccountListener implements Listener {
 		BungeeMember member = (BungeeMember) CommonGeneral.getInstance().getMemberManager()
 				.getMember(event.getPlayer().getUniqueId());
 		member.setProxiedPlayer(event.getPlayer());
-		
-		if (!member.isOnCooldown("default-vip")) {
-			Iterator<Entry<RankType, Long>> iterator = member.getRanks().entrySet().iterator();
-
-			while (iterator.hasNext()) {
-				Entry<RankType, Long> entry = iterator.next();
-
-				if (!DateUtils.isForever(entry.getValue())) {
-					entry.setValue(entry.getValue() + (1000l * 60l * 60l * 24l * 3l));
-					member.sendMessage("§a§l> §fVocê ganhou mais 3 dias de "
-							+ Tag.valueOf(entry.getKey().name()).getPrefix() + "§f!");
-				}
-			}
-
-			if (!member.getRanks().containsKey(RankType.SAINT)) {
-				member.getRanks().put(RankType.SAINT, 1593298791761l);
-				member.saveRanks();
-			}
-			
-			member.sendMessage("§a§l> §fVocê recebeu vip " + Tag.SAINT.getPrefix() + "§f por §a"
-					+ DateUtils.getTime(1593298791761l) + "§f!");
-			member.setCooldown("default-vip", System.currentTimeMillis() + (1000 * 60 * 60 * 24 * 300));
-		}
 	}
 
 	@EventHandler
@@ -396,10 +398,19 @@ public class AccountListener implements Listener {
 				if (member != null) {
 					member.setLeaveData();
 
-					UUID uniqueId = proxied.getUniqueId();
+					CommonGeneral.getInstance().getPlayerData().cacheMember(member.getUniqueId());
+					CommonGeneral.getInstance().getMemberManager().unloadMember(member.getUniqueId());
 
-					CommonGeneral.getInstance().getPlayerData().cacheMember(uniqueId);
-					CommonGeneral.getInstance().getMemberManager().unloadMember(uniqueId);
+					Clan clan = CommonGeneral.getInstance().getClanManager().getClan(member.getClanUniqueId());
+
+					if (clan != null) {
+						if (clan.getOnlineMembers().size() != 0) {
+							clan.callEvent(new MemberOnlineEvent(clan, member, false));
+						} else {
+							CommonGeneral.getInstance().debug("Clan " + clan.getClanName() + " has been unloaded!");
+							CommonGeneral.getInstance().getClanManager().unload(clan.getUniqueId());
+						}
+					}
 				}
 			}
 		});

@@ -14,9 +14,9 @@ import org.bukkit.scoreboard.Team;
 import lombok.Getter;
 import lombok.Setter;
 import tk.yallandev.saintmc.CommonGeneral;
-import tk.yallandev.saintmc.bukkit.account.BukkitMember;
 import tk.yallandev.saintmc.bukkit.api.scoreboard.Score;
 import tk.yallandev.saintmc.bukkit.api.scoreboard.Scoreboard;
+import tk.yallandev.saintmc.bukkit.bukkit.BukkitMember;
 
 /**
  * 

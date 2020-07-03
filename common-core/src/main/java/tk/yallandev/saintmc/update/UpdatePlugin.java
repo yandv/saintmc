@@ -23,7 +23,8 @@ public class UpdatePlugin {
 			CommonGeneral.getInstance().debug("[Common] The plugin " + pluginInfo.getPluginName() + " need update!");
 
 			if (pluginInfo.update(key)) {
-				shutdown.stop();
+//				shutdown.stop();
+				System.exit(0);
 				return true;
 			}
 		}

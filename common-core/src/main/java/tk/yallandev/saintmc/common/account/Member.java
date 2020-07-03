@@ -1,7 +1,9 @@
 package tk.yallandev.saintmc.common.account;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
@@ -13,13 +15,16 @@ import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.common.account.configuration.AccountConfiguration;
 import tk.yallandev.saintmc.common.account.configuration.LoginConfiguration;
 import tk.yallandev.saintmc.common.ban.PunishmentHistory;
+import tk.yallandev.saintmc.common.clan.Clan;
+import tk.yallandev.saintmc.common.command.CommandSender;
+import tk.yallandev.saintmc.common.medals.Medal;
 import tk.yallandev.saintmc.common.permission.Group;
 import tk.yallandev.saintmc.common.permission.RankType;
 import tk.yallandev.saintmc.common.server.ServerType;
 import tk.yallandev.saintmc.common.tag.Tag;
 
 @Getter
-public abstract class Member {
+public abstract class Member implements CommandSender {
 
 	/*
 	 * Player Information
@@ -58,6 +63,9 @@ public abstract class Member {
 	private String discordName;
 	private DiscordType discordType;
 
+	private UUID clanUniqueId;
+	private UUID partyId;
+
 	/*
 	 * Permission Information
 	 * 
@@ -69,6 +77,9 @@ public abstract class Member {
 
 	private Tag tag;
 	private boolean chroma;
+
+	private List<Medal> medalList;
+	private Medal medal;
 
 	/*
 	 * Status Information
@@ -103,7 +114,7 @@ public abstract class Member {
 	private ServerType lastServerType;
 
 	private boolean online = false;
-
+	
 	public Member(MemberModel memberModel) {
 		playerName = memberModel.getPlayerName();
 		uniqueId = memberModel.getUniqueId();
@@ -122,10 +133,17 @@ public abstract class Member {
 		discordName = memberModel.getDiscordName();
 		discordType = memberModel.getDiscordType();
 
+		clanUniqueId = memberModel.getClanUniqueId();
+
 		group = memberModel.getGroup();
 		ranks = memberModel.getRanks();
 		permissions = memberModel.getPermissions();
+
 		tag = memberModel.getTag();
+		chroma = memberModel.isChroma();
+
+		medalList = memberModel.getMedalList();
+		medal = memberModel.getMedal();
 
 		money = memberModel.getMoney();
 		xp = memberModel.getXp();
@@ -166,7 +184,10 @@ public abstract class Member {
 		this.group = Group.MEMBRO;
 		this.permissions = new HashMap<>();
 		this.ranks = new HashMap<>();
+
 		this.tag = Tag.MEMBRO;
+
+		this.medalList = new ArrayList<>();
 
 		this.league = League.UNRANKED;
 		this.reputation = 5;
@@ -183,13 +204,45 @@ public abstract class Member {
 		this.lastServerType = ServerType.NONE;
 	}
 
+	public boolean hasParty() {
+		return this.partyId != null;
+	}
+	
+	public void setClanUniqueId(UUID clanUniqueId) {
+		this.clanUniqueId = clanUniqueId;
+		save("clanUniqueId");
+	}
+
+	public Clan getClan() {
+		if (this.clanUniqueId == null)
+			return null;
+
+		return CommonGeneral.getInstance().getClanManager().getClan(clanUniqueId);
+	}
+
+	public boolean hasClan() {
+		return this.clanUniqueId != null;
+	}
+
+	public void setMedal(Medal medal) {
+		this.medal = medal;
+		save("medal");
+	}
+
+	public void addMedal(Medal medal) {
+		if (!this.medalList.contains(medal)) {
+			this.medalList.add(medal);
+			save("medalList");
+		}
+	}
+
 	/*
 	 * Fake
 	 */
 
 	public void setFakeName(String fakeName) {
 		this.fakeName = fakeName;
-		CommonGeneral.getInstance().getPlayerData().updateMember(this, "fakeName");
+		save("fakeName");
 	}
 
 	public boolean isUsingFake() {
@@ -220,12 +273,12 @@ public abstract class Member {
 
 	public void setCooldown(String cooldownKey, long cooldownTime) {
 		cooldown.put(cooldownKey.toLowerCase(), cooldownTime);
-		CommonGeneral.getInstance().getPlayerData().updateMember(this, "cooldown");
+		save("cooldown");
 	}
-	
+
 	public void setCooldown(String cooldownKey, int cooldownTime) {
 		cooldown.put(cooldownKey.toLowerCase(), System.currentTimeMillis() + (1000 * cooldownTime));
-		CommonGeneral.getInstance().getPlayerData().updateMember(this, "cooldown");
+		save("cooldown");
 	}
 
 	/*
@@ -243,9 +296,7 @@ public abstract class Member {
 		this.discordId = discordId;
 		this.discordName = discordName;
 		this.discordType = discordId == 0l ? DiscordType.DELINKED : DiscordType.NORMAL;
-		CommonGeneral.getInstance().getPlayerData().updateMember(this, "discordId");
-		CommonGeneral.getInstance().getPlayerData().updateMember(this, "discordName");
-		CommonGeneral.getInstance().getPlayerData().updateMember(this, "discordType");
+		save("discordId", "discordName", "discordType");
 	}
 
 	public String getDiscordName() {
@@ -258,7 +309,12 @@ public abstract class Member {
 
 	public void setDiscordType(DiscordType discordType) {
 		this.discordType = discordType;
-		CommonGeneral.getInstance().getPlayerData().updateMember(this, "discordType");
+		save("discordType");
+	}
+
+	@Override
+	public String getName() {
+		return this.playerName;
 	}
 
 	/*
@@ -267,15 +323,15 @@ public abstract class Member {
 
 	public boolean setTag(Tag tag) {
 		this.tag = tag;
-		CommonGeneral.getInstance().getPlayerData().updateMember(this, "tag");
+		save("tag");
 		return true;
 	}
 
 	public void setChroma(boolean chroma) {
 		this.chroma = chroma;
-		CommonGeneral.getInstance().getPlayerData().updateMember(this, "chroma");
+		save("chroma");
 	}
-	
+
 	public boolean isLastServer(ServerType serverType) {
 		return this.serverType == serverType;
 	}
@@ -303,12 +359,14 @@ public abstract class Member {
 
 	public void setGroup(Group group) {
 		this.group = group;
-		CommonGeneral.getInstance().getPlayerData().updateMember(this, "group");
+		save("group");
 		setChroma(false);
 	}
 
 	public boolean hasGroupPermission(Group groupToUse) {
 		if (getServerGroup() == Group.YOUTUBERPLUS)
+			return Group.TRIAL.ordinal() >= groupToUse.ordinal();
+		else if (getServerGroup() == Group.STREAMER)
 			return Group.MODPLUS.ordinal() >= groupToUse.ordinal();
 		return getServerGroup().ordinal() >= groupToUse.ordinal();
 	}
@@ -334,7 +392,7 @@ public abstract class Member {
 	}
 
 	public void saveRanks() {
-		CommonGeneral.getInstance().getPlayerData().updateMember(this, "ranks");
+		save("ranks");
 	}
 
 	/*
@@ -344,18 +402,18 @@ public abstract class Member {
 	public void setReputation(int reputation) {
 		this.reputation = reputation;
 
-		if (this.reputation < -10)
-			this.reputation = -10;
+		if (this.reputation < -15)
+			this.reputation = -15;
 
-		if (this.reputation > 20)
-			this.reputation = 20;
+		if (this.reputation > 30)
+			this.reputation = 30;
 
-		CommonGeneral.getInstance().getPlayerData().updateMember(this, "reputation");
+		save("reputation");
 	}
 
 	public void setLeague(League league) {
 		this.league = league;
-		CommonGeneral.getInstance().getPlayerData().updateMember(this, "league");
+		save("league");
 	}
 
 	public void setXp(int xp) {
@@ -364,7 +422,7 @@ public abstract class Member {
 		if (this.xp < 0)
 			this.xp = 0;
 
-		CommonGeneral.getInstance().getPlayerData().updateMember(this, "xp");
+		save("xp");
 	}
 
 	public int addXp(int xp) {
@@ -399,8 +457,11 @@ public abstract class Member {
 	}
 
 	public void addPermission(String string) {
+		if (permissions.containsKey(string.toLowerCase()))
+			return;
+
 		permissions.put(string.toLowerCase(), -1l);
-		CommonGeneral.getInstance().getPlayerData().updateMember(this, "permissions");
+		save("permissions");
 	}
 
 	public void addMoney(int money) {
@@ -414,14 +475,13 @@ public abstract class Member {
 	public void setServerId(String serverId) {
 		this.lastServerId = this.serverId;
 		this.serverId = serverId;
-		CommonGeneral.getInstance().getPlayerData().updateMember(this, "serverId");
-		CommonGeneral.getInstance().getPlayerData().updateMember(this, "lastServerId");
+		save("serverId", "lastServerId");
 	}
 
 	public void setServerType(ServerType serverType) {
 		this.lastServerType = this.serverType;
 		this.serverType = serverType;
-		CommonGeneral.getInstance().getPlayerData().updateMember(this, "lastServerType");
+		save("lastServerType");
 	}
 
 	/*
@@ -430,7 +490,7 @@ public abstract class Member {
 
 	public void setOnline(boolean online) {
 		this.online = online;
-		CommonGeneral.getInstance().getPlayerData().updateMember(this, "online");
+		save("online");
 	}
 
 	/*
@@ -451,8 +511,7 @@ public abstract class Member {
 	public void updateTime() {
 		this.joinTime = System.currentTimeMillis();
 		this.lastLogin = System.currentTimeMillis();
-		CommonGeneral.getInstance().getPlayerData().updateMember(this, "joinTime");
-		CommonGeneral.getInstance().getPlayerData().updateMember(this, "lastLogin");
+		save("joinTime", "lastLogin");
 	}
 
 	public void setJoinData(String playerName, String hostString) {
@@ -463,36 +522,29 @@ public abstract class Member {
 		this.accountConfiguration.setPlayer(this);
 		this.loginConfiguration.setPlayer(this);
 
-		CommonGeneral.getInstance().getPlayerData().updateMember(this, "playerName");
-		CommonGeneral.getInstance().getPlayerData().updateMember(this, "lastIpAddress");
-		CommonGeneral.getInstance().getPlayerData().updateMember(this, "online");
+		save("playerName", "lastIpAddress", "online");
 	}
 
 	public void connect(String serverId, ServerType type) {
 		checkRanks();
-		
+
 		if (this.serverId != null && !this.serverId.isEmpty())
-			this.lastServerId = this.serverId;
-		
+			this.lastServerId = this.serverId + "";
+
 		if (this.serverType != null)
 			this.lastServerType = this.serverType;
-		
+
 		this.serverId = serverId;
 		this.serverType = type;
-		
-		CommonGeneral.getInstance().getPlayerData().updateMember(this, "serverId");
-		CommonGeneral.getInstance().getPlayerData().updateMember(this, "serverType");
-		CommonGeneral.getInstance().getPlayerData().updateMember(this, "lastServerId");
-		CommonGeneral.getInstance().getPlayerData().updateMember(this, "lastServerType");
+
+		save("serverId", "serverType", "lastServerId", "lastServerType");
 	}
 
 	public void setLeaveData() {
 		this.online = false;
 		this.onlineTime = onlineTime + (System.currentTimeMillis() - lastLogin);
 
-		CommonGeneral.getInstance().getPlayerData().updateMember(this, "online");
-		CommonGeneral.getInstance().getPlayerData().updateMember(this, "lastLogin");
-		CommonGeneral.getInstance().getPlayerData().updateMember(this, "onlineTime");
+		save("online", "lastLogin", "onlineTime");
 	}
 
 	public void checkRanks() {
@@ -516,6 +568,11 @@ public abstract class Member {
 			if (save)
 				saveRanks();
 		}
+	}
+
+	public void save(String... fieldName) {
+		for (String field : fieldName)
+			CommonGeneral.getInstance().getPlayerData().updateMember(this, field);
 	}
 
 	public abstract void sendMessage(String message);

@@ -3,13 +3,16 @@ package tk.yallandev.saintmc.bungee.command.register;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
+import tk.yallandev.saintmc.CommonConst;
 import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.bungee.BungeeMain;
 import tk.yallandev.saintmc.bungee.command.BungeeCommandArgs;
 import tk.yallandev.saintmc.bungee.event.BlockAddressEvent;
+import tk.yallandev.saintmc.bungee.event.ClearVerifyingEvent;
 import tk.yallandev.saintmc.bungee.event.UnblockAddressEvent;
 import tk.yallandev.saintmc.common.account.Member;
 import tk.yallandev.saintmc.common.command.CommandArgs;
@@ -63,11 +66,14 @@ public class ServerCommand implements CommandClass {
 			}
 
 			if (args[0].equalsIgnoreCase("add")) {
-				ProxyServer.getInstance().getPluginManager().callEvent(new BlockAddressEvent(args[0]));
-				sender.sendMessage("§aO ip " + args[0] + " foi bloqueado!");
+				ProxyServer.getInstance().getPluginManager().callEvent(new BlockAddressEvent(args[1]));
+				sender.sendMessage("§aO ip " + args[1] + " foi bloqueado!");
 			} else if (args[0].equalsIgnoreCase("remove")) {
-				ProxyServer.getInstance().getPluginManager().callEvent(new UnblockAddressEvent(args[0]));
-				sender.sendMessage("§aO ip " + args[0] + " foi desbloqueado!");
+				ProxyServer.getInstance().getPluginManager().callEvent(new UnblockAddressEvent(args[1]));
+				sender.sendMessage("§aO ip " + args[1] + " foi desbloqueado!");
+			} else if (args[0].equalsIgnoreCase("clear")) {
+				ProxyServer.getInstance().getPluginManager().callEvent(new ClearVerifyingEvent());
+				sender.sendMessage("§aOs ips foram limpos!");
 			}
 		}
 	}
@@ -78,7 +84,8 @@ public class ServerCommand implements CommandClass {
 		String[] args = cmdArgs.getArgs();
 
 		if (args.length <= 1) {
-			sender.sendMessage(" §e* §fUse §a/" + cmdArgs.getLabel() + " <server>§f para enviar a algum servidor.");
+			sender.sendMessage(" §e* §fUse §a/" + cmdArgs.getLabel()
+					+ " <all:current:player>§f para enviar alguém a algum servidor.");
 			return;
 		}
 
@@ -94,9 +101,7 @@ public class ServerCommand implements CommandClass {
 			sender.sendMessage(
 					" §a* §fVocê enviou §atodos jogadores §fpara o servidor §a" + server.getServerId() + "§f!");
 			return;
-		}
-
-		if (args[0].equalsIgnoreCase("current")) {
+		} else if (args[0].equalsIgnoreCase("current")) {
 			if (cmdArgs.isPlayer()) {
 				ProxiedServer server = BungeeMain.getInstance().getServerManager().getServer(args[1]);
 
@@ -169,14 +174,14 @@ public class ServerCommand implements CommandClass {
 							+ " para se conectar novamente!");
 			return;
 		}
-		
+
 		if (sender.isOnCooldown("connect-command")) {
 			sender.sendMessage(
 					"§cEspere mais " + DateUtils.formatTime(sender.getCooldown("connect-command"), DECIMAL_FORMAT)
 							+ " para se conectar novamente!");
 			return;
 		}
-		
+
 		String[] args = cmdArgs.getArgs();
 
 		if (!cmdArgs.isPlayer()) {
@@ -186,14 +191,16 @@ public class ServerCommand implements CommandClass {
 
 		if (args.length == 0) {
 			sender.sendMessage(
-					" §e* §fUse §a/" + cmdArgs.getLabel() + " <player>§f para conectar-se a algum servidor.");
+					" §e* §fUse §a/" + cmdArgs.getLabel() + " <server>§f para conectar-se a algum servidor.");
 			return;
 		}
 
-		ProxiedServer server = BungeeMain.getInstance().getServerManager().getServer(args[0]);
+		String serverId = args[0].endsWith(CommonConst.IP_END) ? args[0] : args[0] + "." + CommonConst.IP_END;
+
+		ProxiedServer server = BungeeMain.getInstance().getServerManager().getServer(serverId);
 
 		if (server == null || server.getServerInfo() == null) {
-			sender.sendMessage(" §c* §fO servidor §a" + args[0] + "§f não existe!");
+			sender.sendMessage(" §c* §fO servidor §a" + serverId + "§f não existe!");
 			return;
 		}
 
@@ -211,7 +218,7 @@ public class ServerCommand implements CommandClass {
 							+ " para se conectar novamente!");
 			return;
 		}
-		
+
 		String[] args = cmdArgs.getArgs();
 
 		if (!cmdArgs.isPlayer()) {
@@ -223,9 +230,9 @@ public class ServerCommand implements CommandClass {
 			sender.sendMessage(" §e* §fUse §a/" + cmdArgs.getLabel() + " <type>§f para entrar em algum servidor.");
 			return;
 		}
-		
+
 		sender.setCooldown("connect-command", 4);
-		
+
 		switch (args[0].toLowerCase()) {
 		case "hg":
 		case "hungergames": {
@@ -252,11 +259,22 @@ public class ServerCommand implements CommandClass {
 			break;
 		}
 		case "peak": {
-			ProxiedServer server = BungeeMain.getInstance().getServerManager().getBalancer(ServerType.PRIVATE_SERVER)
-					.next();
+			ProxiedServer server = BungeeMain.getInstance().getServerManager().getBalancer(ServerType.PEAK).next();
 
 			if (server == null || server.getServerInfo() == null) {
-				sender.sendMessage("§cNenhum servidor de hungergames disponivel!");
+				sender.sendMessage("§cNenhum servidor de peak disponivel!");
+				return;
+			}
+
+			cmdArgs.getPlayer().connect(server.getServerInfo());
+			break;
+		}
+		case "clanxclan":
+		case "cxc": {
+			ProxiedServer server = BungeeMain.getInstance().getServerManager().getBalancer(ServerType.CLANXCLAN).next();
+
+			if (server == null || server.getServerInfo() == null) {
+				sender.sendMessage("§cNenhum servidor de Clan x Clan disponivel!");
 				return;
 			}
 
@@ -296,12 +314,13 @@ public class ServerCommand implements CommandClass {
 	@Completer(name = "server", aliases = { "go", "connect", "ir" })
 	public List<String> serverCompleter(CommandArgs cmdArgs) {
 		if (cmdArgs.getArgs().length == 1) {
-			List<String> tagList = new ArrayList<>();
+			List<String> serverList = new ArrayList<>();
 
-			for (ProxiedServer server : BungeeMain.getInstance().getServerManager().getServers())
-				tagList.add(server.getServerId());
+			for (ProxiedServer server : BungeeMain.getInstance().getServerManager().getServers().stream()
+					.sorted((o1, o2) -> o1.getServerType().compareTo(o2.getServerType())).collect(Collectors.toList()))
+				serverList.add(server.getServerId());
 
-			return tagList;
+			return serverList;
 		}
 
 		return new ArrayList<>();

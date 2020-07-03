@@ -1,6 +1,7 @@
 package tk.yallandev.saintmc.common.report;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
 
@@ -15,20 +16,20 @@ public class Report {
 
 	private String playerName;
 	private UUID uniqueId;
-	
-	private HashMap<UUID, ReportInformation> playersReason;
+
+	private Map<UUID, ReportInformation> playersReason;
 	private int reportLevel;
 	private long reportExpire = Long.MIN_VALUE;
-	
+
 	private UUID lastReport = null;
-	
+
 	@Getter
 	private boolean online = false;
 
 	public Report(UUID uniqueId, String playerName) {
 		playersReason = new HashMap<>();
 		reportLevel = 0;
-		
+
 		this.playerName = playerName;
 		this.uniqueId = uniqueId;
 		this.online = true;
@@ -41,48 +42,48 @@ public class Report {
 	public int getReportLevel() {
 		return reportLevel;
 	}
-	
+
 	public long getLastReportTime() {
 		if (lastReport != null) {
 			return getPlayersReason().get(lastReport).getReportTime();
 		}
-		
+
 		return Long.MIN_VALUE;
 	}
-	
+
 	public ReportInformation getLastReport() {
 		if (lastReport != null) {
 			return getPlayersReason().get(lastReport);
 		}
-		
+
 		return null;
 	}
-	
+
 	public boolean isExpired() {
-		return reportExpire < getLastReportTime();
+		return reportExpire < System.currentTimeMillis();
 	}
 
 	public void setReportLevel(int reportLevel) {
 		this.reportLevel = reportLevel / playersReason.size();
 		CommonGeneral.getInstance().getReportData().updateReport(this, "reportLevel");
 	}
-	
+
 	public void setOnline(boolean online) {
 		this.online = online;
 		CommonGeneral.getInstance().getReportData().updateReport(this, "online");
 	}
-	
+
 	public void setPlayerName(String playerName) {
 		if (this.playerName != playerName) {
 			this.playerName = playerName;
 			CommonGeneral.getInstance().getReportData().updateReport(this, "playerName");
 		}
 	}
-	
+
 	public boolean addReport(UUID playerReporting, String playerName, int reportLevel, String reason) {
 		if (playersReason.containsKey(playerReporting))
 			return false;
-		
+
 		playersReason.put(playerReporting, new ReportInformation(playerName, reason, reportLevel));
 		reportExpire = System.currentTimeMillis() + (1000 * 60 * 60 * 12);
 		lastReport = playerReporting;
@@ -97,76 +98,83 @@ public class Report {
 		CommonGeneral.getInstance().getReportData().deleteReport(getPlayerUniqueId());
 		CommonGeneral.getInstance().getReportManager().unloadReport(getPlayerUniqueId());
 	}
-	
+
 	public void banPlayer() {
-		
 		CommonGeneral.getInstance().getCommonPlatform().runAsync(new Runnable() {
-			
+
 			@Override
 			public void run() {
-				
+
 				for (Entry<UUID, ReportInformation> entry : playersReason.entrySet()) {
 					Member member = CommonGeneral.getInstance().getMemberManager().getMember(entry.getKey());
-					
+
 					if (member == null) {
-						MemberModel memberModel = CommonGeneral.getInstance().getPlayerData().loadMember(entry.getKey());
-						
+						MemberModel memberModel = CommonGeneral.getInstance().getPlayerData()
+								.loadMember(entry.getKey());
+
 						if (memberModel == null)
 							continue;
-						
+
 						member = new MemberVoid(memberModel);
 						memberModel = null;
 					}
-					
+
 					member.sendMessage("§a§l> §fO jogador §a" + getPlayerName() + "§f foi banido do servidor!");
-					member.sendMessage("§a§l> §fVocê ganhou §a20 xp§f, §650 coins§f e §d2 pontos de reputação§f por ter reportado ele!");
+					member.sendMessage(
+							"§a§l> §fVocê ganhou §a20 xp§f, §650 coins§f e §d1 pontos de reputação§f por ter reportado ele!");
 					member.sendMessage("§a§l> §fObrigado por ajudar a comunidade do §aSaintMC§f!");
-					member.setReputation(member.getReputation() + 2);
+					member.setReputation(member.getReputation() + 1);
+					member.addXp(20);
+					member.addMoney(50);
 					member = null;
 				}
-				
+
 			}
 		});
-		
+
 		CommonGeneral.getInstance().getReportData().deleteReport(getPlayerUniqueId());
 		CommonGeneral.getInstance().getReportManager().unloadReport(getPlayerUniqueId());
 	}
-	
+
 	public void mutePlayer() {
 		CommonGeneral.getInstance().getCommonPlatform().runAsync(new Runnable() {
-			
+
 			@Override
 			public void run() {
-				
+
 				for (Entry<UUID, ReportInformation> entry : playersReason.entrySet()) {
 					Member member = CommonGeneral.getInstance().getMemberManager().getMember(entry.getKey());
-					
+
 					if (member == null) {
-						MemberModel memberModel = CommonGeneral.getInstance().getPlayerData().loadMember(entry.getKey());
-						
+						MemberModel memberModel = CommonGeneral.getInstance().getPlayerData()
+								.loadMember(entry.getKey());
+
 						if (memberModel == null)
 							continue;
-						
+
 						member = new MemberVoid(memberModel);
 						memberModel = null;
 					}
-					
+
 					member.sendMessage("§a§l> §fO jogador §a" + getPlayerName() + "§f foi punido do servidor!");
-					member.sendMessage("§a§l> §fVocê ganhou §a20 xp§f, §a50 money§f e §d1 ponto de reputação§f por ter reportado ele!");
+					member.sendMessage(
+							"§a§l> §fVocê ganhou §a20 xp§f, §a50 money§f e §d1 ponto de reputação§f por ter reportado ele!");
 					member.sendMessage("§a§l> §fObrigado por ajudar a comunidade do §aSaintMC§f!");
 					member.setReputation(member.getReputation() + 1);
 					member = null;
 				}
-				
+
 			}
 		});
-		
+
 		CommonGeneral.getInstance().getReportData().deleteReport(getPlayerUniqueId());
 		CommonGeneral.getInstance().getReportManager().unloadReport(getPlayerUniqueId());
 	}
-	
+
 	public void denyPlayer() {
-//		DataReport.denyReport(this);
+		
+		
+		
 		CommonGeneral.getInstance().getReportData().deleteReport(getPlayerUniqueId());
 		CommonGeneral.getInstance().getReportManager().unloadReport(getPlayerUniqueId());
 	}
@@ -192,7 +200,7 @@ public class Report {
 		public String getReason() {
 			return reason;
 		}
-		
+
 		public int getReportLevel() {
 			return reportLevel;
 		}

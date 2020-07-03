@@ -5,7 +5,6 @@ tk\yallandev\saintmc\bungee\listener\ConnectionListener$1.class
 tk\yallandev\saintmc\discord\reaction\MessageReaction.class
 tk\yallandev\saintmc\bungee\controller\StoreController$1$1.class
 tk\yallandev\saintmc\bungee\networking\redis\BungeePubSubHandler$7.class
-tk\yallandev\saintmc\bungee\account\BungeeMember.class
 tk\yallandev\saintmc\discord\command\DiscordCommandFramework.class
 tk\yallandev\saintmc\discord\command\register\DiscordCommand.class
 tk\yallandev\saintmc\bungee\BungeeMain$2.class
@@ -27,9 +26,11 @@ tk\yallandev\saintmc\bungee\listener\ChatListener.class
 tk\yallandev\saintmc\bungee\networking\redis\BungeePubSubHandler$6.class
 tk\yallandev\saintmc\bungee\networking\redis\BungeePubSubHandler.class
 tk\yallandev\saintmc\bungee\controller\BungeeServerManager.class
+tk\yallandev\saintmc\bungee\event\ClearVerifyingEvent.class
 tk\yallandev\saintmc\discord\listener\BoosterListener.class
 tk\yallandev\saintmc\bungee\listener\LoginListener.class
 tk\yallandev\saintmc\bungee\listener\PacketListener.class
+tk\yallandev\saintmc\bungee\command\register\ClanCommand.class
 tk\yallandev\saintmc\bungee\controller\StoreController$1.class
 tk\yallandev\saintmc\bungee\command\register\GroupCommand$1.class
 tk\yallandev\saintmc\bungee\command\register\ReportCommand.class
@@ -39,6 +40,7 @@ tk\yallandev\saintmc\bungee\networking\redis\BungeePubSubHandler$9.class
 tk\yallandev\saintmc\discord\guild\GuildConfiguration.class
 tk\yallandev\saintmc\discord\reaction\ReactionEnum.class
 tk\yallandev\saintmc\bungee\controller\StoreController$Order.class
+tk\yallandev\saintmc\bungee\bungee\BungeeMember.class
 tk\yallandev\saintmc\bungee\command\register\StaffCommand.class
 tk\yallandev\saintmc\bungee\BungeeMain$3.class
 tk\yallandev\saintmc\bungee\command\register\BanCommand.class
@@ -50,6 +52,7 @@ tk\yallandev\saintmc\discord\utils\MessageUtils.class
 tk\yallandev\saintmc\bungee\listener\MessageListener.class
 tk\yallandev\saintmc\bungee\networking\redis\BungeePubSubHandler$5.class
 tk\yallandev\saintmc\discord\DiscordMain.class
+tk\yallandev\saintmc\bungee\bungee\BungeeClan.class
 tk\yallandev\saintmc\discord\reaction\Reaction.class
 tk\yallandev\saintmc\discord\command\DiscordCommandFramework$CommandRegister.class
 tk\yallandev\saintmc\bungee\networking\redis\BungeePubSubHandler$2.class

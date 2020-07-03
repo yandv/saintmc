@@ -37,8 +37,6 @@ public class ReportInventory {
 			reportPlayer = new MemberVoid(
 					CommonGeneral.getInstance().getPlayerData().loadMember(report.getPlayerUniqueId()));
 
-		System.out.println((report.getReportExpire() - System.currentTimeMillis()) / 1000);
-
 		menu.setItem(22, new ItemBuilder().type(Material.SKULL_ITEM).durability(3)
 				.lore("", "§7Status: " + (reportPlayer.isOnline() ? "§aOnline no momento" : "§cOffline no momento"),
 						"§7Servidor: §f" + reportPlayer.getServerId(),

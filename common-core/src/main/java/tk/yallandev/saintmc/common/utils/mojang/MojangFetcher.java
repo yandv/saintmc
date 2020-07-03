@@ -55,13 +55,11 @@ public class MojangFetcher {
 			try {
 				return cacheUuid.get(playerName);
 			} catch (Exception ex) {
-				ex.printStackTrace();
+				return null;
 			}
 		} else {
 			return UUIDParser.parse(playerName);
 		}
-
-		return null;
 	}
 
 	public static void main(String[] args) {
@@ -124,27 +122,30 @@ public class MojangFetcher {
 			try {
 				futureCallback.result(cache.get(playerName), null);
 			} catch (ExecutionException e) {
-				e.printStackTrace();
 				futureCallback.result(false, e);
 			}
 			return;
 		}
 
-		CommonConst.DEFAULT_WEB.doAsyncRequest(CommonConst.MOJANG_FETCHER + "?name=" + playerName, Method.GET,
-				new FutureCallback<JsonElement>() {
+		try {
+			CommonConst.DEFAULT_WEB.doRequest(CommonConst.MOJANG_FETCHER + "?name=" + playerName, Method.GET,
+					new FutureCallback<JsonElement>() {
 
-					@Override
-					public void result(JsonElement result, Throwable error) {
-						if (error == null) {
-							boolean cracked = result.getAsJsonObject().get("cracked").getAsBoolean();
-							futureCallback.result(cracked, error);
-							cache.put(playerName, cracked);
-						} else {
-							futureCallback.result(false, error);
+						@Override
+						public void result(JsonElement result, Throwable error) {
+							if (error == null) {
+								boolean cracked = result.getAsJsonObject().get("cracked").getAsBoolean();
+								futureCallback.result(cracked, error);
+								cache.put(playerName, cracked);
+							} else {
+								futureCallback.result(false, error);
+							}
 						}
-					}
 
-				});
+					});
+		} catch (Exception e) {
+			futureCallback.result(false, e);
+		}
 	}
 
 }

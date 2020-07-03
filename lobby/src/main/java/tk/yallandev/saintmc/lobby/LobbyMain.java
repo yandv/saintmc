@@ -14,7 +14,6 @@ import tk.yallandev.saintmc.bukkit.BukkitMain;
 import tk.yallandev.saintmc.bukkit.command.BukkitCommandFramework;
 import tk.yallandev.saintmc.bukkit.listener.register.MoveListener;
 import tk.yallandev.saintmc.common.backend.database.redis.RedisDatabase.PubSubListener;
-import tk.yallandev.saintmc.common.command.CommandLoader;
 import tk.yallandev.saintmc.common.server.ServerType;
 import tk.yallandev.saintmc.lobby.collectable.Collectables;
 import tk.yallandev.saintmc.lobby.listener.CharacterListener;
@@ -70,7 +69,7 @@ public class LobbyMain extends JavaPlugin {
 
 		if (CommonGeneral.getInstance().isLoginServer())
 			Bukkit.getPluginManager().registerEvents(new LoginListener(), getInstance());
-		
+
 		for (Entry<String, Map<String, String>> entry : CommonGeneral.getInstance().getServerData().loadServers()
 				.entrySet()) {
 			try {
@@ -100,8 +99,7 @@ public class LobbyMain extends JavaPlugin {
 
 		getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
 
-		new CommandLoader(new BukkitCommandFramework(getInstance()))
-				.loadCommandsFromPackage("tk.yallandev.saintmc.lobby.command");
+		BukkitCommandFramework.INSTANCE.loadCommands(this.getClass(), "tk.yallandev.saintmc.lobby.command");
 
 		/*
 		 * viadagem que o allan faz

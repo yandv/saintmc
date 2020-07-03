@@ -15,6 +15,7 @@ import tk.yallandev.saintmc.common.backend.data.ServerData;
 import tk.yallandev.saintmc.common.backend.data.StatusData;
 import tk.yallandev.saintmc.common.backend.database.mongodb.MongoConnection;
 import tk.yallandev.saintmc.common.backend.database.redis.RedisDatabase;
+import tk.yallandev.saintmc.common.command.CommandSender;
 import tk.yallandev.saintmc.common.data.impl.PlayerDataImpl;
 import tk.yallandev.saintmc.common.data.impl.ReportDataImpl;
 import tk.yallandev.saintmc.common.data.impl.ServerDataImpl;
@@ -54,6 +55,11 @@ public class Test {
 			
 			@Override
 			public <T> T getExactPlayerByName(String playerName, Class<T> clazz) {
+				return null;
+			}
+
+			@Override
+			public CommandSender getConsoleSender() {
 				return null;
 			}
 		});

@@ -20,6 +20,10 @@ public interface WebHelper {
 	JsonElement doRequest(String url, Method method) throws Exception;
 	
 	JsonElement doRequest(String url, Method method, String jsonEntity) throws Exception;
+	
+	void doRequest(String url, Method method, FutureCallback<JsonElement> callback);
+	
+	void doRequest(String url, Method method, String jsonEntity, FutureCallback<JsonElement> callback);
 
 	/*
 	 * Callback

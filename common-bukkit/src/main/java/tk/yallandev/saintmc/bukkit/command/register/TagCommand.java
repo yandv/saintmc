@@ -8,7 +8,7 @@ import net.md_5.bungee.api.chat.HoverEvent.Action;
 import net.md_5.bungee.api.chat.TextComponent;
 import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.bukkit.BukkitMain;
-import tk.yallandev.saintmc.bukkit.account.BukkitMember;
+import tk.yallandev.saintmc.bukkit.bukkit.BukkitMember;
 import tk.yallandev.saintmc.common.command.CommandArgs;
 import tk.yallandev.saintmc.common.command.CommandClass;
 import tk.yallandev.saintmc.common.command.CommandFramework.Command;
@@ -59,7 +59,7 @@ public class TagCommand implements CommandClass {
 		}
 
 		if (args[0].equalsIgnoreCase("chroma")) {
-			if (member.hasGroupPermission(Group.ADMIN)) {
+			if (member.hasGroupPermission(Group.ADMIN) || member.hasPermission("tag.chroma")) {
 				member.setChroma(!member.isChroma());
 				member.setTag(member.getTag());
 				player.sendMessage(

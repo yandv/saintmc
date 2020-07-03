@@ -3,8 +3,11 @@ package tk.yallandev.saintmc.login.listener;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 
+import lombok.Getter;
+
 public class CaptchaListener implements Listener {
 	
+	@Getter
 	public class CaptchaMenu {
 		
 		private CaptchaHandler captchaHandler;

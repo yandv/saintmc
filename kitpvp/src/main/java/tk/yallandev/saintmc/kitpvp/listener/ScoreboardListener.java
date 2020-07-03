@@ -377,7 +377,7 @@ public class ScoreboardListener implements Listener {
 		scoreboard.updateScore(player, new Score("§fXp: §a" + member.getXp(), "xp"));
 
 		scoreboard.updateScore(player, new Score("§fMoney: §6" + member.getMoney(), "coins"));
-		scoreboard.updateScore(player, new Score("§fJogadores: §b" + Bukkit.getOnlinePlayers().size(), "players"));
+		scoreboard.updateScore(new Score("§fJogadores: §b" + Bukkit.getOnlinePlayers().size(), "players"));
 	}
 
 	public Scoreboard createScoreboard(Player player, Player target, boolean shadow) {

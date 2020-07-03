@@ -60,6 +60,23 @@ public class StoreController<K, V> {
 		this.defaultFunction = defaultFunction;
 		return this;
 	}
+	
+	public int getIndexOf(K key) {
+		
+		if (!containsKey(key))
+			return -1;
+		
+		int index = 0;
+		
+		for (V value : getStoreMap().values()) {
+			if (key == value)
+				return index;
+			
+			index++;
+		}
+		
+		return -1;
+	}
 
 	@Getter
 	@Setter

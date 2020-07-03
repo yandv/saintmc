@@ -5,16 +5,20 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.bukkit.entity.Player;
 
+import com.google.common.base.Joiner;
+
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import tk.yallandev.saintmc.CommonConst;
 import tk.yallandev.saintmc.CommonGeneral;
-import tk.yallandev.saintmc.bukkit.account.BukkitMember;
+import tk.yallandev.saintmc.bukkit.bukkit.BukkitMember;
 import tk.yallandev.saintmc.bukkit.command.BukkitCommandArgs;
 import tk.yallandev.saintmc.bukkit.menu.account.AccountInventory;
 import tk.yallandev.saintmc.common.account.League;
@@ -22,12 +26,16 @@ import tk.yallandev.saintmc.common.account.Member;
 import tk.yallandev.saintmc.common.account.MemberModel;
 import tk.yallandev.saintmc.common.account.MemberVoid;
 import tk.yallandev.saintmc.common.ban.constructor.Mute;
+import tk.yallandev.saintmc.common.clan.enums.ClanDisplayType;
+import tk.yallandev.saintmc.common.command.CommandArgs;
 import tk.yallandev.saintmc.common.command.CommandClass;
 import tk.yallandev.saintmc.common.command.CommandFramework.Command;
 import tk.yallandev.saintmc.common.command.CommandSender;
+import tk.yallandev.saintmc.common.medals.Medal;
 import tk.yallandev.saintmc.common.permission.Group;
 import tk.yallandev.saintmc.common.utils.DateUtils;
 import tk.yallandev.saintmc.common.utils.string.MessageBuilder;
+import tk.yallandev.saintmc.common.utils.string.NameUtils;
 
 public class AccountCommand implements CommandClass {
 
@@ -73,14 +81,103 @@ public class AccountCommand implements CommandClass {
 
 		new AccountInventory(sender, player);
 	}
-
-	@Command(name = "rank", aliases = { "ranks", "liga", "ligas" })
-	public void rankCommand(BukkitCommandArgs cmdArgs) {
+	
+	@Command(name = "medal", aliases = { "medals" })
+	public void medalCommand(CommandArgs cmdArgs) {
 		if (!cmdArgs.isPlayer())
 			return;
 
-		Player p = cmdArgs.getPlayer();
-		Member player = CommonGeneral.getInstance().getMemberManager().getMember(p.getUniqueId());
+		String[] args = cmdArgs.getArgs();
+		BukkitMember member = (BukkitMember) CommonGeneral.getInstance().getMemberManager()
+				.getMember(cmdArgs.getSender().getUniqueId());
+
+		if (args.length == 0) {
+			member.sendMessage(" §e* §fUse §a/" + cmdArgs.getLabel() + " <medalha:remove>§f para mudar de medalha!");
+
+			TextComponent textComponent = new MessageBuilder(" §e* §fMedalhas disponíveis: ").create();
+
+			for (int x = 0; x < member.getMedalList().size(); x++) {
+				Medal medal = member.getMedalList().get(x);
+
+				textComponent
+						.addExtra(new MessageBuilder(medal.getChatColor() + medal.getMedalName())
+								.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+										new ComponentBuilder("" + medal.getChatColor() + medal.getMedalIcon())
+												.create()))
+								.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/medal " + medal.name()))
+								.create());
+
+				if (x != member.getMedalList().size()) {
+					textComponent.addExtra("§f, ");
+				}
+			}
+
+			member.sendMessage(textComponent);
+			return;
+		}
+
+		Medal medal = Medal.getMedalByName(args[0]);
+
+		if (medal == null) {
+			if (args[0].equalsIgnoreCase("remove")) {
+				member.sendMessage("§aSua medalha foi removida!");
+				member.setMedal(null);
+				member.setTag(member.getTag());
+				return;
+			}
+
+			member.sendMessage("§cA medalha " + args[0] + " não existe!");
+			return;
+		}
+
+		if (member.getMedalList().contains(medal)) {
+			member.sendMessage("§aSua medalha foi alterada para " + medal.getMedalName() + "!");
+			member.setMedal(medal);
+			member.setTag(member.getTag());
+		} else
+			member.sendMessage("§cVocê não possui essa medalha!");
+	}
+
+	@Command(name = "clandisplaytag", runAsync = true)
+	public void clandisplaytagCommand(CommandArgs cmdArgs) {
+		if (!cmdArgs.isPlayer())
+			return;
+
+		String[] args = cmdArgs.getArgs();
+		BukkitMember player = (BukkitMember) cmdArgs.getSender();
+
+		if (args.length == 0) {
+			player.sendMessage(" §e* §fUse §a/" + cmdArgs.getLabel() + " <"
+					+ Joiner.on(':')
+							.join(Arrays.asList(ClanDisplayType.values()).stream().map(cl -> cl.name().toLowerCase())
+									.collect(Collectors.toList()))
+					+ ">§f para mudar o estado da sua tag do clan no tab!");
+			return;
+		}
+
+		ClanDisplayType clanDisplayType = null;
+
+		try {
+			clanDisplayType = ClanDisplayType.valueOf(args[0].toUpperCase());
+		} catch (Exception ex) {
+			player.sendMessage("§cO estado " + args[0] + " não foi encontrado. Tente: "
+					+ Joiner.on(',').join(Arrays.asList(ClanDisplayType.values()).stream()
+							.map(cl -> cl.name().toLowerCase()).collect(Collectors.toList())));
+			return;
+		}
+
+		player.getAccountConfiguration().setClanDisplayType(clanDisplayType);
+		player.sendMessage("§aO estado da sua tag de clan foi alterado para "
+				+ NameUtils.formatString(clanDisplayType.name()) + "!");
+		player.setTag(player.getTag());
+	}
+
+	@Command(name = "rank", aliases = { "ranks", "liga", "ligas" })
+	public void rankCommand(CommandArgs cmdArgs) {
+		if (!cmdArgs.isPlayer())
+			return;
+
+		Member player = CommonGeneral.getInstance().getMemberManager().getMember(cmdArgs.getSender().getUniqueId());
 
 		List<League> leagues = Arrays.asList(League.values());
 		Collections.reverse(leagues);
@@ -94,27 +191,53 @@ public class AccountCommand implements CommandClass {
 
 				player.sendMessage(text);
 			} else {
-				p.sendMessage(league.getColor() + league.getSymbol() + " " + league.name());
+				player.sendMessage(league.getColor() + league.getSymbol() + " " + league.name());
 			}
 		}
 
-		p.sendMessage("");
-		p.sendMessage("§a§l> §fSeu rank atual é " + player.getLeague().getColor() + player.getLeague().getSymbol() + " "
-				+ player.getLeague().getName());
-		p.sendMessage("§a§l> §fSeu xp §e" + player.getXp());
+		player.sendMessage("");
+		player.sendMessage("§a§l> §fSeu rank atual é " + player.getLeague().getColor() + player.getLeague().getSymbol()
+				+ " " + player.getLeague().getName());
+		player.sendMessage("§a§l> §fSeu xp §e" + player.getXp());
 
 		if (player.getLeague() == League.CHALLENGER) {
-			p.sendMessage("");
-			p.sendMessage("§a§l> §fVocê está no maior rank do servidor");
-			p.sendMessage("§a§l> §fContinue ganhando XP para ficar no topo do ranking");
+			player.sendMessage("");
+			player.sendMessage("§a§l> §fVocê está no maior rank do servidor");
+			player.sendMessage("§a§l> §fContinue ganhando XP para ficar no topo do ranking");
 		} else {
-			p.sendMessage("");
-			p.sendMessage("§a§l> §fPróximo rank §e" + player.getLeague().getNextLeague().getColor()
+			player.sendMessage("");
+			player.sendMessage("§a§l> §fPróximo rank §e" + player.getLeague().getNextLeague().getColor()
 					+ player.getLeague().getNextLeague().getSymbol() + " "
 					+ player.getLeague().getNextLeague().getName());
-			p.sendMessage(
+			player.sendMessage(
 					"§a§l> §fXP necessário para o próximo rank §e" + (player.getLeague().getMaxXp() - player.getXp()));
 		}
+	}
+
+	@Command(name = "youtuber")
+	public void youtuberCommand(BukkitCommandArgs cmdArgs) {
+		cmdArgs.getSender().sendMessage(new BaseComponent[] {
+				new MessageBuilder("§bPara receber tag por um vídeo que você fez no servidor clique nesta mensagem!")
+						.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, CommonConst.YOUTUBER_FORM))
+						.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+								new BaseComponent[] { new MessageBuilder(CommonConst.YOUTUBER_FORM).create() }))
+						.create() });
+	}
+
+	@Command(name = "aplicar")
+	public void aplicarCommand(BukkitCommandArgs cmdArgs) {
+		cmdArgs.getSender().sendMessage(new BaseComponent[] {
+				new MessageBuilder("§dPara entrar na equipe de Trial, faça o formulário clicando nessa mensagem!")
+						.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, CommonConst.TRIAL_FORM))
+						.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+								new BaseComponent[] { new MessageBuilder(CommonConst.TRIAL_FORM).create() }))
+						.create() });
+		cmdArgs.getSender().sendMessage(new BaseComponent[] {
+				new MessageBuilder("§9Para entrar na equipe de Helper, faça o formulário clicando nessa mensagem!")
+						.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, CommonConst.HELPER_FORM))
+						.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+								new BaseComponent[] { new MessageBuilder(CommonConst.HELPER_FORM).create() }))
+						.create() });
 	}
 
 	@Command(name = "site", aliases = { "website", "discord" })
@@ -131,7 +254,7 @@ public class AccountCommand implements CommandClass {
 						new BaseComponent[] { new MessageBuilder("§bClique aqui para entrar em nosso discord!")
 								.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, CommonConst.DISCORD))
 								.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
-										new BaseComponent[] { new MessageBuilder(CommonConst.WEBSITE).create() }))
+										new BaseComponent[] { new MessageBuilder(CommonConst.DISCORD).create() }))
 								.create() });
 	}
 
@@ -184,6 +307,9 @@ public class AccountCommand implements CommandClass {
 
 		message = sb.toString();
 
+		if (!member.getAccountConfiguration().isTellEnabled())
+			player.setLastTell(null);
+
 		sender.sendMessage("§7[§e" + cmdArgs.getPlayer().getName() + " §7» §e"
 				+ (member.isUsingFake() ? member.getFakeName() : member.getPlayerName()) + "§7] §f" + message);
 		member.sendMessage("§7[§e" + cmdArgs.getPlayer().getName() + " §7» §e"
@@ -220,7 +346,6 @@ public class AccountCommand implements CommandClass {
 
 		if (args.length == 1) {
 			if (args[0].equalsIgnoreCase("on")) {
-
 				Member member = CommonGeneral.getInstance().getMemberManager()
 						.getMember(cmdArgs.getPlayer().getUniqueId());
 
@@ -230,9 +355,8 @@ public class AccountCommand implements CommandClass {
 				}
 
 				member.getAccountConfiguration().setTellEnabled(!member.getAccountConfiguration().isTellEnabled());
-				sender.sendMessage(" §a* §fVocê §aativou fo seu tell!");
+				sender.sendMessage(" §a* §fVocê §aativou§f o seu tell!");
 			} else if (args[0].equalsIgnoreCase("off")) {
-
 				Member member = CommonGeneral.getInstance().getMemberManager()
 						.getMember(cmdArgs.getPlayer().getUniqueId());
 
@@ -242,7 +366,7 @@ public class AccountCommand implements CommandClass {
 				}
 
 				member.getAccountConfiguration().setTellEnabled(!member.getAccountConfiguration().isTellEnabled());
-				sender.sendMessage(" §a* §fVocê §cdesativou fo seu tell!");
+				sender.sendMessage(" §a* §fVocê §cdesativou§f o seu tell!");
 			} else {
 				sender.sendMessage(" §e* §fVocê deve utilizar §a/" + cmdArgs.getLabel()
 						+ " <mensagem>§f, para enviar uma mensagem privada!");
@@ -267,6 +391,12 @@ public class AccountCommand implements CommandClass {
 			sender.sendMessage(" §c* §fO jogador §a" + args[0] + "§f está offline!");
 			return;
 		}
+
+		if (!member.getAccountConfiguration().isTellEnabled())
+			if (!player.hasGroupPermission(Group.TRIAL)) {
+				player.sendMessage("§cO tell desse jogador está desativado!");
+				return;
+			}
 
 		boolean fake = false;
 

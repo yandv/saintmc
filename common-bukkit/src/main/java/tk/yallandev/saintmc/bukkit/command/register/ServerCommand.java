@@ -22,9 +22,8 @@ import net.md_5.bungee.api.ChatColor;
 import net.minecraft.server.v1_8_R3.MinecraftServer;
 import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.bukkit.BukkitMain;
-import tk.yallandev.saintmc.bukkit.account.BukkitMember;
 import tk.yallandev.saintmc.bukkit.api.scoreboard.Scoreboard;
-import tk.yallandev.saintmc.bukkit.command.BukkitCommandArgs;
+import tk.yallandev.saintmc.bukkit.bukkit.BukkitMember;
 import tk.yallandev.saintmc.bukkit.command.BukkitCommandSender;
 import tk.yallandev.saintmc.bukkit.event.player.PlayerScoreboardStateEvent;
 import tk.yallandev.saintmc.common.account.Member;
@@ -41,11 +40,11 @@ public class ServerCommand implements CommandClass {
 	public static long timingStart = 0L;
 
 	@Command(name = "score", aliases = { "scoreboard" })
-	public void scoreboardCommand(BukkitCommandArgs args) {
-		if (!args.isPlayer())
+	public void scoreboardCommand(CommandArgs cmdArgs) {
+		if (!cmdArgs.isPlayer())
 			return;
 
-		Player player = args.getPlayer();
+		Player player = ((BukkitMember)cmdArgs.getSender()).getPlayer();
 		Member member = CommonGeneral.getInstance().getMemberManager().getMember(player.getUniqueId());
 
 		member.getAccountConfiguration().setScoreboardEnabled(!member.getAccountConfiguration().isScoreboardEnabled());
@@ -71,7 +70,7 @@ public class ServerCommand implements CommandClass {
 	}
 
 	@Command(name = "shutdown", aliases = { "stop" }, groupToUse = Group.ADMIN)
-	public void stop(BukkitCommandArgs cmdArgs) {
+	public void stop(CommandArgs cmdArgs) {
 		CommandSender sender = cmdArgs.getSender();
 		String[] args = cmdArgs.getArgs();
 
@@ -264,7 +263,7 @@ public class ServerCommand implements CommandClass {
 	}
 
 	@Command(name = "memoryinfo", groupToUse = Group.DONO)
-	public void memoryinfoCommand(BukkitCommandArgs cmdArgs) {
+	public void memoryinfoCommand(CommandArgs cmdArgs) {
 		double total = Runtime.getRuntime().maxMemory();
 		double free = Runtime.getRuntime().freeMemory();
 		double used = total - free;

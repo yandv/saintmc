@@ -20,7 +20,7 @@ import tk.yallandev.saintmc.common.backend.Query;
 import tk.yallandev.saintmc.common.utils.json.JsonUtils;
 
 public class MongoQuery implements Query<JsonElement> {
-	
+
 	/**
 	 * To replace the mongo int64 to java long
 	 */

@@ -2,6 +2,7 @@ package tk.yallandev.saintmc.bukkit.api.item;
 
 import java.lang.reflect.Constructor;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map.Entry;
 
 import org.bukkit.Material;
@@ -27,23 +28,37 @@ public class ActionItemStack {
 
 	public ActionItemStack(ItemStack stack, Interact handler) {
 		itemStack = setTag(stack, registerHandler(handler));
-		
+
 		if (itemStack == null)
 			itemStack = stack;
-		
+
 		interactHandler = handler;
 	}
 
 	public static int registerHandler(Interact handler) {
 		if (HANDLERS.containsValue(handler))
-			return HANDLERS.entrySet().stream().filter(entry -> entry.getValue() == handler).map(Entry::getKey).findFirst().orElse(-1);
-		
+			return HANDLERS.entrySet().stream().filter(entry -> entry.getValue() == handler).map(Entry::getKey)
+					.findFirst().orElse(-1);
+
 		HANDLERS.put(HANDLERS.size() + 1, handler);
 		return HANDLERS.size();
 	}
 
 	public static void unregisterHandler(Integer id) {
 		HANDLERS.remove(id);
+	}
+
+	public static void unregisterHandler(Interact handler) {
+		Iterator<Entry<Integer, Interact>> iterator = HANDLERS.entrySet().iterator();
+
+		while (iterator.hasNext()) {
+			Entry<Integer, Interact> entry = iterator.next();
+
+			if (entry.getValue() == handler) {
+				iterator.remove();
+				break;
+			}
+		}
 	}
 
 	public static Interact getHandler(Integer id) {
@@ -66,43 +81,44 @@ public class ActionItemStack {
 		}
 		return null;
 	}
-	
+
 	public static ActionItemStack create(ItemStack stack, Interact handler) {
 		return new ActionItemStack(stack, handler);
 	}
-	
+
 	@Getter
 	public static abstract class Interact {
-		
+
 		private InteractType interactType;
 		private boolean inventoryClick;
-		
+
 		public Interact() {
 			this.interactType = InteractType.CLICK;
 		}
-		
+
 		public Interact(InteractType interactType) {
 			this.interactType = interactType;
 		}
-		
+
 		public Interact setInventoryClick(boolean inventoryClick) {
 			this.inventoryClick = inventoryClick;
 			return this;
 		}
 
-		public abstract boolean onInteract(Player player, Entity entity, Block block, ItemStack item, ActionType action);
+		public abstract boolean onInteract(Player player, Entity entity, Block block, ItemStack item,
+				ActionType action);
 	}
-	
+
 	public enum ActionType {
-		
+
 		CLICK_PLAYER, RIGHT, LEFT;
-		
+
 	}
-	
+
 	public enum InteractType {
-		
+
 		PLAYER, CLICK;
-		
+
 	}
 
 }

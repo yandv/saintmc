@@ -72,7 +72,7 @@ public class ApacheWebImpl implements WebHelper {
 
 	@Override
 	public JsonElement doRequest(String url, Method method) throws Exception {
-		return doRequest(url, method, null);
+		return doRequest(url, method, (String) null);
 	}
 
 	@Override
@@ -103,6 +103,43 @@ public class ApacheWebImpl implements WebHelper {
 	}
 
 	@Override
+	public void doRequest(String url, Method method, FutureCallback<JsonElement> callback) {
+		doRequest(url, method, null, callback);
+	}
+
+	@Override
+	public void doRequest(String url, Method method, String jsonEntity, FutureCallback<JsonElement> callback) {
+		try {
+			HttpRequestBase requestBase = createRequestBase(url, method, jsonEntity);
+
+			CloseableHttpResponse response = closeableHttpClient.execute(requestBase);
+
+			HttpEntity entity = response.getEntity();
+			String json = EntityUtils.toString(entity);
+
+			if (json == null) {
+				response.close();
+
+				Exception ex = new Exception("Received empty response from your server, check connections.");
+
+				callback.result(null, ex);
+				throw ex;
+			}
+
+			try {
+				callback.result(JsonParser.parseString(json), null);
+			} catch (Exception ex) {
+				CommonGeneral.getInstance().getLogger().warning(json);
+				callback.result(null, ex);
+			}
+
+			response.close();
+		} catch (Exception ex) {
+			callback.result(null, ex);
+		}
+	}
+
+	@Override
 	public void doAsyncRequest(String url, Method method, FutureCallback<JsonElement> callback) {
 		doAsyncRequest(url, method, null, callback);
 	}
@@ -112,7 +149,7 @@ public class ApacheWebImpl implements WebHelper {
 		try {
 			closeableHttpAsyncClient.execute(createRequestBase(url, method, jsonEntity),
 					new org.apache.http.concurrent.FutureCallback<HttpResponse>() {
-				
+
 						public void completed(HttpResponse response) {
 
 							HttpEntity entity = response.getEntity();

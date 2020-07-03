@@ -5,12 +5,13 @@ import java.util.UUID;
 import org.bukkit.entity.Player;
 
 import tk.yallandev.saintmc.CommonGeneral;
-import tk.yallandev.saintmc.bukkit.command.BukkitCommandArgs;
+import tk.yallandev.saintmc.bukkit.bukkit.BukkitMember;
 import tk.yallandev.saintmc.bukkit.menu.report.ReportInventory;
 import tk.yallandev.saintmc.bukkit.menu.report.ReportListInventory;
 import tk.yallandev.saintmc.common.account.Member;
 import tk.yallandev.saintmc.common.account.MemberModel;
 import tk.yallandev.saintmc.common.account.MemberVoid;
+import tk.yallandev.saintmc.common.command.CommandArgs;
 import tk.yallandev.saintmc.common.command.CommandClass;
 import tk.yallandev.saintmc.common.command.CommandFramework.Command;
 import tk.yallandev.saintmc.common.permission.Group;
@@ -19,11 +20,11 @@ import tk.yallandev.saintmc.common.report.Report;
 public class ReportCommand implements CommandClass {
 
 	@Command(name = "report", aliases = { "reports", "reportar" })
-	public void reportComman(BukkitCommandArgs cmdArgs) {
+	public void reportComman(CommandArgs cmdArgs) {
 		if (!cmdArgs.isPlayer())
 			return;
 
-		Player sender = cmdArgs.getPlayer();
+		Player sender = ((BukkitMember)cmdArgs.getSender()).getPlayer();
 		String[] args = cmdArgs.getArgs();
 
 		Member member = CommonGeneral.getInstance().getMemberManager().getMember(sender.getUniqueId());
@@ -32,7 +33,7 @@ public class ReportCommand implements CommandClass {
 			return;
 
 		if (args.length == 0) {
-			new ReportListInventory(cmdArgs.getPlayer(), 1);
+			new ReportListInventory(sender, 1);
 			return;
 		}
 

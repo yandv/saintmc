@@ -14,7 +14,6 @@ import tk.yallandev.saintmc.bukkit.api.menu.MenuInventory;
 import tk.yallandev.saintmc.bukkit.api.menu.MenuUpdateHandler;
 import tk.yallandev.saintmc.common.account.Member;
 import tk.yallandev.saintmc.common.permission.Group;
-import tk.yallandev.saintmc.common.profile.Profile;
 import tk.yallandev.saintmc.common.server.ServerType;
 import tk.yallandev.saintmc.common.server.loadbalancer.server.ProxiedServer;
 import tk.yallandev.saintmc.lobby.menu.server.ServerInventory.SendClick;
@@ -68,7 +67,7 @@ public class KitpvpInventory {
 
 		for (ProxiedServer server : serverList) {
 			if (!server.isJoinEnabled() && !member.hasGroupPermission(Group.BUILDER)
-					&& !server.isInWhitelist(Profile.fromMember(member)))
+					&& !server.isInWhitelist(member.getPlayerName()))
 				continue;
 
 			ItemBuilder builder = new ItemBuilder();

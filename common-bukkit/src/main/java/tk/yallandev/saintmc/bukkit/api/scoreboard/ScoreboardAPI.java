@@ -8,13 +8,16 @@ import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Team;
 
+import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.common.account.League;
+import tk.yallandev.saintmc.common.clan.Clan;
+import tk.yallandev.saintmc.common.medals.Medal;
 import tk.yallandev.saintmc.common.tag.Tag;
 
 public class ScoreboardAPI {
-	
-	private static char[] chars = { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r',
-			's', 't', 'u', 'v', 'w', 'x', 'y', 'z' };
+
+	private static char[] chars = { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q',
+			'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z' };
 
 	public static Team getTeamFromPlayer(Player player, String teamID) {
 		if (teamID.length() > 16) {
@@ -411,7 +414,7 @@ public class ScoreboardAPI {
 		if (objectiveID.length() > 16) {
 			objectiveID = objectiveID.substring(0, 16);
 		}
-		
+
 		return player.getScoreboard().getObjective(objectiveID);
 	}
 
@@ -422,18 +425,18 @@ public class ScoreboardAPI {
 	public static Objective createObjectiveToPlayer(Player player, String objectiveID, String displayName,
 			DisplaySlot displaySlot) {
 		Objective objective = getObjectiveFromPlayer(player, objectiveID);
-		
+
 		if (objective == null) {
 			if (objectiveID.length() > 16) {
 				objectiveID = objectiveID.substring(0, 16);
 			}
 			objective = player.getScoreboard().registerNewObjective(objectiveID, "dummy");
 		}
-		
+
 		if (displayName.length() > 32) {
 			displayName = displayName.substring(0, 32);
 		}
-		
+
 		objective.setDisplayName(displayName);
 		objective.setDisplaySlot(displaySlot);
 		return objective;
@@ -454,14 +457,15 @@ public class ScoreboardAPI {
 		}
 	}
 
-	public static Objective createObjectiveIfNotExistsToPlayer(Player player, String objectiveID, String displayName, DisplaySlot displaySlot) {
+	public static Objective createObjectiveIfNotExistsToPlayer(Player player, String objectiveID, String displayName,
+			DisplaySlot displaySlot) {
 		Objective objective = getObjectiveFromPlayer(player, objectiveID);
-		
+
 		if (objective == null) {
 			objective = createObjectiveToPlayer(player, objectiveID, displayName, displaySlot);
 			objective.setDisplaySlot(displaySlot);
 		}
-		
+
 		return objective;
 	}
 
@@ -873,8 +877,13 @@ public class ScoreboardAPI {
 		}
 	}
 
-	public static String getTeamName(Tag tag, League liga, boolean chroma) {
-		return chars[tag.ordinal()] + "-" + chars[League.values().length - liga.ordinal()] + (chroma ? "a" : "b");
+	public static String getTeamName(Tag tag, League liga, Medal medal, boolean chroma, boolean clanTag, Clan clan) {
+		String clanId = clanTag ? "" + chars[CommonGeneral.getInstance().getClanManager().getClans().size()
+				- CommonGeneral.getInstance().getClanManager().getIndexOf(clan.getUniqueId())] : "";
+
+		return chars[tag.ordinal()] + "-" + chars[League.values().length - liga.ordinal()] + "-"
+				+ (medal == null ? "" : chars[Medal.values().length - medal.ordinal()]) + "-" + (chroma ? "a" : "b")
+				+ "-" + clanId;
 	}
 
 }

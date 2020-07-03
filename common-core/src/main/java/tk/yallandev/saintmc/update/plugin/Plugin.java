@@ -35,7 +35,7 @@ public class Plugin implements Updateable {
 		String filePath = pluginInfo.getPluginFile().getAbsolutePath();
 
 		try {
-			HttpGet request = new HttpGet("http://apidata.saintmc.net/plugin/download/?pluginName=" + pluginInfo.getPluginName() + "&key=" + key);
+			HttpGet request = new HttpGet(CommonConst.API + "/plugin/download/?pluginName=" + pluginInfo.getPluginName() + "&key=" + key);
 
 			CloseableHttpResponse response = ((ApacheWebImpl) CommonConst.DEFAULT_WEB).getCloseableHttpClient()
 					.execute(request);
@@ -83,7 +83,7 @@ public class Plugin implements Updateable {
 	
 	@Override
 	public boolean upload(String key) {
-		HttpPost httppost = new HttpPost("http://apidata.saintmc.net/plugin/?pluginName=" + pluginInfo.getPluginName()
+		HttpPost httppost = new HttpPost(CommonConst.API + "/plugin/?pluginName=" + pluginInfo.getPluginName()
 				+ "&version=" + pluginInfo.getActualVersion() + "");
 
 		MultipartEntityBuilder mpEntity = MultipartEntityBuilder.create();

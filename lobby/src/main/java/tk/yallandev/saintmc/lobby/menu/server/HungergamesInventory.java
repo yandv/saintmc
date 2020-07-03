@@ -14,10 +14,9 @@ import tk.yallandev.saintmc.bukkit.api.menu.MenuInventory;
 import tk.yallandev.saintmc.bukkit.api.menu.MenuUpdateHandler;
 import tk.yallandev.saintmc.common.account.Member;
 import tk.yallandev.saintmc.common.permission.Group;
-import tk.yallandev.saintmc.common.profile.Profile;
 import tk.yallandev.saintmc.common.server.ServerType;
-import tk.yallandev.saintmc.common.server.loadbalancer.server.ProxiedServer;
 import tk.yallandev.saintmc.common.server.loadbalancer.server.HungerGamesServer;
+import tk.yallandev.saintmc.common.server.loadbalancer.server.ProxiedServer;
 import tk.yallandev.saintmc.common.utils.string.StringUtils;
 import tk.yallandev.saintmc.lobby.menu.server.ServerInventory.SendClick;
 
@@ -76,7 +75,8 @@ public class HungergamesInventory {
 		int w = 10;
 
 		for (ProxiedServer proxiedServer : serverList) {
-			if (!proxiedServer.isJoinEnabled() && !member.hasGroupPermission(Group.TRIAL) && !proxiedServer.isInWhitelist(Profile.fromMember(member)))
+			if (!proxiedServer.isJoinEnabled() && !member.hasGroupPermission(Group.TRIAL)
+					&& !proxiedServer.isInWhitelist(member.getPlayerName()))
 				continue;
 
 			HungerGamesServer server = (HungerGamesServer) proxiedServer;

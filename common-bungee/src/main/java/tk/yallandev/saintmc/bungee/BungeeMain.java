@@ -30,6 +30,7 @@ import tk.yallandev.saintmc.bungee.listener.MultiserverTeleport;
 import tk.yallandev.saintmc.bungee.listener.PacketListener;
 import tk.yallandev.saintmc.bungee.networking.packet.BungeePacketHandler;
 import tk.yallandev.saintmc.bungee.networking.redis.BungeePubSubHandler;
+import tk.yallandev.saintmc.common.backend.data.ClanData;
 import tk.yallandev.saintmc.common.backend.data.PlayerData;
 import tk.yallandev.saintmc.common.backend.data.PunishData;
 import tk.yallandev.saintmc.common.backend.data.ReportData;
@@ -37,9 +38,9 @@ import tk.yallandev.saintmc.common.backend.data.ServerData;
 import tk.yallandev.saintmc.common.backend.database.mongodb.MongoConnection;
 import tk.yallandev.saintmc.common.backend.database.redis.RedisDatabase;
 import tk.yallandev.saintmc.common.backend.database.redis.RedisDatabase.PubSubListener;
-import tk.yallandev.saintmc.common.command.CommandLoader;
 import tk.yallandev.saintmc.common.controller.PacketController;
 import tk.yallandev.saintmc.common.controller.PunishManager;
+import tk.yallandev.saintmc.common.data.impl.ClanDataImpl;
 import tk.yallandev.saintmc.common.data.impl.PlayerDataImpl;
 import tk.yallandev.saintmc.common.data.impl.PunishDataImpl;
 import tk.yallandev.saintmc.common.data.impl.ReportDataImpl;
@@ -111,19 +112,22 @@ public class BungeeMain extends Plugin {
 			PlayerData playerData = new PlayerDataImpl(mongo, redis);
 			ServerData serverData = new ServerDataImpl(mongo, redis);
 			ReportData reportData = new ReportDataImpl(mongo, redis);
+			ClanData clanData = new ClanDataImpl(mongo, redis);
 			PunishData punishData = new PunishDataImpl(mongo);
 
 			general.setPlayerData(playerData);
 			general.setServerData(serverData);
 			general.setReportData(reportData);
 			general.setPunishData(punishData);
+			general.setClanData(clanData);
 
 			/*
 			 * Server Network Info
 			 */
 
-			getProxy().getScheduler().runAsync(getInstance(), pubSubListener = new PubSubListener(redis,
-					new BungeePubSubHandler(), "server-info", "account-field", "report-field", "report-action"));
+			getProxy().getScheduler().runAsync(getInstance(),
+					pubSubListener = new PubSubListener(redis, new BungeePubSubHandler(), "server-info",
+							"account-field", "clan-field", "report-field", "report-action"));
 
 		} catch (Exception ex) {
 			ex.printStackTrace();
@@ -147,12 +151,7 @@ public class BungeeMain extends Plugin {
 
 		general.setCommonPlatform(new BungeePlatform());
 
-		try {
-			new CommandLoader(new BungeeCommandFramework(getInstance()))
-					.loadCommandsFromPackage("tk.yallandev.saintmc.bungee.command.register");
-		} catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException e1) {
-			e1.printStackTrace();
-		}
+		new BungeeCommandFramework(this).loadCommands("tk.yallandev.saintmc.bungee.command.register");
 
 		punishManager = new BungeePunishManager();
 		serverManager = new BungeeServerManager();

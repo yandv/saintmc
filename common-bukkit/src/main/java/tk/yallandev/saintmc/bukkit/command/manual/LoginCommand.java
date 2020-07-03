@@ -1,5 +1,7 @@
 package tk.yallandev.saintmc.bukkit.command.manual;
 
+import java.util.regex.Pattern;
+
 import org.bukkit.Bukkit;
 
 import tk.yallandev.saintmc.CommonGeneral;
@@ -14,11 +16,13 @@ import tk.yallandev.saintmc.common.command.CommandSender;
 
 public class LoginCommand implements CommandClass {
 
+	public static final Pattern PASSWORD_PATTERN = Pattern.compile("[a-zA-Z0-9_]{8,48}");
+
 	@Command(name = "login", aliases = { "registrar" })
 	public void loginCommand(BukkitCommandArgs cmdArgs) {
 		if (!cmdArgs.isPlayer())
 			return;
-		
+
 		Member player = CommonGeneral.getInstance().getMemberManager().getMember(cmdArgs.getSender().getUniqueId());
 
 		if (player.getLoginConfiguration().getAccountType() == AccountType.ORIGINAL) {
@@ -79,10 +83,20 @@ public class LoginCommand implements CommandClass {
 			return;
 		}
 
-		if (args[0].equals(args[1])) {
+		String password = args[0];
+
+		if (!PASSWORD_PATTERN.matcher(password).matches() || password.equals("minecraft")
+				|| password.equals("abc123")) {
+			player.sendMessage(" §c* §fSenha muito fraca!");
+			player.sendMessage(" §c* §fVocê precisa colocar pelo menos 8 caracteres!");
+			player.sendMessage(" §c* §fVocê pode usar letras, numeros e underline!");
+			return;
+		}
+
+		if (password.equals(args[1])) {
 			player.sendMessage(" §a* §fSua conta foi registrada no servidor!");
 			player.getLoginConfiguration().register(args[0], player.getLastIpAddress());
-			
+
 			Bukkit.getPluginManager().callEvent(new PlayerChangeLoginStatusEvent(cmdArgs.getPlayer(), player, true));
 			Bukkit.getPluginManager().callEvent(new PlayerRegisterEvent(cmdArgs.getPlayer(), player));
 		} else {

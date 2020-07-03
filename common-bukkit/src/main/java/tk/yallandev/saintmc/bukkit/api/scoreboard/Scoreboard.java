@@ -4,7 +4,7 @@ import java.util.Set;
 
 import org.bukkit.entity.Player;
 
-import tk.yallandev.saintmc.bukkit.account.BukkitMember;
+import tk.yallandev.saintmc.bukkit.bukkit.BukkitMember;
 
 /**
  * 

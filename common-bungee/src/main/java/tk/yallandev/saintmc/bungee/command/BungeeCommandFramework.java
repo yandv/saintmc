@@ -27,8 +27,7 @@ public class BungeeCommandFramework implements CommandFramework {
 	private final Map<String, Entry<Method, Object>> completers = new HashMap<String, Entry<Method, Object>>();
 	private final Plugin plugin;
 
-	public BungeeCommandFramework(Plugin plugin)
-			throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException {
+	public BungeeCommandFramework(Plugin plugin) {
 		this.plugin = plugin;
 		this.plugin.getProxy().getPluginManager().registerListener(plugin, new BungeeCompleter());
 	}

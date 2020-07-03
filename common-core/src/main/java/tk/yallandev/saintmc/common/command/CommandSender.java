@@ -6,7 +6,6 @@ import net.md_5.bungee.api.chat.BaseComponent;
 
 /*
  * Forked from https://github.com/mcardy/CommandFramework
- * Took from https://github.com/Battlebits
  * 
  */
 

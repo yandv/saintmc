@@ -2,11 +2,21 @@ package tk.yallandev.saintmc.bungee;
 
 import java.util.UUID;
 
+import lombok.Getter;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import tk.yallandev.saintmc.CommonPlatform;
+import tk.yallandev.saintmc.bungee.command.BungeeCommandSender;
+import tk.yallandev.saintmc.common.command.CommandSender;
 
 public class BungeePlatform implements CommonPlatform {
+	
+	@Getter
+	private CommandSender consoleSender;
+	
+	public BungeePlatform() {
+		this.consoleSender = new BungeeCommandSender(ProxyServer.getInstance().getConsole());
+	}
 	
 	@Override
 	public UUID getUuid(String playerName) {

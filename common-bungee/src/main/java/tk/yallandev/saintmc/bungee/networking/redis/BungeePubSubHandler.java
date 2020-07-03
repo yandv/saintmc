@@ -13,6 +13,7 @@ import tk.yallandev.saintmc.CommonConst;
 import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.bungee.BungeeMain;
 import tk.yallandev.saintmc.common.account.Member;
+import tk.yallandev.saintmc.common.clan.Clan;
 import tk.yallandev.saintmc.common.data.payload.DataServerMessage;
 import tk.yallandev.saintmc.common.data.payload.DataServerMessage.Action;
 import tk.yallandev.saintmc.common.data.payload.DataServerMessage.JoinEnablePayload;
@@ -35,20 +36,38 @@ public class BungeePubSubHandler extends JedisPubSub {
 	public void onMessage(String channel, String message) {
 		if (!(message.startsWith("{") && message.endsWith("}")))
 			return;
-		
+
 		JsonObject jsonObject = (JsonObject) JsonParser.parseString(message);
-		
-		if (!jsonObject.has("source") || jsonObject.get("source").getAsString().equalsIgnoreCase(CommonGeneral.getInstance().getServerId()))
+
+		if (!jsonObject.has("source")
+				|| jsonObject.get("source").getAsString().equalsIgnoreCase(CommonGeneral.getInstance().getServerId()))
 			return;
-		
+
 		switch (channel) {
+		case "clan-field": {
+			UUID uuid = UUID.fromString(jsonObject.get("uniqueId").getAsString());
+			Clan report = CommonGeneral.getInstance().getClanManager().getClan(uuid);
+
+			if (report == null)
+				break;
+
+			try {
+				Field field = Reflection.getField(Clan.class, jsonObject.get("field").getAsString());
+				field.setAccessible(true);
+				Object object = CommonConst.GSON.fromJson(jsonObject.get("value"), field.getGenericType());
+				field.set(report, object);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			break;
+		}
 		case "report-field": {
-            UUID uuid = UUID.fromString(jsonObject.get("uniqueId").getAsString());
-            Report report = CommonGeneral.getInstance().getReportManager().getReport(uuid);
-            
-            if (report == null)
-            	break;
-            
+			UUID uuid = UUID.fromString(jsonObject.get("uniqueId").getAsString());
+			Report report = CommonGeneral.getInstance().getReportManager().getReport(uuid);
+
+			if (report == null)
+				break;
+
 			try {
 				Field field = Reflection.getField(Report.class, jsonObject.get("field").getAsString());
 				field.setAccessible(true);
@@ -75,31 +94,31 @@ public class BungeePubSubHandler extends JedisPubSub {
 			break;
 		}
 		case "account-field": {
-            UUID uuid = UUID.fromString(jsonObject.getAsJsonPrimitive("uniqueId").getAsString());
-            ProxiedPlayer p = BungeeMain.getPlugin().getProxy().getPlayer(uuid);
-            
-            if (p == null)
-                return;
-            
-            String field = jsonObject.getAsJsonPrimitive("field").getAsString();
-            Member player = CommonGeneral.getInstance().getMemberManager().getMember(uuid);
-            
-            if (player == null)
-                return;
-            
-            try {
-                Field f = Reflection.getField(Member.class, field);
-                f.setAccessible(true);
-                Object object = CommonConst.GSON.fromJson(jsonObject.get("value"), f.getGenericType());
-                f.set(player, object);
-            } catch (SecurityException | IllegalArgumentException | IllegalAccessException e) {
-                e.printStackTrace();
-            }
-            break;
+			UUID uuid = UUID.fromString(jsonObject.getAsJsonPrimitive("uniqueId").getAsString());
+			ProxiedPlayer p = BungeeMain.getPlugin().getProxy().getPlayer(uuid);
+
+			if (p == null)
+				return;
+
+			String field = jsonObject.getAsJsonPrimitive("field").getAsString();
+			Member player = CommonGeneral.getInstance().getMemberManager().getMember(uuid);
+
+			if (player == null)
+				return;
+
+			try {
+				Field f = Reflection.getField(Member.class, field);
+				f.setAccessible(true);
+				Object object = CommonConst.GSON.fromJson(jsonObject.get("value"), f.getGenericType());
+				f.set(player, object);
+			} catch (SecurityException | IllegalArgumentException | IllegalAccessException e) {
+				e.printStackTrace();
+			}
+			break;
 		}
 		case "server-info": {
 			String source = jsonObject.get("source").getAsString();
-			
+
 			ServerType sourceType = ServerType.valueOf(jsonObject.get("serverType").getAsString());
 			Action action = Action.valueOf(jsonObject.get("action").getAsString());
 			switch (action) {
@@ -178,24 +197,28 @@ public class BungeePubSubHandler extends JedisPubSub {
 				DataServerMessage<WhitelistAddPayload> payload = CommonConst.GSON.fromJson(jsonObject,
 						new TypeToken<DataServerMessage<WhitelistAddPayload>>() {
 						}.getType());
-				
+
 				if (sourceType == ServerType.NETWORK) {
 					break;
 				}
-				
-				BungeeMain.getPlugin().getServerManager().getServer(source).addWhitelist(payload.getPayload().getProfile());;
+
+				BungeeMain.getPlugin().getServerManager().getServer(source)
+						.addWhitelist(payload.getPayload().getProfile());
+				;
 				break;
 			}
 			case WHITELIST_REMOVE: {
 				DataServerMessage<WhitelistRemovePayload> payload = CommonConst.GSON.fromJson(jsonObject,
 						new TypeToken<DataServerMessage<WhitelistRemovePayload>>() {
 						}.getType());
-				
+
 				if (sourceType == ServerType.NETWORK) {
 					break;
 				}
-				
-				BungeeMain.getPlugin().getServerManager().getServer(source).removeWhitelist(payload.getPayload().getProfile());;
+
+				BungeeMain.getPlugin().getServerManager().getServer(source)
+						.removeWhitelist(payload.getPayload().getProfile());
+				;
 				break;
 			}
 			default:

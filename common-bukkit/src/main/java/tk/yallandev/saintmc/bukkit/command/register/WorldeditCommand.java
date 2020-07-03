@@ -15,12 +15,12 @@ import com.google.common.base.Joiner;
 
 import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.bukkit.BukkitMain;
-import tk.yallandev.saintmc.bukkit.account.BukkitMember;
 import tk.yallandev.saintmc.bukkit.api.worldedit.WorldeditController;
 import tk.yallandev.saintmc.bukkit.api.worldedit.arena.ArenaResponse;
 import tk.yallandev.saintmc.bukkit.api.worldedit.arena.ArenaType;
-import tk.yallandev.saintmc.bukkit.command.BukkitCommandArgs;
+import tk.yallandev.saintmc.bukkit.bukkit.BukkitMember;
 import tk.yallandev.saintmc.common.account.Member;
+import tk.yallandev.saintmc.common.command.CommandArgs;
 import tk.yallandev.saintmc.common.command.CommandClass;
 import tk.yallandev.saintmc.common.command.CommandFramework.Command;
 import tk.yallandev.saintmc.common.permission.Group;
@@ -37,14 +37,13 @@ public class WorldeditCommand implements CommandClass {
 	}
 	
 	@Command(name = "build")
-	public void buildCommand(BukkitCommandArgs cmdArgs) {
+	public void buildCommand(CommandArgs cmdArgs) {
 		if (!cmdArgs.isPlayer()) {
 			cmdArgs.getSender().sendMessage("§4§lERRO §fComando disponivel apenas §c§lin-game");
 			return;
 		}
 
-		BukkitMember member = (BukkitMember) CommonGeneral.getInstance().getMemberManager()
-				.getMember(cmdArgs.getPlayer().getUniqueId());
+		BukkitMember member = (BukkitMember)cmdArgs.getSender();
 		
 		if (checkPermission(member))
 			return;
@@ -55,11 +54,11 @@ public class WorldeditCommand implements CommandClass {
 	}
 
 	@Command(name = "wand", groupToUse = Group.BUILDER)
-	public void wandCommand(BukkitCommandArgs cmdArgs) {
+	public void wandCommand(CommandArgs cmdArgs) {
 		if (!cmdArgs.isPlayer())
 			return;
 
-		Player player = cmdArgs.getPlayer();
+		Player player = ((BukkitMember)cmdArgs.getSender()).getPlayer();
 		Member member = CommonGeneral.getInstance().getMemberManager().getMember(player.getUniqueId());
 
 		if (checkPermission(member))
@@ -70,11 +69,11 @@ public class WorldeditCommand implements CommandClass {
 	}
 
 	@Command(name = "createarena", groupToUse = Group.BUILDER)
-	public void createarenaCommand(BukkitCommandArgs cmdArgs) {
+	public void createarenaCommand(CommandArgs cmdArgs) {
 		if (!cmdArgs.isPlayer())
 			return;
 
-		Player player = cmdArgs.getPlayer();
+		Player player = ((BukkitMember)cmdArgs.getSender()).getPlayer();
 		Member member = CommonGeneral.getInstance().getMemberManager().getMember(player.getUniqueId());
 
 		if (checkPermission(member))
@@ -156,11 +155,11 @@ public class WorldeditCommand implements CommandClass {
 	}
 
 	@Command(name = "set", groupToUse = Group.BUILDER)
-	public void setCommand(BukkitCommandArgs cmdArgs) {
+	public void setCommand(CommandArgs cmdArgs) {
 		if (!cmdArgs.isPlayer())
 			return;
 
-		Player player = cmdArgs.getPlayer();
+		Player player = ((BukkitMember)cmdArgs.getSender()).getPlayer();
 		Member member = CommonGeneral.getInstance().getMemberManager().getMember(player.getUniqueId());
 
 		if (checkPermission(member))
@@ -254,11 +253,11 @@ public class WorldeditCommand implements CommandClass {
 	}
 
 	@Command(name = "undo", groupToUse = Group.BUILDER)
-	public void undoCommand(BukkitCommandArgs cmdArgs) {
+	public void undoCommand(CommandArgs cmdArgs) {
 		if (!cmdArgs.isPlayer())
 			return;
 
-		Player player = cmdArgs.getPlayer();
+		Player player = ((BukkitMember)cmdArgs.getSender()).getPlayer();
 		Member member = CommonGeneral.getInstance().getMemberManager().getMember(player.getUniqueId());
 
 		if (checkPermission(member))

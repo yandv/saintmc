@@ -3,6 +3,7 @@ package tk.yallandev.saintmc.bukkit.command.register;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -11,12 +12,16 @@ import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffectType;
 
 import tk.yallandev.saintmc.CommonGeneral;
-import tk.yallandev.saintmc.bukkit.account.BukkitMember;
 import tk.yallandev.saintmc.bukkit.api.worldedit.arena.ArenaType;
+import tk.yallandev.saintmc.bukkit.bukkit.BukkitMember;
+import tk.yallandev.saintmc.common.account.Member;
+import tk.yallandev.saintmc.common.clan.ClanInfo;
+import tk.yallandev.saintmc.common.clan.enums.ClanHierarchy;
 import tk.yallandev.saintmc.common.command.CommandArgs;
 import tk.yallandev.saintmc.common.command.CommandClass;
 import tk.yallandev.saintmc.common.command.CommandFramework.Command;
 import tk.yallandev.saintmc.common.command.CommandFramework.Completer;
+import tk.yallandev.saintmc.common.medals.Medal;
 import tk.yallandev.saintmc.common.permission.Group;
 import tk.yallandev.saintmc.common.permission.RankType;
 import tk.yallandev.saintmc.common.tag.Tag;
@@ -28,15 +33,15 @@ public class CompleterCommand implements CommandClass {
 	 * 
 	 * @since 1.2
 	 */
-	
+
 	@Command(name = "giftcode", aliases = { "resgatar", "codigo" }, groupToUse = Group.DIRETOR)
 	public void principalCommand(CommandArgs cmdArgs) {
-		
+
 	}
 
 	@Command(name = "send", aliases = { "groupset", "setargrupo" }, groupToUse = Group.ADMIN)
 	public void adminCommand(CommandArgs cmdArgs) {
-		
+
 	}
 
 	@Command(name = "groupset", aliases = { "removevip", "tempgroup", "givevip", "removervip", "unban", "unmute",
@@ -56,11 +61,11 @@ public class CompleterCommand implements CommandClass {
 
 	}
 
-	@Command(name = "lobby", aliases = { "server", "connect", "ir", "go", "discord", "hub", "ping", "play" })
+	@Command(name = "lobby", aliases = { "server", "connect", "ir", "go", "discord", "hub", "ping", "play", "clan" })
 	public void memberCommand(CommandArgs cmdArgs) {
-		
+
 	}
-	
+
 	@Completer(name = "giftcode", aliases = { "resgatar", "codigo" })
 	public List<String> giftcodeCompleter(CommandArgs cmdArgs) {
 		if (cmdArgs.getArgs().length == 1) {
@@ -128,7 +133,88 @@ public class CompleterCommand implements CommandClass {
 
 		return new ArrayList<>();
 	}
-	
+
+	@Completer(name = "clan")
+	public List<String> clanCompleter(CommandArgs cmdArgs) {
+		if (cmdArgs.getSender() instanceof Member) {
+			Member member = (Member) cmdArgs.getSender();
+			
+			if (cmdArgs.getArgs().length == 1) {
+				List<String> argList = new ArrayList<>();
+				List<String> avaiableArgs = Arrays.asList("criar", "apagar", "leave", "top", "kick", "setgroup",
+						"membros", "info", "join", "deny", "chat");
+
+				if (cmdArgs.getArgs()[0].isEmpty())
+					for (String arg : avaiableArgs)
+						argList.add(arg);
+				else {
+					for (String arg : avaiableArgs)
+						if (arg.toLowerCase().startsWith(cmdArgs.getArgs()[0].toLowerCase()))
+							argList.add(arg);
+				}
+
+				return argList;
+			} else if (cmdArgs.getArgs().length == 2) {
+				List<String> argList = new ArrayList<>();
+				if (member.hasClan()) {
+					if (cmdArgs.getArgs()[0].equalsIgnoreCase("kick")) {
+						if (cmdArgs.getArgs()[1].isEmpty())
+							for (String arg : member.getClan().getMemberMap().values().stream()
+									.map(ClanInfo::getPlayerName).collect(Collectors.toList()))
+								argList.add(arg);
+						else {
+							for (String arg : member.getClan().getMemberMap().values().stream()
+									.map(ClanInfo::getPlayerName).collect(Collectors.toList()))
+								if (arg.toLowerCase().startsWith(cmdArgs.getArgs()[1].toLowerCase()))
+									argList.add(arg);
+						}
+					} else if (cmdArgs.getArgs()[0].equalsIgnoreCase("invite")) {
+						if (cmdArgs.getArgs()[1].isEmpty())
+							for (String arg : getPlayerList(cmdArgs.getArgs()).stream()
+									.filter(player -> !member.getClan().isMember(player)).collect(Collectors.toList()))
+								argList.add(arg);
+						else {
+							for (String arg : getPlayerList(cmdArgs.getArgs()).stream()
+									.filter(player -> !member.getClan().isMember(player)).collect(Collectors.toList()))
+								if (arg.toLowerCase().startsWith(cmdArgs.getArgs()[1].toLowerCase()))
+									argList.add(arg);
+						}
+					} else if (cmdArgs.getArgs()[0].equalsIgnoreCase("setgroup")) {
+						if (cmdArgs.getArgs()[1].isEmpty())
+							for (String arg : member.getClan().getMemberMap().values().stream()
+									.map(ClanInfo::getPlayerName).collect(Collectors.toList()))
+								argList.add(arg);
+						else {
+							for (String arg : member.getClan().getMemberMap().values().stream()
+									.map(ClanInfo::getPlayerName).collect(Collectors.toList()))
+								if (arg.toLowerCase().startsWith(cmdArgs.getArgs()[1].toLowerCase()))
+									argList.add(arg);
+						}
+					}
+				}
+
+				return argList;
+			} else if (cmdArgs.getArgs().length == 3) {
+				List<String> argList = new ArrayList<>();
+
+				if (cmdArgs.getArgs()[0].equalsIgnoreCase("setgroup")) {
+					if (cmdArgs.getArgs()[2].isEmpty()) {
+						for (ClanHierarchy clanHierarchy : ClanHierarchy.values())
+							argList.add(clanHierarchy.toString());
+					} else {
+						for (ClanHierarchy clanHierarchy : ClanHierarchy.values())
+							if (clanHierarchy.toString().toLowerCase().startsWith(cmdArgs.getArgs()[2].toLowerCase()))
+								argList.add(clanHierarchy.toString());
+					}
+				}
+
+				return argList;
+			}
+		}
+
+		return new ArrayList<>();
+	}
+
 	@Completer(name = "send")
 	public List<String> sendCompleter(CommandArgs cmdArgs) {
 		if (cmdArgs.getArgs().length == 1) {
@@ -235,6 +321,30 @@ public class CompleterCommand implements CommandClass {
 		return new ArrayList<>();
 	}
 
+	@Completer(name = "medal")
+	public List<String> medalCompleter(CommandArgs cmdArgs) {
+		if (cmdArgs.getArgs().length == 1) {
+			List<String> tagList = new ArrayList<>();
+			BukkitMember member = (BukkitMember) CommonGeneral.getInstance().getMemberManager()
+					.getMember(cmdArgs.getSender().getUniqueId());
+
+			if (cmdArgs.getArgs()[0].isEmpty()) {
+				for (Medal medal : Medal.values())
+					if (member.getMedalList().contains(medal))
+						tagList.add(medal.name());
+			} else {
+				for (Medal medal : Medal.values())
+					if (member.getMedalList().contains(medal))
+						if (medal.name().startsWith(cmdArgs.getArgs()[0].toUpperCase()))
+							tagList.add(medal.name());
+			}
+
+			return tagList;
+		}
+
+		return new ArrayList<>();
+	}
+
 	@Completer(name = "enchant")
 	public List<String> enchantCompleter(CommandArgs cmdArgs) {
 		if (cmdArgs.getArgs().length == 1) {
@@ -274,7 +384,7 @@ public class CompleterCommand implements CommandClass {
 
 		return getPlayerList(cmdArgs.getArgs());
 	}
-	
+
 	@Completer(name = "set")
 	public List<String> setCompleter(CommandArgs cmdArgs) {
 		if (cmdArgs.getArgs().length == 1) {
@@ -294,7 +404,7 @@ public class CompleterCommand implements CommandClass {
 
 		return new ArrayList<>();
 	}
-	
+
 	@Completer(name = "createarena")
 	public List<String> createarenaCompleter(CommandArgs cmdArgs) {
 		if (cmdArgs.getArgs().length == 1) {
@@ -308,7 +418,7 @@ public class CompleterCommand implements CommandClass {
 					if (arenaType.name().toLowerCase().startsWith(cmdArgs.getArgs()[0].toLowerCase()))
 						typeList.add(arenaType.name());
 			}
-			
+
 			return typeList;
 		} else if (cmdArgs.getArgs().length == 2) {
 			List<String> materialList = new ArrayList<>();

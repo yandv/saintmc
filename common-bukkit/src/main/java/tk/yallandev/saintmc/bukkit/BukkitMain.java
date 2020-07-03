@@ -59,6 +59,7 @@ import tk.yallandev.saintmc.bukkit.networking.redis.BukkitPubSubHandler;
 import tk.yallandev.saintmc.bukkit.permission.PermissionManager;
 import tk.yallandev.saintmc.bukkit.scheduler.UpdateScheduler;
 import tk.yallandev.saintmc.common.account.Member;
+import tk.yallandev.saintmc.common.backend.data.ClanData;
 import tk.yallandev.saintmc.common.backend.data.PlayerData;
 import tk.yallandev.saintmc.common.backend.data.ReportData;
 import tk.yallandev.saintmc.common.backend.data.ServerData;
@@ -66,7 +67,7 @@ import tk.yallandev.saintmc.common.backend.data.StatusData;
 import tk.yallandev.saintmc.common.backend.database.mongodb.MongoConnection;
 import tk.yallandev.saintmc.common.backend.database.redis.RedisDatabase;
 import tk.yallandev.saintmc.common.backend.database.redis.RedisDatabase.PubSubListener;
-import tk.yallandev.saintmc.common.command.CommandLoader;
+import tk.yallandev.saintmc.common.data.impl.ClanDataImpl;
 import tk.yallandev.saintmc.common.data.impl.PlayerDataImpl;
 import tk.yallandev.saintmc.common.data.impl.ReportDataImpl;
 import tk.yallandev.saintmc.common.data.impl.ServerDataImpl;
@@ -153,16 +154,18 @@ public class BukkitMain extends JavaPlugin {
 			ServerData serverData = new ServerDataImpl(mongo, redis);
 			ReportData reportData = new ReportDataImpl(mongo, redis);
 			StatusData statusData = new StatusDataImpl(mongo);
+			ClanData clanData = new ClanDataImpl(mongo, redis);
 
 			general.setPlayerData(playerData);
 			general.setServerData(serverData);
 			general.setReportData(reportData);
 			general.setStatusData(statusData);
+			general.setClanData(clanData);
 
 			if (general.getServerType() != ServerType.PRIVATE_SERVER)
 				getServer().getScheduler().runTaskAsynchronously(getInstance(),
 						pubSubListener = new PubSubListener(redis, new BukkitPubSubHandler(), "account-field",
-								"report-field", "report-action", "server-info"));
+								"clan-field", "report-field", "report-action", "server-info"));
 
 		} catch (Exception ex) {
 			ex.printStackTrace();
@@ -270,8 +273,7 @@ public class BukkitMain extends JavaPlugin {
 						"trigger", "viaver", "protocolsupport", "ps", "holograms", "hd", "holo", "hologram", "restart",
 						"stop", "filter", "packetlog", "pl", "plugins", "timings", "whitelist");
 
-				new CommandLoader(BukkitCommandFramework.INSTANCE).loadCommandsFromPackage(getFile(),
-						"tk.yallandev.saintmc.bukkit.command.register");
+				BukkitCommandFramework.INSTANCE.loadCommands("tk.yallandev.saintmc.bukkit.command.register");
 
 				Bukkit.setWhitelist(false);
 			}

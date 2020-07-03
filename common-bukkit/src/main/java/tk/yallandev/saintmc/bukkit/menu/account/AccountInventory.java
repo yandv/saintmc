@@ -34,13 +34,12 @@ public class AccountInventory {
 						+ player.getLoginConfiguration().getAccountType().name()
 				: "\n§7";
 
-		menu.setItem(13,
-				new ItemBuilder().type(Material.SKULL_ITEM).durability(3)
-						.name((player.getGroup() == Group.MEMBRO ? "§7" + player.getPlayerName()
-								: Tag.getByName(player.getGroup().name()).getPrefix() + " " + player.getPlayerName())
-								+ " " + "§7[" + player.getLeague().getColor() + player.getLeague().getSymbol() + "§7]")
-						.lore(lore).skin(player.getPlayerName()).build());
-		
+		menu.setItem(13, new ItemBuilder().type(Material.SKULL_ITEM).durability(3)
+				.name((player.getGroup() == Group.MEMBRO ? "§7" + player.getPlayerName()
+						: Tag.getByName(player.getServerGroup().name()).getPrefix() + " " + player.getPlayerName())
+						+ " " + "§7[" + player.getLeague().getColor() + player.getLeague().getSymbol() + "§7]")
+				.lore(lore).skin(player.getPlayerName()).build());
+
 		create(menu, player);
 
 		menu.setUpdateHandler((p, m) -> create(m, player));

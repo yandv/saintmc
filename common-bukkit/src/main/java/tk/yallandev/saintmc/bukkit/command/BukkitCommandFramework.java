@@ -40,18 +40,24 @@ import tk.yallandev.saintmc.common.command.CommandFramework;
 import tk.yallandev.saintmc.common.permission.Group;
 
 public class BukkitCommandFramework implements CommandFramework {
-	
+
 	public static final BukkitCommandFramework INSTANCE = new BukkitCommandFramework(BukkitMain.getInstance());
 
 	private Plugin plugin;
 	private final Map<String, Entry<Method, Object>> commandMap = new HashMap<String, Entry<Method, Object>>();
 	private CommandMap map;
-	
+
 	private Map<String, org.bukkit.command.Command> knownCommands;
+
+	/**
+	 * 
+	 * @param plugin
+	 * @deprecated use the Instance
+	 */
 
 	public BukkitCommandFramework(Plugin plugin) {
 		this.plugin = plugin;
-		
+
 		if (plugin.getServer().getPluginManager() instanceof SimplePluginManager) {
 			SimplePluginManager manager = (SimplePluginManager) plugin.getServer().getPluginManager();
 
@@ -62,7 +68,7 @@ public class BukkitCommandFramework implements CommandFramework {
 			} catch (IllegalArgumentException | NoSuchFieldException | IllegalAccessException | SecurityException e) {
 				e.printStackTrace();
 			}
-			
+
 			try {
 				Field field = map.getClass().getDeclaredField("knownCommands");
 
@@ -163,7 +169,7 @@ public class BukkitCommandFramework implements CommandFramework {
 
 	public void registerHelp() {
 		Set<HelpTopic> help = new TreeSet<HelpTopic>(HelpTopicComparator.helpTopicComparatorInstance());
-		
+
 		for (String s : commandMap.keySet()) {
 			if (!s.contains(".")) {
 				org.bukkit.command.Command cmd = map.getCommand(s);
@@ -171,7 +177,7 @@ public class BukkitCommandFramework implements CommandFramework {
 				help.add(topic);
 			}
 		}
-		
+
 		IndexHelpTopic topic = new IndexHelpTopic(plugin.getName(), "All commands for " + plugin.getName(), null, help,
 				"Below is a list of all " + plugin.getName() + " commands:");
 		Bukkit.getServer().getHelpMap().addTopic(topic);
@@ -249,16 +255,16 @@ public class BukkitCommandFramework implements CommandFramework {
 	public Class<?> getJarClass() {
 		return plugin.getClass();
 	}
-	
+
 	public class BukkitCommand extends org.bukkit.command.Command {
 
 		private Plugin owningPlugin;
 		private CommandExecutor executor;
-		
+
 		@Setter
 		@Getter
 		private BukkitCompleter completer;
-		
+
 		@Setter
 		private Group group;
 
@@ -362,7 +368,7 @@ public class BukkitCommandFramework implements CommandFramework {
 			return true;
 		}
 	}
-	
+
 	public class BukkitCompleter implements TabCompleter {
 
 		private final Map<String, Entry<Method, Object>> completers = new HashMap<String, Entry<Method, Object>>();
