@@ -33,21 +33,21 @@ public class LoginConfiguration {
 
 	public void register(String password, String ipAddress) {
 		this.password = password;
-		lastIp = ipAddress;
-		lastLogin = System.currentTimeMillis();
-		logged = true;
+		this.lastIp = ipAddress;
+		this.lastLogin = System.currentTimeMillis();
+		this.logged = true;
 		CommonGeneral.getInstance().getPlayerData().updateMember(player, "loginConfiguration");
 	}
 
 	public void login(String ipAddress) {
-		lastIp = ipAddress;
-		lastLogin = System.currentTimeMillis();
-		logged = true;
+		this.lastIp = ipAddress;
+		this.lastLogin = System.currentTimeMillis();
+		this.logged = true;
 		CommonGeneral.getInstance().getPlayerData().updateMember(player, "loginConfiguration");
 	}
 
 	public void logOut() {
-		logged = false;
+		this.logged = false;
 		CommonGeneral.getInstance().getPlayerData().updateMember(player, "loginConfiguration");
 	}
 
@@ -55,7 +55,7 @@ public class LoginConfiguration {
 		if (this.accountType != AccountType.NONE) {
 			throw new IllegalStateException(player.getPlayerName() + " accountType already set!");
 		}
-		
+
 		this.accountType = accountType;
 		CommonGeneral.getInstance().getPlayerData().updateMember(player, "loginConfiguration");
 	}

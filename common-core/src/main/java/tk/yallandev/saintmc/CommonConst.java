@@ -40,7 +40,7 @@ public class CommonConst {
 	public static final String YOUTUBER_FORM = "https://youtuber.saintmc.net/";
 	public static final String APPEAL_FORM = "https://appeal.saintmc.net/";
 	
-	public static final String API = "http://api.saintmc.yallandev.tk";
+	public static final String API = "http://apidata.saintmc.net";
 	public static final String DOWNLOAD_KEY = "kangaroo123";
 
 	public static final String SKIN_URL = API + "/skin/";

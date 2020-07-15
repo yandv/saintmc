@@ -7,7 +7,7 @@ public class StringUtils {
 	public static String join(List<String> input, String separator) {
 		if (input == null || input.size() <= 0)
 			return "";
-		
+
 		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < input.size(); i++) {
 
@@ -22,11 +22,11 @@ public class StringUtils {
 		return sb.toString();
 
 	}
-	
+
 	public static String join(String[] input, String separator) {
 		if (input == null || input.length <= 0)
 			return "";
-		
+
 		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < input.length; i++) {
 
@@ -40,29 +40,21 @@ public class StringUtils {
 
 		return sb.toString();
 	}
-	
-    public static String format(int time) {
-        if (time >= 3600) {
-            int hours = (time / 3600), minutes = (time % 3600) / 60, seconds = (time % 3600) % 60;
-            return (hours < 10 ? "0" : "") + hours + ":" + (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
-        } else {
-            int minutes = (time / 60), seconds = (time % 60);
-            return minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
-        }
-    }
-    
-    public static String formatTime(int time) {
-    	int minutes = time / 60, seconds = (time % 3600) % 60;
-    	return (minutes > 0 ? minutes + "m " : "") + seconds + "s";
-//    	return (minutes > 0 ? minutes + "m " : "") + (seconds < 10 ? "0" : "") + seconds + "s";
-//    	
-//        if (time >= 3600) {
-//            int hours = (time / 3600), minutes = (time % 3600) / 60, seconds = (time % 3600) % 60;
-//            return (hours < 10 ? "0" : "") + hours + ":" + (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
-//        } else {
-//            int minutes = (time / 60), seconds = (time % 60);
-//            return minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
-//        }
-    }
+
+	public static String format(int time) {
+		if (time >= 3600) {
+			int hours = (time / 3600), minutes = (time % 3600) / 60, seconds = (time % 3600) % 60;
+			return (hours < 10 ? "0" : "") + hours + ":" + (minutes < 10 ? "0" : "") + minutes + ":"
+					+ (seconds < 10 ? "0" : "") + seconds;
+		} else {
+			int minutes = (time / 60), seconds = (time % 60);
+			return minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
+		}
+	}
+
+	public static String formatTime(int time) {
+		int minutes = time / 60, seconds = (time % 3600) % 60;
+		return (minutes > 0 ? minutes + "m " : "") + seconds + "s";
+	}
 
 }

@@ -125,6 +125,14 @@ public class SimpleScoreboard implements Scoreboard {
 					team.setSuffix(suffix);
 			}
 		}
+		
+		for (Score score : scoreList.values()) {
+			if (score.getTeamName().equals(teamName)) {
+				score.setPrefix(prefix);
+				score.setSuffix(suffix);
+			}
+		}
+		
 	}
 
 	@Override

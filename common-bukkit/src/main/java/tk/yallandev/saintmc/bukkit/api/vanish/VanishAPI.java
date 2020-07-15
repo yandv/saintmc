@@ -39,6 +39,9 @@ public class VanishAPI {
 			
 			Member onlineP = CommonGeneral.getInstance().getMemberManager().getMember(online.getUniqueId());
 			
+			if (onlineP == null)
+				continue;
+			
 			if (group != null && onlineP.getServerGroup().ordinal() <= group.ordinal()) {
 				PlayerHideToPlayerEvent event = new PlayerHideToPlayerEvent(player, online);
 				

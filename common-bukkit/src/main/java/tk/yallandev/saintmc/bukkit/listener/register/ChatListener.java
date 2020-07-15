@@ -21,6 +21,7 @@ import tk.yallandev.saintmc.common.account.League;
 import tk.yallandev.saintmc.common.account.Member;
 import tk.yallandev.saintmc.common.account.configuration.LoginConfiguration.AccountType;
 import tk.yallandev.saintmc.common.ban.constructor.Mute;
+import tk.yallandev.saintmc.common.medals.Medal;
 import tk.yallandev.saintmc.common.permission.Group;
 import tk.yallandev.saintmc.common.server.ServerType;
 import tk.yallandev.saintmc.common.utils.DateUtils;
@@ -155,15 +156,17 @@ public class ChatListener extends Listener {
 		if (player.hasGroupPermission(Group.LIGHT))
 			event.setMessage(event.getMessage().replace("&", "§"));
 
-		TextComponent textComponent = player.getMedal() != null
-				? new MessageBuilder("" + player.getMedal().getChatColor() + player.getMedal().getMedalIcon() + " ")
-						.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
-								TextComponent.fromLegacyText(player.getMedal().getMedalDescription())))
-						.create()
-				: new TextComponent("");
+		TextComponent textComponent = new TextComponent("");
+
+		if (player.getMedal() != Medal.NONE)
+			textComponent.addExtra(
+					new MessageBuilder("" + player.getMedal().getChatColor() + player.getMedal().getMedalIcon() + " ")
+							.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+									TextComponent.fromLegacyText(player.getMedal().getMedalDescription())))
+							.create());
 
 		textComponent.addExtra(player.isUsingFake()
-				? new MessageBuilder(ChatColor.GRAY + "(" + League.UNRANKED.getSymbol() + ChatColor.GRAY + ") ")
+				? new MessageBuilder(ChatColor.GRAY + "(§f" + League.UNRANKED.getSymbol() + ChatColor.GRAY + ") ")
 						.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
 								TextComponent.fromLegacyText(ChatColor.BOLD + League.UNRANKED.getSymbol() + " "
 										+ ChatColor.BOLD + League.UNRANKED.name())))
@@ -190,36 +193,16 @@ public class ChatListener extends Listener {
 
 		textComponent.addExtra(new TextComponent(" §7»§f"));
 
-		TextComponent[] textTo = new TextComponent[event.getMessage().split(" ").length];
-
-		int i = 0;
 		for (String msg : event.getMessage().split(" ")) {
 			msg = " " + msg;
-
-			TextComponent txt = new TextComponent(
-					(i == 0 ? "§f" : ChatColor.getLastColors(textTo[i - 1].getText())) + msg);
 			List<String> url = StringURLUtils.extractUrls(msg);
 
-			if (player.hasGroupPermission(Group.SAINT)) {
-				if (url.size() > 0) {
-					txt.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, url.get(0)));
-
-					if (player.hasGroupPermission(Group.SAINT))
-						txt.setHoverEvent(
-								new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(url.get(0))));
-					else
-						txt.setHoverEvent(null);
-				} else
-					txt.setHoverEvent(null);
-			} else
-				txt.setHoverEvent(null);
-
-			textTo[i] = txt;
-			++i;
+			textComponent.addExtra(url.isEmpty() ? new MessageBuilder(msg).setHoverable(true).create()
+					: new MessageBuilder(msg).setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, url.get(0)))
+							.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+									TextComponent.fromLegacyText(url.get(0))))
+							.create());
 		}
-
-		for (TextComponent txt : textTo)
-			textComponent.addExtra(txt);
 
 		for (Player r : event.getRecipients()) {
 			try {
@@ -233,10 +216,7 @@ public class ChatListener extends Listener {
 						public void run() {
 							Player p = Bukkit.getPlayer(r.getUniqueId());
 
-							if (p == null)
-								return;
-
-							if (!p.isOnline())
+							if (p == null || !p.isOnline())
 								return;
 
 							p.kickPlayer("ERROR");

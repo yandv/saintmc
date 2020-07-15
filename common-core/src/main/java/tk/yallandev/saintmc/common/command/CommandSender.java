@@ -20,4 +20,6 @@ public interface CommandSender {
     void sendMessage(BaseComponent str);
 
     void sendMessage(BaseComponent[] fromLegacyText);
+    
+    boolean isPlayer();
 }

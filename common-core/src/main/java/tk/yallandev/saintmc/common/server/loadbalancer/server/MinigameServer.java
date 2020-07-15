@@ -13,7 +13,7 @@ import tk.yallandev.saintmc.common.server.ServerType;
 public abstract class MinigameServer extends ProxiedServer {
 
     private int time;
-    private String map;
+    private String map = "-/-";
     private MinigameState state;
 
     public MinigameServer(String serverId, ServerType type, Set<UUID> players, Set<Profile> profile, int maxPlayers, boolean joinEnabled) {

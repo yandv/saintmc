@@ -12,25 +12,17 @@ public class AnticheatAlertPacket extends Packet {
 		super(jsonObject);
 	}
 
-	public AnticheatAlertPacket(String hackType, int cps, int alerts, int maxAlerts) {
+	public AnticheatAlertPacket(String hackType, JsonObject jsonObject) {
 		super(new JsonBuilder().addProperty("packetType", PacketType.ANTICHEAT_ALERT.name())
-				.addProperty("hackType", hackType).addProperty("cps", cps).addProperty("alerts", alerts).addProperty("maxAlerts", maxAlerts).build());
+				.addProperty("hackType", hackType).add("metadata", jsonObject).build());
 	}
 
 	public String getHackType() {
 		return getJsonObject().get("hackType").getAsString();
 	}
-	
-	public int getCps() {
-		return getJsonObject().get("cps").getAsInt();
-	}
-	
-	public int getAlerts() {
-		return getJsonObject().get("alerts").getAsInt();
-	}
 
-	public int getMaxAlerts() {
-		return getJsonObject().get("maxAlerts").getAsInt();
+	public JsonObject getMetadata() {
+		return getJsonObject().get("metadata").getAsJsonObject();
 	}
 
 }

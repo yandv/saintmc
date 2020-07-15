@@ -6,12 +6,13 @@ import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.config.ServerInfo;
 import tk.yallandev.saintmc.common.server.ServerManager;
 import tk.yallandev.saintmc.common.server.ServerType;
+import tk.yallandev.saintmc.common.server.loadbalancer.server.ProxiedServer;
 
 public class BungeeServerManager extends ServerManager {
 
 	@Override
-	public void addActiveServer(String serverAddress, String serverIp, ServerType type, int maxPlayers) {
-		super.addActiveServer(serverAddress, serverIp, type, maxPlayers);
+	public ProxiedServer addActiveServer(String serverAddress, String serverIp, ServerType type, int maxPlayers) {
+		ProxiedServer server = super.addActiveServer(serverAddress, serverIp, type, maxPlayers);
 
 		if (!ProxyServer.getInstance().getServers().containsKey(serverIp.toLowerCase())) {
 			String ipAddress = serverAddress.split(":")[0];
@@ -22,6 +23,8 @@ public class BungeeServerManager extends ServerManager {
 
 			ProxyServer.getInstance().getServers().put(serverIp.toLowerCase(), localServerInfo);
 		}
+		
+		return server;
 	}
 
 	@Override

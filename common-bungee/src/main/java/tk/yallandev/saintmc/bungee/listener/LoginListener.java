@@ -58,8 +58,9 @@ public class LoginListener implements Listener {
 		if (socket instanceof InetSocketAddress) {
 			InetSocketAddress inetSocketAddress = (InetSocketAddress) socket;
 
-			if (blockedAddress.contains(inetSocketAddress.getHostString()))
+			if (blockedAddress.contains(inetSocketAddress.getHostString())) {
 				event.setCancelled(true);
+			}
 		}
 	}
 
@@ -105,7 +106,7 @@ public class LoginListener implements Listener {
 					CommonConst.DEFAULT_WEB.doRequest(
 							CommonConst.MOJANG_FETCHER + "session/?ip=" + URLEncoder.encode(ipAddress, "UTF-8"),
 							Method.GET, new FutureCallback<JsonElement>() {
-
+								
 								@Override
 								public void result(JsonElement result, Throwable error) {
 									if (error == null) {

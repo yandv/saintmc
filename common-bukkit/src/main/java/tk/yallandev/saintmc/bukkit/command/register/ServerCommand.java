@@ -10,14 +10,12 @@ import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.SimplePluginManager;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 
 import com.google.common.base.Joiner;
 
-import co.aikar.timings.Timings;
 import net.md_5.bungee.api.ChatColor;
 import net.minecraft.server.v1_8_R3.MinecraftServer;
 import tk.yallandev.saintmc.CommonGeneral;
@@ -125,47 +123,6 @@ public class ServerCommand implements CommandClass {
 			}
 
 		}.runTaskTimer(BukkitMain.getInstance(), 0, 20);
-	}
-
-	@Command(name = "timings", groupToUse = Group.ADMIN)
-	public void timingsCommand(CommandArgs cmdArgs) {
-		CommandSender sender = cmdArgs.getSender();
-		String[] args = cmdArgs.getArgs();
-
-		if (args.length == 0) {
-			sender.sendMessage(" §a* §fUse §a/timings <on:off:reset:report>§f");
-			return;
-		}
-
-		if (args[0].equalsIgnoreCase("on")) {
-			((SimplePluginManager) Bukkit.getPluginManager()).useTimings(true);
-			Timings.setTimingsEnabled(true);
-			sender.sendMessage("Enabled Timings & Reset");
-			return;
-		}
-
-		if (args[0].equalsIgnoreCase("off")) {
-			((SimplePluginManager) Bukkit.getPluginManager()).useTimings(false);
-			Timings.setTimingsEnabled(false);
-			sender.sendMessage("Disabled Timings");
-			return;
-		}
-
-		if (!Timings.isTimingsEnabled()) {
-			sender.sendMessage("Please enable timings by typing /timings on");
-			return;
-		}
-
-		if (args[0].equals("reset")) {
-			Timings.reset();
-			sender.sendMessage("Timings reset");
-			return;
-		}
-
-		if (args[0].equalsIgnoreCase("merged") || args[0].equalsIgnoreCase("report")
-				|| args[0].equalsIgnoreCase("paste")) {
-			Timings.generateReport(((BukkitCommandSender)sender).getSender());
-		}
 	}
 
 	@Command(name = "time", groupToUse = Group.ADMIN)

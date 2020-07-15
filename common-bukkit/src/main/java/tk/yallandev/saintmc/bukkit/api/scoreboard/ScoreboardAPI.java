@@ -8,10 +8,8 @@ import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Team;
 
-import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.common.account.League;
 import tk.yallandev.saintmc.common.clan.Clan;
-import tk.yallandev.saintmc.common.medals.Medal;
 import tk.yallandev.saintmc.common.tag.Tag;
 
 public class ScoreboardAPI {
@@ -877,13 +875,13 @@ public class ScoreboardAPI {
 		}
 	}
 
-	public static String getTeamName(Tag tag, League liga, Medal medal, boolean chroma, boolean clanTag, Clan clan) {
-		String clanId = clanTag ? "" + chars[CommonGeneral.getInstance().getClanManager().getClans().size()
-				- CommonGeneral.getInstance().getClanManager().getIndexOf(clan.getUniqueId())] : "";
-
+	public static String getTeamName(Tag tag, League liga, boolean chroma, boolean clanTag, Clan clan) {
 		return chars[tag.ordinal()] + "-" + chars[League.values().length - liga.ordinal()] + "-"
-				+ (medal == null ? "" : chars[Medal.values().length - medal.ordinal()]) + "-" + (chroma ? "a" : "b")
-				+ "-" + clanId;
+				+ (clanTag ? clan.getClanAbbreviation().toLowerCase() + "-" : "") + (chroma ? "a" : "b");
+	}
+
+	public static String getTeamName(Tag tag) {
+		return chars[tag.ordinal()] + "";
 	}
 
 }

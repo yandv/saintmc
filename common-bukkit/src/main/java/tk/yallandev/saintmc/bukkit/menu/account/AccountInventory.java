@@ -26,7 +26,8 @@ public class AccountInventory {
 	private static final DateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 
 	public AccountInventory(Player sender, Member player) {
-		MenuInventory menu = new MenuInventory("§7Conta de " + player.getPlayerName(), 5);
+		MenuInventory menu = new MenuInventory(
+				"§7Conta de " + (player.isUsingFake() ? player.getFakeName() : player.getPlayerName()), 5);
 		boolean isStaff = Member.hasGroupPermission(sender.getUniqueId(), Group.DEV);
 
 		String lore = isStaff

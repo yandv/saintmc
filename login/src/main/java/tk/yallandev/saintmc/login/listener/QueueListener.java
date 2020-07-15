@@ -65,7 +65,6 @@ public class QueueListener implements Listener {
 	
 	@EventHandler
 	public void onPlayerChangeLoginStatus(PlayerChangeLoginStatusEvent event) {
-
 		/**
 		 * If the player is the login status change
 		 */
@@ -121,8 +120,10 @@ public class QueueListener implements Listener {
 			queueList.put(player, true);
 			handleTeleport(player, false);
 			player.sendMessage("§aVocê tem prioridade na fila!");
+			System.out.println("5");
 		} else {
 			queueList.put(player, false);
+			System.out.println("6");
 			player.sendMessage("§aVocê foi colocado na fila para se conectar ao lobby! §e(" + queueList.size() + "°)");
 		}
 	}

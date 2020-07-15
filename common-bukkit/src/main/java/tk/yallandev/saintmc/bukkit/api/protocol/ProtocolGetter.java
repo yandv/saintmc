@@ -25,21 +25,19 @@ public class ProtocolGetter {
 	private static ProtocolVersion nativeVersion = UNKNOWN;
 
 	public static void foundDependencies() {
-		String version = Bukkit.getServer().getClass().getPackage().getName().substring(23);
-
 		try {
 			Class.forName("protocolsupport.api.ProtocolSupportAPI");
 			BukkitMain.getInstance().getLogger().info("ProtocolSupport encontrado!");
 			protocolSupport = true;
 		} catch (ClassNotFoundException e) {
-			if (version.equals("v1_7_R4")) {
-				try {
-					Class.forName("org.spigotmc.ProtocolInjector");
-					BukkitMain.getInstance().getLogger().info("ProtocolHack encontrado!");
-					protocolHack = true;
-				} catch (ClassNotFoundException e2) {
-				}
-			}
+//			if (version.equals("v1_7_R4")) {
+//				try {
+//					Class.forName("org.spigotmc.ProtocolInjector");
+//					BukkitMain.getInstance().getLogger().info("ProtocolHack encontrado!");
+//					protocolHack = true;
+//				} catch (ClassNotFoundException e2) {
+//				}
+//			}
 		}
 
 		try {
@@ -48,17 +46,23 @@ public class ProtocolGetter {
 			viaVersion = true;
 		} catch (ClassNotFoundException e) {
 		}
+		
+		try {
+			String version = Bukkit.getServer().getClass().getPackage().getName().substring(23);
 
-		if (version.startsWith("v1_7_R")) {
-			nativeVersion = (version.endsWith("R1") || version.endsWith("R2")) ? MINECRAFT_1_7_5 : MINECRAFT_1_7_10;
-		} else if (version.startsWith("v1_8_R")) {
+			if (version.startsWith("v1_7_R")) {
+				nativeVersion = (version.endsWith("R1") || version.endsWith("R2")) ? MINECRAFT_1_7_5 : MINECRAFT_1_7_10;
+			} else if (version.startsWith("v1_8_R")) {
+				nativeVersion = MINECRAFT_1_8;
+			} else if (version.startsWith("v1_9_R")) {
+				nativeVersion = MINECRAFT_1_9;
+			} else if (version.startsWith("v1_10_R")) {
+				nativeVersion = MINECRAFT_1_10;
+			} else if (version.startsWith("v1_11_R")) {
+				nativeVersion = MINECRAFT_1_11;
+			}
+		} catch (StringIndexOutOfBoundsException ex) {
 			nativeVersion = MINECRAFT_1_8;
-		} else if (version.startsWith("v1_9_R")) {
-			nativeVersion = MINECRAFT_1_9;
-		} else if (version.startsWith("v1_10_R")) {
-			nativeVersion = MINECRAFT_1_10;
-		} else if (version.startsWith("v1_11_R")) {
-			nativeVersion = MINECRAFT_1_11;
 		}
 	}
 

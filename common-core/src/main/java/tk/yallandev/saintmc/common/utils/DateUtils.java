@@ -18,7 +18,7 @@ public class DateUtils {
 	}
 	
 	public static String formatTime(long time, DecimalFormat decimalFormat) {
-		long seconds = (time - System.currentTimeMillis()) / 1000l;
+		double seconds = (double)(time - System.currentTimeMillis()) / 1000;
 		return decimalFormat.format(seconds);
 	}
 

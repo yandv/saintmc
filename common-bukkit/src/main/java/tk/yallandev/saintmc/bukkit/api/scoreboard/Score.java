@@ -6,17 +6,17 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class Score {
-	
+
 	private String teamName;
 	private String scoreName;
-	
+
 	private String prefix;
 	private String suffix;
-	
+
 	public Score(String text, String teamName) {
 		String part1 = text;
 		String part2 = "";
-		
+
 		/*
 		 *  
 		 */
@@ -41,26 +41,29 @@ public class Score {
 		String id = "";
 
 		for (int i = 0; i < (teamName + "").length(); i++)
-			id = id + "§" + (teamName + "").charAt(i);
-		
+			if (id.length() < 16)
+				id += "§" + (teamName + "").charAt(i);
+			else
+				break;
+
 		this.prefix = part1;
 		this.suffix = part2;
 		this.teamName = teamName;
 		this.scoreName = id;
-		
+
 		if (this.teamName.length() > 16)
 			this.teamName = this.teamName.substring(0, 16);
-		
+
 		if (this.scoreName.length() > 16)
 			this.scoreName = this.scoreName.substring(0, 16);
 	}
-	
+
 	public void setPrefix(String prefix) {
 		this.prefix = prefix;
 	}
-	
+
 	public void setSuffix(String suffix) {
 		this.suffix = suffix;
 	}
-	
+
 }

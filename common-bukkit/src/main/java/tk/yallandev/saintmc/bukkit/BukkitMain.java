@@ -38,9 +38,15 @@ import com.google.common.io.ByteStreams;
 
 import lombok.Getter;
 import lombok.Setter;
+import net.saintmc.anticheat.AnticheatController;
+import net.saintmc.anticheat.check.CheckController;
+import net.saintmc.anticheat.check.register.CombatCheck;
+import net.saintmc.anticheat.check.register.MovementCheck;
+import net.saintmc.anticheat.listener.StorageListener;
 import tk.yallandev.hologramapi.controller.HologramController;
 import tk.yallandev.saintmc.CommonConst;
 import tk.yallandev.saintmc.CommonGeneral;
+import tk.yallandev.saintmc.bukkit.anticheat.alert.AlertController;
 import tk.yallandev.saintmc.bukkit.api.character.CharacterListener;
 import tk.yallandev.saintmc.bukkit.api.cooldown.CooldownController;
 import tk.yallandev.saintmc.bukkit.api.item.ActionItemListener;
@@ -95,6 +101,7 @@ public class BukkitMain extends JavaPlugin {
 
 	private SkinController skinManager;
 	private WorldeditController worldeditController;
+	private AnticheatController anticheatController;
 
 	private PermissionManager permissionManager;
 	private ServerManager serverManager;
@@ -110,6 +117,8 @@ public class BukkitMain extends JavaPlugin {
 
 	@Setter
 	private boolean tagControl = true;
+	@Setter
+	private boolean oldTag = false;
 	@Setter
 	private boolean removePlayerDat = true;
 	@Setter
@@ -162,7 +171,11 @@ public class BukkitMain extends JavaPlugin {
 			general.setStatusData(statusData);
 			general.setClanData(clanData);
 
-			if (general.getServerType() != ServerType.PRIVATE_SERVER)
+			general.setServerAddress(getConfig().getString("serverAddress", "0.0.0.0") + ":" + Bukkit.getPort());
+			general.setServerId(general.getServerData().getServerId("127.0.0.1:" + Bukkit.getPort()));
+			general.setServerType(general.getServerData().getServerType("127.0.0.1:" + Bukkit.getPort()));
+
+			if (general.getServerType().canSendData())
 				getServer().getScheduler().runTaskAsynchronously(getInstance(),
 						pubSubListener = new PubSubListener(redis, new BukkitPubSubHandler(), "account-field",
 								"clan-field", "report-field", "report-action", "server-info"));
@@ -178,10 +191,6 @@ public class BukkitMain extends JavaPlugin {
 		 */
 
 		saveDefaultConfig();
-
-		general.setServerAddress(getConfig().getString("serverAddress", "0.0.0.0") + ":" + Bukkit.getPort());
-		general.setServerId(general.getServerData().getServerId("127.0.0.1:" + Bukkit.getPort()));
-		general.setServerType(general.getServerData().getServerType("127.0.0.1:" + Bukkit.getPort()));
 
 		general.debug("The server has been loaded " + general.getServerAddress() + " (" + general.getServerId() + " - "
 				+ general.getServerType().toString() + ")");
@@ -207,7 +216,13 @@ public class BukkitMain extends JavaPlugin {
 
 		skinManager = new SkinController();
 		worldeditController = new WorldeditController();
-
+		
+		CheckController checkController = new CheckController();
+		anticheatController = new AnticheatController(checkController, new AlertController());
+		
+		checkController.registerCheck(new MovementCheck());
+		checkController.registerCheck(new CombatCheck(this));
+		
 		hologramController = new HologramController(getInstance());
 		packetController = new BukkitPacketController();
 
@@ -271,7 +286,7 @@ public class BukkitMain extends JavaPlugin {
 						"blockdata", "clone", "debug", "defaultgamemode", "entitydata", "execute", "fill", "gamemode",
 						"pardon", "pardon-ip", "replaceitem", "setidletimeout", "stats", "testforblock", "title",
 						"trigger", "viaver", "protocolsupport", "ps", "holograms", "hd", "holo", "hologram", "restart",
-						"stop", "filter", "packetlog", "pl", "plugins", "timings", "whitelist");
+						"stop", "filter", "packetlog", "pl", "plugins", "whitelist");
 
 				BukkitCommandFramework.INSTANCE.loadCommands("tk.yallandev.saintmc.bukkit.command.register");
 
@@ -329,6 +344,8 @@ public class BukkitMain extends JavaPlugin {
 		pm.registerEvents(new CharacterListener(), getInstance());
 		pm.registerEvents(new MenuListener(), getInstance());
 		pm.registerEvents(new CooldownController(), getInstance());
+		
+		pm.registerEvents(new StorageListener(), getInstance());
 	}
 
 	public void sendPlayerToLobby(Player p) {
@@ -397,6 +414,20 @@ public class BukkitMain extends JavaPlugin {
 		file.set(config + ".z", location.getZ());
 		file.set(config + ".pitch", location.getPitch());
 		file.set(config + ".yaw", location.getYaw());
+
+		saveConfig();
+	}
+
+	public void removeLocationInConfig(String config) {
+		this.location.remove(config);
+		FileConfiguration file = getConfig();
+
+		file.set(config + ".world", null);
+		file.set(config + ".x", null);
+		file.set(config + ".y", null);
+		file.set(config + ".z", null);
+		file.set(config + ".pitch", null);
+		file.set(config + ".yaw", null);
 
 		saveConfig();
 	}

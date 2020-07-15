@@ -18,7 +18,7 @@ import tk.yallandev.saintmc.common.utils.DateUtils;
 public class PackageCommand implements CommandClass {
 
 	@Command(name = "givevip", usage = "/<command> <player> <tempo> <group>", groupToUse = Group.GERENTE, aliases = {
-			"tempgroup" })
+			"tempgroup" }, runAsync = true)
 	public void givevip(BungeeCommandArgs cmdArgs) {
 		final CommandSender sender = cmdArgs.getSender();
 		final String[] args = cmdArgs.getArgs();

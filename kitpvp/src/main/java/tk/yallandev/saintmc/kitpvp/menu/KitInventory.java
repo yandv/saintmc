@@ -31,7 +31,7 @@ public class KitInventory {
 					}
 				});
 
-		menuInventory.setItem(5, new ItemBuilder().name("§aTodos os kits")
+		menuInventory.setItem(4, new ItemBuilder().name("§aTodos os kits")
 				.durability(inventoryType == InventoryType.ALL ? 10 : 8).type(Material.INK_SACK).build(),
 				new MenuClickHandler() {
 
@@ -39,6 +39,17 @@ public class KitInventory {
 					public void onClick(Player p, Inventory inv, ClickType type, ItemStack stack, int slot) {
 						if (inventoryType != InventoryType.ALL)
 							new KitInventory(player, InventoryType.ALL);
+					}
+				});
+
+		menuInventory.setItem(5, new ItemBuilder().name("§aTodos os kits")
+				.durability(inventoryType == InventoryType.ALL ? 10 : 8).type(Material.INK_SACK).build(),
+				new MenuClickHandler() {
+
+					@Override
+					public void onClick(Player p, Inventory inv, ClickType type, ItemStack stack, int slot) {
+						if (inventoryType != InventoryType.SHOP)
+							new KitInventory(player, InventoryType.SHOP);
 					}
 				});
 
@@ -80,7 +91,7 @@ public class KitInventory {
 
 	public enum InventoryType {
 
-		ALL, OWN;
+		ALL, OWN, SHOP;
 
 	}
 

@@ -82,11 +82,11 @@ public class BanCommand implements CommandClass {
 			sender.sendMessage(
 					" §a* §fVocê baniu o jogador §a" + player.getPlayerName() + "§f por §a" + ban.getReason() + "§f!");
 		} else {
-			sender.sendMessage(" §c* §fNão foi possível banir o jogador!");
+			sender.sendMessage("§cO jogador já está banido!");
 		}
 	}
 
-	@Command(name = "tempban", runAsync = true, groupToUse = Group.TRIAL)
+	@Command(name = "tempban", runAsync = true, groupToUse = Group.HELPER)
 	public void tempbanCommand(BungeeCommandArgs cmdArgs) {
 		CommandSender sender = cmdArgs.getSender();
 		String[] args = cmdArgs.getArgs();
@@ -156,7 +156,7 @@ public class BanCommand implements CommandClass {
 			sender.sendMessage(
 					" §a* §fVocê baniu o jogador §a" + player.getPlayerName() + "§f por §a" + ban.getReason() + "§f!");
 		} else {
-			sender.sendMessage(" §c* §fNão foi possível banir o jogador!");
+			sender.sendMessage("§cO jogador já está banido!");
 		}
 	}
 
@@ -212,7 +212,7 @@ public class BanCommand implements CommandClass {
 		}
 	}
 
-	@Command(name = "mute", aliases = { "silenciar" }, runAsync = true, groupToUse = Group.TRIAL)
+	@Command(name = "mute", aliases = { "silenciar" }, runAsync = true, groupToUse = Group.HELPER)
 	public void muteCommand(BungeeCommandArgs cmdArgs) {
 		CommandSender sender = cmdArgs.getSender();
 		String[] args = cmdArgs.getArgs();
@@ -277,7 +277,7 @@ public class BanCommand implements CommandClass {
 		}
 	}
 
-	@Command(name = "tempmute", runAsync = true, groupToUse = Group.TRIAL)
+	@Command(name = "tempmute", runAsync = true, groupToUse = Group.HELPER)
 	public void tempmuteCommand(BungeeCommandArgs cmdArgs) {
 		CommandSender sender = cmdArgs.getSender();
 		String[] args = cmdArgs.getArgs();
@@ -395,7 +395,7 @@ public class BanCommand implements CommandClass {
 		}
 	}
 
-	@Command(name = "warn", aliases = { "avisar" }, runAsync = true, groupToUse = Group.TRIAL)
+	@Command(name = "warn", aliases = { "avisar" }, runAsync = true, groupToUse = Group.HELPER)
 	public void warnCommand(BungeeCommandArgs cmdArgs) {
 		CommandSender sender = cmdArgs.getSender();
 		String[] args = cmdArgs.getArgs();

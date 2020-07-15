@@ -5,7 +5,7 @@ import org.bukkit.inventory.ItemStack;
 
 import lombok.Getter;
 import lombok.Setter;
-import net.minecraft.server.v1_8_R3.EnumParticle;
+import net.minecraft.server.EnumParticle;
 import tk.yallandev.saintmc.lobby.collectable.Collectables.CollectableType;
 
 @Getter
@@ -22,8 +22,6 @@ public class Gamer {
 	
 	private EnumParticle wingParticle;
 	private EnumParticle particle;
-	
-	private double alpha = 0;
 	
 	public Gamer(Player player) {
 		this.player = player;

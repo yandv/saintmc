@@ -12,6 +12,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockDamageEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
@@ -68,6 +69,13 @@ public class AutoclickHack extends Hack {
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onPlayerInteract(BlockDamageEvent event) {
 		clicksPerSecond.remove(event.getPlayer());
+		cooldownMap.put(event.getPlayer(), System.currentTimeMillis() + 10000l);
+	}
+	
+	@EventHandler
+	public void onPlayerQuit(PlayerQuitEvent event) {
+		clicksPerSecond.remove(event.getPlayer());
+		cooldownMap.remove(event.getPlayer());
 	}
 
 	public void handle(Player player) {

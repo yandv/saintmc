@@ -25,7 +25,6 @@ import tk.yallandev.saintmc.common.backend.data.PlayerData;
 import tk.yallandev.saintmc.common.backend.database.mongodb.MongoConnection;
 import tk.yallandev.saintmc.common.backend.database.mongodb.MongoQuery;
 import tk.yallandev.saintmc.common.backend.database.redis.RedisDatabase;
-import tk.yallandev.saintmc.common.server.ServerType;
 import tk.yallandev.saintmc.common.utils.json.JsonBuilder;
 import tk.yallandev.saintmc.common.utils.json.JsonUtils;
 
@@ -98,7 +97,7 @@ public class PlayerDataImpl implements PlayerData {
 		if (needCreate)
 			query.create(new String[] { CommonConst.GSON.toJson(memberModel) });
 
-		if (CommonGeneral.getInstance().getServerType() != ServerType.PRIVATE_SERVER)
+		if (CommonGeneral.getInstance().getServerType().canSendData())
 			CommonGeneral.getInstance().getCommonPlatform().runAsync(new Runnable() {
 
 				@Override
@@ -119,7 +118,7 @@ public class PlayerDataImpl implements PlayerData {
 		if (needCreate)
 			query.create(new String[] { CommonConst.GSON.toJson(memberModel) });
 
-		if (CommonGeneral.getInstance().getServerType() != ServerType.PRIVATE_SERVER)
+		if (CommonGeneral.getInstance().getServerType().canSendData())
 			CommonGeneral.getInstance().getCommonPlatform().runAsync(new Runnable() {
 
 				@Override
@@ -143,7 +142,7 @@ public class PlayerDataImpl implements PlayerData {
 					new JsonBuilder().addProperty("fieldName", fieldName).add("value", object.get(fieldName)).build());
 		}
 
-		if (CommonGeneral.getInstance().getServerType() != ServerType.PRIVATE_SERVER)
+		if (CommonGeneral.getInstance().getServerType().canSendData())
 			CommonGeneral.getInstance().getCommonPlatform().runAsync(new Runnable() {
 
 				@Override
@@ -201,7 +200,7 @@ public class PlayerDataImpl implements PlayerData {
 
 	@Override
 	public void cacheMember(UUID uniqueId) {
-		if (CommonGeneral.getInstance().getServerType() != ServerType.PRIVATE_SERVER)
+		if (CommonGeneral.getInstance().getServerType().canSendData())
 			try (Jedis jedis = redisDatabase.getPool().getResource()) {
 				CommonGeneral.getInstance().debug(uniqueId + "");
 				jedis.expire("account:" + uniqueId.toString(), 300);

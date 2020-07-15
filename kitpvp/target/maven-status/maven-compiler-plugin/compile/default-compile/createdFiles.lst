@@ -24,6 +24,7 @@ tk\yallandev\saintmc\kitpvp\listener\CombatlogListener.class
 tk\yallandev\saintmc\kitpvp\listener\SoupListener.class
 tk\yallandev\saintmc\kitpvp\event\challenge\FightFinishEvent.class
 tk\yallandev\saintmc\kitpvp\listener\WarpListener.class
+tk\yallandev\saintmc\kitpvp\menu\KitInventory$4.class
 tk\yallandev\saintmc\kitpvp\event\challenge\shadow\ShadowFightStartEvent.class
 tk\yallandev\saintmc\kitpvp\event\warp\PlayerWarpDeathEvent.class
 tk\yallandev\saintmc\kitpvp\kit\register\TimelordKit.class
@@ -66,6 +67,7 @@ tk\yallandev\saintmc\kitpvp\event\warp\PlayerLostProtectionEvent.class
 tk\yallandev\saintmc\kitpvp\menu\KitInventory$3.class
 tk\yallandev\saintmc\kitpvp\warp\types\SpawnWarp$2.class
 tk\yallandev\saintmc\kitpvp\manager\KitManager.class
+tk\yallandev\saintmc\kitpvp\menu\ShopInventory.class
 tk\yallandev\saintmc\kitpvp\warp\challenge\shadow\ShadowChallenge.class
 tk\yallandev\saintmc\kitpvp\event\party\PartyEvent.class
 tk\yallandev\saintmc\kitpvp\command\WarpCommand.class

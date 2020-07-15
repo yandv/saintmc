@@ -16,6 +16,7 @@ import lombok.Getter;
 import lombok.Setter;
 import tk.yallandev.saintmc.CommonConst;
 import tk.yallandev.saintmc.common.utils.web.WebHelper.Method;
+import tk.yallandev.saintmc.update.Updater;
 
 @Getter
 @SuppressWarnings("resource")
@@ -70,7 +71,7 @@ public class PluginInfo {
 		}
 
 		try {
-			JsonElement json = CommonConst.DEFAULT_WEB.doRequest(CommonConst.API + "/plugin/?pluginName=" + pluginName,
+			JsonElement json = CommonConst.DEFAULT_WEB.doRequest(Updater.API + "/plugin/?pluginName=" + pluginName,
 					Method.GET);
 
 			JsonObject jsonObject = (JsonObject) json;
@@ -88,7 +89,7 @@ public class PluginInfo {
 
 	public PluginInfo(String pluginName, String path) {
 		try {
-			JsonElement json = CommonConst.DEFAULT_WEB.doRequest(CommonConst.API + "/plugin/?pluginName=" + pluginName,
+			JsonElement json = CommonConst.DEFAULT_WEB.doRequest(Updater.API + "/plugin/?pluginName=" + pluginName,
 					Method.GET);
 
 			JsonObject jsonObject = (JsonObject) json;

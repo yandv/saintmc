@@ -28,15 +28,15 @@ public class ScoreboardListener implements Listener {
 	public static final Scoreboard DEFAULT_SCOREBOARD;
 
 	static {
-
 		DEFAULT_SCOREBOARD = new SimpleScoreboard("§6§lLOBBY");
 
-		DEFAULT_SCOREBOARD.blankLine(10);
-		DEFAULT_SCOREBOARD.setScore(9, new Score("§fGrupo: §7§lMEMBRO", "group"));
-		DEFAULT_SCOREBOARD.setScore(8, new Score("§fRanking: §7(§f-§7)", "ranking"));
+		DEFAULT_SCOREBOARD.blankLine(11);
+		DEFAULT_SCOREBOARD.setScore(10, new Score("Grupo: §7§lMEMBRO", "group"));
+		DEFAULT_SCOREBOARD.setScore(9, new Score("Ranking: §7(§f-§7)", "ranking"));
+		DEFAULT_SCOREBOARD.setScore(8, new Score("Clan: §7-/-", "clan"));
 		DEFAULT_SCOREBOARD.blankLine(7);
-		DEFAULT_SCOREBOARD.setScore(6, new Score("§fXp: §e0", "xp"));
-		DEFAULT_SCOREBOARD.setScore(5, new Score("§fCoins: §e0", "money"));
+		DEFAULT_SCOREBOARD.setScore(6, new Score("Xp: §e0", "xp"));
+		DEFAULT_SCOREBOARD.setScore(5, new Score("Coins: §e0", "money"));
 		DEFAULT_SCOREBOARD.blankLine(4);
 		DEFAULT_SCOREBOARD.setScore(3,
 				new Score("§fJogadores: §e" + BukkitMain.getInstance().getServerManager().getTotalNumber(), "online"));
@@ -56,7 +56,7 @@ public class ScoreboardListener implements Listener {
 			@Override
 			public void run() {
 				DEFAULT_SCOREBOARD.updateScore(new Score(
-						"§fJogadores: §e" + BukkitMain.getInstance().getServerManager().getTotalNumber(), "online"));
+						"Jogadores: §e" + BukkitMain.getInstance().getServerManager().getTotalNumber(), "online"));
 			}
 		}.runTaskLater(LobbyMain.getInstance(), 20l);
 	}
@@ -70,7 +70,7 @@ public class ScoreboardListener implements Listener {
 				Group group = event.getGroup();
 
 				DEFAULT_SCOREBOARD.updateScore(event.getPlayer(),
-						new Score("§fGrupo: §f§l"
+						new Score("Grupo: §f§l"
 								+ (group == Group.MEMBRO ? "§7§lMEMBRO" : Tag.valueOf(group.name()).getPrefix()),
 								"group"));
 			}
@@ -86,7 +86,7 @@ public class ScoreboardListener implements Listener {
 				League league = event.getNewLeague();
 
 				DEFAULT_SCOREBOARD.updateScore(event.getPlayer(),
-						new Score("§fRanking: §7(" + league.getColor() + league.getSymbol() + "§7)", "ranking"));
+						new Score("Ranking: §7(" + league.getColor() + league.getSymbol() + "§7)", "ranking"));
 			}
 		}.runTaskLater(LobbyMain.getInstance(), 10l);
 	}
@@ -111,9 +111,11 @@ public class ScoreboardListener implements Listener {
 								+ (group == Group.MEMBRO ? "§7§lMEMBRO" : Tag.valueOf(group.name()).getPrefix()),
 						"group"));
 		DEFAULT_SCOREBOARD.updateScore(player,
-				new Score("§fRanking: §7(" + league.getColor() + league.getSymbol() + "§7)", "ranking"));
-		DEFAULT_SCOREBOARD.updateScore(player, new Score("§fXp: §e" + member.getXp(), "xp"));
-		DEFAULT_SCOREBOARD.updateScore(player, new Score("§fCoins: §e" + member.getMoney(), "money"));
+				new Score("Ranking: §7(" + league.getColor() + league.getSymbol() + "§7)", "ranking"));
+		DEFAULT_SCOREBOARD.updateScore(player, new Score("Xp: §e" + member.getXp(), "xp"));
+		DEFAULT_SCOREBOARD.updateScore(player, new Score("Coins: §e" + member.getMoney(), "money"));
+		DEFAULT_SCOREBOARD.updateScore(player,
+				new Score("Clan: §7" + (member.hasClan() ? member.getClan().getClanAbbreviation() : "-/-"), "clan"));
 
 		new BukkitRunnable() {
 

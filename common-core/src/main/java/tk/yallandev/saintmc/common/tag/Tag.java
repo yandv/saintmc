@@ -2,6 +2,7 @@ package tk.yallandev.saintmc.common.tag;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -31,16 +32,18 @@ public abstract class Tag {
 	public static final Tag MODGC = TagWrapper.create("§5§lMODGC§5", Group.MODGC);
 	public static final Tag MOD = TagWrapper.create("§5§lMOD§5", Group.MOD);
 	public static final Tag TRIAL = TagWrapper.create("§d§lTRIAL§d", Group.TRIAL);
-	public static final Tag INVESTIDOR = TagWrapper.create("§6§lINVST§6", null, true);
+	public static final Tag INVESTIDOR = TagWrapper.create("§6§lINVST§6", (Group) null, true);
 	public static final Tag STREAMER = TagWrapper.create("§e§lSTREAMER§e", Group.STREAMER, true);
 	public static final Tag YOUTUBERPLUS = TagWrapper.create("YOUTUBERPLUS", "§3§lYT+§3", Group.YOUTUBERPLUS, true);
 	public static final Tag HELPER = TagWrapper.create("§9§lHELPER§9", Group.HELPER);
 	public static final Tag BUILDER = TagWrapper.create("§e§lBUILDER§e", Group.BUILDER, true);
 	public static final Tag DESIGNER = TagWrapper.create("§2§lDESIGNER§2", Group.DESIGNER, true);
-	public static final Tag YOUTUBER = TagWrapper.create("YOUTUBER", "§b§lYT§b", Group.YOUTUBER, true);
+	public static final Tag YOUTUBER = TagWrapper.create("YOUTUBER", "§b§lYT§b",
+			Arrays.asList(Group.YOUTUBER, Group.YOUTUBERPLUS, Group.STREAMER), true);
 	public static final Tag BETA = TagWrapper.create("§1§lBETA§1", Group.BETA);
+	public static final Tag CREATOR = TagWrapper.create("§9§lCREATOR§9",
+			Arrays.asList(Group.CREATOR, Group.YOUTUBER, Group.YOUTUBERPLUS, Group.STREAMER), true);
 	public static final Tag SAINT = TagWrapper.create("§d§lSAINT§d", Group.SAINT);
-	public static final Tag CREATOR = TagWrapper.create("§9§lCREATOR§9", Group.CREATOR, true);
 	public static final Tag BLIZZARD = TagWrapper.create("§b§lBLIZZARD§b", Group.BLIZZARD);
 	public static final Tag LIGHT = TagWrapper.create("§a§lLIGHT§a", Group.LIGHT);
 	public static final Tag DONATOR = TagWrapper.create("§d§lDONATOR§d", Group.DONATOR, true);
@@ -53,7 +56,7 @@ public abstract class Tag {
 
 	public abstract String getPrefix();
 
-	public abstract Group getGroupToUse();
+	public abstract List<Group> getGroupToUse();
 
 	public abstract boolean isExclusive();
 
@@ -66,6 +69,10 @@ public abstract class Tag {
 	public abstract Tag setChroma(boolean chroma);
 
 	public abstract Tag clone();
+
+	public Group getDefaultGroup() {
+		return getGroupToUse().stream().findFirst().orElse(null);
+	}
 
 	/*
 	 * Static
@@ -124,7 +131,7 @@ public abstract class Tag {
 			throw new IllegalStateException("The tag " + tag.getName() + " already exist!");
 
 		if (TAG_MAP.containsValue(tag))
-			throw new IllegalStateException("The tag " + tag + " already exist!");
+			throw new IllegalStateException("The tag " + tag.getName() + " already exist!");
 
 		TAG_MAP.put(tag.getName(), tag);
 	}
@@ -154,7 +161,7 @@ public abstract class Tag {
 		Tag tag = (Tag) obj;
 
 		return tag.ordinal() == ordinal() && tag.getPrefix().equals(getPrefix())
-				&& tag.getGroupToUse() == this.getGroupToUse() && tag.isChroma() == this.isChroma();
+				&& tag.getDefaultGroup() == this.getDefaultGroup() && tag.isChroma() == this.isChroma();
 	}
 
 }

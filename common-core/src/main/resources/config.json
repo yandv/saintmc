@@ -11,12 +11,16 @@
 			"path":"C:\\Users\\Allan\\git\\saintmc\\common-bungee\\target\\BungeeCommon.jar"
 		},
 		{
-			"pluginName":"Lobby",
-			"path":"C:\\Users\\Allan\\git\\saintmc\\lobby\\target\\Lobby.jar"
-		},
-		{
 			"pluginName":"HungerGames",
 			"path":"C:\\Users\\Allan\\git\\saintmc\\hungergames\\target\\HungerGames.jar"
+		},
+		{
+			"pluginName":"Skywars",
+			"path":"C:\\Users\\Allan\\git\\saintmc\\skywars\\target\\Skywars.jar"
+		},
+		{
+			"pluginName":"Lobby",
+			"path":"C:\\Users\\Allan\\git\\saintmc\\lobby\\target\\Lobby.jar"
 		},
 		{
 			"pluginName":"SaintPvP",

@@ -138,7 +138,7 @@ public class CompleterCommand implements CommandClass {
 	public List<String> clanCompleter(CommandArgs cmdArgs) {
 		if (cmdArgs.getSender() instanceof Member) {
 			Member member = (Member) cmdArgs.getSender();
-			
+
 			if (cmdArgs.getArgs().length == 1) {
 				List<String> argList = new ArrayList<>();
 				List<String> avaiableArgs = Arrays.asList("criar", "apagar", "leave", "top", "kick", "setgroup",
@@ -299,47 +299,67 @@ public class CompleterCommand implements CommandClass {
 
 	@Completer(name = "tag")
 	public List<String> tagCompleter(CommandArgs cmdArgs) {
-		if (cmdArgs.getArgs().length == 1) {
-			List<String> tagList = new ArrayList<>();
-			BukkitMember member = (BukkitMember) CommonGeneral.getInstance().getMemberManager()
-					.getMember(cmdArgs.getSender().getUniqueId());
+		if (cmdArgs.isPlayer())
+			if (cmdArgs.getArgs().length == 1) {
+				List<String> tagList = new ArrayList<>();
+				BukkitMember member = (BukkitMember) CommonGeneral.getInstance().getMemberManager()
+						.getMember(cmdArgs.getSender().getUniqueId());
 
-			if (cmdArgs.getArgs()[0].isEmpty()) {
-				for (Tag tag : Tag.values())
-					if (member.getTags().contains(tag))
-						tagList.add(tag.getName());
-			} else {
-				for (Tag tag : Tag.values())
-					if (member.getTags().contains(tag))
-						if (tag.getName().toLowerCase().startsWith(cmdArgs.getArgs()[0].toLowerCase()))
+				if (cmdArgs.getArgs()[0].isEmpty()) {
+					for (Tag tag : Tag.values())
+						if (member.getTags().contains(tag))
 							tagList.add(tag.getName());
-			}
+				} else {
+					for (Tag tag : Tag.values())
+						if (member.getTags().contains(tag))
+							if (tag.getName().toLowerCase().startsWith(cmdArgs.getArgs()[0].toLowerCase()))
+								tagList.add(tag.getName());
+				}
 
-			return tagList;
-		}
+				return tagList;
+			}
 
 		return new ArrayList<>();
 	}
 
 	@Completer(name = "medal")
 	public List<String> medalCompleter(CommandArgs cmdArgs) {
-		if (cmdArgs.getArgs().length == 1) {
-			List<String> tagList = new ArrayList<>();
-			BukkitMember member = (BukkitMember) CommonGeneral.getInstance().getMemberManager()
-					.getMember(cmdArgs.getSender().getUniqueId());
+		if (cmdArgs.isPlayer())
+			if (cmdArgs.getArgs().length == 1) {
+				List<String> medalList = new ArrayList<>();
+				BukkitMember member = (BukkitMember) CommonGeneral.getInstance().getMemberManager()
+						.getMember(cmdArgs.getSender().getUniqueId());
 
-			if (cmdArgs.getArgs()[0].isEmpty()) {
-				for (Medal medal : Medal.values())
-					if (member.getMedalList().contains(medal))
-						tagList.add(medal.name());
-			} else {
-				for (Medal medal : Medal.values())
-					if (member.getMedalList().contains(medal))
+				if (cmdArgs.getArgs()[0].isEmpty()) {
+					for (Medal medal : member.getMedalList())
+						medalList.add(medal.name());
+				} else {
+					for (Medal medal : member.getMedalList())
 						if (medal.name().startsWith(cmdArgs.getArgs()[0].toUpperCase()))
-							tagList.add(medal.name());
+							medalList.add(medal.name());
+				}
+
+				return medalList;
 			}
 
-			return tagList;
+		return new ArrayList<>();
+	}
+
+	@Completer(name = "addmedal")
+	public List<String> addmedalCompleter(CommandArgs cmdArgs) {
+		if (cmdArgs.getArgs().length == 2) {
+			List<String> medalList = new ArrayList<>();
+
+			if (cmdArgs.getArgs()[1].isEmpty()) {
+				for (Medal medal : Medal.values())
+					medalList.add(medal.name());
+			} else {
+				for (Medal medal : Medal.values())
+					if (medal.name().startsWith(cmdArgs.getArgs()[1].toUpperCase()))
+						medalList.add(medal.name());
+			}
+
+			return medalList;
 		}
 
 		return new ArrayList<>();

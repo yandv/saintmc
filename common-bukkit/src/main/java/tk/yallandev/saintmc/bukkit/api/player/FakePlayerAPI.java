@@ -156,14 +156,14 @@ public class FakePlayerAPI {
 		respawnPlayer.getDifficulties().write(0, Difficulty.valueOf(player.getWorld().getDifficulty().name()));
 		respawnPlayer.getGameModes().write(0, NativeGameMode.fromBukkit(player.getGameMode()));
 		respawnPlayer.getWorldTypeModifier().write(0, player.getWorld().getWorldType());
-		boolean isFlying = player.isFlying();
+		boolean flying = player.isFlying();
 		
 		try {
 			BukkitMain.getInstance().getProcotolManager().sendServerPacket(player, removePlayerInfo);
 			BukkitMain.getInstance().getProcotolManager().sendServerPacket(player, addPlayerInfo);
 			BukkitMain.getInstance().getProcotolManager().sendServerPacket(player, respawnPlayer);
 			player.teleport(player.getLocation());
-			player.setFlying(isFlying);
+			player.setFlying(flying);
 			player.setExp(player.getExp());
 			player.setLevel(player.getLevel());
 			player.updateInventory();

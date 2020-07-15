@@ -1,6 +1,7 @@
 package tk.yallandev.saintmc.common.controller;
 
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -8,6 +9,10 @@ import tk.yallandev.saintmc.common.clan.Clan;
 import tk.yallandev.saintmc.common.clan.ClanModel;
 
 public class ClanManager extends StoreController<UUID, Clan> {
+	
+	public ClanManager() {
+		setStoreMap(new LinkedHashMap<>());
+	}
 
 	public Clan getClan(UUID key) {
 		return super.getValue(key);

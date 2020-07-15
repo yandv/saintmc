@@ -7,12 +7,15 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import com.comphenix.protocol.wrappers.WrappedSignedProperty;
 
+import tk.yallandev.saintmc.CommonConst;
 import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.bukkit.BukkitMain;
 import tk.yallandev.saintmc.bukkit.api.player.FakePlayerAPI;
 import tk.yallandev.saintmc.bukkit.api.scoreboard.ScoreboardAPI;
+import tk.yallandev.saintmc.bukkit.bukkit.BukkitMember;
 import tk.yallandev.saintmc.bukkit.command.BukkitCommandArgs;
 import tk.yallandev.saintmc.common.account.Member;
+import tk.yallandev.saintmc.common.command.CommandArgs;
 import tk.yallandev.saintmc.common.command.CommandClass;
 import tk.yallandev.saintmc.common.command.CommandFramework.Command;
 import tk.yallandev.saintmc.common.permission.Group;
@@ -21,13 +24,15 @@ import tk.yallandev.saintmc.common.utils.DateUtils;
 
 public class YoutubeCommand implements CommandClass {
 
+	private static final String[] FAKERANDOM = { "broowkk_", "yNegocioNegocio", "YTBERMASTER__" };
+
 	@Command(name = "fake", groupToUse = Group.YOUTUBER, runAsync = true)
-	public void fakeCommand(BukkitCommandArgs args) {
+	public void fakeCommand(CommandArgs args) {
 		if (!args.isPlayer())
 			return;
 
-		Player player = args.getPlayer();
-		Member member = CommonGeneral.getInstance().getMemberManager().getMember(player.getUniqueId());
+		Player player = ((BukkitMember) args.getSender()).getPlayer();
+		Member member = (Member) args.getSender();
 
 		if (args.getArgs().length != 1) {
 			player.sendMessage(
@@ -35,7 +40,10 @@ public class YoutubeCommand implements CommandClass {
 			return;
 		}
 
-		String playerName = args.getArgs()[0].equals("#") ? member.getPlayerName() : args.getArgs()[0];
+		String playerName = args.getArgs()[0].equals("#") ? member.getPlayerName()
+				: args.getArgs()[0].equalsIgnoreCase("random")
+						? FAKERANDOM[CommonConst.RANDOM.nextInt(FAKERANDOM.length)]
+						: args.getArgs()[0];
 
 		if (!FakePlayerAPI.validateName(playerName)) {
 			player.sendMessage(" §c* §fO nickname que você colocou está inválido!");

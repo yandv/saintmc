@@ -26,7 +26,7 @@ public class ParticleInventory {
 					@Override
 					public void onClick(Player p, Inventory inv, ClickType type, ItemStack stack, int slot) {
 						gamer.setUsingParticle(false);
-						gamer.setAlpha(0);
+//						gamer.setAlpha(0);
 						player.sendMessage(" §a* §fVocê removeu todas as suas §apartículas§f ativas!");
 						player.closeInventory();
 

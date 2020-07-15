@@ -15,6 +15,8 @@ import tk.yallandev.saintmc.bukkit.command.BukkitCommandFramework;
 import tk.yallandev.saintmc.bukkit.listener.register.MoveListener;
 import tk.yallandev.saintmc.common.backend.database.redis.RedisDatabase.PubSubListener;
 import tk.yallandev.saintmc.common.server.ServerType;
+import tk.yallandev.saintmc.common.server.loadbalancer.server.MinigameServer;
+import tk.yallandev.saintmc.common.server.loadbalancer.server.ProxiedServer;
 import tk.yallandev.saintmc.lobby.collectable.Collectables;
 import tk.yallandev.saintmc.lobby.listener.CharacterListener;
 import tk.yallandev.saintmc.lobby.listener.HologramListener;
@@ -87,12 +89,27 @@ public class LobbyMain extends JavaPlugin {
 
 				if (ServerType.valueOf(entry.getValue().get("type").toUpperCase()) == ServerType.NETWORK)
 					continue;
-
-				BukkitMain.getInstance().getServerManager().addActiveServer(entry.getValue().get("address"),
-						entry.getKey(), ServerType.valueOf(entry.getValue().get("type").toUpperCase()),
+				
+				ProxiedServer server = BukkitMain.getInstance().getServerManager().addActiveServer(
+						entry.getValue().get("address"), entry.getKey(),
+						ServerType.valueOf(entry.getValue().get("type").toUpperCase()),
 						Integer.valueOf(entry.getValue().get("maxplayers")));
+				
+				System.out.println(server.getServerType());
+
 				BukkitMain.getInstance().getServerManager().getServer(entry.getKey())
 						.setOnlinePlayers(CommonGeneral.getInstance().getServerData().getPlayers(entry.getKey()));
+				BukkitMain.getInstance().getServerManager().getServer(entry.getKey())
+						.setJoinEnabled(Boolean.valueOf(entry.getValue().get("joinenabled")));
+
+				if (server instanceof MinigameServer) {
+					MinigameServer minigameServer = (MinigameServer) server;
+
+					System.out.println(CommonGeneral.getInstance().getServerData().getTime(entry.getKey()));
+					minigameServer.setTime(CommonGeneral.getInstance().getServerData().getTime(entry.getKey()));
+					minigameServer.setMap(CommonGeneral.getInstance().getServerData().getMap(entry.getKey()));
+					minigameServer.setState(CommonGeneral.getInstance().getServerData().getState(entry.getKey()));
+				}
 			} catch (Exception e) {
 			}
 		}

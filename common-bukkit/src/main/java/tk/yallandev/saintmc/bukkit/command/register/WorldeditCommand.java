@@ -35,7 +35,7 @@ public class WorldeditCommand implements CommandClass {
 	public WorldeditCommand() {
 		controller = BukkitMain.getInstance().getWorldeditController();
 	}
-	
+
 	@Command(name = "build")
 	public void buildCommand(CommandArgs cmdArgs) {
 		if (!cmdArgs.isPlayer()) {
@@ -43,8 +43,8 @@ public class WorldeditCommand implements CommandClass {
 			return;
 		}
 
-		BukkitMember member = (BukkitMember)cmdArgs.getSender();
-		
+		BukkitMember member = (BukkitMember) cmdArgs.getSender();
+
 		if (checkPermission(member))
 			return;
 
@@ -58,7 +58,7 @@ public class WorldeditCommand implements CommandClass {
 		if (!cmdArgs.isPlayer())
 			return;
 
-		Player player = ((BukkitMember)cmdArgs.getSender()).getPlayer();
+		Player player = ((BukkitMember) cmdArgs.getSender()).getPlayer();
 		Member member = CommonGeneral.getInstance().getMemberManager().getMember(player.getUniqueId());
 
 		if (checkPermission(member))
@@ -73,7 +73,7 @@ public class WorldeditCommand implements CommandClass {
 		if (!cmdArgs.isPlayer())
 			return;
 
-		Player player = ((BukkitMember)cmdArgs.getSender()).getPlayer();
+		Player player = ((BukkitMember) cmdArgs.getSender()).getPlayer();
 		Member member = CommonGeneral.getInstance().getMemberManager().getMember(player.getUniqueId());
 
 		if (checkPermission(member))
@@ -159,7 +159,7 @@ public class WorldeditCommand implements CommandClass {
 		if (!cmdArgs.isPlayer())
 			return;
 
-		Player player = ((BukkitMember)cmdArgs.getSender()).getPlayer();
+		Player player = ((BukkitMember) cmdArgs.getSender()).getPlayer();
 		Member member = CommonGeneral.getInstance().getMemberManager().getMember(player.getUniqueId());
 
 		if (checkPermission(member))
@@ -257,7 +257,7 @@ public class WorldeditCommand implements CommandClass {
 		if (!cmdArgs.isPlayer())
 			return;
 
-		Player player = ((BukkitMember)cmdArgs.getSender()).getPlayer();
+		Player player = ((BukkitMember) cmdArgs.getSender()).getPlayer();
 		Member member = CommonGeneral.getInstance().getMemberManager().getMember(player.getUniqueId());
 
 		if (checkPermission(member))
@@ -288,7 +288,9 @@ public class WorldeditCommand implements CommandClass {
 				|| member.hasPermission("permission.build"))
 			return false;
 
-		if (CommonGeneral.getInstance().getServerType() == ServerType.HUNGERGAMES
+		if ((CommonGeneral.getInstance().getServerType() == ServerType.HUNGERGAMES
+				|| CommonGeneral.getInstance().getServerType() == ServerType.EVENTO
+				|| CommonGeneral.getInstance().getServerType() == ServerType.CLANXCLAN)
 				&& member.hasGroupPermission(Group.MODPLUS))
 			return false;
 

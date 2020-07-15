@@ -8,7 +8,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import lombok.Getter;
-import net.md_5.bungee.BungeeCord;
+import lombok.Setter;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.config.ListenerInfo;
@@ -48,6 +48,8 @@ import tk.yallandev.saintmc.common.data.impl.ServerDataImpl;
 import tk.yallandev.saintmc.common.report.Report;
 import tk.yallandev.saintmc.common.server.ServerManager;
 import tk.yallandev.saintmc.common.server.ServerType;
+import tk.yallandev.saintmc.common.server.loadbalancer.server.MinigameServer;
+import tk.yallandev.saintmc.common.server.loadbalancer.server.ProxiedServer;
 import tk.yallandev.saintmc.discord.DiscordMain;
 import tk.yallandev.saintmc.update.UpdatePlugin;
 
@@ -69,6 +71,9 @@ public class BungeeMain extends Plugin {
 
 	private PubSubListener pubSubListener;
 
+	@Setter
+	private boolean maintenceMode;
+
 	@Override
 	public void onLoad() {
 		general = new CommonGeneral(ProxyServer.getInstance().getLogger());
@@ -83,7 +88,7 @@ public class BungeeMain extends Plugin {
 
 			@Override
 			public void stop() {
-				BungeeCord.getInstance().stop("§aAtualizando o plugin!");
+				System.exit(0);
 			}
 
 		};
@@ -198,13 +203,23 @@ public class BungeeMain extends Plugin {
 				if (ServerType.valueOf(entry.getValue().get("type").toUpperCase()) == ServerType.NETWORK)
 					continue;
 
-				BungeeMain.getPlugin().getServerManager().addActiveServer(entry.getValue().get("address"),
+				ProxiedServer server = getServerManager().addActiveServer(entry.getValue().get("address"),
 						entry.getKey(), ServerType.valueOf(entry.getValue().get("type").toUpperCase()),
 						Integer.valueOf(entry.getValue().get("maxplayers")));
-				BungeeMain.getPlugin().getServerManager().getServer(entry.getKey())
+
+				getServerManager().getServer(entry.getKey())
 						.setOnlinePlayers(general.getServerData().getPlayers(entry.getKey()));
-				BungeeMain.getPlugin().getServerManager().getServer(entry.getKey())
+				getServerManager().getServer(entry.getKey())
 						.setJoinEnabled(Boolean.valueOf(entry.getValue().get("joinenabled")));
+
+				if (server instanceof MinigameServer) {
+					MinigameServer minigameServer = (MinigameServer) server;
+
+					minigameServer.setTime(general.getServerData().getTime(entry.getKey()));
+					minigameServer.setMap(general.getServerData().getMap(entry.getKey()));
+					minigameServer.setState(general.getServerData().getState(entry.getKey()));
+				}
+
 			} catch (Exception e) {
 			}
 		}

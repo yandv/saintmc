@@ -71,19 +71,19 @@ public class StoreController {
 											ProxyServer.getInstance().getPluginManager()
 													.dispatchCommand(ProxyServer.getInstance().getConsole(), command);
 										}
-										
+
 										if (member.hasDiscord()) {
-											
+
 										}
-										
+
 										member.sendMessage(" ");
 										member.sendMessage("§a§l> §fO seu pedido de numero §a" + order.order_id
 												+ "§f acabou de ser executado!");
 										member.sendMessage(" ");
 										processedOrders.add(order.order_id);
-										CommonGeneral.getInstance().getMemberManager()
-												.broadcast("§a[DEBUG] WOOCommerce -> O pedido " + order.order_id
-														+ " acaba de ser executado!", Group.GERENTE);
+										CommonGeneral.getInstance().getMemberManager().broadcast(
+												"§aO pedido " + order.order_id + " acaba de ser executado!",
+												Group.DIRETOR);
 									}
 
 									if (processedOrders.isEmpty())

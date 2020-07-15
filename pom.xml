@@ -19,6 +19,7 @@
 		<module>screenshare</module>
 		<module>anticheat</module>
 		<module>login</module>
+		<module>skywars</module>
 	</modules>
 
 	<build>
@@ -145,13 +146,6 @@
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
 			<version>28.0-jre</version>
-			<scope>provided</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>com.google.code.gson</groupId>
-			<artifactId>gson</artifactId>
-			<version>2.8.6</version>
 			<scope>provided</scope>
 		</dependency>
 

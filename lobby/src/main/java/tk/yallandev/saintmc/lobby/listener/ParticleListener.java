@@ -7,14 +7,14 @@ import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
+import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import net.minecraft.server.v1_8_R3.EnumParticle;
-import net.minecraft.server.v1_8_R3.PacketPlayOutWorldParticles;
+import net.minecraft.server.EnumParticle;
+import net.minecraft.server.PacketPlayOutWorldParticles;
 import tk.yallandev.saintmc.bukkit.event.PlayerMoveUpdateEvent;
 import tk.yallandev.saintmc.bukkit.event.update.UpdateEvent;
 import tk.yallandev.saintmc.lobby.LobbyMain;
@@ -64,6 +64,7 @@ public class ParticleListener implements Listener {
 			new Point3D(1.0f, -0.2f, -0.5f), new Point3D(1.2f, -0.1f, -0.5f), };
 
 	private Map<UUID, Long> map;
+	private double alpha = 0;
 
 	public ParticleListener() {
 		map = new HashMap<>();
@@ -136,9 +137,7 @@ public class ParticleListener implements Listener {
 
 			if (gamer.isUsingParticle()) {
 				Player player = gamer.getPlayer();
-				gamer.setAlpha(gamer.getAlpha() + Math.PI / 16);
-
-				double alpha = gamer.getAlpha();
+				alpha += Math.PI / 16;
 
 				Location loc = player.getLocation();
 				Location firstLocation = loc.clone().add(Math.cos(alpha), Math.sin(alpha) + 1, Math.sin(alpha));

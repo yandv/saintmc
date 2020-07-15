@@ -3,12 +3,9 @@ package tk.yallandev.saintmc.lobby.menu.server;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-
-import com.google.common.base.Joiner;
 
 import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.bukkit.BukkitMain;
@@ -17,7 +14,6 @@ import tk.yallandev.saintmc.bukkit.api.menu.MenuInventory;
 import tk.yallandev.saintmc.bukkit.api.menu.MenuUpdateHandler;
 import tk.yallandev.saintmc.common.account.Member;
 import tk.yallandev.saintmc.common.permission.Group;
-import tk.yallandev.saintmc.common.profile.Profile;
 import tk.yallandev.saintmc.common.server.ServerType;
 import tk.yallandev.saintmc.common.server.loadbalancer.server.ProxiedServer;
 import tk.yallandev.saintmc.lobby.menu.server.ServerInventory.SendClick;
@@ -71,10 +67,6 @@ public class GladiatorInventory {
 		int w = 10;
 
 		for (ProxiedServer server : serverList) {
-			System.out.println(Joiner.on(", ")
-					.join(server.getProfile().stream().map(Profile::getPlayerName).collect(Collectors.toList())));
-			System.out.println(server.isInWhitelist(member.getPlayerName()));
-
 			if (!server.isJoinEnabled() && !member.hasGroupPermission(Group.BUILDER)
 					&& !server.isInWhitelist(member.getPlayerName()))
 				continue;

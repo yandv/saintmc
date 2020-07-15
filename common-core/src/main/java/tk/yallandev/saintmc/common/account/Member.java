@@ -79,7 +79,7 @@ public abstract class Member implements CommandSender {
 	private boolean chroma;
 
 	private List<Medal> medalList;
-	private Medal medal;
+	private Medal medal = Medal.NONE;
 
 	/*
 	 * Status Information
@@ -114,7 +114,7 @@ public abstract class Member implements CommandSender {
 	private ServerType lastServerType;
 
 	private boolean online = false;
-	
+
 	public Member(MemberModel memberModel) {
 		playerName = memberModel.getPlayerName();
 		uniqueId = memberModel.getUniqueId();
@@ -207,7 +207,7 @@ public abstract class Member implements CommandSender {
 	public boolean hasParty() {
 		return this.partyId != null;
 	}
-	
+
 	public void setClanUniqueId(UUID clanUniqueId) {
 		this.clanUniqueId = clanUniqueId;
 		save("clanUniqueId");
@@ -234,6 +234,20 @@ public abstract class Member implements CommandSender {
 			this.medalList.add(medal);
 			save("medalList");
 		}
+	}
+	
+	public void removeMedal(Medal medal) {
+		if (this.medalList.contains(medal)) {
+			this.medalList.remove(medal);
+			save("medalList");
+		}
+	}
+
+	public Medal getMedal() {
+		if (medal == null)
+			return Medal.NONE;
+
+		return medal;
 	}
 
 	/*
@@ -383,6 +397,18 @@ public abstract class Member implements CommandSender {
 		return getRanks().containsKey(rankType);
 	}
 
+	public boolean hasRank(List<Group> groupList) {
+		for (Group group : groupList) {
+			try {
+				if (getRanks().containsKey(RankType.valueOf(group.name())))
+					return true;
+			} catch (Exception ex) {
+			}
+		}
+
+		return false;
+	}
+
 	public boolean hasRank(RankType rankType) {
 		return getRanks().containsKey(rankType);
 	}
@@ -443,6 +469,27 @@ public abstract class Member implements CommandSender {
 			setXp(getXp() - xp);
 		return xp;
 	}
+	
+	public int addMoney(int money) {
+		if (money < 0)
+			money = 0;
+		
+		setMoney(getMoney() + money);
+		return money;
+	}
+	
+	public int removeMoney(int money) {
+		if (money < 0)
+			money = 0;
+		
+		setMoney(getMoney() - money);
+		return money;
+	}
+	
+	public void setMoney(int money) {
+		this.money = money;
+		save("money");
+	}
 
 	public boolean hasPermission(String string) {
 		if (permissions.containsKey(string.toLowerCase()))
@@ -462,10 +509,6 @@ public abstract class Member implements CommandSender {
 
 		permissions.put(string.toLowerCase(), -1l);
 		save("permissions");
-	}
-
-	public void addMoney(int money) {
-		this.money += money;
 	}
 
 	/*
@@ -573,6 +616,11 @@ public abstract class Member implements CommandSender {
 	public void save(String... fieldName) {
 		for (String field : fieldName)
 			CommonGeneral.getInstance().getPlayerData().updateMember(this, field);
+	}
+
+	@Override
+	public boolean isPlayer() {
+		return true;
 	}
 
 	public abstract void sendMessage(String message);

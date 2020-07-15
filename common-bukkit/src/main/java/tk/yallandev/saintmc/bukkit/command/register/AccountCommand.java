@@ -33,6 +33,7 @@ import tk.yallandev.saintmc.common.command.CommandFramework.Command;
 import tk.yallandev.saintmc.common.command.CommandSender;
 import tk.yallandev.saintmc.common.medals.Medal;
 import tk.yallandev.saintmc.common.permission.Group;
+import tk.yallandev.saintmc.common.profile.Profile;
 import tk.yallandev.saintmc.common.utils.DateUtils;
 import tk.yallandev.saintmc.common.utils.string.MessageBuilder;
 import tk.yallandev.saintmc.common.utils.string.NameUtils;
@@ -81,8 +82,8 @@ public class AccountCommand implements CommandClass {
 
 		new AccountInventory(sender, player);
 	}
-	
-	@Command(name = "medal", aliases = { "medals" })
+
+	@Command(name = "medal", aliases = { "medals", "medalha", "medalhas" })
 	public void medalCommand(CommandArgs cmdArgs) {
 		if (!cmdArgs.isPlayer())
 			return;
@@ -99,6 +100,9 @@ public class AccountCommand implements CommandClass {
 			for (int x = 0; x < member.getMedalList().size(); x++) {
 				Medal medal = member.getMedalList().get(x);
 
+				if (medal == Medal.NONE)
+					continue;
+
 				textComponent
 						.addExtra(new MessageBuilder(medal.getChatColor() + medal.getMedalName())
 								.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
@@ -107,7 +111,7 @@ public class AccountCommand implements CommandClass {
 								.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/medal " + medal.name()))
 								.create());
 
-				if (x != member.getMedalList().size()) {
+				if (x + 1 != member.getMedalList().size()) {
 					textComponent.addExtra("§f, ");
 				}
 			}
@@ -121,7 +125,7 @@ public class AccountCommand implements CommandClass {
 		if (medal == null) {
 			if (args[0].equalsIgnoreCase("remove")) {
 				member.sendMessage("§aSua medalha foi removida!");
-				member.setMedal(null);
+				member.setMedal(Medal.NONE);
 				member.setTag(member.getTag());
 				return;
 			}
@@ -136,6 +140,73 @@ public class AccountCommand implements CommandClass {
 			member.setTag(member.getTag());
 		} else
 			member.sendMessage("§cVocê não possui essa medalha!");
+	}
+
+	@Command(name = "addmedal", groupToUse = Group.GERENTE)
+	public void addmedalCommand(CommandArgs cmdArgs) {
+		if (!cmdArgs.isPlayer())
+			return;
+
+		String[] args = cmdArgs.getArgs();
+		CommandSender sender = cmdArgs.getSender();
+
+		if (args.length == 0) {
+			sender.sendMessage(
+					" §e* §fUse §a/" + cmdArgs.getLabel() + " <player> <medalha>§f para dar medalha para alguém!");
+
+			TextComponent textComponent = new MessageBuilder(" §e* §fMedalhas disponíveis: ").create();
+
+			for (TextComponent txt : Arrays
+					.asList(Medal.values()).stream().filter(
+							medal -> medal != Medal.NONE)
+					.map(medal -> new MessageBuilder(medal.getChatColor() + medal.getMedalName() + ", ")
+							.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+									new ComponentBuilder("" + medal.getChatColor() + medal.getMedalIcon()).create()))
+							.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/medal " + medal.name()))
+							.create())
+					.collect(Collectors.toList())) {
+				textComponent.addExtra(txt);
+			}
+
+			sender.sendMessage(textComponent);
+			return;
+		}
+
+		Medal medal = Medal.getMedalByName(args[1]);
+
+		UUID uuid = CommonGeneral.getInstance().getUuid(args[0]);
+
+		if (uuid == null) {
+			sender.sendMessage(" §c* §fO jogador §a" + args[0] + "§f não existe!");
+			return;
+		}
+
+		Member player = CommonGeneral.getInstance().getMemberManager().getMember(uuid);
+
+		if (player == null) {
+			try {
+				MemberModel loaded = CommonGeneral.getInstance().getPlayerData().loadMember(uuid);
+
+				if (loaded == null) {
+					sender.sendMessage(" §c* §fO jogador §a" + args[0] + "§f nunca entrou no servidor!");
+					return;
+				}
+
+				player = new MemberVoid(loaded);
+			} catch (Exception e) {
+				e.printStackTrace();
+				sender.sendMessage(" §c* §fNão foi possível pegar as informações do jogador §a" + args[0] + "§f!");
+				return;
+			}
+		}
+
+		if (player.getMedalList().contains(medal))
+			sender.sendMessage("§cO jogador " + player.getPlayerName() + " já tem esta medalha!");
+		else {
+			player.addMedal(medal);
+			player.sendMessage("§aVocê ganhou a medalha " + medal.getMedalName() + "!");
+			sender.sendMessage("§aVocê deu a medalha ");
+		}
 	}
 
 	@Command(name = "clandisplaytag", runAsync = true)
@@ -265,7 +336,7 @@ public class AccountCommand implements CommandClass {
 			return;
 		}
 
-		CommandSender sender = cmdArgs.getSender();
+		BukkitMember sender = (BukkitMember) cmdArgs.getSender();
 		String[] args = cmdArgs.getArgs();
 
 		if (args.length == 0) {
@@ -274,27 +345,25 @@ public class AccountCommand implements CommandClass {
 			return;
 		}
 
-		BukkitMember player = (BukkitMember) CommonGeneral.getInstance().getMemberManager()
-				.getMember(cmdArgs.getSender().getUniqueId());
-
-		if (player.getLastTell() == null) {
+		if (sender.getLastTell() == null) {
 			sender.sendMessage(" §c* §fVocê não tem tell para responder!");
 			return;
 		}
 
-		Mute mute = player.getPunishmentHistory().getActiveMute();
+		Mute mute = sender.getPunishmentHistory().getActiveMute();
 
 		if (mute != null) {
-			player.sendMessage("§4§l> §fVocê está mutado "
+			sender.sendMessage("§4§l> §fVocê está mutado "
 					+ (mute.isPermanent() ? "permanentemente" : "temporariamente") + " do servidor!"
 					+ (mute.isPermanent() ? "" : "\n §4§l> §fExpira em §e" + DateUtils.getTime(mute.getMuteExpire())));
 			return;
 		}
 
-		Member member = CommonGeneral.getInstance().getMemberManager().getMember(player.getLastTell());
+		Member member = CommonGeneral.getInstance().getMemberManager().getMember(sender.getLastTell().getUniqueId());
 
 		if (member == null) {
-			sender.sendMessage(" §c* §fO jogador §a" + args[0] + "§f está offline!");
+			sender.sendMessage(" §c* §fO jogador §a" + sender.getLastTell().getPlayerName() + "§f está offline!");
+			sender.setLastTell(null);
 			return;
 		}
 
@@ -308,7 +377,7 @@ public class AccountCommand implements CommandClass {
 		message = sb.toString();
 
 		if (!member.getAccountConfiguration().isTellEnabled())
-			player.setLastTell(null);
+			sender.setLastTell(null);
 
 		sender.sendMessage("§7[§e" + cmdArgs.getPlayer().getName() + " §7» §e"
 				+ (member.isUsingFake() ? member.getFakeName() : member.getPlayerName()) + "§7] §f" + message);
@@ -323,16 +392,13 @@ public class AccountCommand implements CommandClass {
 			return;
 		}
 
-		CommandSender sender = cmdArgs.getSender();
+		BukkitMember sender = (BukkitMember) cmdArgs.getSender();
 		String[] args = cmdArgs.getArgs();
 
-		BukkitMember player = (BukkitMember) CommonGeneral.getInstance().getMemberManager()
-				.getMember(cmdArgs.getSender().getUniqueId());
-
-		Mute mute = player.getPunishmentHistory().getActiveMute();
+		Mute mute = sender.getPunishmentHistory().getActiveMute();
 
 		if (mute != null) {
-			player.sendMessage("§4§l> §fVocê está mutado "
+			sender.sendMessage("§4§l> §fVocê está mutado "
 					+ (mute.isPermanent() ? "permanentemente" : "temporariamente") + " do servidor!"
 					+ (mute.isPermanent() ? "" : "\n §4§l> §fExpira em §e" + DateUtils.getTime(mute.getMuteExpire())));
 			return;
@@ -393,8 +459,8 @@ public class AccountCommand implements CommandClass {
 		}
 
 		if (!member.getAccountConfiguration().isTellEnabled())
-			if (!player.hasGroupPermission(Group.TRIAL)) {
-				player.sendMessage("§cO tell desse jogador está desativado!");
+			if (!sender.hasGroupPermission(Group.TRIAL)) {
+				sender.sendMessage("§cO tell desse jogador está desativado!");
 				return;
 			}
 
@@ -416,7 +482,7 @@ public class AccountCommand implements CommandClass {
 				+ (fake ? member.getFakeName() : member.getPlayerName()) + "§7] §f" + message);
 		member.sendMessage("§7[§e" + cmdArgs.getPlayer().getName() + " §7» §e"
 				+ (fake ? member.getFakeName() : member.getPlayerName()) + "§7] §f" + message);
-		member.setLastTell(sender.getUniqueId());
+		member.setLastTell(Profile.fromMember(sender));
 	}
 
 }

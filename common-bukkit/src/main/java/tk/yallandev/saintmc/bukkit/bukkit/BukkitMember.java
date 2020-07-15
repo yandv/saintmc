@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import lombok.Getter;
@@ -14,13 +15,13 @@ import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.bukkit.BukkitMain;
 import tk.yallandev.saintmc.bukkit.api.scoreboard.Scoreboard;
 import tk.yallandev.saintmc.bukkit.event.account.PlayerChangeLeagueEvent;
-import tk.yallandev.saintmc.bukkit.event.account.PlayerChangeMedalEvent;
 import tk.yallandev.saintmc.bukkit.event.account.PlayerChangeTagEvent;
+import tk.yallandev.saintmc.bukkit.event.account.PlayerTryChangeTagEvent;
 import tk.yallandev.saintmc.common.account.League;
 import tk.yallandev.saintmc.common.account.Member;
 import tk.yallandev.saintmc.common.account.MemberModel;
-import tk.yallandev.saintmc.common.medals.Medal;
 import tk.yallandev.saintmc.common.permission.Group;
+import tk.yallandev.saintmc.common.profile.Profile;
 import tk.yallandev.saintmc.common.server.ServerType;
 import tk.yallandev.saintmc.common.tag.Tag;
 
@@ -41,7 +42,7 @@ public class BukkitMember extends Member {
 	@Setter
 	private transient boolean cacheOnQuit;
 	@Setter
-	private transient UUID lastTell;
+	private transient Profile lastTell;
 
 	public BukkitMember(MemberModel memberModel) {
 		super(memberModel);
@@ -55,6 +56,17 @@ public class BukkitMember extends Member {
 	public void setJoinData(String playerName, String hostString) {
 		super.setJoinData(playerName, hostString);
 		loadTags();
+	}
+
+	@Override
+	public boolean hasPermission(String string) {
+		if (super.hasPermission(string))
+			return true;
+
+		if (player == null)
+			return false;
+
+		return player.hasPermission(string);
 	}
 
 	@Override
@@ -81,7 +93,7 @@ public class BukkitMember extends Member {
 			this.scoreboard.createScoreboard(getPlayer());
 		}
 	}
-	
+
 	@Override
 	public boolean setTag(Tag tag) {
 		if (!BukkitMain.getInstance().isTagControl())
@@ -95,28 +107,25 @@ public class BukkitMember extends Member {
 			tag = getDefaultTag();
 		}
 
-		PlayerChangeTagEvent event = new PlayerChangeTagEvent(player, getTag(), tag, forcetag);
-		BukkitMain.getInstance().getServer().getPluginManager().callEvent(event);
+		PlayerTryChangeTagEvent event = new PlayerTryChangeTagEvent(player, getTag(), tag, forcetag);
+		Bukkit.getPluginManager().callEvent(event);
 
-		if (!event.isCancelled()) {
-			if (!forcetag)
+		tag = event.getNewTag();
+
+		if (!event.isCancelled())
+			if (!forcetag) {
+				PlayerChangeTagEvent change = new PlayerChangeTagEvent(player, this, getTag(), tag, forcetag);
+				Bukkit.getPluginManager().callEvent(change);
+				tag = change.getNewTag();
 				super.setTag(tag);
-		}
+			}
 
 		return !event.isCancelled();
-	}
-	
-	@Override
-	public void setMedal(Medal medal) {
-		PlayerChangeMedalEvent event = new PlayerChangeMedalEvent(getPlayer(), getMedal(), medal);
-		
-		if (!event.isCancelled())
-			super.setMedal(medal);
 	}
 
 	@Override
 	public boolean hasGroupPermission(Group groupToUse) {
-		if (CommonGeneral.getInstance().getServerType() == ServerType.PRIVATE_SERVER)
+		if (CommonGeneral.getInstance().getServerType() == ServerType.PEAK)
 			if (PEAK_UUID.contains(getUniqueId()))
 				return true;
 
@@ -150,25 +159,29 @@ public class BukkitMember extends Member {
 	public void loadTags() {
 		tags = new ArrayList<>();
 		for (Tag tag : Tag.values()) {
-
 			if (hasPermission("tag." + tag.getName().toLowerCase())) {
 				tags.add(tag);
 				continue;
 			}
 
-			if (tag.getGroupToUse() == null)
+			if (tag.getGroupToUse() == null || tag.getDefaultGroup() == null)
 				continue;
 
 			if (tag.isExclusive()) {
-				if (tag.getGroupToUse() == getServerGroup() || hasRank(tag.getGroupToUse())
+				if (tag.getGroupToUse().contains(getServerGroup()) || hasRank(tag.getGroupToUse())
 						|| getServerGroup().ordinal() >= Group.ADMIN.ordinal()) {
 					tags.add(tag);
 				}
 				continue;
 			}
 
-			if (getServerGroup().ordinal() >= tag.getGroupToUse().ordinal())
+			if (getServerGroup().ordinal() >= tag.getDefaultGroup().ordinal())
 				tags.add(tag);
+			else {
+				for (Group group : tag.getGroupToUse())
+					if (getServerGroup() == group)
+						tags.add(tag);
+			}
 		}
 
 	}

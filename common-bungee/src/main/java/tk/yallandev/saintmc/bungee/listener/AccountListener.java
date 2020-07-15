@@ -1,7 +1,12 @@
 package tk.yallandev.saintmc.bungee.listener;
 
+import java.lang.reflect.Field;
 import java.net.InetSocketAddress;
 import java.util.UUID;
+
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
@@ -14,6 +19,7 @@ import net.md_5.bungee.api.event.PlayerDisconnectEvent;
 import net.md_5.bungee.api.event.PostLoginEvent;
 import net.md_5.bungee.api.event.PreLoginEvent;
 import net.md_5.bungee.api.plugin.Listener;
+import net.md_5.bungee.connection.LoginResult;
 import net.md_5.bungee.event.EventHandler;
 import net.md_5.bungee.event.EventPriority;
 import tk.yallandev.saintmc.CommonConst;
@@ -33,6 +39,7 @@ import tk.yallandev.saintmc.common.report.Report;
 import tk.yallandev.saintmc.common.server.ServerType;
 import tk.yallandev.saintmc.common.utils.string.NameUtils;
 import tk.yallandev.saintmc.common.utils.supertype.FutureCallback;
+import tk.yallandev.saintmc.common.utils.web.WebHelper.Method;
 
 public class AccountListener implements Listener {
 
@@ -69,6 +76,49 @@ public class AccountListener implements Listener {
 							 */
 
 							connection.setOnlineMode(!cracked);
+
+							CommonConst.DEFAULT_WEB.doAsyncRequest(CommonConst.SKIN_URL + "?name=" + playerName,
+									Method.GET, new FutureCallback<JsonElement>() {
+
+										@Override
+										public void result(JsonElement result, Throwable error) {
+											JsonObject jsonObject = result.getAsJsonObject();
+
+											if (error == null) {
+												if (jsonObject.has("properties")) {
+													JsonArray jsonArray = jsonObject.get("properties").getAsJsonArray();
+
+													for (int x = 0; x < jsonArray.size(); x++) {
+														JsonObject json = (JsonObject) jsonArray.get(x);
+
+														if (json.get("name").getAsString()
+																.equalsIgnoreCase("textures")) {
+															try {
+																Class<?> initialHandlerClass = event.getConnection()
+																		.getClass();
+																Field loginProfile = initialHandlerClass
+																		.getDeclaredField("loginProfile");
+
+																LoginResult.Property property = new LoginResult.Property(
+																		"textures", json.get("value").getAsString(),
+																		json.get("signature").getAsString());
+																LoginResult loginResult = new LoginResult(
+																		event.getConnection().getUniqueId().toString(),
+																		event.getConnection().getName(),
+																		new LoginResult.Property[] { property });
+
+																loginProfile.setAccessible(true);
+																loginProfile.set(event.getConnection(), loginResult);
+															} catch (Exception ex) {
+																
+															}
+															break;
+														}
+													}
+												}
+											}
+										}
+									});
 						} else {
 							event.setCancelled(true);
 							event.setCancelReason("§4§l" + CommonConst.KICK_PREFIX
@@ -244,6 +294,7 @@ public class AccountListener implements Listener {
 								"§4§lMOJANG\n\n§fA conta original logada no servidor é original!\nVocê precisa logar nela como original!\n§f\nCaso esteja no minecraft original, isso pode está acontecendo por causa da nossa conexão com a mojang!\nEntre em contato pelo discord §b"
 										+ CommonConst.DISCORD);
 						event.completeIntent(BungeeMain.getPlugin());
+						CommonGeneral.getInstance().getMemberManager().unloadMember(member.getUniqueId());
 						return;
 					}
 
@@ -300,6 +351,18 @@ public class AccountListener implements Listener {
 					return;
 				}
 
+				if (BungeeMain.getInstance().isMaintenceMode()) {
+					if (!member.hasGroupPermission(Group.YOUTUBER)) {
+						event.setCancelled(true);
+						event.setCancelReason("§4§l" + CommonConst.KICK_PREFIX
+								+ "\n§f\n§cO servidor está em modo manutenção\n§f\n§6Mais informação em: §b"
+								+ CommonConst.DISCORD);
+						event.completeIntent(BungeeMain.getPlugin());
+						CommonGeneral.getInstance().getMemberManager().unloadMember(member.getUniqueId());
+						return;
+					}
+				}
+
 				if (member.getClanUniqueId() != null) {
 					Clan clan = CommonGeneral.getInstance().getClanManager().getClan(member.getClanUniqueId());
 
@@ -317,9 +380,12 @@ public class AccountListener implements Listener {
 					}
 
 					if (clan != null) {
-						clan.updateMember(member);
+						if (clan.isMember(member.getUniqueId())) {
+							clan.updateMember(member);
 
-						clan.callEvent(new MemberOnlineEvent(clan, member, true));
+							clan.callEvent(new MemberOnlineEvent(clan, member, true));
+						} else
+							member.setClanUniqueId(null);
 					}
 				}
 
@@ -348,15 +414,15 @@ public class AccountListener implements Listener {
 		if (CommonGeneral.getInstance().getMemberManager().getMember(event.getPlayer().getUniqueId()) == null) {
 			event.getPlayer().disconnect(new TextComponent(
 					"§4§lCONTA\n\n§fSua conta não foi carregada!\n§6Mais informação em: §b" + CommonConst.WEBSITE));
+			return;
 		}
 
 		/*
 		 * Start BungeeMember
 		 */
 
-		BungeeMember member = (BungeeMember) CommonGeneral.getInstance().getMemberManager()
-				.getMember(event.getPlayer().getUniqueId());
-		member.setProxiedPlayer(event.getPlayer());
+		((BungeeMember) CommonGeneral.getInstance().getMemberManager().getMember(event.getPlayer().getUniqueId()))
+				.setProxiedPlayer(event.getPlayer());
 	}
 
 	@EventHandler

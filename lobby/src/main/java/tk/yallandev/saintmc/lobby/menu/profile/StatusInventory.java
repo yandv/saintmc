@@ -76,7 +76,7 @@ public class StatusInventory {
 					+ status.getKillstreak() + "\n§fMaior killstreak: §7" + status.getMaxKillstreak();
 			type = Material.IRON_FENCE;
 			break;
-		case LOBBY:
+		default:
 			break;
 		}
 

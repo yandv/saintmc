@@ -1,5 +1,9 @@
 package tk.yallandev.saintmc.bungee.command.register;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -14,6 +18,7 @@ import tk.yallandev.saintmc.common.account.Member;
 import tk.yallandev.saintmc.common.command.CommandArgs;
 import tk.yallandev.saintmc.common.command.CommandClass;
 import tk.yallandev.saintmc.common.command.CommandFramework.Command;
+import tk.yallandev.saintmc.common.command.CommandFramework.Completer;
 import tk.yallandev.saintmc.common.command.CommandSender;
 import tk.yallandev.saintmc.common.permission.Group;
 import tk.yallandev.saintmc.common.server.ServerType;
@@ -27,8 +32,9 @@ public class StaffCommand implements CommandClass {
 		cmdArgs.getSender().sendMessage(" §a* §fJogadores online no servidor: §a"
 				+ ProxyServer.getInstance().getOnlineCount() + " jogadores! §7(No total)");
 		cmdArgs.getSender().sendMessage("");
-		ProxyServer.getInstance().getServers().forEach((map, info) -> cmdArgs.getSender()
-				.sendMessage(" §a * §f" + info.getName() + " -§a " + info.getPlayers().size() + " jogadores"));
+		ProxyServer.getInstance().getServers().values().stream()
+				.sorted((o1, o2) -> o1.getName().compareTo(o2.getName())).forEach(info -> cmdArgs.getSender()
+						.sendMessage(" §a * §f" + info.getName() + " -§a " + info.getPlayers().size() + " jogadores"));
 		cmdArgs.getSender().sendMessage("");
 	}
 
@@ -58,6 +64,21 @@ public class StaffCommand implements CommandClass {
 				.broadcast("§7O " + sender.getName() + " enviou uma mensagem global!", Group.TRIAL);
 	}
 
+	@Command(name = "maintence", groupToUse = Group.DEV)
+	public void maintenceCommand(CommandArgs cmdArgs) {
+		BungeeMain.getInstance().setMaintenceMode(!BungeeMain.getInstance().isMaintenceMode());
+		ProxyServer.getInstance()
+				.broadcast(BungeeMain.getInstance().isMaintenceMode() ? "§aO servidor entrou em modo manutenção!"
+						: "§cO servidor saiu do modo manutenção!");
+
+		if (BungeeMain.getInstance().isMaintenceMode()) {
+			for (Member member : CommonGeneral.getInstance().getMemberManager().getMembers().stream()
+					.filter(member -> !member.hasGroupPermission(Group.YOUTUBER)).collect(Collectors.toList())) {
+				((BungeeMember) member).getProxiedPlayer().disconnect("§cO servidor entrou em modo manutenção!");
+			}
+		}
+	}
+
 	@Command(name = "staffchat", groupToUse = Group.HELPER, usage = "/<command>", aliases = { "sc" })
 	public void staffchatCommand(CommandArgs cmdArgs) {
 		if (!cmdArgs.isPlayer())
@@ -66,34 +87,36 @@ public class StaffCommand implements CommandClass {
 		CommandSender sender = cmdArgs.getSender();
 		Member member = CommonGeneral.getInstance().getMemberManager().getMember(sender.getUniqueId());
 
-		if (cmdArgs.getArgs().length == 0) {
-			member.getAccountConfiguration()
-					.setStaffChatEnabled(!member.getAccountConfiguration().isStaffChatEnabled());
-			sender.sendMessage(
-					" §a* §fVocê " + (member.getAccountConfiguration().isStaffChatEnabled() ? "entrou no" : "saiu do")
-							+ " §astaff-chat§f!");
-
-			if (member.getAccountConfiguration().isStaffChatEnabled())
-				if (!member.getAccountConfiguration().isSeeingStaffchat())
+		if (cmdArgs.getArgs().length == 1) {
+			if (cmdArgs.getArgs()[0].equalsIgnoreCase("on")) {
+				if (member.getAccountConfiguration().isSeeingStaffchat()) {
+					member.sendMessage("§cO staffchat já está ativado!");
+				} else {
 					member.getAccountConfiguration().setSeeingStaffchat(true);
-			return;
+					member.sendMessage("§aVocê agora vê o staffchat!");
+				}
+
+				return;
+			} else if (cmdArgs.getArgs()[0].equalsIgnoreCase("off")) {
+				if (!member.getAccountConfiguration().isSeeingStaffchat()) {
+					member.sendMessage("§cO staffchat já está desativado!");
+				} else {
+					member.getAccountConfiguration().setSeeingStaffchat(false);
+					member.sendMessage("§cVocê agora não vê mais o staffchat!");
+				}
+
+				return;
+			}
 		}
 
-		if (cmdArgs.getArgs()[0].equalsIgnoreCase("on")) {
-			if (member.getAccountConfiguration().isSeeingStaffchat()) {
-				member.sendMessage("§cO staffchat já está ativado!");
-			} else {
+		member.getAccountConfiguration().setStaffChatEnabled(!member.getAccountConfiguration().isStaffChatEnabled());
+		sender.sendMessage(
+				" §a* §fVocê " + (member.getAccountConfiguration().isStaffChatEnabled() ? "entrou no" : "saiu do")
+						+ " §astaff-chat§f!");
+
+		if (member.getAccountConfiguration().isStaffChatEnabled())
+			if (!member.getAccountConfiguration().isSeeingStaffchat())
 				member.getAccountConfiguration().setSeeingStaffchat(true);
-				member.sendMessage("§aVocê agora vê o staffchat!");
-			}
-		} else if (cmdArgs.getArgs()[0].equalsIgnoreCase("off")) {
-			if (!member.getAccountConfiguration().isSeeingStaffchat()) {
-				member.sendMessage("§cO staffchat já está desativado!");
-			} else {
-				member.getAccountConfiguration().setSeeingStaffchat(false);
-				member.sendMessage("§cVocê agora não vê mais o staffchat!");
-			}
-		}
 	}
 
 	@Command(name = "stafflog", groupToUse = Group.HELPER, usage = "/<command>", aliases = { "sl" })
@@ -112,7 +135,7 @@ public class StaffCommand implements CommandClass {
 		}
 	}
 
-	@Command(name = "fakelist", runAsync = true, groupToUse = Group.TRIAL, usage = "/<command> <player> <server>")
+	@Command(name = "fakelist", runAsync = true, groupToUse = Group.HELPER, usage = "/<command> <player> <server>")
 	public void fakelistCommand(CommandArgs cmdArgs) {
 		CommandSender sender = cmdArgs.getSender();
 
@@ -132,7 +155,8 @@ public class StaffCommand implements CommandClass {
 		sender.sendMessage(" ");
 
 		CommonGeneral.getInstance().getMemberManager().getMembers().stream()
-				.filter(member -> member.hasGroupPermission(Group.TRIAL))
+				.filter(member -> member.hasGroupPermission(Group.HELPER))
+				.sorted((o1, o2) -> o1.getServerGroup().compareTo(o2.getServerGroup()))
 				.forEach(member -> sender.sendMessage("§7" + member.getPlayerName() + " §8- §f"
 						+ Tag.valueOf(member.getServerGroup().name()).getPrefix()));
 	}
@@ -234,6 +258,28 @@ public class StaffCommand implements CommandClass {
 
 			sender.sendMessage(" §a* §fVocê enviou o jogador §a" + member.getPlayerName() + "§f para §aScreenshare§f!");
 		}
+	}
+
+	@Completer(name = "find", aliases = { "report" })
+	public List<String> serverCompleter(CommandArgs cmdArgs) {
+		if (cmdArgs.getArgs().length == 1) {
+			List<String> playerList = new ArrayList<>();
+
+			try {
+				for (String playerName : ProxyServer.getInstance().getPlayers().stream().map(ProxiedPlayer::getName)
+						.collect(Collectors.toList()))
+					if (cmdArgs.getArgs()[0].toLowerCase().startsWith(playerName))
+						playerList.add(cmdArgs.getArgs()[0]);
+			} catch (Exception ex) {
+				for (String playerName : ProxyServer.getInstance().getPlayers().stream().map(ProxiedPlayer::getName)
+						.collect(Collectors.toList()))
+					playerList.add(playerName);
+			}
+
+			return playerList;
+		}
+
+		return new ArrayList<>();
 	}
 
 }

@@ -1,4 +1,3 @@
-
 package tk.yallandev.saintmc.bukkit.networking.redis;
 
 import java.lang.reflect.Field;
@@ -112,6 +111,7 @@ public class BukkitPubSubHandler extends JedisPubSub {
 				if (server instanceof MinigameServer) {
 					((MinigameServer) server).setState(payload.getPayload().getState());
 					((MinigameServer) server).setTime(payload.getPayload().getTime());
+					((MinigameServer) server).setMap(payload.getPayload().getMap());
 				}
 				break;
 			}

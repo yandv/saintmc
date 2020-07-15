@@ -16,7 +16,13 @@ public enum ServerType {
     SIMULATOR("PvP Simulator"),
     GLADIATOR("Gladiator"),
     
-    CLANXCLAN("ClanXClan"),
+    EVENTO("Evento"),
+    
+    SW_SOLO("Skywars Solo"),
+    SW_TEAM("Skywars Team"),
+    SW_SQUAD("Skywars Squad"),
+    
+    CLANXCLAN("Clan x Clan"),
     PEAK("Peak"),
     
     PRIVATE_SERVER("Private Server"),
@@ -40,6 +46,10 @@ public enum ServerType {
             default:
                 return LOBBY;
         }
+	}
+
+    public boolean canSendData() {
+		return this == PEAK ? false : true;
 	}
 
 }

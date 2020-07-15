@@ -29,13 +29,18 @@ public class StaffCommand implements CommandClass {
 		if (!cmdArgs.isPlayer())
 			return;
 
-		Player p = ((BukkitMember)cmdArgs.getSender()).getPlayer();
+		Player p = ((BukkitMember) cmdArgs.getSender()).getPlayer();
 
-		if (!Member.hasGroupPermission(p.getUniqueId(), Group.GERENTE)
-				&& !Member.isGroup(p.getUniqueId(), Group.BUILDER)) {
-			p.sendMessage(" §c* §fVocê não tem §cpermissão§f para executar esse comando!");
-			return;
-		}
+		if (CommonGeneral.getInstance().getServerType() == ServerType.HUNGERGAMES)
+			if (!Member.hasGroupPermission(p.getUniqueId(), Group.MODPLUS)
+					&& !Member.isGroup(p.getUniqueId(), Group.BUILDER)) {
+				p.sendMessage(" §c* §fVocê não tem §cpermissão§f para executar esse comando!");
+				return;
+			} else if (!Member.hasGroupPermission(p.getUniqueId(), Group.GERENTE)
+					&& !Member.isGroup(p.getUniqueId(), Group.BUILDER)) {
+				p.sendMessage(" §c* §fVocê não tem §cpermissão§f para executar esse comando!");
+				return;
+			}
 
 		String[] a = cmdArgs.getArgs();
 
@@ -79,7 +84,7 @@ public class StaffCommand implements CommandClass {
 		if (!cmdArgs.isPlayer())
 			return;
 
-		Player p = ((BukkitMember)cmdArgs.getSender()).getPlayer();
+		Player p = ((BukkitMember) cmdArgs.getSender()).getPlayer();
 		String[] args = cmdArgs.getArgs();
 		Member member = CommonGeneral.getInstance().getMemberManager().getMember(p.getUniqueId());
 
@@ -131,7 +136,7 @@ public class StaffCommand implements CommandClass {
 	@Command(name = "updatevanish", groupToUse = Group.TRIAL)
 	public void updatevanish(CommandArgs args) {
 		if (args.isPlayer()) {
-			VanishAPI.getInstance().updateVanishToPlayer(((BukkitMember)args.getSender()).getPlayer());
+			VanishAPI.getInstance().updateVanishToPlayer(((BukkitMember) args.getSender()).getPlayer());
 		}
 	}
 
@@ -140,7 +145,7 @@ public class StaffCommand implements CommandClass {
 		if (!args.isPlayer())
 			return;
 
-		Player p = ((BukkitMember)args.getSender()).getPlayer();
+		Player p = ((BukkitMember) args.getSender()).getPlayer();
 		VanishAPI.getInstance().showPlayer(p);
 		p.sendMessage("\n §a* §fVocê está visível para todos os jogadores!\n§f");
 	}
@@ -151,7 +156,7 @@ public class StaffCommand implements CommandClass {
 			return;
 		}
 
-		Player p = ((BukkitMember)args.getSender()).getPlayer();
+		Player p = ((BukkitMember) args.getSender()).getPlayer();
 		Member bP = CommonGeneral.getInstance().getMemberManager().getMember(p.getUniqueId());
 		Group group = Group.MEMBRO;
 
@@ -178,7 +183,7 @@ public class StaffCommand implements CommandClass {
 		if (!args.isPlayer())
 			return;
 
-		Player p = ((BukkitMember)args.getSender()).getPlayer();
+		Player p = ((BukkitMember) args.getSender()).getPlayer();
 
 		if (args.getArgs().length == 0) {
 			p.sendMessage(" §e* §fUse §a/" + args.getLabel() + " <player>§f para abrir o inventário de alguém!");
@@ -229,27 +234,23 @@ public class StaffCommand implements CommandClass {
 			CommonGeneral.getInstance().getMemberManager().broadcast("§7" + sender.getName() + " desativou o chat!",
 					Group.TRIAL);
 		} else {
-			if (args.getArgs().length >= 2) {
-				ChatState chatState = null;
+			ChatState chatState = null;
 
-				try {
-					chatState = ChatState.valueOf(args.getArgs()[1]);
-				} catch (Exception ex) {
-				}
+			try {
+				chatState = ChatState.valueOf(args.getArgs()[0].toUpperCase());
+			} catch (Exception ex) {
+			}
 
-				if (chatState == null) {
-					sender.sendMessage(" §e* §fUse §a/chat <on:off>§f para ativar ou desativar o chat!");
-					return;
-				}
-				
-				BukkitMain.getInstance().getServerConfig().setChatState(chatState);
-				sender.sendMessage(chatState == ChatState.ENABLED ? " §a* §fO chat está disponível para todos!"
-						: " §a* §fO chat agora está disponível somente para §a"
-								+ BukkitMain.getInstance().getServerConfig().getChatState().getAvailableTo() + "§f!");
+			if (chatState == null) {
+				sender.sendMessage(" §e* §fUse §a/chat <on:off>§f para ativar ou desativar o chat!");
 				return;
 			}
 
-			sender.sendMessage(" §e* §fUse §a/chat <on:off>§f para ativar ou desativar o chat!");
+			BukkitMain.getInstance().getServerConfig().setChatState(chatState);
+			sender.sendMessage(chatState == ChatState.ENABLED ? " §a* §fO chat está disponível para todos!"
+					: " §a* §fO chat agora está disponível somente para §a"
+							+ BukkitMain.getInstance().getServerConfig().getChatState().getAvailableTo() + "§f!");
+			return;
 		}
 	}
 

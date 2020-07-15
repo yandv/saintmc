@@ -1,12 +1,9 @@
 package tk.yallandev.saintmc.bukkit.command.register;
 
-import org.bukkit.entity.Player;
-
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.HoverEvent.Action;
 import net.md_5.bungee.api.chat.TextComponent;
-import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.bukkit.BukkitMain;
 import tk.yallandev.saintmc.bukkit.bukkit.BukkitMember;
 import tk.yallandev.saintmc.common.command.CommandArgs;
@@ -23,23 +20,21 @@ public class TagCommand implements CommandClass {
 		if (!cmdArgs.isPlayer())
 			return;
 
-		BukkitMember member = (BukkitMember) CommonGeneral.getInstance().getMemberManager()
-				.getMember(cmdArgs.getSender().getUniqueId());
-		Player player = member.getPlayer();
-		String[] args = cmdArgs.getArgs();
-
 		if (!BukkitMain.getInstance().isTagControl()) {
-			player.sendMessage(" §a* §fO comando não está ativado nesse servidor!");
+			cmdArgs.getSender().sendMessage(" §a* §fO comando não está ativado nesse servidor!");
 			return;
 		}
+
+		BukkitMember player = (BukkitMember) cmdArgs.getSender();
+		String[] args = cmdArgs.getArgs();
 
 		if (args.length == 0) {
 			TextComponent message = new TextComponent(" §a* §fTags disponíveis: ");
 
-			int max = member.getTags().size() * 2;
+			int max = player.getTags().size() * 2;
 			int i = max - 1;
 
-			for (Tag t : member.getTags()) {
+			for (Tag t : player.getTags()) {
 				if (i < max - 1) {
 					message.addExtra(new TextComponent("§f, "));
 					i -= 1;
@@ -54,22 +49,22 @@ public class TagCommand implements CommandClass {
 				i -= 1;
 			}
 
-			player.spigot().sendMessage(message);
+			player.sendMessage(message);
 			return;
 		}
 
 		if (args[0].equalsIgnoreCase("chroma")) {
-			if (member.hasGroupPermission(Group.ADMIN) || member.hasPermission("tag.chroma")) {
-				member.setChroma(!member.isChroma());
-				member.setTag(member.getTag());
+			if (player.hasGroupPermission(Group.ADMIN) || player.hasPermission("tag.chroma")) {
+				player.setChroma(!player.isChroma());
+				player.setTag(player.getTag());
 				player.sendMessage(
-						" §a* §fO modo chroma foi " + (member.isChroma() ? "§aativado" : "§cdesativado") + "§f!");
+						" §a* §fO modo chroma foi " + (player.isChroma() ? "§aativado" : "§cdesativado") + "§f!");
 				return;
 			}
 		}
 
 		if (args[0].equalsIgnoreCase("default")) {
-			if (member.setTag(member.getDefaultTag())) {
+			if (player.setTag(player.getDefaultTag())) {
 				player.sendMessage(" §a* §fVocê voltou para sua tag padrão!");
 			}
 			return;
@@ -82,9 +77,9 @@ public class TagCommand implements CommandClass {
 			return;
 		}
 
-		if (member.hasTag(tag)) {
-			if (!member.getTag().equals(tag)) {
-				if (member.setTag(tag)) {
+		if (player.hasTag(tag)) {
+			if (!player.getTag().equals(tag)) {
+				if (player.setTag(tag)) {
 					player.sendMessage(" §a* §fVocê selecionou a tag "
 							+ ((tag == Tag.MEMBRO) ? "§7§lMEMBRO" : tag.getPrefix()) + "§f!");
 				}

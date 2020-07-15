@@ -137,7 +137,7 @@ public class GroupCommand implements CommandClass {
 		String[] args = cmdArgs.getArgs();
 
 		if (args.length != 2) {
-			sender.sendMessage(" §e* §fUse §a/groupset <player> <group>§f para setar um grupo.");
+			sender.sendMessage(" §e* §fUse §a/" + cmdArgs.getLabel() + " <player> <group>§f para setar um grupo.");
 			return;
 		}
 	}

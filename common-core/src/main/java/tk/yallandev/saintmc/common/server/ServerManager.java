@@ -12,6 +12,7 @@ import tk.yallandev.saintmc.common.server.loadbalancer.server.HungerGamesServer;
 import tk.yallandev.saintmc.common.server.loadbalancer.server.MinigameServer;
 import tk.yallandev.saintmc.common.server.loadbalancer.server.MinigameState;
 import tk.yallandev.saintmc.common.server.loadbalancer.server.ProxiedServer;
+import tk.yallandev.saintmc.common.server.loadbalancer.server.SkywarsServer;
 import tk.yallandev.saintmc.common.server.loadbalancer.type.LeastConnection;
 import tk.yallandev.saintmc.common.server.loadbalancer.type.MostConnection;
 
@@ -27,11 +28,11 @@ import tk.yallandev.saintmc.common.server.loadbalancer.type.MostConnection;
 public class ServerManager {
 
 	private Map<String, ProxiedServer> activeServers;
-
 	private Map<ServerType, BaseBalancer<ProxiedServer>> balancers;
 
 	public ServerManager() {
 		balancers = new HashMap<>();
+		activeServers = new HashMap<>();
 
 		balancers.put(ServerType.LOBBY, new LeastConnection<>());
 		balancers.put(ServerType.LOGIN, new LeastConnection<>());
@@ -44,9 +45,12 @@ public class ServerManager {
 		balancers.put(ServerType.HUNGERGAMES, new MostConnection<>());
 		balancers.put(ServerType.PRIVATE_SERVER, new MostConnection<>());
 		balancers.put(ServerType.CLANXCLAN, new MostConnection<>());
+		balancers.put(ServerType.EVENTO, new MostConnection<>());
 		balancers.put(ServerType.PEAK, new MostConnection<>());
 
-		activeServers = new HashMap<>();
+		balancers.put(ServerType.SW_SOLO, new MostConnection<>());
+		balancers.put(ServerType.SW_TEAM, new MostConnection<>());
+		balancers.put(ServerType.SW_SQUAD, new MostConnection<>());
 	}
 
 	public BaseBalancer<ProxiedServer> getBalancer(ServerType type) {
@@ -57,25 +61,27 @@ public class ServerManager {
 		balancers.put(type, balancer);
 	}
 
-	public void addActiveServer(String serverAddress, String serverIp, ServerType type, int maxPlayers) {
-		updateActiveServer(serverIp, type, new HashSet<>(), maxPlayers, true);
+	public ProxiedServer addActiveServer(String serverAddress, String serverIp, ServerType type, int maxPlayers) {
+		return updateActiveServer(serverIp, type, new HashSet<>(), maxPlayers, true);
 	}
 
-	public void updateActiveServer(String serverId, ServerType type, Set<UUID> onlinePlayers, int maxPlayers,
+	public ProxiedServer updateActiveServer(String serverId, ServerType type, Set<UUID> onlinePlayers, int maxPlayers,
 			boolean canJoin) {
-		updateActiveServer(serverId, type, onlinePlayers, maxPlayers, canJoin, 0, "Unknown", null);
+		return updateActiveServer(serverId, type, onlinePlayers, maxPlayers, canJoin, 0, "Unknown", null);
 	}
 
-	public void updateActiveServer(String serverId, ServerType type, Set<UUID> onlinePlayers, int maxPlayers,
+	public ProxiedServer updateActiveServer(String serverId, ServerType type, Set<UUID> onlinePlayers, int maxPlayers,
 			boolean canJoin, int tempo, String map, MinigameState state) {
 		ProxiedServer server = activeServers.get(serverId);
 
 		if (server == null) {
-			if (type == ServerType.HUNGERGAMES) {
+			if (type == ServerType.HUNGERGAMES)
 				server = new HungerGamesServer(serverId, type, onlinePlayers, new HashSet<>(), true);
-			} else {
+			else if (type.name().startsWith("SW"))
+				server = new SkywarsServer(serverId, type, onlinePlayers, new HashSet<>(), true);
+			else
 				server = new ProxiedServer(serverId, type, onlinePlayers, new HashSet<>(), maxPlayers, true);
-			}
+
 			activeServers.put(serverId.toLowerCase(), server);
 		}
 
@@ -89,6 +95,7 @@ public class ServerManager {
 		}
 
 		addToBalancers(serverId, server);
+		return server;
 	}
 
 	public ProxiedServer getServer(String str) {

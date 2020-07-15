@@ -58,52 +58,70 @@ public class MessageListener implements Listener {
 		String subChannel = in.readUTF();
 
 		switch (subChannel) {
-		case "Hungergames": {
-			event.setCancelled(true);
-			if (!searchServer(player, proxiedPlayer, ServerType.HUNGERGAMES)) {
-				player.sendMessage("§cNenhum servidor encontrado!");
-			}
-			break;
-		}
-		case "PVPFulliron": {
-			event.setCancelled(true);
-			if (!searchServer(player, proxiedPlayer, ServerType.FULLIRON)) {
-				player.sendMessage("§cNenhum servidor encontrado!");
-			}
-			break;
-		}
-		case "PVPSimulator": {
+		case "Hungergames":
 			event.setCancelled(true);
 
-			if (!searchServer(player, proxiedPlayer, ServerType.SIMULATOR)) {
+			if (!searchServer(player, proxiedPlayer, ServerType.HUNGERGAMES))
 				player.sendMessage("§cNenhum servidor encontrado!");
-			}
+
 			break;
-		}
-		case "PVP": {
+		case "PVPFulliron":
+			event.setCancelled(true);
+
+			if (!searchServer(player, proxiedPlayer, ServerType.FULLIRON))
+				player.sendMessage("§cNenhum servidor encontrado!");
+
+			break;
+		case "PVPSimulator":
+			event.setCancelled(true);
+
+			if (!searchServer(player, proxiedPlayer, ServerType.SIMULATOR))
+				player.sendMessage("§cNenhum servidor encontrado!");
+
+			break;
+		case "PVP":
 			event.setCancelled(true);
 
 			if (!searchServer(player, proxiedPlayer, ServerType.FULLIRON))
 				if (!searchServer(player, proxiedPlayer, ServerType.SIMULATOR))
 					player.sendMessage("§cNenhum servidor encontrado!");
+
 			break;
-		}
-		case "Gladiator": {
+		case "Gladiator":
 			event.setCancelled(true);
 
 			if (!searchServer(player, proxiedPlayer, ServerType.GLADIATOR))
-					player.sendMessage("§cNenhum servidor encontrado!");
+				player.sendMessage("§cNenhum servidor encontrado!");
+
 			break;
-		}
-		case "Lobby": {
+		case "SWSolo":
 			event.setCancelled(true);
 
-			if (!searchServer(player, proxiedPlayer, ServerType.LOBBY)) {
+			if (!searchServer(player, proxiedPlayer, ServerType.SW_SOLO))
 				player.sendMessage("§cNenhum servidor encontrado!");
-			}
 
 			break;
-		}
+		case "SWTeam":
+			event.setCancelled(true);
+
+			if (!searchServer(player, proxiedPlayer, ServerType.SW_TEAM))
+				player.sendMessage("§cNenhum servidor encontrado!");
+
+			break;
+		case "SWSquad":
+			event.setCancelled(true);
+
+			if (!searchServer(player, proxiedPlayer, ServerType.SW_SQUAD))
+				player.sendMessage("§cNenhum servidor encontrado!");
+
+			break;
+		case "Lobby":
+			event.setCancelled(true);
+
+			if (!searchServer(player, proxiedPlayer, ServerType.LOBBY))
+				player.sendMessage("§cNenhum servidor encontrado!");
+
+			break;
 		default:
 			break;
 		}
@@ -112,9 +130,8 @@ public class MessageListener implements Listener {
 	public boolean searchServer(Member player, ProxiedPlayer proxiedPlayer, ServerType serverType) {
 		ProxiedServer server = manager.getBalancer(serverType).next();
 
-		if (server == null || server.getServerInfo() == null) {
+		if (server == null || server.getServerInfo() == null)
 			return false;
-		}
 
 		if (server.isFull() && !player.hasGroupPermission(Group.SAINT)) {
 			proxiedPlayer.sendMessage("§cO servidor está cheio!");

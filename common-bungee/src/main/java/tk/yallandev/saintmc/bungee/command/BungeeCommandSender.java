@@ -44,4 +44,9 @@ public class BungeeCommandSender implements CommandSender {
         sender.sendMessage(fromLegacyText);
     }
 
+	@Override
+	public boolean isPlayer() {
+		return sender instanceof ProxiedPlayer;
+	}
+
 }

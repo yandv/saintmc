@@ -52,24 +52,6 @@ public class ApacheWebImpl implements WebHelper {
 		this.closeableHttpAsyncClient.start();
 	}
 
-	public static void main(String[] args) {
-		ApacheWebImpl apache = new ApacheWebImpl();
-
-		try {
-			apache.doAsyncRequest("http://localhost:3333/mojang/session/?ip=186.221.185.74", Method.GET,
-					new FutureCallback<JsonElement>() {
-
-						@Override
-						public void result(JsonElement result, Throwable error) {
-							System.out.println(result);
-						}
-
-					});
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
 	@Override
 	public JsonElement doRequest(String url, Method method) throws Exception {
 		return doRequest(url, method, (String) null);

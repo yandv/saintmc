@@ -39,6 +39,8 @@ public class LoginMain extends JavaPlugin implements Listener {
 			return;
 		
 		BukkitCommandFramework.INSTANCE.registerCommands(new LoginCommand());
+		Tag.registerTag(LOGGING_TAG);
+		Tag.registerTag(ORIGINAL_TAG);
 
 		Bukkit.getPluginManager().registerEvents(new QueueListener(), this);
 		Bukkit.getPluginManager().registerEvents(new PlayerListener(), this);

@@ -45,15 +45,16 @@ public class BungeePunishManager implements PunishManager {
 	public boolean ban(Member member, Ban ban) {
 		Ban activeBan = member.getPunishmentHistory().getActiveBan();
 
-		if (activeBan != null && !activeBan.isPermanent() && !ban.isPermanent())
-			return false;
+		if (activeBan != null)
+			if (activeBan.isPermanent())
+				return false;
 
 		member.getPunishmentHistory().ban(ban);
 		CommonGeneral.getInstance().getMemberManager().getMembers().forEach(m -> {
 			if (m.hasGroupPermission(Group.TRIAL)) {
 				if (ban.isPermanent()) {
-					m.sendMessage(" §4* §cO jogador " + member.getPlayerName() + " foi banido pelo "
-							+ ban.getBannedBy() + " por " + ban.getReason() + "!");
+					m.sendMessage(" §4* §cO jogador " + member.getPlayerName() + " foi banido pelo " + ban.getBannedBy()
+							+ " por " + ban.getReason() + "!");
 				} else {
 					TextComponent textComponent = new TextComponent(
 							" §4* §cO jogador " + member.getPlayerName() + " foi banido temporariamente pelo "
@@ -127,7 +128,7 @@ public class BungeePunishManager implements PunishManager {
 
 		if (report != null)
 			report.mutePlayer();
-		
+
 		CommonGeneral.getInstance().getPlayerData().updateMember(member, "punishmentHistory");
 		return true;
 	}
@@ -138,8 +139,8 @@ public class BungeePunishManager implements PunishManager {
 				.collect(Collectors.toList());
 
 		if (list.size() >= 3) {
-			Ban ban = new Ban(member.getUniqueId(), warn.getWarnedBy(), warn.getWarnedByUuid(), "AUTOBAN: Excesso de avisos (3/3)",
-					System.currentTimeMillis() + (1000 * 60 * 60 * 6));
+			Ban ban = new Ban(member.getUniqueId(), warn.getWarnedBy(), warn.getWarnedByUuid(),
+					"Excesso de avisos (3/3)", System.currentTimeMillis() + (1000 * 60 * 60 * 3));
 
 			member.getPunishmentHistory().warn(warn);
 			return ban(member, ban);
@@ -151,9 +152,8 @@ public class BungeePunishManager implements PunishManager {
 		CommonGeneral.getInstance().getMemberManager().getMembers().stream()
 				.filter(m -> m.hasGroupPermission(Group.TRIAL)).forEach(m -> {
 
-					TextComponent textComponent = new TextComponent(
-							" §4* §cO jogador §c" + member.getPlayerName() + " foi avisado pelo "
-									+ warn.getWarnedBy() + " por " + warn.getReason() + "!");
+					TextComponent textComponent = new TextComponent(" §4* §cO jogador §c" + member.getPlayerName()
+							+ " foi avisado pelo " + warn.getWarnedBy() + " por " + warn.getReason() + "!");
 
 					textComponent.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent
 							.fromLegacyText("§fTempo da punição: §c" + DateUtils.getTime(warn.getWarnExpire()))));
@@ -161,9 +161,9 @@ public class BungeePunishManager implements PunishManager {
 					m.sendMessage(textComponent);
 				});
 
-		member.setReputation(member.getReputation() - 3);
-		member.sendMessage("§c* Você recebeu um aviso por: " + warn.getReason()
-				+ ". Você perdeu 3 pontos de sua reputação.");
+		member.setReputation(member.getReputation() - 2);
+		member.sendMessage("§cVocê recebeu um aviso por: " + warn.getReason() + ".");
+		member.sendMessage("§cVocê perdeu 2 pontos de sua reputação.");
 
 		CommonGeneral.getInstance().getPunishData().addWarn(warn);
 		return true;
@@ -175,10 +175,10 @@ public class BungeePunishManager implements PunishManager {
 
 		if (activeBan == null)
 			return false;
-		
+
 		if (banCache.asMap().containsKey(member.getLastIpAddress()))
 			banCache.invalidate(member.getLastIpAddress());
-		
+
 		activeBan.unban(uniqueId, userName, unbanReason);
 		CommonGeneral.getInstance().getMemberManager().getMembers().stream()
 				.filter(m -> m.hasGroupPermission(Group.MODPLUS)).forEach(m -> {

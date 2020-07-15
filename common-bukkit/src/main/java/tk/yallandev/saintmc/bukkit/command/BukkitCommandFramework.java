@@ -28,7 +28,6 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.SimplePluginManager;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import co.aikar.timings.TimingsManager;
 import lombok.Getter;
 import lombok.Setter;
 import tk.yallandev.saintmc.CommonGeneral;
@@ -274,7 +273,7 @@ public class BukkitCommandFramework implements CommandFramework {
 			this.owningPlugin = owner;
 			this.usageMessage = "";
 			this.group = group;
-			this.timings = TimingsManager.getCommandTiming(fallbackPrefix, this);
+			this.timings = new org.spigotmc.CustomTimingsHandler("** Common-Command: " + fallbackPrefix);
 		}
 
 		@Override

@@ -5,20 +5,24 @@ import java.util.Map;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import net.md_5.bungee.api.ChatColor;
 
 @Getter
 @AllArgsConstructor
+@NoArgsConstructor
 public enum Medal {
 
+	NONE,
 	EARLY_ACCESS("Acesso antecipado", "Medalha para jogadores que entraram no servidor na fase inicial", ChatColor.GOLD,
 			'⌚', new String[] { "early", "access", "antecipado" }),
 	BUG("Bug", "Medalha para jogadores que reportaram bugs no servidor", ChatColor.YELLOW, '☭'),
 	BETA("Beta", "Medalha para jogadores que compraram BETA na fase inicial", ChatColor.BLUE, 'Ⓑ'),
+	SUGGESTION("Seguestão", "Medalha para jogadores que deram uma sugestão para o servidor", ChatColor.DARK_BLUE, '➰'),
 
-	YING_YANG("Desempenho", "Medalha simbolica: Ying Yang", ChatColor.DARK_AQUA, '☯',
+	YING_YANG("Ying Yang", "Medalha simbolica: Ying Yang", ChatColor.DARK_AQUA, '☯',
 			new String[] { "ying", "yang", "ying-yang" }),
-	TOXIC("Tóxico", "Medalha simbolica: Tóxico", ChatColor.GREEN, '☢', new String[] { "toxico" }),
+	TOXIC("Tóxico", "Medalha simbolica: Tóxico", ChatColor.GREEN, '\u2622', new String[] { "toxico" }),
 	HEART("Coração", "Medalha simbolica: Coração", ChatColor.RED, '\u2764', new String[] { "coracao" });
 
 	private String medalName;
@@ -45,8 +49,9 @@ public enum Medal {
 
 			MAP.put(medal.name().toLowerCase(), medal);
 
-			for (String aliases : medal.aliases)
-				MAP.put(aliases.toLowerCase(), medal);
+			if (medal.aliases != null)
+				for (String aliases : medal.aliases)
+					MAP.put(aliases.toLowerCase(), medal);
 		}
 	}
 

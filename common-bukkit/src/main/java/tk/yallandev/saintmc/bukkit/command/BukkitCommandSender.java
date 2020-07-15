@@ -50,4 +50,9 @@ public class BukkitCommandSender implements CommandSender {
 			System.out.println("Mensagem nao suportada pelo console!");
 	}
 
+	@Override
+	public boolean isPlayer() {
+		return sender instanceof Player;
+	}
+
 }

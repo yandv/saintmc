@@ -2,6 +2,7 @@ package tk.yallandev.saintmc.bukkit.api.title.types;
 
 import java.lang.reflect.InvocationTargetException;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import com.comphenix.protocol.PacketType;
@@ -59,7 +60,7 @@ public class SimpleTitle implements Title {
 
 	@Override
 	public void broadcast() {
-
+		Bukkit.getOnlinePlayers().forEach(player -> send(player));
 	}
 
 	private void sendPacket(Player player, PacketContainer packet) {

@@ -15,6 +15,8 @@ import tk.yallandev.saintmc.bukkit.api.menu.MenuInventory;
 import tk.yallandev.saintmc.bukkit.api.menu.click.ClickType;
 import tk.yallandev.saintmc.bukkit.api.menu.click.MenuClickHandler;
 import tk.yallandev.saintmc.bukkit.utils.string.StringLoreUtils;
+import tk.yallandev.saintmc.common.account.Member;
+import tk.yallandev.saintmc.common.permission.Group;
 import tk.yallandev.saintmc.common.server.ServerType;
 import tk.yallandev.saintmc.lobby.LobbyMain;
 
@@ -31,79 +33,108 @@ public class ServerInventory {
 										+ BukkitMain.getInstance().getServerManager().getBalancer(ServerType.FULLIRON)
 												.getTotalNumber())
 								+ " jogadores online!"))
-						.build(), new MenuClickHandler() {
-							
-							@Override
-							public void onClick(Player p, Inventory inv, ClickType type, ItemStack stack, int slot) {
-								if (type == ClickType.LEFT) {
-									new KitpvpInventory(p);
-									return;
-								}
-								
-								ByteArrayDataOutput out = ByteStreams.newDataOutput();
-								out.writeUTF("PVP");
-								player.sendPluginMessage(LobbyMain.getInstance(), "BungeeCord", out.toByteArray());
-								player.closeInventory();
-							}
-						});
-		
+						.build(),
+				new MenuClickHandler() {
+
+					@Override
+					public void onClick(Player p, Inventory inv, ClickType type, ItemStack stack, int slot) {
+						if (type == ClickType.LEFT) {
+							new KitpvpInventory(p);
+							return;
+						}
+
+						ByteArrayDataOutput out = ByteStreams.newDataOutput();
+						out.writeUTF("PVP");
+						player.sendPluginMessage(LobbyMain.getInstance(), "BungeeCord", out.toByteArray());
+						player.closeInventory();
+					}
+				});
+
 		menuInventory.setItem(11,
 				new ItemBuilder().name("§a§lHungerGames").type(Material.MUSHROOM_SOUP).lore(StringLoreUtils.getLore(30,
 						"\n§7Seja o ultimo sobrevivente em uma batalha brutal com kits onde apenas um será o campeão!\n§f\n§a"
 								+ (BukkitMain.getInstance().getServerManager().getBalancer(ServerType.HUNGERGAMES)
 										.getTotalNumber())
 								+ " jogadores online!"))
-						.build(), new MenuClickHandler() {
-							
-							@Override
-							public void onClick(Player p, Inventory inv, ClickType type, ItemStack stack, int slot) {
-								if (type == ClickType.LEFT) {
-									new HungergamesInventory(p);
-									return;
-								}
-								
-								ByteArrayDataOutput out = ByteStreams.newDataOutput();
-								out.writeUTF("Hungergames");
-								player.sendPluginMessage(LobbyMain.getInstance(), "BungeeCord", out.toByteArray());
-								player.closeInventory();
-							}
-						});
-		
+						.build(),
+				new MenuClickHandler() {
+
+					@Override
+					public void onClick(Player p, Inventory inv, ClickType type, ItemStack stack, int slot) {
+						if (type == ClickType.LEFT) {
+							new HungergamesInventory(p);
+							return;
+						}
+
+						ByteArrayDataOutput out = ByteStreams.newDataOutput();
+						out.writeUTF("Hungergames");
+						player.sendPluginMessage(LobbyMain.getInstance(), "BungeeCord", out.toByteArray());
+						player.closeInventory();
+					}
+				});
+
 		menuInventory.setItem(12,
 				new ItemBuilder().name("§3§lGladiator").type(Material.IRON_FENCE).lore(StringLoreUtils.getLore(30,
 						"\n§7Neste modo de jogo você pode desafiar seus amigos ou inimigos para uma batalha mortal!\n§f\n§a"
 								+ (BukkitMain.getInstance().getServerManager().getBalancer(ServerType.GLADIATOR)
 										.getTotalNumber())
 								+ " jogadores online!"))
-						.build(), new MenuClickHandler() {
-							
-							@Override
-							public void onClick(Player p, Inventory inv, ClickType type, ItemStack stack, int slot) {
-								if (type == ClickType.LEFT) {
-									new GladiatorInventory(p);
-									return;
-								}
-								
-								ByteArrayDataOutput out = ByteStreams.newDataOutput();
-								out.writeUTF("Gladiator");
-								player.sendPluginMessage(LobbyMain.getInstance(), "BungeeCord", out.toByteArray());
-								player.closeInventory();
+						.build(),
+				new MenuClickHandler() {
+
+					@Override
+					public void onClick(Player p, Inventory inv, ClickType type, ItemStack stack, int slot) {
+						if (type == ClickType.LEFT) {
+							new GladiatorInventory(p);
+							return;
+						}
+
+						ByteArrayDataOutput out = ByteStreams.newDataOutput();
+						out.writeUTF("Gladiator");
+						player.sendPluginMessage(LobbyMain.getInstance(), "BungeeCord", out.toByteArray());
+						player.closeInventory();
+					}
+				});
+
+		if (Member.hasGroupPermission(player.getUniqueId(), Group.TRIAL))
+			menuInventory.setItem(16, new ItemBuilder().name("§e§lSkyWars").type(Material.GRASS)
+					.lore(StringLoreUtils.getLore(30, "\n§7Neste modo de jogo você batalhará nos céus!\n\n"
+							+ "§7Este modo está em fase §1§lBETA§7 e poderá mudar a qualquer momento!\n§f\n§a"
+							+ (BukkitMain.getInstance().getServerManager().getBalancer(ServerType.SW_SOLO)
+									.getTotalNumber()
+									+ BukkitMain.getInstance().getServerManager().getBalancer(ServerType.SW_TEAM)
+											.getTotalNumber()
+									+ BukkitMain.getInstance().getServerManager().getBalancer(ServerType.SW_SQUAD)
+											.getTotalNumber())
+							+ " jogadores online!"))
+					.build(), new MenuClickHandler() {
+
+						@Override
+						public void onClick(Player p, Inventory inv, ClickType type, ItemStack stack, int slot) {
+							if (type == ClickType.RIGHT && Member.hasGroupPermission(p.getUniqueId(), Group.TRIAL)) {
+								new SkywarsInventory(p);
+								return;
 							}
-						});
-		
+
+							ByteArrayDataOutput out = ByteStreams.newDataOutput();
+							out.writeUTF("SWSolo");
+							player.sendPluginMessage(LobbyMain.getInstance(), "BungeeCord", out.toByteArray());
+							player.closeInventory();
+						}
+					});
+
 		menuInventory.open(player);
 	}
-	
+
 	@RequiredArgsConstructor
 	static class SendClick implements MenuClickHandler {
-		
+
 		private final String serverId;
 
 		@Override
 		public void onClick(Player p, Inventory inv, ClickType type, ItemStack stack, int slot) {
 			BukkitMain.getInstance().sendPlayer(p, serverId);
 		}
-		
-		
+
 	}
 }

@@ -1,19 +1,21 @@
 package tk.yallandev.saintmc.common.controller;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 import lombok.Getter;
 import lombok.Setter;
 
+@Getter
 public class StoreController<K, V> {
 
-	@Getter
+	@Setter
 	private Map<K, V> storeMap;
 	private Function<K, V> defaultFunction;
 
-	@Getter
 	private StoreConfig storeConfig;
 
 	public StoreController() {
@@ -22,9 +24,19 @@ public class StoreController<K, V> {
 	}
 
 	public StoreController(Function<K, V> defaultFunction) {
-		this.storeMap = new HashMap<>();
 		this.defaultFunction = defaultFunction;
 		this.storeConfig = new StoreConfig();
+		this.storeMap = new HashMap<>();
+	}
+
+	public StoreController(Function<K, V> defaultFunction, StoreConfig storeConfig) {
+		this.defaultFunction = defaultFunction;
+		this.storeConfig = storeConfig;
+
+		if (this.storeConfig.linked)
+			this.storeMap = new LinkedHashMap<>();
+		else
+			this.storeMap = new HashMap<>();
 	}
 
 	public void load(K key, V value) {
@@ -41,7 +53,7 @@ public class StoreController<K, V> {
 			storeMap.remove(key);
 			return true;
 		}
-		
+
 		return false;
 	}
 
@@ -60,21 +72,29 @@ public class StoreController<K, V> {
 		this.defaultFunction = defaultFunction;
 		return this;
 	}
-	
+
+	public long count() {
+		return storeMap.size();
+	}
+
+	public long count(Predicate<? super V> predicate) {
+		return storeMap.values().stream().filter(predicate).count();
+	}
+
 	public int getIndexOf(K key) {
-		
+
 		if (!containsKey(key))
 			return -1;
-		
+
 		int index = 0;
-		
+
 		for (V value : getStoreMap().values()) {
 			if (key == value)
 				return index;
-			
+
 			index++;
 		}
-		
+
 		return -1;
 	}
 
@@ -83,6 +103,7 @@ public class StoreController<K, V> {
 	public class StoreConfig {
 
 		private boolean replace;
+		private boolean linked;
 
 	}
 

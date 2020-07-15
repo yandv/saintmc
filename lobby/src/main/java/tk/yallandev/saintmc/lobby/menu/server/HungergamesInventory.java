@@ -118,6 +118,10 @@ public class HungergamesInventory {
 				break;
 			}
 			case NONE: {
+
+				if (!member.hasGroupPermission(Group.TRIAL))
+					continue;
+
 				nameId = "§4§l" + name;
 				loreId = "\n§7O servidor está sendo iniciado!";
 				builder.durability(1);

@@ -20,12 +20,15 @@ import tk.yallandev.saintmc.common.account.MemberVoid;
 import tk.yallandev.saintmc.common.backend.Database;
 import tk.yallandev.saintmc.common.backend.data.ClanData;
 import tk.yallandev.saintmc.common.backend.data.PlayerData;
+import tk.yallandev.saintmc.common.backend.data.ServerData;
 import tk.yallandev.saintmc.common.backend.database.redis.RedisDatabase;
 import tk.yallandev.saintmc.common.command.CommandSender;
 import tk.yallandev.saintmc.common.data.impl.ClanDataImpl;
 import tk.yallandev.saintmc.common.data.impl.PlayerDataImpl;
+import tk.yallandev.saintmc.common.data.impl.ServerDataImpl;
 import tk.yallandev.saintmc.common.medals.Medal;
 import tk.yallandev.saintmc.common.server.ServerType;
+import tk.yallandev.saintmc.common.server.loadbalancer.server.MinigameState;
 
 @Getter
 public class MongoConnection implements Database {
@@ -89,8 +92,9 @@ public class MongoConnection implements Database {
 	public static void main(String[] args) {
 		MongoConnection mongoConnection = new MongoConnection(
 				CommonConst.MONGO_URL.replace("localhost", "35.198.32.68"));
-		RedisDatabase redisDatabase = new RedisDatabase(CommonConst.REDIS_HOSTNAME.replace("localhost", "35.198.32.68"),
-				CommonConst.REDIS_PASSWORD, 6379);
+//		RedisDatabase redisDatabase = new RedisDatabase(CommonConst.REDIS_HOSTNAME.replace("localhost", "35.198.32.68"),
+//				CommonConst.REDIS_PASSWORD, 6379);
+		RedisDatabase redisDatabase = new RedisDatabase("localhost", "", 6379);
 
 		redisDatabase.connect();
 		mongoConnection.connect();
@@ -138,14 +142,22 @@ public class MongoConnection implements Database {
 			}
 
 		});
-		
+
 		PlayerData playerData = new PlayerDataImpl(mongoConnection, redisDatabase);
 		ClanData clanData = new ClanDataImpl(mongoConnection, redisDatabase);
+		ServerData serverData = new ServerDataImpl(mongoConnection, redisDatabase);
+		
+		serverData.startServer(80);
+		serverData.updateStatus(MinigameState.GAMETIME, "pinto", 30);
+		
+		System.out.println(serverData.getTime(general.getServerId()));
+		System.out.println(serverData.getMap(general.getServerId()));
+		System.out.println(serverData.getState(general.getServerId()));
 
 		general.setPlayerData(playerData);
 		general.setClanData(clanData);
 
-		mongoConnection.getDb().getCollection("account").find(Filters.eq("playerName", "Spexeey"))
+		mongoConnection.getDb().getCollection("account").find(Filters.eq("playerName", "Danzin_"))
 				.forEach(new Block<Document>() {
 
 					@Override
@@ -153,13 +165,12 @@ public class MongoConnection implements Database {
 						MemberModel memberModel = CommonConst.GSON.fromJson(CommonConst.GSON.toJson(t),
 								MemberModel.class);
 						MemberVoid memberVoid = new MemberVoid(memberModel);
-						
-						memberVoid.addMedal(Medal.BETA);
+
 						memberVoid.addMedal(Medal.BUG);
 					}
 
 				});
-		
+
 		System.exit(0);
 	}
 

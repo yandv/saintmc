@@ -7,6 +7,7 @@ import net.md_5.bungee.api.Callback;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.ServerPing;
 import net.md_5.bungee.api.ServerPing.PlayerInfo;
+import net.md_5.bungee.api.ServerPing.Protocol;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.PendingConnection;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -40,36 +41,14 @@ public class ConnectionListener implements Listener {
 	@EventHandler
 	public void onServerKick(ServerKickEvent event) {
 		ProxiedPlayer player = event.getPlayer();
-
-		/*
-		 * Servidor que ele foi desconectado
-		 */
-
 		ProxiedServer kickedFrom = manager.getServer(event.getKickedFrom().getName());
-
-		/*
-		 * Verifica se o servidor é nulo, caso seja, wtf / kicka o player
-		 */
 
 		if (kickedFrom == null) {
 			player.disconnect(event.getKickReasonComponent());
 			return;
 		}
 
-		/*
-		 * Se o servidor for lobby, desconectar o player do servidor!
-		 */
-
 		ProxiedServer fallbackServer = manager.getBalancer(kickedFrom.getServerType().getServerLobby()).next();
-
-		if (kickedFrom.getServerType() == ServerType.HUNGERGAMES) {
-
-		}
-
-		/*
-		 * Caso o fallback seja nulo, desconectar o player, pois não haverá servidor
-		 * para ele entrar
-		 */
 
 		if (fallbackServer == null || fallbackServer.getServerInfo() == null) {
 			event.getPlayer().disconnect(event.getKickReasonComponent());
@@ -88,10 +67,6 @@ public class ConnectionListener implements Listener {
 		}
 
 		event.setCancelled(true);
-//
-//		if (!fallbackServer.containsPlayer(player.getUniqueId())) {
-//			event.setCancelServer(fallbackServer.getServerInfo());
-//		}
 	}
 
 	@EventHandler
@@ -119,23 +94,6 @@ public class ConnectionListener implements Listener {
 			}
 
 		event.setServer(server.getServerInfo());
-	}
-
-	private ProxiedServer searchServer(ProxiedPlayer player) {
-		String serverId = getServerIp(player.getPendingConnection());
-
-		AccountType accountType = player.getAccountType();
-
-		if (accountType != AccountType.PREMIUM)
-			return manager
-					.getBalancer(CommonGeneral.getInstance().isLoginServer() ? ServerType.LOGIN : ServerType.LOBBY)
-					.next();
-
-		if (serverId.toLowerCase().toLowerCase().contains("hg"))
-			return manager.getBalancer(ServerType.HUNGERGAMES).next();
-
-		return manager.getServer(serverId) == null ? manager.getBalancer(ServerType.LOBBY).next()
-				: manager.getServer(serverId);
 	}
 
 	/*
@@ -185,34 +143,44 @@ public class ConnectionListener implements Listener {
 			message = "§cO servidor está cheio!";
 		}
 
-		if (event.isCancelled()) {
+		if (event.isCancelled())
 			if (event.getPlayer().getServer() == null || event.getPlayer().getServer().getInfo() == null)
 				event.getPlayer().disconnect(message);
 			else
 				player.sendMessage(message);
-		} else {
+		else
 			event.setTarget(server.getServerInfo());
-		}
 	}
 
 	@EventHandler(priority = 127)
 	public void onProxyPing(ProxyPingEvent event) {
+		ServerPing serverPing = event.getResponse();
+
+		if (BungeeMain.getInstance().isMaintenceMode()) {
+			serverPing.getPlayers().setMax(ProxyServer.getInstance().getOnlineCount() + 1);
+			serverPing.getPlayers().setOnline(ProxyServer.getInstance().getOnlineCount());
+			serverPing.setVersion(new Protocol("§cMantencao!", -1));
+			serverPing.getPlayers()
+					.setSample(new PlayerInfo[] { new PlayerInfo("§e" + CommonConst.WEBSITE, UUID.randomUUID()) });
+			serverPing.setDescription("      §f﹄ §6§lSaint§f§lMC §f| §eMinecraft Network §7(1.7-1.15) §f﹃\n"
+					+ StringCenter.centered("§cO servidor está em manutenção!", 127));
+			return;
+		}
+
 		String serverIp = getServerIp(event.getConnection());
 		ProxiedServer server = manager.getServer(serverIp);
-		ServerPing serverPing = event.getResponse();
 
 		if (server == null) {
 			serverPing.getPlayers().setMax(ProxyServer.getInstance().getOnlineCount() + 1);
 			serverPing.getPlayers().setOnline(ProxyServer.getInstance().getOnlineCount());
 			serverPing.getPlayers()
 					.setSample(new PlayerInfo[] { new PlayerInfo("§e" + CommonConst.WEBSITE, UUID.randomUUID()) });
-			serverPing.setDescription("      §f﹄ §6§lSaint§f§lMC §f| §eMinecraft Network §7(1.7-.12) §f﹃\n"
+			serverPing.setDescription("      §f﹄ §6§lSaint§f§lMC §f| §eMinecraft Network §7(1.7-1.15) §f﹃\n"
 					+ StringCenter.centered(motdList[new Random().nextInt(motdList.length)], 127));
 			return;
 		}
 
 		event.registerIntent(BungeeMain.getPlugin());
-
 		server.getServerInfo().ping(new Callback<ServerPing>() {
 
 			@Override
@@ -226,7 +194,7 @@ public class ConnectionListener implements Listener {
 					serverPing.getPlayers().setOnline(ProxyServer.getInstance().getOnlineCount());
 					serverPing.getPlayers().setSample(
 							new PlayerInfo[] { new PlayerInfo("§e" + CommonConst.WEBSITE, UUID.randomUUID()) });
-					serverPing.setDescription("    §f﹄ §6§lSaint§f§lMC §f| §eMinecraft Network §7(1.7-.12) §f﹃\n"
+					serverPing.setDescription("    §f﹄ §6§lSaint§f§lMC §f| §eMinecraft Network §7(1.7-1.15) §f﹃\n"
 							+ StringCenter.centered("§4§nServidor não encontrado!", 127));
 				}
 
@@ -234,6 +202,23 @@ public class ConnectionListener implements Listener {
 			}
 
 		});
+	}
+
+	private ProxiedServer searchServer(ProxiedPlayer player) {
+		String serverId = getServerIp(player.getPendingConnection());
+
+		AccountType accountType = player.getAccountType();
+
+		if (accountType != AccountType.PREMIUM)
+			return manager
+					.getBalancer(CommonGeneral.getInstance().isLoginServer() ? ServerType.LOGIN : ServerType.LOBBY)
+					.next();
+
+		if (serverId.toLowerCase().toLowerCase().contains("hg"))
+			return manager.getBalancer(ServerType.HUNGERGAMES).next();
+
+		return manager.getServer(serverId) == null ? manager.getBalancer(ServerType.LOBBY).next()
+				: manager.getServer(serverId);
 	}
 
 	private String getServerIp(PendingConnection con) {

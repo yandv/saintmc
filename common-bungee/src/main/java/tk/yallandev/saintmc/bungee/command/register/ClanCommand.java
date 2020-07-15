@@ -25,16 +25,19 @@ import tk.yallandev.saintmc.common.clan.Clan;
 import tk.yallandev.saintmc.common.clan.ClanInfo;
 import tk.yallandev.saintmc.common.clan.ClanInvite;
 import tk.yallandev.saintmc.common.clan.ClanModel;
+import tk.yallandev.saintmc.common.clan.ClanVoid;
 import tk.yallandev.saintmc.common.clan.enums.ClanHierarchy;
-import tk.yallandev.saintmc.common.clan.event.ClanVoid;
 import tk.yallandev.saintmc.common.command.CommandArgs;
 import tk.yallandev.saintmc.common.command.CommandClass;
 import tk.yallandev.saintmc.common.command.CommandFramework.Command;
+import tk.yallandev.saintmc.common.permission.Group;
 import tk.yallandev.saintmc.common.command.CommandSender;
 import tk.yallandev.saintmc.common.tag.Tag;
 import tk.yallandev.saintmc.common.utils.string.MessageBuilder;
 
 public class ClanCommand implements CommandClass {
+
+	public static final int CLAN_MONEY = 5000;
 
 	public static final Pattern ABBREVIATION_PATTERN = Pattern.compile("[a-zA-Z0-9_]{3,6}");
 	public static final Pattern CLANNAME_PATTERN = Pattern.compile("[a-zA-Z0-9_]{3,12}");
@@ -60,6 +63,17 @@ public class ClanCommand implements CommandClass {
 		case "criar": {
 			if (dontHaveClan(player)) {
 				if (args.length >= 3) {
+
+					if (!player.hasGroupPermission(Group.LIGHT) && player.getMoney() < CLAN_MONEY) {
+
+						player.sendMessage("§cVocê não tem money o suficiente para criar um clan, você precisa de mais "
+								+ (CLAN_MONEY - player.getMoney()) + " coins!");
+						player.sendMessage("§cOu seja " + Tag.LIGHT.getPrefix()
+								+ "§c ou superior para criar um clan a qualquer momento.");
+
+						return;
+					}
+
 					String clanName = args[1];
 
 					if (CommonGeneral.getInstance().getClanData().loadClan(clanName) != null) {
@@ -132,6 +146,11 @@ public class ClanCommand implements CommandClass {
 						player.sendMessage("§cO grupo " + args[2] + " não existe! Tente: "
 								+ Joiner.on(", ").join(Arrays.asList(ClanHierarchy.values()).stream()
 										.map(cl -> cl.name().toLowerCase()).collect(Collectors.toList())));
+						return;
+					}
+
+					if (clanHierarchy == ClanHierarchy.OWNER) {
+						player.sendMessage("§cVocê não pode manejar esse grupo!");
 						return;
 					}
 
@@ -575,7 +594,8 @@ public class ClanCommand implements CommandClass {
 				stringBuilder.append(cmdArgs.getArgs()[x] + " ");
 
 			if (stringBuilder.toString().isEmpty()) {
-				player.sendMessage(" §e* §fUse §a/" + cmdArgs.getLabel() + " chat <mensagem>§f para falar no chat do clan!");
+				player.sendMessage(
+						" §e* §fUse §a/" + cmdArgs.getLabel() + " chat <mensagem>§f para falar no chat do clan!");
 				return;
 			}
 

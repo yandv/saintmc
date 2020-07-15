@@ -81,8 +81,6 @@ public class ReportCommand implements CommandClass {
 			return;
 		}
 
-		player.setCooldown("report-command", System.currentTimeMillis() + 120000l);
-
 		UUID uuid = CommonGeneral.getInstance().getUuid(args[0]);
 
 		if (uuid == null) {
@@ -174,6 +172,7 @@ public class ReportCommand implements CommandClass {
 							.addField("Suspeito: ", report.getPlayerName(), true)
 							.addField("Reportado por: ", cmdArgs.getPlayer().getName(), true)
 							.addField("Motivo: ", builder.toString().trim(), false).build()).build());
+			player.setCooldown("report-command", System.currentTimeMillis() + 120000l);
 		} else {
 			sender.sendMessage(" §a* §fVocê reportou o jogador §a" + target.getPlayerName() + "§f por §a"
 					+ builder.toString().trim() + "§f!");
