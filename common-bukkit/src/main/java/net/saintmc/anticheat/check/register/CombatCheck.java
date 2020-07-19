@@ -14,6 +14,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.player.PlayerEatSoupEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.Plugin;
 
@@ -25,12 +26,11 @@ import com.comphenix.protocol.events.PacketEvent;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import net.saintmc.anticheat.account.Member;
 import net.saintmc.anticheat.alert.AlertMetadata;
 import net.saintmc.anticheat.alert.AlertType;
 import net.saintmc.anticheat.check.CheckClass;
-import net.saintmc.anticheat.check.CheckController.CheckHandler;
-import net.saintmc.anticheat.check.CheckController.CheckType;
-import net.saintmc.anticheat.storage.InteractStorage;
+import net.saintmc.anticheat.controller.MemberController;
 import net.saintmc.anticheat.storage.InventoryChangeStorage;
 import net.saintmc.anticheat.storage.InventoryCloseStorage;
 import tk.yallandev.saintmc.bukkit.api.protocol.ProtocolGetter;
@@ -46,7 +46,7 @@ public class CombatCheck extends PacketAdapter implements CheckClass, Listener {
 		super(plugin, ListenerPriority.MONITOR, PacketType.Play.Client.USE_ENTITY);
 		macroMap = new HashMap<>();
 		clickMap = new HashMap<>();
-		
+
 		ProtocolLibrary.getProtocolManager().addPacketListener(
 				new PacketAdapter(plugin, ListenerPriority.MONITOR, PacketType.Play.Client.USE_ENTITY) {
 
@@ -85,10 +85,10 @@ public class CombatCheck extends PacketAdapter implements CheckClass, Listener {
 		Clicks click = clickMap.computeIfAbsent(player, v -> new Clicks());
 
 		if (click.getExpireTime() < System.currentTimeMillis()) {
-			if (click.getClicks() >= 19) {
+			if (click.getClicks() >= 20) {
 				alert(player, AlertType.AUTOCLICK, new AlertMetadata("cps", click.getClicks()));
 			}
-			
+
 			clickMap.remove(player);
 			return;
 		}
@@ -113,7 +113,7 @@ public class CombatCheck extends PacketAdapter implements CheckClass, Listener {
 			if (click.getClicks() >= 25) {
 				alert(player, AlertType.MACRO, new AlertMetadata("cps", click.getClicks()));
 			}
-			
+
 			macroMap.remove(player);
 			return;
 		}
@@ -121,27 +121,26 @@ public class CombatCheck extends PacketAdapter implements CheckClass, Listener {
 		click.addClick();
 	}
 
-	@CheckHandler(checkType = CheckType.INTERACT)
-	public boolean onAutosoupCheck(InteractStorage interactStorage) {
-		if (!interactStorage.getAction().toString().contains("RIGHT") || interactStorage.getItem() == null
-				|| interactStorage.getItem().getType() != Material.MUSHROOM_SOUP)
-			return false;
+	@EventHandler(priority = EventPriority.MONITOR)
+//	@CheckHandler(checkType = CheckType.INTERACT)
+	public boolean onPlayerEatSoup(PlayerEatSoupEvent interactStorage) {
+		Member member = MemberController.INSTANCE.load(interactStorage.getPlayer());
 
-		InventoryChangeStorage change = interactStorage.getMember().getLastChangeStorage();
-		InventoryCloseStorage close = interactStorage.getMember().getLastInventoryClose();
+		InventoryChangeStorage change = member.getLastChangeStorage();
+		InventoryCloseStorage close = member.getLastInventoryClose();
 
 		if (change == null || change.getCurrentItem() == null
 				|| change.getCurrentItem().getType() != Material.MUSHROOM_SOUP)
 			return false;
 
 		if (close == null || change.getTickTime() > close.getTickTime() + 5) {
-			alert(interactStorage.getMember(), AlertType.AUTOSOUP);
+			alert(member, AlertType.AUTOSOUP);
 			return true;
 		}
 
 		return false;
 	}
-	
+
 	@EventHandler
 	public void onServerTime(UpdateEvent event) {
 		if (event.getType() == UpdateType.SECOND) {
@@ -152,7 +151,8 @@ public class CombatCheck extends PacketAdapter implements CheckClass, Listener {
 
 				if (entry.getValue().getExpireTime() < System.currentTimeMillis()) {
 					if (entry.getValue().getClicks() >= 19) {
-						alert(entry.getKey(), AlertType.AUTOCLICK, new AlertMetadata("cps", entry.getValue().getClicks()));
+						alert(entry.getKey(), AlertType.AUTOCLICK,
+								new AlertMetadata("cps", entry.getValue().getClicks()));
 					}
 
 					iterator.remove();

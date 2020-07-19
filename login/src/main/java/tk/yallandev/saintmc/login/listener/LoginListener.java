@@ -10,6 +10,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import tk.yallandev.saintmc.CommonConst;
 import tk.yallandev.saintmc.CommonGeneral;
@@ -19,6 +20,7 @@ import tk.yallandev.saintmc.bukkit.bukkit.BukkitMember;
 import tk.yallandev.saintmc.bukkit.event.update.UpdateEvent;
 import tk.yallandev.saintmc.bukkit.event.update.UpdateEvent.UpdateType;
 import tk.yallandev.saintmc.common.account.configuration.LoginConfiguration.AccountType;
+import tk.yallandev.saintmc.login.LoginMain;
 
 public class LoginListener implements Listener {
 
@@ -39,7 +41,8 @@ public class LoginListener implements Listener {
 						member.getLoginConfiguration().isRegistred() ? "§a§l> §fUse §a/login <senha>§f para se logar!"
 								: "§a§l> §fUse §a/register <senha> <senha>§f para se registrar!");
 
-				Title.send(event.getPlayer(), member.getLoginConfiguration().isRegistred() ? "§a§lLOGIN" : "§a§lREGISTER",
+				Title.send(event.getPlayer(),
+						member.getLoginConfiguration().isRegistred() ? "§a§lLOGIN" : "§a§lREGISTER",
 						member.getLoginConfiguration().isRegistred() ? "§aUse /login <senha> para se logar!"
 								: "§aUse /register <senha> para se registrar!",
 						SimpleTitle.class);
@@ -48,7 +51,7 @@ public class LoginListener implements Listener {
 			}
 		}
 	}
-	
+
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onPlayerQuit(PlayerQuitEvent event) {
 		BukkitMember member = (BukkitMember) CommonGeneral.getInstance().getMemberManager()
@@ -81,9 +84,15 @@ public class LoginListener implements Listener {
 							: "§a§l> §fUse §a/register <senha> <repita a senha>§f para se registrar!");
 				}
 			} else {
-				member.getPlayer()
-						.kickPlayer("§4§l" + CommonConst.KICK_PREFIX + "\n§f\n§fVocê demorou muito para se §alogar§f!");
 				iterator.remove();
+				new BukkitRunnable() {
+
+					@Override
+					public void run() {
+						member.getPlayer().kickPlayer(
+								"§4§l" + CommonConst.KICK_PREFIX + "\n§f\n§fVocê demorou muito para se §alogar§f!");
+					}
+				}.runTask(LoginMain.getInstance());
 			}
 		}
 	}

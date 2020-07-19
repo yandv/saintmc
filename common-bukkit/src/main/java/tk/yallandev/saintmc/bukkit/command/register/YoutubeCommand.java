@@ -24,7 +24,10 @@ import tk.yallandev.saintmc.common.utils.DateUtils;
 
 public class YoutubeCommand implements CommandClass {
 
-	private static final String[] FAKERANDOM = { "broowkk_", "yNegocioNegocio", "YTBERMASTER__" };
+	private static final String[] FAKERANDOM = { "broowkk_", "yNegocioNegocio", "YTBERMASTER__", "KillepHG", "Foccus",
+			"_Usayy_", "_Xereyy_", "_UseiDrogas_", "_ProerdHG_", "_Dollows_", "_Finalee_", "BrabaoPvP", "brouqui",
+			"YanDavii", "abreuzinpvp", "Vooei", "Surfaaay", "uDeathadder", "MouseG0D", "ThePrinceHG", "LGostosoNooT",
+			"GANGMEMBERXITO", "XITOCONTRAISPOPI", "MEBANIRAMNOCOGU" };
 
 	@Command(name = "fake", groupToUse = Group.YOUTUBER, runAsync = true)
 	public void fakeCommand(CommandArgs args) {

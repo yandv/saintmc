@@ -18,7 +18,8 @@ public enum Medal {
 			'⌚', new String[] { "early", "access", "antecipado" }),
 	BUG("Bug", "Medalha para jogadores que reportaram bugs no servidor", ChatColor.YELLOW, '☭'),
 	BETA("Beta", "Medalha para jogadores que compraram BETA na fase inicial", ChatColor.BLUE, 'Ⓑ'),
-	SUGGESTION("Seguestão", "Medalha para jogadores que deram uma sugestão para o servidor", ChatColor.DARK_BLUE, '➰'),
+	SUGGESTION("Seguestão", "Medalha para jogadores que deram uma sugestão para o servidor", ChatColor.DARK_BLUE, 'ⓢ'),
+	BDF("Bdf", "Medalha simbolica: Para jogadores que possuem BDF no nick!", ChatColor.DARK_BLUE, 'ⓢ'),
 
 	YING_YANG("Ying Yang", "Medalha simbolica: Ying Yang", ChatColor.DARK_AQUA, '☯',
 			new String[] { "ying", "yang", "ying-yang" }),

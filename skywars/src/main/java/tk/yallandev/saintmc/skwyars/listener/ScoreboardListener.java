@@ -87,8 +87,10 @@ public class ScoreboardListener implements Listener {
 				"players"));
 
 		if (event.getEntity().getPlayer() instanceof Player)
-			GAME_SCOREBOARD.updateScore(event.getEntity().getKiller(), new Score("Kills: §7" + GameGeneral.getInstance()
-					.getGamerController().getGamer(event.getEntity().getKiller()).getMatchKills(), "kills"));
+			if (GameGeneral.getInstance().getGamerController().containsKey(event.getEntity().getKiller().getUniqueId()))
+				GAME_SCOREBOARD.updateScore(event.getEntity().getKiller(),
+						new Score("Kills: §7" + GameGeneral.getInstance().getGamerController()
+								.getGamer(event.getEntity().getKiller()).getMatchKills(), "kills"));
 	}
 
 	@EventHandler

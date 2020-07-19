@@ -1,12 +1,15 @@
 package tk.yallandev.saintmc.bungee.listener;
 
-import java.io.UnsupportedEncodingException;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.net.URLEncoder;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
@@ -40,11 +43,23 @@ public class LoginListener implements Listener {
 
 	private static final int MAX_VERIFY = 15;
 
+	private LoadingCache<String, JsonObject> cache;
+
 	private Set<String> blockedAddress;
 	private int verifyingAddresses;
 
 	public LoginListener() {
 		blockedAddress = new HashSet<>();
+
+		cache = CacheBuilder.newBuilder().expireAfterWrite(5L, TimeUnit.MINUTES)
+				.build(new CacheLoader<String, JsonObject>() {
+
+					@Override
+					public JsonObject load(String key) throws Exception {
+						return null;
+					}
+
+				});
 	}
 
 	/*
@@ -103,42 +118,58 @@ public class LoginListener implements Listener {
 				verifyingAddresses++;
 
 				try {
-					CommonConst.DEFAULT_WEB.doRequest(
-							CommonConst.MOJANG_FETCHER + "session/?ip=" + URLEncoder.encode(ipAddress, "UTF-8"),
-							Method.GET, new FutureCallback<JsonElement>() {
-								
-								@Override
-								public void result(JsonElement result, Throwable error) {
-									if (error == null) {
-										JsonObject jsonObject = (JsonObject) result;
+					if (cache.asMap().containsKey(ipAddress)) {
+						JsonObject jsonObject = cache.getIfPresent(ipAddress);
 
-										if (!jsonObject.get("allow").getAsBoolean()) {
+						if (!jsonObject.get("allow").getAsBoolean()) {
+							event.setCancelled(true);
+							event.setCancelReason(
+									"§4§l" + CommonConst.KICK_PREFIX + "\n§f\n§cSeu endereço de ip foi bloqueado!"
+											+ "\n\n§fMotivo: §7" + jsonObject.get("message").getAsString()
+											+ "\n§f\n§6Mais informação em: §b" + CommonConst.DISCORD);
+							blockAddress(ipAddress);
+						}
+
+						verifyingAddresses--;
+					} else
+						CommonConst.DEFAULT_WEB.doRequest(
+								CommonConst.MOJANG_FETCHER + "session/?ip=" + URLEncoder.encode(ipAddress, "UTF-8"),
+								Method.GET, new FutureCallback<JsonElement>() {
+
+									@Override
+									public void result(JsonElement result, Throwable error) {
+										if (error == null) {
+											JsonObject jsonObject = (JsonObject) result;
+
+											if (!jsonObject.get("allow").getAsBoolean()) {
+												event.setCancelled(true);
+												event.setCancelReason("§4§l" + CommonConst.KICK_PREFIX
+														+ "\n§f\n§cSeu endereço de ip foi bloqueado!"
+														+ "\n\n§fMotivo: §7" + jsonObject.get("message").getAsString()
+														+ "\n§f\n§6Mais informação em: §b" + CommonConst.DISCORD);
+												blockAddress(ipAddress);
+											}
+
+											cache.put(ipAddress, jsonObject);
+										} else {
 											event.setCancelled(true);
 											event.setCancelReason("§4§l" + CommonConst.KICK_PREFIX
-													+ "\n§f\n§cSeu endereço de ip foi bloqueado!" + "\n\n§fMotivo: §7"
-													+ jsonObject.get("message").getAsString()
-													+ "\n§f\n§6Mais informação em: §b" + CommonConst.DISCORD);
-											blockAddress(ipAddress);
+													+ "\n§f\n§fNão foi possível verificar o seu ip!§f\n§6Mais informação em: §b"
+													+ CommonConst.DISCORD);
 										}
-									} else {
-										event.setCancelled(true);
-										event.setCancelReason("§4§l" + CommonConst.KICK_PREFIX
-												+ "\n§f\n§fNão foi possível verificar o seu ip!§f\n§6Mais informação em: §b"
-												+ CommonConst.DISCORD);
-									}
 
-									event.completeIntent(BungeeMain.getPlugin());
-									verifyingAddresses--;
-								}
-							});
-				} catch (UnsupportedEncodingException e) {
+										event.completeIntent(BungeeMain.getPlugin());
+										verifyingAddresses--;
+									}
+								});
+				} catch (Exception ex) {
 					event.setCancelled(true);
 					event.setCancelReason("§4§l" + CommonConst.KICK_PREFIX
 							+ "\n§f\n§fNão foi possível verificar o seu ip!§f\n§6Mais informação em: §b"
 							+ CommonConst.DISCORD);
 					event.completeIntent(BungeeMain.getPlugin());
 
-					e.printStackTrace();
+					ex.printStackTrace();
 					verifyingAddresses--;
 				}
 			}
@@ -148,6 +179,7 @@ public class LoginListener implements Listener {
 	@EventHandler
 	public void onUnblockAddress(UnblockAddressEvent event) {
 		blockedAddress.remove(event.getIpAddress());
+		cache.invalidate(event.getIpAddress());
 	}
 
 	@EventHandler
@@ -168,8 +200,8 @@ public class LoginListener implements Listener {
 					CommonConst.DEFAULT_WEB.doRequest(
 							CommonConst.API + "/ip/?ip" + URLEncoder.encode(ipAddress, "UTF-8") + "&allowed=false",
 							Method.POST);
-				} catch (Exception e) {
-					e.printStackTrace();
+				} catch (Exception ex) {
+					ex.printStackTrace();
 				}
 			}
 

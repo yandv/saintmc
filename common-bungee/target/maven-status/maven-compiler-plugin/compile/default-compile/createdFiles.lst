@@ -3,6 +3,7 @@ tk\yallandev\saintmc\bungee\controller\GiftcodeController.class
 tk\yallandev\saintmc\discord\reaction\MessageReaction$1.class
 tk\yallandev\saintmc\bungee\listener\AccountListener$1$1$1.class
 tk\yallandev\saintmc\bungee\controller\StoreController$1$1.class
+tk\yallandev\saintmc\bungee\listener\LoginListener$2$1.class
 tk\yallandev\saintmc\bungee\networking\redis\BungeePubSubHandler$7.class
 tk\yallandev\saintmc\bungee\listener\PartyListener.class
 tk\yallandev\saintmc\discord\command\register\DiscordCommand.class
@@ -19,6 +20,7 @@ tk\yallandev\saintmc\bungee\controller\BungeeServerManager.class
 tk\yallandev\saintmc\bungee\listener\LoginListener.class
 tk\yallandev\saintmc\bungee\command\register\ClanCommand.class
 tk\yallandev\saintmc\bungee\command\register\ReportCommand.class
+tk\yallandev\saintmc\bungee\listener\LoginListener$3.class
 tk\yallandev\saintmc\discord\guild\GuildConfiguration.class
 tk\yallandev\saintmc\discord\reaction\ReactionEnum.class
 tk\yallandev\saintmc\bungee\BungeeMain$3.class
@@ -84,6 +86,7 @@ tk\yallandev\saintmc\bungee\command\BungeeCommandFramework$BungeeCommand.class
 tk\yallandev\saintmc\bungee\command\BungeeCommandFramework$1.class
 tk\yallandev\saintmc\discord\command\DiscordCommandFramework$1.class
 tk\yallandev\saintmc\bungee\command\register\ServerCommand.class
+tk\yallandev\saintmc\bungee\BungeeMain$4.class
 tk\yallandev\saintmc\bungee\BungeeMain.class
 tk\yallandev\saintmc\bungee\command\register\DiscordCommand.class
 tk\yallandev\saintmc\bungee\command\register\GifcodeCommand.class
@@ -93,6 +96,5 @@ tk\yallandev\saintmc\bungee\listener\AccountListener.class
 tk\yallandev\saintmc\bungee\networking\redis\BungeePubSubHandler$4.class
 tk\yallandev\saintmc\bungee\command\register\GifcodeCommand$1.class
 tk\yallandev\saintmc\bungee\command\register\PackageCommand.class
-tk\yallandev\saintmc\bungee\listener\LoginListener$1$1.class
 tk\yallandev\saintmc\discord\reaction\ReactionHandler.class
 tk\yallandev\saintmc\bungee\listener\MultiserverTeleport.class

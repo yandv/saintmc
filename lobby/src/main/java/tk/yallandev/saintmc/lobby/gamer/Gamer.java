@@ -5,7 +5,7 @@ import org.bukkit.inventory.ItemStack;
 
 import lombok.Getter;
 import lombok.Setter;
-import net.minecraft.server.EnumParticle;
+import net.minecraft.server.v1_8_R3.EnumParticle;
 import tk.yallandev.saintmc.lobby.collectable.Collectables.CollectableType;
 
 @Getter

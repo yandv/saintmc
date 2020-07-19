@@ -11,6 +11,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.server.PluginDisableEvent;
 
+import tk.yallandev.saintmc.CommonConst;
 import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.bukkit.BukkitMain;
 import tk.yallandev.saintmc.bukkit.api.scoreboard.ScoreboardAPI;
@@ -67,6 +68,11 @@ public class TagListener implements Listener {
 
 		BukkitMember player = (BukkitMember) CommonGeneral.getInstance().getMemberManager()
 				.getMember(e.getPlayer().getUniqueId());
+		
+		if (player == null) {
+			p.kickPlayer("§4§l" + CommonConst.KICK_PREFIX + "\n§f\n§fNão foi possível carregar sua conta!");
+			return;
+		}
 
 		player.setTag(player.getTag() == null ? player.getDefaultTag() : player.getTag());
 

@@ -4,7 +4,7 @@ import org.bukkit.Material;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import net.minecraft.server.EnumParticle;
+import net.minecraft.server.v1_8_R3.EnumParticle;
 
 public class Collectables {
 	

@@ -26,7 +26,6 @@ import tk.yallandev.saintmc.common.command.CommandSender;
 import tk.yallandev.saintmc.common.data.impl.ClanDataImpl;
 import tk.yallandev.saintmc.common.data.impl.PlayerDataImpl;
 import tk.yallandev.saintmc.common.data.impl.ServerDataImpl;
-import tk.yallandev.saintmc.common.medals.Medal;
 import tk.yallandev.saintmc.common.server.ServerType;
 import tk.yallandev.saintmc.common.server.loadbalancer.server.MinigameState;
 
@@ -157,7 +156,7 @@ public class MongoConnection implements Database {
 		general.setPlayerData(playerData);
 		general.setClanData(clanData);
 
-		mongoConnection.getDb().getCollection("account").find(Filters.eq("playerName", "Danzin_"))
+		mongoConnection.getDb().getCollection("account").find(Filters.eq("playerName", "LNooT"))
 				.forEach(new Block<Document>() {
 
 					@Override
@@ -166,7 +165,7 @@ public class MongoConnection implements Database {
 								MemberModel.class);
 						MemberVoid memberVoid = new MemberVoid(memberModel);
 
-						memberVoid.addMedal(Medal.BUG);
+						memberVoid.addPermission("tag.chroma");
 					}
 
 				});

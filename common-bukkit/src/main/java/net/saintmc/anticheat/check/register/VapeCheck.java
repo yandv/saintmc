@@ -5,6 +5,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 
+import net.saintmc.anticheat.alert.AlertType;
+import net.saintmc.anticheat.alert.impl.AlertImpl;
 import net.saintmc.anticheat.check.CheckClass;
 import tk.yallandev.saintmc.bukkit.BukkitMain;
 
@@ -22,7 +24,8 @@ public class VapeCheck implements CheckClass, PluginMessageListener {
 
 	@Override
 	public void onPluginMessageReceived(String s, Player player, byte[] data) {
-		BukkitMain.getInstance().getAnticheatController().getAlertController().autoban(player, 1);
+		BukkitMain.getInstance().getAnticheatController().getAlertController().autoban(player,
+				new AlertImpl(AlertType.VAPE, player.getName()), 1);
 	}
 
 }

@@ -1,6 +1,8 @@
 package net.saintmc.anticheat.account;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -24,7 +26,7 @@ public class Member {
 	private UUID playerId;
 
 	private Player player;
-	
+
 	@Setter
 	private long lastHit;
 
@@ -45,8 +47,10 @@ public class Member {
 	@Setter
 	private InteractStorage lastInteractStorage;
 
-	private Map<AlertType, Alert> alertList;
-	private boolean banTime;
+	private Map<AlertType, List<Alert>> alertList;
+
+	private Alert banAlert;
+	private long banTime;
 
 	public Member(Player player) {
 		this.playerName = player.getName();
@@ -83,21 +87,40 @@ public class Member {
 	}
 
 	public void addAlert(Alert alert) {
-		this.alertList.put(alert.getAlertType(), alert);
+		if (alertList.containsKey(alert.getAlertType()))
+			if (alertList.get(alert.getAlertType()).size() >= alert.getAlertType().getMaxAlerts()) {
+				if (!isBan())
+					ban(alert, 60000l);
+				return;
+			}
+
+		this.alertList.computeIfAbsent(alert.getAlertType(), v -> new ArrayList<>()).add(alert);
 	}
 
-	public boolean ban(long time) {
+	public boolean ban(Alert alert, long time) {
+		this.banAlert = alert;
+		this.banTime = System.currentTimeMillis() + time;
 		return true;
 	}
 
+	public boolean isBan() {
+		return this.banAlert != null;
+	}
+
 	public void alert() {
-		Alert alert = this.alertList.values().stream().filter(a -> !a.isAlert()).findFirst().orElse(null);
+		List<Alert> alertList = this.alertList.values().stream().filter(a -> !a.isEmpty()).findFirst().orElse(null);
+
+		if (alertList == null)
+			return;
+
+		Alert alert = alertList.stream().filter(a -> !a.isAlert()).findFirst().orElse(null);
 
 		if (alert == null)
 			return;
 
 		alert.alert();
-		BukkitMain.getInstance().getAnticheatController().getAlertController().alert(player, alert);
+		BukkitMain.getInstance().getAnticheatController().getAlertController().alert(player, alert,
+				(int) alertList.stream().filter(a -> a.isAlert()).count());
 	}
 
 }

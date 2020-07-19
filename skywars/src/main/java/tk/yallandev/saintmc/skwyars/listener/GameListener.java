@@ -34,6 +34,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.bukkit.BukkitMain;
+import tk.yallandev.saintmc.bukkit.api.scoreboard.ScoreboardAPI;
 import tk.yallandev.saintmc.bukkit.api.title.Title;
 import tk.yallandev.saintmc.bukkit.api.title.types.SimpleTitle;
 import tk.yallandev.saintmc.bukkit.event.PlayerMoveUpdateEvent;
@@ -193,7 +194,7 @@ public class GameListener implements Listener {
 
 		player.setHealth(20);
 		player.setFoodLevel(20);
-		
+
 		Title.send(player, "§c§lMORREU", "§fVocê morreu!", SimpleTitle.class);
 
 		if (gamer.isPlaying()) {
@@ -215,9 +216,20 @@ public class GameListener implements Listener {
 			event.setCancelled(true);
 	}
 
-	@EventHandler
+	@EventHandler(priority = EventPriority.MONITOR)
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		event.setJoinMessage(null);
+
+		Player player = event.getPlayer();
+		Gamer gamer = GameGeneral.getInstance().getGamerController().getGamer(player);
+
+		for (Player o : Bukkit.getOnlinePlayers()) {
+			if (gamer.getTeam().equals(GameGeneral.getInstance().getGamerController().getGamer(o).getTeam())) {
+				ScoreboardAPI.joinTeam(ScoreboardAPI.createTeamIfNotExistsToPlayer(player, "a", "§a", ""), o);
+			} else {
+				ScoreboardAPI.joinTeam(ScoreboardAPI.createTeamIfNotExistsToPlayer(player, "b", "§c", ""), o);
+			}
+		}
 	}
 
 	@EventHandler

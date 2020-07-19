@@ -22,6 +22,9 @@ public class GamerController extends StoreController<UUID, Gamer> {
 	}
 
 	public Gamer getGamer(Player player) {
+		if (player == null)
+			return null;
+		
 		return super.getValue(player.getUniqueId());
 	}
 	

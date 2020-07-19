@@ -150,7 +150,6 @@ tk\yallandev\saintmc\update\Updater.class
 tk\yallandev\saintmc\common\account\status\types\normal\NormalStatus.class
 tk\yallandev\saintmc\common\backend\Database.class
 tk\yallandev\saintmc\common\party\Party.class
-tk\yallandev\saintmc\test\Test$1.class
 tk\yallandev\saintmc\common\medals\Medal.class
 tk\yallandev\saintmc\common\command\CommandArgs.class
 tk\yallandev\saintmc\common\command\CommandFramework$Completer.class

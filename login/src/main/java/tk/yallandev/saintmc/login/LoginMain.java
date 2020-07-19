@@ -6,6 +6,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import lombok.Getter;
 import tk.yallandev.saintmc.CommonConst;
 import tk.yallandev.saintmc.bukkit.command.BukkitCommandFramework;
 import tk.yallandev.saintmc.bukkit.command.manual.LoginCommand;
@@ -19,11 +20,15 @@ import tk.yallandev.saintmc.update.UpdatePlugin;
 
 public class LoginMain extends JavaPlugin implements Listener {
 	
+	@Getter
+	private static LoginMain instance;
+	
 	public static final Tag ORIGINAL_TAG = TagWrapper.create("§6§lORIGINAL§6", null);
 	public static final Tag LOGGING_TAG = TagWrapper.create("§8§lLOGANDO§8", null);
-
+	
 	@Override
 	public void onEnable() {
+		instance = this;
 		UpdatePlugin.Shutdown shutdown = new UpdatePlugin.Shutdown() {
 
 			@Override

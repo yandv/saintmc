@@ -24,6 +24,7 @@ import tk.yallandev.saintmc.common.networking.packet.AnticheatBanPacket;
 import tk.yallandev.saintmc.common.permission.Group;
 import tk.yallandev.saintmc.common.utils.string.MessageBuilder;
 import tk.yallandev.saintmc.common.utils.string.NameUtils;
+import tk.yallandev.saintmc.common.utils.string.StringUtils;
 
 public class AlertController implements net.saintmc.anticheat.alert.AlertController {
 
@@ -34,7 +35,22 @@ public class AlertController implements net.saintmc.anticheat.alert.AlertControl
 			public void onUpdate(UpdateEvent event) {
 				if (event.getType() == UpdateType.SECOND)
 					for (Member member : MemberController.INSTANCE.getCollection()) {
-						member.alert();
+						if (member.isBan()) {
+							if (member.getBanTime() < System.currentTimeMillis())
+								autoban(member.getPlayer(), member.getBanAlert(),
+										System.currentTimeMillis() + member.getBanAlert().getAlertType().getBanTime());
+							else if (((member.getBanTime() - System.currentTimeMillis()) / 1000) % 10 == 0)
+								CommonGeneral.getInstance().getMemberManager().getMemberMap().values().stream()
+										.filter(m -> m.hasGroupPermission(Group.MOD)
+												&& m.getAccountConfiguration().isAnticheatEnabled())
+										.forEach(m -> m.sendMessage("§9Spectrum> §fO jogador §c"
+												+ member.getPlayerName() + "§f será auto banido em §4"
+												+ (StringUtils.formatTime(
+														(int) ((member.getBanTime() - System.currentTimeMillis())
+																/ 1000)))
+												+ "§f!"));
+						} else
+							member.alert();
 					}
 			}
 
@@ -42,29 +58,34 @@ public class AlertController implements net.saintmc.anticheat.alert.AlertControl
 	}
 
 	@Override
-	public void alert(Player player, Alert alert) {
-		MessageBuilder messageBuilder = new MessageBuilder("§9Anticheat> §fO jogador §d" + alert.getPlayerName()
-				+ "§f está usando §c" + NameUtils.formatString(alert.getAlertType().name()) + "§f!");
+	public void alert(Player player, Alert alert, int alertIndex) {
+		MessageBuilder messageBuilder = new MessageBuilder("§9Spectrum> §fO jogador §d" + alert.getPlayerName()
+				+ "§f está usando §c" + NameUtils.formatString(alert.getAlertType().name()) + " §e(" + alertIndex + "/"
+				+ alert.getAlertType().getMaxAlerts() + ")§f!");
 
 		if (alert.hasMetadata())
 			messageBuilder.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
-					TextComponent.fromLegacyText(Joiner.on("\n").join(alert.getMetadataList().stream()
-							.map(e -> "§c" + e.getKey() + ": §f" + e.getObject()).collect(Collectors.toList())))));
+					TextComponent.fromLegacyText(Joiner.on("\n")
+							.join(alert.getMetadataList().stream()
+									.map(e -> "§c" + NameUtils.formatString(e.getKey()) + ": §f" + e.getObject())
+									.collect(Collectors.toList())))));
 
 		CommonGeneral.getInstance().getMemberManager().getMemberMap().values().stream()
 				.filter(member -> member.hasGroupPermission(Group.TRIAL)
 						&& member.getAccountConfiguration().isAnticheatEnabled())
 				.forEach(member -> member.sendMessage(messageBuilder.create()));
 
-		BukkitMain.getInstance().getPacketController().sendPacket(
-				new AnticheatAlertPacket(NameUtils.formatString(alert.getAlertType().name()), new JsonObject()),
-				player);
+		if (alertIndex % 3 == 0)
+			BukkitMain.getInstance().getPacketController()
+					.sendPacket(new AnticheatAlertPacket(NameUtils.formatString(alert.getAlertType().name()),
+							alertIndex, alert.getAlertType().getMaxAlerts(), new JsonObject()), player);
 	}
 
 	@Override
-	public void autoban(Player player, long time) {
-		BukkitMain.getInstance().getPacketController().sendPacket(
-				new AnticheatBanPacket("Uso de Hack", System.currentTimeMillis() + (24 * 60 * 60 * 1000 * 14)), player);
+	public void autoban(Player player, Alert alert, long time) {
+		BukkitMain.getInstance().getPacketController()
+				.sendPacket(new AnticheatBanPacket(NameUtils.formatString(alert.getAlertType().name()),
+						time == -1 ? -1 : System.currentTimeMillis() + (time)), player);
 	}
 
 }

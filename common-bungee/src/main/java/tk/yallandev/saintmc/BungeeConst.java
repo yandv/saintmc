@@ -2,10 +2,10 @@ package tk.yallandev.saintmc;
 
 public class BungeeConst {
 	
-	public static final String MONGO_URL = "mongodb://yandv:YBOfXYL2IBjEKAkE@localhost/saintmc-common?retryWrites=true&w=majority";
+	public static final String MONGO_URL = "mongodb://localhost/saintmc-common?retryWrites=true&w=majority";
 	
 	public static final String REDIS_HOSTNAME = "localhost";
-	public static final String REDIS_PASSWORD = "EMJhKKLONg8IuZ@G";
+	public static final String REDIS_PASSWORD = "";
 	
 	public static final String[] BROADCAST_MESSAGES = new String[] {
 			"&e&lDICA&f: &7Viu um player suspeito? Use o &a/report &7para reportá-lo",

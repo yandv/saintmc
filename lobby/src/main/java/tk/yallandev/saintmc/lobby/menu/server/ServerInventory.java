@@ -96,32 +96,30 @@ public class ServerInventory {
 					}
 				});
 
-		if (Member.hasGroupPermission(player.getUniqueId(), Group.TRIAL))
-			menuInventory.setItem(16, new ItemBuilder().name("§e§lSkyWars").type(Material.GRASS)
-					.lore(StringLoreUtils.getLore(30, "\n§7Neste modo de jogo você batalhará nos céus!\n\n"
-							+ "§7Este modo está em fase §1§lBETA§7 e poderá mudar a qualquer momento!\n§f\n§a"
-							+ (BukkitMain.getInstance().getServerManager().getBalancer(ServerType.SW_SOLO)
-									.getTotalNumber()
-									+ BukkitMain.getInstance().getServerManager().getBalancer(ServerType.SW_TEAM)
-											.getTotalNumber()
-									+ BukkitMain.getInstance().getServerManager().getBalancer(ServerType.SW_SQUAD)
-											.getTotalNumber())
-							+ " jogadores online!"))
-					.build(), new MenuClickHandler() {
+		menuInventory.setItem(16, new ItemBuilder().name("§e§lSkyWars").type(Material.GRASS)
+				.lore(StringLoreUtils.getLore(30, "\n§7Neste modo de jogo você batalhará nos céus!\n\n"
+						+ "§7Este modo está em fase §1§lBETA§7 e poderá mudar a qualquer momento!\n§f\n§a"
+						+ (BukkitMain.getInstance().getServerManager().getBalancer(ServerType.SW_SOLO).getTotalNumber()
+								+ BukkitMain.getInstance().getServerManager().getBalancer(ServerType.SW_TEAM)
+										.getTotalNumber()
+								+ BukkitMain.getInstance().getServerManager().getBalancer(ServerType.SW_SQUAD)
+										.getTotalNumber())
+						+ " jogadores online!"))
+				.build(), new MenuClickHandler() {
 
-						@Override
-						public void onClick(Player p, Inventory inv, ClickType type, ItemStack stack, int slot) {
-							if (type == ClickType.RIGHT && Member.hasGroupPermission(p.getUniqueId(), Group.TRIAL)) {
-								new SkywarsInventory(p);
-								return;
-							}
-
-							ByteArrayDataOutput out = ByteStreams.newDataOutput();
-							out.writeUTF("SWSolo");
-							player.sendPluginMessage(LobbyMain.getInstance(), "BungeeCord", out.toByteArray());
-							player.closeInventory();
+					@Override
+					public void onClick(Player p, Inventory inv, ClickType type, ItemStack stack, int slot) {
+						if (type == ClickType.RIGHT && Member.hasGroupPermission(p.getUniqueId(), Group.TRIAL)) {
+							new SkywarsInventory(p);
+							return;
 						}
-					});
+
+						ByteArrayDataOutput out = ByteStreams.newDataOutput();
+						out.writeUTF("SWSolo");
+						player.sendPluginMessage(LobbyMain.getInstance(), "BungeeCord", out.toByteArray());
+						player.closeInventory();
+					}
+				});
 
 		menuInventory.open(player);
 	}

@@ -95,10 +95,11 @@ public class BungeePunishManager implements PunishManager {
 	@Override
 	public boolean mute(Member member, Mute mute) {
 		Mute activeMute = member.getPunishmentHistory().getActiveMute();
-
-		if (activeMute != null && !activeMute.isPermanent() && !mute.isPermanent())
-			return false;
-
+		
+		if (activeMute != null)
+			if (activeMute.isPermanent())
+				return false;
+		
 		member.getPunishmentHistory().mute(mute);
 
 		CommonGeneral.getInstance().getMemberManager().getMembers().stream().forEach(m -> {

@@ -256,8 +256,14 @@ public class BungeeMain extends Plugin {
 				});
 			}
 		}, 10, 10, TimeUnit.MINUTES);
-
-		discord = new DiscordMain();
+		
+		ProxyServer.getInstance().getScheduler().runAsync(getInstance(), new Runnable() {
+			
+			@Override
+			public void run() {
+				discord = new DiscordMain();
+			}
+		});
 
 		System.setProperty("DEBUG.MONGO", "false");
 		System.setProperty("DB.TRACE", "false");

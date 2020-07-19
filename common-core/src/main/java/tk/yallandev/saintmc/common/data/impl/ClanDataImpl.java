@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
+import java.util.regex.Pattern;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -74,7 +75,8 @@ public class ClanDataImpl implements ClanData {
 		ClanModel clanModel = CommonGeneral.getInstance().getClanManager().getClanAsModel(clanName, true);
 
 		if (clanModel == null) {
-			JsonElement found = query.findOne("clanName", clanName);
+			JsonElement found = query.findOne("clanName",
+					Pattern.compile("^" + clanName + "$", Pattern.CASE_INSENSITIVE));
 
 			if (found != null) {
 				clanModel = CommonConst.GSON.fromJson(CommonConst.GSON.toJson(found), ClanModel.class);
@@ -90,7 +92,8 @@ public class ClanDataImpl implements ClanData {
 				.getClanAsModelByAbbreviation(clanAbbreviation, true);
 
 		if (clanModel == null) {
-			JsonElement found = query.findOne("clanAbbreviation", clanAbbreviation);
+			JsonElement found = query.findOne("clanAbbreviation",
+					Pattern.compile("^" + clanAbbreviation + "$", Pattern.CASE_INSENSITIVE));
 
 			if (found != null) {
 				clanModel = CommonConst.GSON.fromJson(CommonConst.GSON.toJson(found), ClanModel.class);
@@ -142,7 +145,7 @@ public class ClanDataImpl implements ClanData {
 	public void deleteClan(Clan clan) {
 		query.deleteOne("uniqueId", clan.getUniqueId().toString());
 	}
-	
+
 	@Override
 	public Collection<ClanModel> ranking(String fieldName, int limit, int order) {
 		List<ClanModel> list = new ArrayList<>();
@@ -153,7 +156,7 @@ public class ClanDataImpl implements ClanData {
 
 		return list;
 	}
-	
+
 	public static Query<JsonElement> createDefault(MongoConnection mongoConnection) {
 		return new MongoQuery(mongoConnection, "clan");
 	}

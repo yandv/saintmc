@@ -94,7 +94,8 @@ public class MojangFetcher {
 			if (jsonObject == null)
 				return null;
 
-			return UUIDParser.parse(jsonObject.get("uuid").getAsString());
+			if (jsonObject.has("uuid"))
+				return UUIDParser.parse(jsonObject.get("uuid").getAsString());
 		} catch (ConnectionPoolTimeoutException ex) {
 		} catch (Exception ex) {
 			ex.printStackTrace();

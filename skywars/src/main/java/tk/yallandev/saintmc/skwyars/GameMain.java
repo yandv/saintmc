@@ -84,11 +84,11 @@ public class GameMain extends JavaPlugin {
 		for (World world : Bukkit.getWorlds()) {
 			world.setAutoSave(false);
 			world.setThundering(false);
-            world.setStorm(false);
-            world.setWeatherDuration(1000000000);
-            world.setTime(6000);
-            world.setGameRuleValue("doDaylightCycle", "false");
-            world.setGameRuleValue("doMobSpawning", "false");
+			world.setStorm(false);
+			world.setWeatherDuration(1000000000);
+			world.setTime(6000);
+			world.setGameRuleValue("doDaylightCycle", "false");
+			world.setGameRuleValue("doMobSpawning", "false");
 		}
 
 		saveDefaultConfig();
@@ -106,6 +106,8 @@ public class GameMain extends JavaPlugin {
 			skywarsType = SkywarsType.TEAM;
 		else if (CommonGeneral.getInstance().getServerType() == ServerType.SW_SQUAD)
 			skywarsType = SkywarsType.SQUAD;
+
+		getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
 
 		gameGeneral.onEnable();
 		loadListener();

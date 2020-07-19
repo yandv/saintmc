@@ -42,10 +42,10 @@ public class ApacheWebImpl implements WebHelper {
 	}
 
 	public ApacheWebImpl() {
-		RequestConfig requestConfig = RequestConfig.custom().setConnectTimeout(5000).setConnectionRequestTimeout(5000)
-				.setSocketTimeout(5000).setMaxRedirects(3).build();
+		RequestConfig requestConfig = RequestConfig.custom().setConnectTimeout(30000).setConnectionRequestTimeout(30000)
+				.setSocketTimeout(30000).setMaxRedirects(3).build();
 
-		this.closeableHttpClient = HttpClientBuilder.create().setConnectionTimeToLive(10, TimeUnit.SECONDS)
+		this.closeableHttpClient = HttpClientBuilder.create().setConnectionTimeToLive(3, TimeUnit.SECONDS)
 				.setDefaultRequestConfig(requestConfig).build();
 
 		this.closeableHttpAsyncClient = HttpAsyncClients.custom().setDefaultRequestConfig(requestConfig).build();

@@ -67,20 +67,22 @@ public class WarpListener implements Listener {
 
 		Warp warp = GameMain.getInstance().getGamerManager().getGamer(entity.getUniqueId()).getWarp();
 
-		Bukkit.getPluginManager().callEvent(new PlayerWarpDeathEvent(entity, killer, warp));
+		if (warp != null) {
+			Bukkit.getPluginManager().callEvent(new PlayerWarpDeathEvent(entity, killer, warp));
 
-		if (!warp.getName().equalsIgnoreCase("1v1")) {
-			for (ItemStack item : event.getDrops().stream()
-					.filter(item -> !item.getType().name().contains("_CHEST")
-							&& !item.getType().name().contains("_LEGGINGS") && !item.getType().name().contains("_BOOTS")
-							&& !item.getType().name().contains("_HELMET") && !item.getType().name().contains("_SWORD")
-							&& !item.getType().name().contains("_AXE"))
-					.collect(Collectors.toList())) {
-				entity.getWorld().dropItemNaturally(entity.getLocation(), item);
+			if (!warp.getName().equalsIgnoreCase("1v1")) {
+				for (ItemStack item : event.getDrops().stream()
+						.filter(item -> !item.getType().name().contains("_CHEST")
+								&& !item.getType().name().contains("_LEGGINGS") && !item.getType().name().contains("_BOOTS")
+								&& !item.getType().name().contains("_HELMET") && !item.getType().name().contains("_SWORD")
+								&& !item.getType().name().contains("_AXE"))
+						.collect(Collectors.toList())) {
+					entity.getWorld().dropItemNaturally(entity.getLocation(), item);
+				}
 			}
+			
+			event.getDrops().clear();
 		}
-		
-		event.getDrops().clear();
 
 		respawn(entity, warp);
 	}

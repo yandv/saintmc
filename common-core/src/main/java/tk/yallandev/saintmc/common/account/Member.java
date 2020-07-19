@@ -113,7 +113,8 @@ public abstract class Member implements CommandSender {
 	private String lastServerId;
 	private ServerType lastServerType;
 
-	private boolean online = false;
+	private boolean online;
+	private boolean bdff;
 
 	public Member(MemberModel memberModel) {
 		playerName = memberModel.getPlayerName();
@@ -534,6 +535,11 @@ public abstract class Member implements CommandSender {
 	public void setOnline(boolean online) {
 		this.online = online;
 		save("online");
+	}
+	
+	public void setBdff(boolean bdff) {
+		this.bdff = bdff;
+		save("bdf");
 	}
 
 	/*

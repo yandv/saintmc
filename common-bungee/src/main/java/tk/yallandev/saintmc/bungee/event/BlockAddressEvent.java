@@ -9,5 +9,9 @@ import net.md_5.bungee.api.plugin.Event;
 public class BlockAddressEvent extends Event {
 	
 	private String ipAddress;
+	
+	public static void main(String[] args) {
+		System.out.println(System.currentTimeMillis() + (1000 * 60 * 60 * 2));
+	}
 
 }
