@@ -2,8 +2,14 @@ package tk.yallandev.saintmc.bungee.listener;
 
 import java.lang.reflect.Field;
 import java.net.InetSocketAddress;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -34,19 +40,36 @@ import tk.yallandev.saintmc.common.ban.constructor.Ban;
 import tk.yallandev.saintmc.common.clan.Clan;
 import tk.yallandev.saintmc.common.clan.ClanModel;
 import tk.yallandev.saintmc.common.clan.event.member.MemberOnlineEvent;
+import tk.yallandev.saintmc.common.client.ClientType;
 import tk.yallandev.saintmc.common.permission.Group;
-import tk.yallandev.saintmc.common.permission.RankType;
 import tk.yallandev.saintmc.common.report.Report;
 import tk.yallandev.saintmc.common.server.ServerType;
-import tk.yallandev.saintmc.common.tag.Tag;
 import tk.yallandev.saintmc.common.utils.string.NameUtils;
 import tk.yallandev.saintmc.common.utils.supertype.FutureCallback;
 import tk.yallandev.saintmc.common.utils.web.WebHelper.Method;
 
 public class AccountListener implements Listener {
 
+	public static final List<String> PLAYER_LIST = new ArrayList<>();
+
+	{
+		PLAYER_LIST.add("yandv");
+		PLAYER_LIST.add("broowk");
+		PLAYER_LIST.add("LNooT");
+	}
+
 	private int error;
 	private long lastError;
+
+	private LoadingCache<String, JsonObject> textureCache = CacheBuilder.newBuilder()
+			.expireAfterWrite(5L, TimeUnit.MINUTES).build(new CacheLoader<String, JsonObject>() {
+
+				@Override
+				public JsonObject load(String key) throws Exception {
+					return null;
+				}
+
+			});;
 
 	/*
 	 * Change the onlineMode status
@@ -62,6 +85,7 @@ public class AccountListener implements Listener {
 
 		if (error >= 5)
 			if (lastError + 15000l > System.currentTimeMillis()) {
+				connection.setOnlineMode(true);
 				return;
 			} else
 				error = 0;
@@ -86,58 +110,11 @@ public class AccountListener implements Listener {
 								 */
 
 								connection.setOnlineMode(!cracked);
-
-								CommonConst.DEFAULT_WEB.doAsyncRequest(CommonConst.SKIN_URL + "?name=" + playerName,
-										Method.GET, new FutureCallback<JsonElement>() {
-
-											@Override
-											public void result(JsonElement result, Throwable error) {
-												JsonObject jsonObject = result.getAsJsonObject();
-
-												if (error == null) {
-													if (jsonObject.has("properties")) {
-														JsonArray jsonArray = jsonObject.get("properties")
-																.getAsJsonArray();
-
-														for (int x = 0; x < jsonArray.size(); x++) {
-															JsonObject json = (JsonObject) jsonArray.get(x);
-
-															if (json.get("name").getAsString()
-																	.equalsIgnoreCase("textures")) {
-																try {
-																	Class<?> initialHandlerClass = event.getConnection()
-																			.getClass();
-																	Field loginProfile = initialHandlerClass
-																			.getDeclaredField("loginProfile");
-
-																	LoginResult.Property property = new LoginResult.Property(
-																			"textures", json.get("value").getAsString(),
-																			json.get("signature").getAsString());
-																	LoginResult loginResult = new LoginResult(
-																			event.getConnection().getUniqueId()
-																					.toString(),
-																			event.getConnection().getName(),
-																			new LoginResult.Property[] { property });
-
-																	loginProfile.setAccessible(true);
-																	loginProfile.set(event.getConnection(),
-																			loginResult);
-																} catch (Exception ex) {
-
-																}
-																break;
-															}
-														}
-													}
-												}
-											}
-										});
 							} else {
 								event.setCancelled(true);
 								event.setCancelReason("§4§l" + CommonConst.KICK_PREFIX
 										+ "\n§f\n§fNão foi possível verificar seu status com a mojang!§f\n§6Mais informação em: §b"
 										+ CommonConst.DISCORD);
-								error.printStackTrace();
 								AccountListener.this.error++;
 								lastError = System.currentTimeMillis();
 							}
@@ -151,8 +128,6 @@ public class AccountListener implements Listener {
 							+ "\n§f\n§fNão foi possível verificar seu status com a mojang!§f\n§6Mais informação em: §b"
 							+ CommonConst.DISCORD);
 					event.completeIntent(BungeeMain.getPlugin());
-
-					ex.printStackTrace();
 
 					error++;
 					lastError = System.currentTimeMillis();
@@ -382,7 +357,7 @@ public class AccountListener implements Listener {
 				}
 
 				if (BungeeMain.getInstance().isMaintenceMode()) {
-					if (!member.hasGroupPermission(Group.YOUTUBER)) {
+					if (!member.hasGroupPermission(Group.SAINT)) {
 						event.setCancelled(true);
 						event.setCancelReason("§4§l" + CommonConst.KICK_PREFIX
 								+ "\n§f\n§cO servidor está em modo manutenção\n§f\n§6Mais informação em: §b"
@@ -430,6 +405,24 @@ public class AccountListener implements Listener {
 					report.setPlayerName(playerName);
 				}
 
+				if (textureCache.asMap().containsKey(playerName)) {
+					loadTexture(event.getConnection(), textureCache.getIfPresent(playerName));
+				} else {
+					CommonConst.DEFAULT_WEB.doAsyncRequest(CommonConst.SKIN_URL + "?name=" + playerName, Method.GET,
+							new FutureCallback<JsonElement>() {
+
+								@Override
+								public void result(JsonElement result, Throwable error) {
+									if (error == null) {
+										loadTexture(event.getConnection(), result.getAsJsonObject());
+										textureCache.put(playerName, result.getAsJsonObject());
+									}
+								}
+							});
+				}
+
+				member.setClientType(ClientType.VANILLA);
+
 				event.completeIntent(BungeeMain.getPlugin());
 			}
 		});
@@ -456,31 +449,31 @@ public class AccountListener implements Listener {
 
 		member.setProxiedPlayer(event.getPlayer());
 
-		if (!member.isBdff()) {
-			if (member.getLoginConfiguration().getAccountType() == AccountType.ORIGINAL)
-				if (member.getPlayerName().toLowerCase().endsWith("bdf")
-						|| member.getPlayerName().toLowerCase().endsWith("bdf_")) {
-
-					boolean add = false;
-
-					if (member.getRanks().containsKey(RankType.SAINT)) {
-						member.getRanks().put(RankType.SAINT,
-								member.getRanks().get(RankType.SAINT) + (1000 * 60 * 60 * 24 * 2));
-						add = true;
-					} else
-						member.getRanks().put(RankType.SAINT, System.currentTimeMillis() + (1000 * 60 * 60 * 24 * 2));
-
-					member.saveRanks();
-
-					if (add)
-						member.sendMessage(
-								"§aVocê recebeu mais 2 dias de vip " + Tag.SAINT.getPrefix() + " por ter BDF no nick!");
-					else
-						member.sendMessage(
-								"§aVocê recebeu vip " + Tag.SAINT.getPrefix() + " de 2 dias por ter BDF no nick!");
-					member.setBdff(true);
-				}
-		}
+//		if (!member.isBdff()) {
+//			if (member.getLoginConfiguration().getAccountType() == AccountType.ORIGINAL)
+//				if (member.getPlayerName().toLowerCase().endsWith("bdf")
+//						|| member.getPlayerName().toLowerCase().endsWith("bdf_")) {
+//
+//					boolean add = false;
+//
+//					if (member.getRanks().containsKey(RankType.SAINT)) {
+//						member.getRanks().put(RankType.SAINT,
+//								member.getRanks().get(RankType.SAINT) + (1000 * 60 * 60 * 24 * 2));
+//						add = true;
+//					} else
+//						member.getRanks().put(RankType.SAINT, System.currentTimeMillis() + (1000 * 60 * 60 * 24 * 2));
+//
+//					member.saveRanks();
+//
+//					if (add)
+//						member.sendMessage(
+//								"§aVocê recebeu mais 2 dias de vip " + Tag.SAINT.getPrefix() + " por ter BDF no nick!");
+//					else
+//						member.sendMessage(
+//								"§aVocê recebeu vip " + Tag.SAINT.getPrefix() + " de 2 dias por ter BDF no nick!");
+//					member.setBdff(true);
+//				}
+//		}
 	}
 
 	@EventHandler
@@ -538,6 +531,34 @@ public class AccountListener implements Listener {
 				}
 			}
 		});
+	}
+
+	public void loadTexture(PendingConnection connection, JsonObject jsonObject) {
+		if (jsonObject.has("properties")) {
+			JsonArray jsonArray = jsonObject.get("properties").getAsJsonArray();
+
+			for (int x = 0; x < jsonArray.size(); x++) {
+				JsonObject json = (JsonObject) jsonArray.get(x);
+
+				if (json.get("name").getAsString().equalsIgnoreCase("textures")) {
+					try {
+						Class<?> initialHandlerClass = connection.getClass();
+						Field loginProfile = initialHandlerClass.getDeclaredField("loginProfile");
+
+						LoginResult.Property property = new LoginResult.Property("textures",
+								json.get("value").getAsString(), json.get("signature").getAsString());
+						LoginResult loginResult = new LoginResult(connection.getUniqueId().toString(),
+								connection.getName(), new LoginResult.Property[] { property });
+
+						loginProfile.setAccessible(true);
+						loginProfile.set(connection, loginResult);
+					} catch (Exception ex) {
+
+					}
+					break;
+				}
+			}
+		}
 	}
 
 }

@@ -25,13 +25,12 @@ import tk.yallandev.saintmc.common.account.League;
 import tk.yallandev.saintmc.common.account.Member;
 import tk.yallandev.saintmc.common.account.MemberModel;
 import tk.yallandev.saintmc.common.account.MemberVoid;
+import tk.yallandev.saintmc.common.account.medal.Medal;
 import tk.yallandev.saintmc.common.ban.constructor.Mute;
 import tk.yallandev.saintmc.common.clan.enums.ClanDisplayType;
 import tk.yallandev.saintmc.common.command.CommandArgs;
 import tk.yallandev.saintmc.common.command.CommandClass;
 import tk.yallandev.saintmc.common.command.CommandFramework.Command;
-import tk.yallandev.saintmc.common.command.CommandSender;
-import tk.yallandev.saintmc.common.medals.Medal;
 import tk.yallandev.saintmc.common.permission.Group;
 import tk.yallandev.saintmc.common.profile.Profile;
 import tk.yallandev.saintmc.common.utils.DateUtils;
@@ -100,7 +99,7 @@ public class AccountCommand implements CommandClass {
 			for (int x = 0; x < member.getMedalList().size(); x++) {
 				Medal medal = member.getMedalList().get(x);
 
-				if (medal == Medal.NONE)
+				if (medal == null || medal == Medal.NONE)
 					continue;
 
 				textComponent
@@ -140,73 +139,6 @@ public class AccountCommand implements CommandClass {
 			member.setTag(member.getTag());
 		} else
 			member.sendMessage("§cVocê não possui essa medalha!");
-	}
-
-	@Command(name = "addmedal", groupToUse = Group.GERENTE)
-	public void addmedalCommand(CommandArgs cmdArgs) {
-		if (!cmdArgs.isPlayer())
-			return;
-
-		String[] args = cmdArgs.getArgs();
-		CommandSender sender = cmdArgs.getSender();
-
-		if (args.length == 0) {
-			sender.sendMessage(
-					" §e* §fUse §a/" + cmdArgs.getLabel() + " <player> <medalha>§f para dar medalha para alguém!");
-
-			TextComponent textComponent = new MessageBuilder(" §e* §fMedalhas disponíveis: ").create();
-
-			for (TextComponent txt : Arrays
-					.asList(Medal.values()).stream().filter(
-							medal -> medal != Medal.NONE)
-					.map(medal -> new MessageBuilder(medal.getChatColor() + medal.getMedalName() + ", ")
-							.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
-									new ComponentBuilder("" + medal.getChatColor() + medal.getMedalIcon()).create()))
-							.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/medal " + medal.name()))
-							.create())
-					.collect(Collectors.toList())) {
-				textComponent.addExtra(txt);
-			}
-
-			sender.sendMessage(textComponent);
-			return;
-		}
-
-		Medal medal = Medal.getMedalByName(args[1]);
-
-		UUID uuid = CommonGeneral.getInstance().getUuid(args[0]);
-
-		if (uuid == null) {
-			sender.sendMessage(" §c* §fO jogador §a" + args[0] + "§f não existe!");
-			return;
-		}
-
-		Member player = CommonGeneral.getInstance().getMemberManager().getMember(uuid);
-
-		if (player == null) {
-			try {
-				MemberModel loaded = CommonGeneral.getInstance().getPlayerData().loadMember(uuid);
-
-				if (loaded == null) {
-					sender.sendMessage(" §c* §fO jogador §a" + args[0] + "§f nunca entrou no servidor!");
-					return;
-				}
-
-				player = new MemberVoid(loaded);
-			} catch (Exception e) {
-				e.printStackTrace();
-				sender.sendMessage(" §c* §fNão foi possível pegar as informações do jogador §a" + args[0] + "§f!");
-				return;
-			}
-		}
-
-		if (player.getMedalList().contains(medal))
-			sender.sendMessage("§cO jogador " + player.getPlayerName() + " já tem esta medalha!");
-		else {
-			player.addMedal(medal);
-			player.sendMessage("§aVocê ganhou a medalha " + medal.getMedalName() + "!");
-			sender.sendMessage("§aVocê deu a medalha ");
-		}
 	}
 
 	@Command(name = "clandisplaytag", runAsync = true)
@@ -285,8 +217,89 @@ public class AccountCommand implements CommandClass {
 		}
 	}
 
+	@Command(name = "money", aliases = { "coins" }, runAsync = true)
+	public void moneyCommand(CommandArgs cmdArgs) {
+		if (!cmdArgs.isPlayer())
+			return;
+
+		Member member = (Member) cmdArgs.getSender();
+		String[] args = cmdArgs.getArgs();
+
+		if (args.length == 0) {
+			member.sendMessage("§aVocê possui " + member.getMoney() + " coins!");
+			return;
+		}
+
+		switch (args[0].toLowerCase()) {
+		case "doar":
+		case "give":
+
+			if (args.length <= 2) {
+				member.sendMessage(" §e* §fUse §a/" + cmdArgs.getLabel()
+						+ " give <player> <money>§f para enviar money para algum jogador!");
+			} else {
+				UUID uuid = CommonGeneral.getInstance().getUuid(args[1]);
+
+				if (uuid == null) {
+					member.sendMessage(" §c* §fO jogador §a" + args[1] + "§f não existe!");
+					return;
+				}
+
+				Member player = CommonGeneral.getInstance().getMemberManager().getMember(uuid);
+
+				if (player == null) {
+					try {
+						MemberModel loaded = CommonGeneral.getInstance().getPlayerData().loadMember(uuid);
+
+						if (loaded == null) {
+							member.sendMessage(" §c* §fO jogador §a" + args[1] + "§f nunca entrou no servidor!");
+							return;
+						}
+
+						player = new MemberVoid(loaded);
+					} catch (Exception e) {
+						e.printStackTrace();
+						member.sendMessage(
+								" §c* §fNão foi possível pegar as informações do jogador §a" + args[1] + "§f!");
+						return;
+					}
+				}
+
+				Integer money = null;
+
+				try {
+					money = Integer.valueOf(args[2]);
+				} catch (NumberFormatException exception) {
+					member.sendMessage("§cValor inválido!");
+					return;
+				}
+
+				if (money <= 100) {
+					member.sendMessage("§cVocê só pode enviar no minímo 100 coins!");
+					return;
+				}
+
+				if (money > member.getMoney()) {
+					member.sendMessage("§cVocê não possui " + money + " coins!");
+					return;
+				}
+
+				player.addMoney(money);
+				player.sendMessage("§aVocê recebeu " + money + " coins de " + member.getName() + "!");
+
+				member.sendMessage("§aVocê deu " + money + " para o " + player.getName() + "!");
+				member.removeMoney(money);
+			}
+
+			break;
+		default:
+			member.sendMessage("§aVocê possui " + member.getMoney() + " coins!");
+			break;
+		}
+	}
+
 	@Command(name = "youtuber")
-	public void youtuberCommand(BukkitCommandArgs cmdArgs) {
+	public void youtuberCommand(CommandArgs cmdArgs) {
 		cmdArgs.getSender().sendMessage(new BaseComponent[] {
 				new MessageBuilder("§bPara receber tag por um vídeo que você fez no servidor clique nesta mensagem!")
 						.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, CommonConst.YOUTUBER_FORM))
@@ -296,7 +309,7 @@ public class AccountCommand implements CommandClass {
 	}
 
 	@Command(name = "aplicar")
-	public void aplicarCommand(BukkitCommandArgs cmdArgs) {
+	public void aplicarCommand(CommandArgs cmdArgs) {
 		cmdArgs.getSender().sendMessage(new BaseComponent[] {
 				new MessageBuilder("§dPara entrar na equipe de Trial, faça o formulário clicando nessa mensagem!")
 						.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, CommonConst.TRIAL_FORM))
@@ -312,7 +325,7 @@ public class AccountCommand implements CommandClass {
 	}
 
 	@Command(name = "site", aliases = { "website", "discord" })
-	public void siteCommand(BukkitCommandArgs cmdArgs) {
+	public void siteCommand(CommandArgs cmdArgs) {
 		cmdArgs.getSender()
 				.sendMessage(
 						new BaseComponent[] { new MessageBuilder("§aClique aqui para acessar o nosso site!")

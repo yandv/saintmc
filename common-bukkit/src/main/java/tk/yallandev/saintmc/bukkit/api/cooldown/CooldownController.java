@@ -1,6 +1,6 @@
 package tk.yallandev.saintmc.bukkit.api.cooldown;
 
-import java.text.DecimalFormat;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -17,6 +17,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 
 import lombok.Getter;
+import tk.yallandev.saintmc.CommonConst;
+import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.bukkit.api.actionbar.ActionBarAPI;
 import tk.yallandev.saintmc.bukkit.api.cooldown.event.CooldownFinishEvent;
 import tk.yallandev.saintmc.bukkit.api.cooldown.event.CooldownStartEvent;
@@ -25,9 +27,9 @@ import tk.yallandev.saintmc.bukkit.api.cooldown.types.Cooldown;
 import tk.yallandev.saintmc.bukkit.api.cooldown.types.ItemCooldown;
 import tk.yallandev.saintmc.bukkit.api.listener.ManualRegisterableListener;
 import tk.yallandev.saintmc.bukkit.api.listener.RegisterableListener;
+import tk.yallandev.saintmc.bukkit.bukkit.BukkitMember;
 import tk.yallandev.saintmc.bukkit.event.update.UpdateEvent;
 import tk.yallandev.saintmc.bukkit.event.update.UpdateEvent.UpdateType;
-import tk.yallandev.saintmc.common.utils.DateUtils;
 
 /**
  * 
@@ -48,12 +50,10 @@ public class CooldownController implements Listener {
 
 	private Map<UUID, List<Cooldown>> map;
 	private RegisterableListener listener;
-	private DecimalFormat decimalFormat;
 
 	public CooldownController() {
 		map = new ConcurrentHashMap<>();
 		listener = new CooldownListener();
-		decimalFormat = new DecimalFormat("#.#");
 	}
 
 	/**
@@ -76,6 +76,17 @@ public class CooldownController implements Listener {
 				if (cool.getName().equals(cooldown.getName())) {
 					cool.update(cooldown.getDuration(), cooldown.getStartTime());
 					add = false;
+				}
+			}
+
+			if (cooldown instanceof ItemCooldown) {
+				try {
+					BukkitMember member = (BukkitMember) CommonGeneral.getInstance().getMemberManager()
+							.getMember(player.getUniqueId());
+					member.getCustomClient().sendCooldown(cooldown.getName(),
+							((ItemCooldown) cooldown).getItem().getType(), (int) cooldown.getDuration());
+				} catch (IOException e) {
+					e.printStackTrace();
 				}
 			}
 
@@ -155,7 +166,7 @@ public class CooldownController implements Listener {
 	 * 
 	 * @param player
 	 * @param name
-	 * @return boolean has a cooldown is tr
+	 * @return boolean
 	 */
 
 	public boolean hasCooldown(Player player, String name) {
@@ -169,12 +180,12 @@ public class CooldownController implements Listener {
 	}
 
 	/**
+	 *
+	 * Check if uniqueId has cooldown
 	 * 
-	 * Check if player has cooldown
-	 * 
-	 * @param player
+	 * @param uniqueId
 	 * @param name
-	 * @return boolean
+	 * @return
 	 */
 
 	public boolean hasCooldown(UUID uniqueId, String name) {
@@ -206,17 +217,6 @@ public class CooldownController implements Listener {
 					return cooldown;
 		}
 		return null;
-	}
-
-	public String getCooldownFormated(UUID uniqueId, String name) {
-		Cooldown cooldown = getCooldown(uniqueId, name);
-
-		if (cooldown == null) {
-			return "1 segundo";
-		}
-
-		return "§c§l> §fO §c" + name + "§f está em cooldown de §c"
-				+ DateUtils.formatDifference((long) cooldown.getRemaining()) + "§f!";
 	}
 
 	public class CooldownListener extends ManualRegisterableListener {
@@ -260,7 +260,7 @@ public class CooldownController implements Listener {
 						}
 
 						it.remove();
-						
+
 						if (!(cooldown instanceof ItemCooldown))
 							player.playSound(player.getLocation(), Sound.LEVEL_UP, 1F, 1F);
 
@@ -308,7 +308,7 @@ public class CooldownController implements Listener {
 				bar.append("§c" + CHAR);
 
 			ActionBarAPI.send(player, "§f" + cooldown.getName() + " " + bar.toString() + " §f"
-					+ (decimalFormat.format(cooldown.getRemaining())) + " segundos");
+					+ (CommonConst.DECIMAL_FORMAT.format(cooldown.getRemaining())) + " segundos");
 		}
 	}
 

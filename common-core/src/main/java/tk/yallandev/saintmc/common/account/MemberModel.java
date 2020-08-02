@@ -8,13 +8,15 @@ import java.util.UUID;
 import lombok.Getter;
 import tk.yallandev.saintmc.common.account.configuration.AccountConfiguration;
 import tk.yallandev.saintmc.common.account.configuration.LoginConfiguration;
+import tk.yallandev.saintmc.common.account.medal.Medal;
 import tk.yallandev.saintmc.common.ban.PunishmentHistory;
-import tk.yallandev.saintmc.common.medals.Medal;
+import tk.yallandev.saintmc.common.client.ClientType;
 import tk.yallandev.saintmc.common.permission.Group;
 import tk.yallandev.saintmc.common.permission.RankType;
 import tk.yallandev.saintmc.common.server.ServerType;
 //import tk.yallandev.saintmc.discord.account.DiscordType;
 import tk.yallandev.saintmc.common.tag.Tag;
+import tk.yallandev.saintmc.common.tournment.TournamentGroup;
 
 @Getter
 public class MemberModel {
@@ -55,7 +57,7 @@ public class MemberModel {
 	private Long discordId;
 	private String discordName;
 	private DiscordType discordType;
-	
+
 	private UUID clanUniqueId;
 
 	/*
@@ -66,12 +68,19 @@ public class MemberModel {
 	private Group group;
 	private Map<RankType, Long> ranks;
 	private Map<String, Long> permissions;
-	
+
 	private Tag tag;
 	private boolean chroma;
-	
+
 	private List<Medal> medalList;
 	private Medal medal;
+
+	/*
+	 * Tournament
+	 * 
+	 */
+
+	private TournamentGroup tournamentGroup;
 
 	/*
 	 * Status Information
@@ -105,6 +114,7 @@ public class MemberModel {
 	private String lastServerId;
 	private ServerType lastServerType;
 
+	private ClientType clientType;
 	private boolean online;
 
 	public MemberModel(Member member) {
@@ -124,19 +134,21 @@ public class MemberModel {
 		discordId = member.getDiscordId();
 		discordName = member.getDiscordName();
 		discordType = member.getDiscordType();
-		
+
 		clanUniqueId = member.getClanUniqueId();
 
 		group = member.getGroup();
 		permissions = member.getPermissions();
 		ranks = member.getRanks();
-		
+
 		tag = member.getTag();
 		chroma = member.isChroma();
 
 		medalList = member.getMedalList();
 		medal = member.getMedal();
-		
+
+		tournamentGroup = member.getTournamentGroup();
+
 		money = member.getMoney();
 		xp = member.getXp();
 		league = member.getLeague();
@@ -153,14 +165,15 @@ public class MemberModel {
 		lastServerId = member.getServerId();
 		lastServerType = member.getServerType();
 
+		clientType = member.getClientType();
 		online = member.isOnline();
 	}
-	
+
 	public List<Medal> getMedalList() {
-		
+
 		if (medalList == null)
 			medalList = new ArrayList<>();
-		
+
 		return medalList;
 	}
 

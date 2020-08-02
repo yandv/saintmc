@@ -32,7 +32,7 @@ public class BungeePunishManager implements PunishManager {
 	private Cache<String, Entry<UUID, Ban>> banCache;
 
 	public BungeePunishManager() {
-		banCache = CacheBuilder.newBuilder().expireAfterWrite(2L, TimeUnit.HOURS)
+		banCache = CacheBuilder.newBuilder().expireAfterWrite(20L, TimeUnit.MINUTES)
 				.build(new CacheLoader<String, Entry<UUID, Ban>>() {
 					@Override
 					public Entry<UUID, Ban> load(String name) throws Exception {

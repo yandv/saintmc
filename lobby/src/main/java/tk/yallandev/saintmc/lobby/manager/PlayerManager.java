@@ -1,9 +1,7 @@
 package tk.yallandev.saintmc.lobby.manager;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.bukkit.entity.Player;
@@ -15,11 +13,9 @@ import tk.yallandev.saintmc.lobby.gamer.Gamer;
 public class PlayerManager {
 	
 	private Map<Player, Gamer> gamerMap;
-	private List<Player> playersInCombat;
 	
 	public PlayerManager() {
 		gamerMap = new HashMap<>();
-		playersInCombat = new ArrayList<>();
 	}
 	
 	public void removeGamer(Player player) {
@@ -33,6 +29,10 @@ public class PlayerManager {
 	
 	public Collection<Gamer> getGamers() {
 		return gamerMap.values();
+	}
+
+	public boolean isCombat(Player player) {
+		return getGamer(player).isCombat();
 	}
 }
 

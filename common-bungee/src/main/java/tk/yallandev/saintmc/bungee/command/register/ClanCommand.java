@@ -65,12 +65,10 @@ public class ClanCommand implements CommandClass {
 				if (args.length >= 3) {
 
 					if (!player.hasGroupPermission(Group.LIGHT) && player.getMoney() < CLAN_MONEY) {
-
 						player.sendMessage("§cVocê não tem money o suficiente para criar um clan, você precisa de mais "
 								+ (CLAN_MONEY - player.getMoney()) + " coins!");
 						player.sendMessage("§cOu seja " + Tag.LIGHT.getPrefix()
 								+ "§c ou superior para criar um clan a qualquer momento.");
-
 						return;
 					}
 

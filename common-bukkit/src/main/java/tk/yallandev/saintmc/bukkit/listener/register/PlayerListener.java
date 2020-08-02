@@ -78,10 +78,10 @@ public class PlayerListener extends Listener {
 			} else if (!online.canSee(player))
 				online.showPlayer(player);
 		}
-		
+
 		player.awardAchievement(Achievement.OPEN_INVENTORY);
 
-		VanishAPI.getInstance().handleJoin(player);
+		VanishAPI.getInstance().updateHide(player);
 	}
 
 	@EventHandler

@@ -1,5 +1,6 @@
 package tk.yallandev.saintmc.bungee.listener;
 
+import java.io.UnsupportedEncodingException;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.net.URLEncoder;
@@ -10,21 +11,26 @@ import java.util.concurrent.TimeUnit;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
+import net.md_5.bungee.api.Callback;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.event.ClientConnectEvent;
+import net.md_5.bungee.api.event.PlayerDisconnectEvent;
 import net.md_5.bungee.api.event.PreLoginEvent;
 import net.md_5.bungee.api.plugin.Listener;
+import net.md_5.bungee.connection.InitialHandler;
 import net.md_5.bungee.event.EventHandler;
 import net.md_5.bungee.event.EventPriority;
+import net.md_5.bungee.http.HttpClient;
 import tk.yallandev.saintmc.CommonConst;
 import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.bungee.BungeeMain;
+import tk.yallandev.saintmc.bungee.bungee.BotMember;
 import tk.yallandev.saintmc.bungee.event.BlockAddressEvent;
+import tk.yallandev.saintmc.bungee.event.ClearVerifyingEvent;
 import tk.yallandev.saintmc.bungee.event.UnblockAddressEvent;
-import tk.yallandev.saintmc.common.utils.supertype.FutureCallback;
 import tk.yallandev.saintmc.common.utils.web.WebHelper.Method;
 
 /**
@@ -41,7 +47,7 @@ import tk.yallandev.saintmc.common.utils.web.WebHelper.Method;
 
 public class LoginListener implements Listener {
 
-	private static final int MAX_VERIFY = 15;
+	private static final int MAX_VERIFY = 20;
 
 	private LoadingCache<String, JsonObject> cache;
 
@@ -73,8 +79,14 @@ public class LoginListener implements Listener {
 		if (socket instanceof InetSocketAddress) {
 			InetSocketAddress inetSocketAddress = (InetSocketAddress) socket;
 
-			if (blockedAddress.contains(inetSocketAddress.getHostString())) {
+			if (blockedAddress.contains(inetSocketAddress.getHostString()))
 				event.setCancelled(true);
+			else {
+				BotMember botMember = BungeeMain.getInstance().getBotController()
+						.getBotMember(inetSocketAddress.getHostString());
+
+				if (botMember.isBlocked())
+					event.setCancelled(true);
 			}
 		}
 	}
@@ -102,78 +114,79 @@ public class LoginListener implements Listener {
 			return;
 		}
 
-		if (verifyingAddresses >= MAX_VERIFY) {
-			event.setCancelled(true);
-			event.setCancelReason("§4§l" + CommonConst.KICK_PREFIX
-					+ "\n§f\n§fEstamos verificando vários ips ao mesmo tempo§f, por favor aguarde para entrar§f\n§6Mais informação em: §b"
-					+ CommonConst.DISCORD);
+		BotMember botMember = BungeeMain.getInstance().getBotController().getBotMember(ipAddress);
+
+		botMember.addName(playerName);
+
+		if (botMember.tooMany()) {
+			botMember.block();
+			CommonGeneral.getInstance().debug("The address " + ipAddress + " has been blocked for too many nicknames!");
 			return;
 		}
 
-		event.registerIntent(BungeeMain.getPlugin());
-		ProxyServer.getInstance().getScheduler().runAsync(BungeeMain.getPlugin(), new Runnable() {
-			@Override
-			public void run() {
+		if (cache.asMap().containsKey(ipAddress)) {
+			JsonObject jsonObject = cache.getIfPresent(ipAddress);
 
-				verifyingAddresses++;
-
-				try {
-					if (cache.asMap().containsKey(ipAddress)) {
-						JsonObject jsonObject = cache.getIfPresent(ipAddress);
-
-						if (!jsonObject.get("allow").getAsBoolean()) {
-							event.setCancelled(true);
-							event.setCancelReason(
-									"§4§l" + CommonConst.KICK_PREFIX + "\n§f\n§cSeu endereço de ip foi bloqueado!"
-											+ "\n\n§fMotivo: §7" + jsonObject.get("message").getAsString()
-											+ "\n§f\n§6Mais informação em: §b" + CommonConst.DISCORD);
-							blockAddress(ipAddress);
-						}
-
-						verifyingAddresses--;
-					} else
-						CommonConst.DEFAULT_WEB.doRequest(
-								CommonConst.MOJANG_FETCHER + "session/?ip=" + URLEncoder.encode(ipAddress, "UTF-8"),
-								Method.GET, new FutureCallback<JsonElement>() {
-
-									@Override
-									public void result(JsonElement result, Throwable error) {
-										if (error == null) {
-											JsonObject jsonObject = (JsonObject) result;
-
-											if (!jsonObject.get("allow").getAsBoolean()) {
-												event.setCancelled(true);
-												event.setCancelReason("§4§l" + CommonConst.KICK_PREFIX
-														+ "\n§f\n§cSeu endereço de ip foi bloqueado!"
-														+ "\n\n§fMotivo: §7" + jsonObject.get("message").getAsString()
-														+ "\n§f\n§6Mais informação em: §b" + CommonConst.DISCORD);
-												blockAddress(ipAddress);
-											}
-
-											cache.put(ipAddress, jsonObject);
-										} else {
-											event.setCancelled(true);
-											event.setCancelReason("§4§l" + CommonConst.KICK_PREFIX
-													+ "\n§f\n§fNão foi possível verificar o seu ip!§f\n§6Mais informação em: §b"
-													+ CommonConst.DISCORD);
-										}
-
-										event.completeIntent(BungeeMain.getPlugin());
-										verifyingAddresses--;
-									}
-								});
-				} catch (Exception ex) {
+			if (jsonObject.has("allow"))
+				if (!jsonObject.get("allow").getAsBoolean()) {
 					event.setCancelled(true);
-					event.setCancelReason("§4§l" + CommonConst.KICK_PREFIX
-							+ "\n§f\n§fNão foi possível verificar o seu ip!§f\n§6Mais informação em: §b"
-							+ CommonConst.DISCORD);
-					event.completeIntent(BungeeMain.getPlugin());
-
-					ex.printStackTrace();
-					verifyingAddresses--;
+					event.setCancelReason("§4§l" + CommonConst.KICK_PREFIX + "\n§f\n§cSeu endereço de ip foi bloqueado!"
+							+ "\n\n§fMotivo: §7" + jsonObject.get("message").getAsString()
+							+ "\n§f\n§6Mais informação em: §b" + CommonConst.DISCORD);
+					blockAddress(ipAddress);
 				}
+
+			return;
+		}
+
+		if (!AccountListener.PLAYER_LIST.contains(playerName))
+			if (verifyingAddresses >= MAX_VERIFY) {
+				event.setCancelled(true);
+				event.setCancelReason("§4§l" + CommonConst.KICK_PREFIX
+						+ "\n§f\n§fEstamos verificando vários ips ao mesmo tempo§f, por favor aguarde para entrar§f\n§6Mais informação em: §b"
+						+ CommonConst.DISCORD);
+				return;
 			}
-		});
+
+		event.registerIntent(BungeeMain.getPlugin());
+		try {
+			HttpClient.get(CommonConst.MOJANG_FETCHER + "session/?ip=" + URLEncoder.encode(ipAddress, "UTF-8"),
+					((InitialHandler) event.getConnection()).getChannelWrapper().getHandle().eventLoop(),
+					new Callback<String>() {
+						@Override
+						public void done(String result, Throwable error) {
+							if (error == null) {
+								JsonObject jsonObject = JsonParser.parseString(result).getAsJsonObject();
+
+								if (!jsonObject.get("allow").getAsBoolean()) {
+									event.setCancelled(true);
+									event.setCancelReason("§4§l" + CommonConst.KICK_PREFIX
+											+ "\n§f\n§cSeu endereço de ip foi bloqueado!" + "\n\n§fMotivo: §7"
+											+ jsonObject.get("message").getAsString() + "\n§f\n§6Mais informação em: §b"
+											+ CommonConst.DISCORD);
+									blockAddress(ipAddress);
+								}
+
+								cache.put(ipAddress, jsonObject);
+							} else {
+								event.setCancelled(true);
+								event.setCancelReason("§4§l" + CommonConst.KICK_PREFIX
+										+ "\n§f\n§fNão foi possível verificar o seu ip!§f\n§6Mais informação em: §b"
+										+ CommonConst.DISCORD);
+							}
+
+							event.completeIntent(BungeeMain.getPlugin());
+							verifyingAddresses--;
+						}
+					});
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+	}
+
+	@EventHandler
+	public void onPlayerDisconnect(PlayerDisconnectEvent event) {
+		cache.put(event.getPlayer().getAddress().getHostString(), new JsonObject());
 	}
 
 	@EventHandler
@@ -186,6 +199,12 @@ public class LoginListener implements Listener {
 	public void onBlockAddress(BlockAddressEvent event) {
 		if (!blockedAddress.contains(event.getIpAddress()))
 			blockedAddress.add(event.getIpAddress());
+	}
+
+	@EventHandler
+	public void onClearVerifying(ClearVerifyingEvent event) {
+		blockedAddress.clear();
+		verifyingAddresses = 0;
 	}
 
 	public void blockAddress(String ipAddress) {
@@ -201,7 +220,6 @@ public class LoginListener implements Listener {
 							CommonConst.API + "/ip/?ip" + URLEncoder.encode(ipAddress, "UTF-8") + "&allowed=false",
 							Method.POST);
 				} catch (Exception ex) {
-					ex.printStackTrace();
 				}
 			}
 

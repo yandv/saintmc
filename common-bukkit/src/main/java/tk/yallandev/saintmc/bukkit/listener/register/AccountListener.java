@@ -31,6 +31,7 @@ import tk.yallandev.saintmc.common.account.MemberModel;
 import tk.yallandev.saintmc.common.clan.Clan;
 import tk.yallandev.saintmc.common.clan.ClanModel;
 import tk.yallandev.saintmc.common.clan.enums.ClanHierarchy;
+import tk.yallandev.saintmc.common.permission.Group;
 import tk.yallandev.saintmc.common.profile.Profile;
 
 public class AccountListener extends Listener {
@@ -49,6 +50,11 @@ public class AccountListener extends Listener {
 				&& !restoreProfile.contains(new Profile(event.getName(), event.getUniqueId()))) {
 			event.disallow(Result.KICK_OTHER,
 					"§cO servidor está em modo restauração, somente jogadores que já estavam no servidor podem entrar!");
+			return;
+		}
+
+		if (Bukkit.getOnlinePlayers().size() >= Bukkit.getMaxPlayers() + 20) {
+			event.disallow(Result.KICK_OTHER, "§cO servidor está cheio!");
 			return;
 		}
 
@@ -156,11 +162,24 @@ public class AccountListener extends Listener {
 
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onPlayerLoginMonitor(PlayerLoginEvent event) {
+		Member member = CommonGeneral.getInstance().getMemberManager().getMember(event.getPlayer().getUniqueId());
+
+		if (member == null) {
+			event.disallow(PlayerLoginEvent.Result.KICK_OTHER,
+					"§4§l" + CommonConst.KICK_PREFIX + "\n§f\n§fNão foi possível carregar sua conta!");
+			return;
+		}
+
 		if (event.getResult() == PlayerLoginEvent.Result.ALLOWED) {
-			Member member = CommonGeneral.getInstance().getMemberManager().getMember(event.getPlayer().getUniqueId());
 			member.connect(CommonGeneral.getInstance().getServerId(), CommonGeneral.getInstance().getServerType());
 			return;
 		}
+
+		if (event.getResult() == PlayerLoginEvent.Result.KICK_FULL && member.hasGroupPermission(Group.LIGHT)) {
+			event.allow();
+			return;
+		} else
+			event.disallow(PlayerLoginEvent.Result.KICK_OTHER, "§cO servidor está cheio!");
 
 		if (CommonGeneral.getInstance().getMemberManager().containsKey(event.getPlayer().getUniqueId()))
 			CommonGeneral.getInstance().getMemberManager().unload(event.getPlayer().getUniqueId());
@@ -229,7 +248,7 @@ public class AccountListener extends Listener {
 
 				if (clan == null)
 					return;
-				
+
 				if (clan.isGroup(player.getUniqueId(), ClanHierarchy.OWNER)) {
 					CommonGeneral.getInstance().getClanManager().unload(clan.getUniqueId());
 				} else {

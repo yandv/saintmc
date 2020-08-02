@@ -18,6 +18,7 @@ import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.bungee.BungeeMain;
 import tk.yallandev.saintmc.bungee.command.BungeeCommandArgs;
 import tk.yallandev.saintmc.common.account.Member;
+import tk.yallandev.saintmc.common.account.medal.Medal;
 import tk.yallandev.saintmc.common.command.CommandClass;
 import tk.yallandev.saintmc.common.command.CommandFramework.Command;
 import tk.yallandev.saintmc.common.command.CommandSender;
@@ -220,6 +221,7 @@ public class DiscordCommand implements CommandClass {
 								System.currentTimeMillis() + (1000 * 60 * 60 * 24 * 14));
 						member.setTag(Tag.valueOf(RankType.DONATOR.name()));
 						member.saveRanks();
+						member.addMedal(Medal.BOOSTER);
 					}
 				}
 			} else {

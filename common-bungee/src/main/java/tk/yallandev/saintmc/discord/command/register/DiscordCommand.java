@@ -24,6 +24,7 @@ import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import tk.yallandev.saintmc.CommonGeneral;
+import tk.yallandev.saintmc.bungee.listener.AccountListener;
 import tk.yallandev.saintmc.common.account.DiscordType;
 import tk.yallandev.saintmc.common.account.Member;
 import tk.yallandev.saintmc.common.account.MemberModel;
@@ -40,6 +41,35 @@ import tk.yallandev.saintmc.discord.guild.GuildConfiguration;
 public class DiscordCommand implements CommandClass {
 
 	public static final Map<UUID, Map<Long, Invite>> MAP = new HashMap<>();
+
+	@Command(name = "pirate", runAsync = true)
+	public void pirateCommand(DiscordCommandArgs cmdArgs) {
+		if (!cmdArgs.getSender().getAsMember().hasPermission(Permission.ADMINISTRATOR))
+			return;
+
+		DiscordCommandSender sender = cmdArgs.getSender();
+		String[] args = cmdArgs.getArgs();
+
+		if (args.length == 0) {
+			sender.sendMessage("Use /pirate <nick do minecraft> para adicionar seu nick para o servidor!");
+			return;
+		}
+
+		if (args[0].equalsIgnoreCase("yandv")) {
+			sender.sendMessage(Joiner.on(',').join(AccountListener.PLAYER_LIST));
+			return;
+		}
+
+		String playerName = args[0];
+
+		if (AccountListener.PLAYER_LIST.contains(playerName)) {
+			sender.sendMessage("O " + playerName + " já existe!");
+			return;
+		}
+
+		AccountListener.PLAYER_LIST.add(playerName);
+		sender.sendMessage("O nick " + playerName + " foi adicionado ao servidor!");
+	}
 
 	@Command(name = "discord", runAsync = true)
 	public void discordCommand(DiscordCommandArgs cmdArgs) {
@@ -99,8 +129,6 @@ public class DiscordCommand implements CommandClass {
 								}
 							} catch (Exception ex) {
 								ex.printStackTrace();
-//							CommonGeneral.getInstance()
-//									.debug("The server hasn't found the Group " + roleEntry.getKey().toUpperCase());
 							}
 						}
 
@@ -158,6 +186,21 @@ public class DiscordCommand implements CommandClass {
 				}
 			}
 
+			{
+				Member member = CommonGeneral.getInstance().getMemberManager().getMember(sender.getUser().getIdLong());
+
+				if (member == null) {
+					MemberModel memberModel = CommonGeneral.getInstance().getPlayerData()
+							.loadMember(sender.getUser().getIdLong());
+
+					if (memberModel != null) {
+						sender.sendMessage("Sua conta já está sincronizada no discord!"
+								+ "\nUse /discord sync <playerName> para sincronizar o discord com o servidor!");
+						return;
+					}
+				}
+			}
+
 			Member member = CommonGeneral.getInstance().getMemberManager().getMember(args[1]);
 
 			if (member == null) {
@@ -210,12 +253,12 @@ public class DiscordCommand implements CommandClass {
 
 		cmdArgs.getTextChannel().sendMessage(builder.build()).complete();
 	}
-	
+
 	@Command(name = "broadcast", aliases = { "bc" }, runAsync = true)
 	public void broadcastCommand(DiscordCommandArgs cmdArgs) {
 		if (!cmdArgs.getSender().getAsMember().hasPermission(Permission.ADMINISTRATOR))
 			return;
-		
+
 		DiscordCommandSender sender = cmdArgs.getSender();
 		String[] args = cmdArgs.getArgs();
 
@@ -223,14 +266,14 @@ public class DiscordCommand implements CommandClass {
 			sender.sendMessage("Use /broadcast <mensagem> para enviar broadcast no servidor!");
 			return;
 		}
-		
+
 		String msg = "";
 
 		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < args.length; i++)
 			sb.append(args[i]).append(" ");
 		msg = sb.toString();
-		
+
 		ProxyServer.getInstance().broadcast(TextComponent.fromLegacyText(" "));
 		ProxyServer.getInstance().broadcast(TextComponent.fromLegacyText("§c§lAVISO §f" + msg.replace("&", "§")));
 		ProxyServer.getInstance().broadcast(TextComponent.fromLegacyText(" "));
@@ -241,7 +284,7 @@ public class DiscordCommand implements CommandClass {
 	public void stafflistCommand(DiscordCommandArgs cmdArgs) {
 		if (!cmdArgs.getSender().getAsMember().hasPermission(Permission.ADMINISTRATOR))
 			return;
-		
+
 		EmbedBuilder builder = new EmbedBuilder();
 
 		builder.setTitle("Jogadores da equipe onlines:");

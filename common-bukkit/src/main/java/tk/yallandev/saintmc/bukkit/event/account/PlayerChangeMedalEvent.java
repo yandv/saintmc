@@ -4,7 +4,7 @@ import org.bukkit.entity.Player;
 
 import lombok.Getter;
 import tk.yallandev.saintmc.bukkit.event.PlayerCancellableEvent;
-import tk.yallandev.saintmc.common.medals.Medal;
+import tk.yallandev.saintmc.common.account.medal.Medal;
 
 @Getter
 public class PlayerChangeMedalEvent extends PlayerCancellableEvent {

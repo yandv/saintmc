@@ -7,6 +7,8 @@ import java.util.Map.Entry;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import com.mongodb.client.model.Filters;
+
 import lombok.Getter;
 import tk.yallandev.saintmc.CommonConst;
 import tk.yallandev.saintmc.CommonGeneral;
@@ -19,12 +21,14 @@ import tk.yallandev.saintmc.common.server.loadbalancer.server.MinigameServer;
 import tk.yallandev.saintmc.common.server.loadbalancer.server.ProxiedServer;
 import tk.yallandev.saintmc.lobby.collectable.Collectables;
 import tk.yallandev.saintmc.lobby.listener.CharacterListener;
+import tk.yallandev.saintmc.lobby.listener.CombatListener;
 import tk.yallandev.saintmc.lobby.listener.HologramListener;
 import tk.yallandev.saintmc.lobby.listener.LoginListener;
 import tk.yallandev.saintmc.lobby.listener.ParticleListener;
 import tk.yallandev.saintmc.lobby.listener.PlayerListener;
 import tk.yallandev.saintmc.lobby.listener.ScoreboardListener;
 import tk.yallandev.saintmc.lobby.manager.PlayerManager;
+import tk.yallandev.saintmc.lobby.menu.tournament.TournamentInventory;
 import tk.yallandev.saintmc.update.UpdatePlugin;
 
 @Getter
@@ -66,6 +70,7 @@ public class LobbyMain extends JavaPlugin {
 		Bukkit.getPluginManager().registerEvents(new ParticleListener(), getInstance());
 		Bukkit.getPluginManager().registerEvents(new MoveListener(), getInstance());
 		Bukkit.getPluginManager().registerEvents(new ScoreboardListener(), getInstance());
+		Bukkit.getPluginManager().registerEvents(new CombatListener(), getInstance());
 		Bukkit.getPluginManager().registerEvents(new CharacterListener(), getInstance());
 		Bukkit.getPluginManager().registerEvents(new HologramListener(), getInstance());
 
@@ -89,13 +94,13 @@ public class LobbyMain extends JavaPlugin {
 
 				if (ServerType.valueOf(entry.getValue().get("type").toUpperCase()) == ServerType.NETWORK)
 					continue;
-				
+
 				ProxiedServer server = BukkitMain.getInstance().getServerManager().addActiveServer(
 						entry.getValue().get("address"), entry.getKey(),
 						ServerType.valueOf(entry.getValue().get("type").toUpperCase()),
 						Integer.valueOf(entry.getValue().get("maxplayers")));
-				
-				System.out.println(server.getServerType());
+
+				System.out.println(server.getServerId() + " - " + server.getServerType());
 
 				BukkitMain.getInstance().getServerManager().getServer(entry.getKey())
 						.setOnlinePlayers(CommonGeneral.getInstance().getServerData().getPlayers(entry.getKey()));
@@ -105,7 +110,7 @@ public class LobbyMain extends JavaPlugin {
 				if (server instanceof MinigameServer) {
 					MinigameServer minigameServer = (MinigameServer) server;
 
-					System.out.println(CommonGeneral.getInstance().getServerData().getTime(entry.getKey()));
+					System.out.print(CommonGeneral.getInstance().getServerData().getTime(entry.getKey()));
 					minigameServer.setTime(CommonGeneral.getInstance().getServerData().getTime(entry.getKey()));
 					minigameServer.setMap(CommonGeneral.getInstance().getServerData().getMap(entry.getKey()));
 					minigameServer.setState(CommonGeneral.getInstance().getServerData().getState(entry.getKey()));
@@ -131,6 +136,15 @@ public class LobbyMain extends JavaPlugin {
 
 		if (lobbyAddress.equalsIgnoreCase("lobby") || lobbyAddress.length() >= 4)
 			lobbyAddress = "§kA?";
+
+		TournamentInventory.GROUP_A = CommonGeneral.getInstance().getPlayerData()
+				.count(Filters.eq("tournamentGroup", "GROUP_A"));
+		TournamentInventory.GROUP_B = CommonGeneral.getInstance().getPlayerData()
+				.count(Filters.eq("tournamentGroup", "GROUP_B"));
+		TournamentInventory.GROUP_C = CommonGeneral.getInstance().getPlayerData()
+				.count(Filters.eq("tournamentGroup", "GROUP_C"));
+		TournamentInventory.GROUP_D = CommonGeneral.getInstance().getPlayerData()
+				.count(Filters.eq("tournamentGroup", "GROUP_D"));
 
 		BukkitMain.getInstance().setServerLog(true);
 		BukkitMain.getInstance().setRemovePlayerDat(true);

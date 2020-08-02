@@ -1,19 +1,28 @@
 package tk.yallandev.saintmc.kitpvp.listener;
 
+import java.util.Arrays;
+
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.TextComponent;
 import tk.yallandev.saintmc.CommonConst;
 import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.common.account.status.Status;
 import tk.yallandev.saintmc.common.account.status.StatusType;
+import tk.yallandev.saintmc.common.account.status.types.normal.NormalStatus;
+import tk.yallandev.saintmc.common.permission.Group;
+import tk.yallandev.saintmc.common.utils.string.MessageBuilder;
 import tk.yallandev.saintmc.kitpvp.event.warp.PlayerWarpDeathEvent;
 import tk.yallandev.saintmc.kitpvp.utils.RewardCalculator;
 import tk.yallandev.saintmc.kitpvp.warp.DuelWarp;
 import tk.yallandev.saintmc.kitpvp.warp.types.PartyWarp;
+import tk.yallandev.saintmc.kitpvp.warp.types.ShadowWarp;
 import tk.yallandev.saintmc.kitpvp.warp.types.SumoWarp;
 
 public class StatusListener implements Listener {
@@ -42,20 +51,32 @@ public class StatusListener implements Listener {
 		boolean duels = (event.getWarp() instanceof DuelWarp);
 		StatusType statusType = duels ? StatusType.SHADOW : StatusType.PVP;
 
-		Status playerStatus = CommonGeneral.getInstance().getStatusManager().loadStatus(player.getUniqueId(),
-				statusType);
-		Status killerStatus = CommonGeneral.getInstance().getStatusManager().loadStatus(killer.getUniqueId(),
-				statusType);
+		NormalStatus playerStatus = CommonGeneral.getInstance().getStatusManager().loadStatus(player.getUniqueId(),
+				statusType, NormalStatus.class);
+		NormalStatus killerStatus = CommonGeneral.getInstance().getStatusManager().loadStatus(killer.getUniqueId(),
+				statusType, NormalStatus.class);
 
 		int winnerXp = RewardCalculator.calculateReward(player, playerStatus, killer, killerStatus);
 
 		if (duels)
 			winnerXp *= 1.5;
 
-		int lostXp = CommonConst.RANDOM.nextInt(8) + 1;
+		int winnerMoney = RewardCalculator.calculateReward(player, playerStatus, killer, killerStatus);
 
-		player.sendMessage("§c§l> §fVocê §cmorreu§f para o §c" + killer.getName() + "§f!");
-		player.sendMessage("§c§l> §fVocê perdeu §c" + lostXp + "§f!");
+		if (duels)
+			winnerMoney *= 1.5;
+
+		int lostXp = CommonConst.RANDOM.nextInt(8) + 1;
+		int lostMoney = 50 * (CommonGeneral.getInstance().getMemberManager().getMember(killer.getUniqueId())
+				.hasGroupPermission(Group.BLIZZARD) ? 2 : 1);
+
+		player.spigot()
+				.sendMessage(
+						new MessageBuilder("§cVocê morreu para o " + killer.getName() + "!")
+								.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+										TextComponent.fromLegacyText(
+												"§c-" + lostXp + " xp" + "\n" + "§c-" + lostMoney + " coins")))
+								.create());
 
 		if (playerStatus.getKillstreak() >= 10)
 			Bukkit.broadcastMessage(
@@ -65,8 +86,23 @@ public class StatusListener implements Listener {
 		playerStatus.addDeath();
 		playerStatus.resetKillstreak();
 
-		killer.sendMessage("§a§l> §fVocê matou o §a" + player.getName() + "§f!");
-		killer.sendMessage("§a§l> §fVocê ganhou §a" + winnerXp + " xp§f" + (duels ? " §7(1.5x no duels)" : "") + "§f!");
+		killer.spigot()
+				.sendMessage(
+						new MessageBuilder("§aVocê matou o " + player.getName() + "!")
+								.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+										TextComponent.fromLegacyText(
+												"§a+" + winnerXp + " xp" + "\n" + "§a+" + winnerMoney + " coins")))
+								.create());
+
+		if (event.getWarp() instanceof ShadowWarp) {
+			int mushroomSoup = (int) Arrays.asList(killer.getInventory().getContents()).stream()
+					.filter(item -> item != null && item.getType() == Material.MUSHROOM_SOUP).count();
+
+			player.sendMessage("§cO jogador ficou com " + (CommonConst.DECIMAL_FORMAT.format(killer.getHealth()))
+					+ " corações e com " + (mushroomSoup) + " sopas!");
+			killer.sendMessage("§aVocê ficou com " + (CommonConst.DECIMAL_FORMAT.format(killer.getHealth()))
+					+ " corações e com " + (mushroomSoup) + " sopas!");
+		}
 
 		killerStatus.addKill();
 		killerStatus.addKillstreak();
@@ -76,7 +112,9 @@ public class StatusListener implements Listener {
 					+ killerStatus.getKillstreak() + "§f!");
 
 		CommonGeneral.getInstance().getMemberManager().getMember(killer.getUniqueId()).addXp(winnerXp);
+		CommonGeneral.getInstance().getMemberManager().getMember(killer.getUniqueId()).addMoney(winnerMoney);
 		CommonGeneral.getInstance().getMemberManager().getMember(player.getUniqueId()).removeXp(lostXp);
+		CommonGeneral.getInstance().getMemberManager().getMember(player.getUniqueId()).removeMoney(lostMoney);
 	}
 
 }

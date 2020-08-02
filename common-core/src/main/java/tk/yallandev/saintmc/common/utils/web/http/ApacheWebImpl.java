@@ -91,17 +91,15 @@ public class ApacheWebImpl implements WebHelper {
 
 	@Override
 	public void doRequest(String url, Method method, String jsonEntity, FutureCallback<JsonElement> callback) {
-		try {
-			HttpRequestBase requestBase = createRequestBase(url, method, jsonEntity);
+		HttpRequestBase requestBase = createRequestBase(url, method, jsonEntity);
 
+		try {
 			CloseableHttpResponse response = closeableHttpClient.execute(requestBase);
 
 			HttpEntity entity = response.getEntity();
 			String json = EntityUtils.toString(entity);
 
 			if (json == null) {
-				response.close();
-
 				Exception ex = new Exception("Received empty response from your server, check connections.");
 
 				callback.result(null, ex);
@@ -115,7 +113,7 @@ public class ApacheWebImpl implements WebHelper {
 				callback.result(null, ex);
 			}
 
-			response.close();
+			EntityUtils.consumeQuietly(response.getEntity());
 		} catch (Exception ex) {
 			callback.result(null, ex);
 		}
@@ -128,51 +126,56 @@ public class ApacheWebImpl implements WebHelper {
 
 	@Override
 	public void doAsyncRequest(String url, Method method, String jsonEntity, FutureCallback<JsonElement> callback) {
+
+		HttpRequestBase base = createRequestBase(url, method, jsonEntity);
+
 		try {
-			closeableHttpAsyncClient.execute(createRequestBase(url, method, jsonEntity),
-					new org.apache.http.concurrent.FutureCallback<HttpResponse>() {
+			closeableHttpAsyncClient.execute(base, new org.apache.http.concurrent.FutureCallback<HttpResponse>() {
 
-						public void completed(HttpResponse response) {
+				public void completed(HttpResponse response) {
 
-							HttpEntity entity = response.getEntity();
-							String json;
+					HttpEntity entity = response.getEntity();
+					String json;
 
-							try {
-								json = EntityUtils.toString(entity);
-							} catch (ParseException | IOException e) {
-								failed(e);
-								return;
-							}
+					try {
+						json = EntityUtils.toString(entity);
+					} catch (ParseException | IOException e) {
+						failed(e);
+						return;
+					}
 
-							if (json == null) {
-								failed(new Exception("Received empty response from your server, check connections."));
-								return;
-							}
+					if (json == null) {
+						failed(new Exception("Received empty response from your server, check connections."));
+						return;
+					}
 
-							JsonElement jsonElement = new JsonObject();
+					JsonElement jsonElement = new JsonObject();
 
-							try {
-								jsonElement = JsonParser.parseString(json);
-							} catch (Exception ex) {
-								callback.result(jsonElement, ex);
-								return;
-							}
+					try {
+						jsonElement = JsonParser.parseString(json);
+					} catch (Exception ex) {
+						callback.result(jsonElement, ex);
+						return;
+					}
 
-							callback.result(jsonElement, null);
-						}
+					callback.result(jsonElement, null);
+				}
 
-						public void failed(Exception ex) {
-							callback.result(new JsonObject(), ex);
-						}
+				public void failed(Exception ex) {
+					callback.result(new JsonObject(), ex);
+				}
 
-						public void cancelled() {
-							callback.result(new JsonObject(), new Exception("The request has been cancelled!"));
-						}
+				public void cancelled() {
+					callback.result(new JsonObject(), new Exception("The request has been cancelled!"));
+				}
 
-					});
+			});
 		} catch (Exception ex) {
 			callback.result(null, ex);
 		}
+//		finally {
+//			base.releaseConnection();
+//		}
 	}
 
 	public JsonElement doRequest(HttpRequestBase requestBase) throws Exception {
@@ -194,8 +197,7 @@ public class ApacheWebImpl implements WebHelper {
 			CommonGeneral.getInstance().getLogger().warning(json);
 		}
 
-		response.close();
-
+		EntityUtils.consumeQuietly(response.getEntity());
 		return jsonElement;
 	}
 

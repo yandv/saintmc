@@ -22,11 +22,11 @@ import tk.yallandev.saintmc.update.updater.UpdateType;
 @Getter
 public class Updater {
 
-	public static final String API = "http://apidata.saintmc.net";
+	public static final String API = "http://api.saintmc.yallandev.tk:3333";
 
 	@Getter
 	private static Updater instance;
-	
+
 	private CommonGeneral general;
 
 	private UpdateType updateType;
@@ -64,13 +64,13 @@ public class Updater {
 						+ " has been loaded!");
 				debug("[Plugin] The actual version is " + pluginInfo.getActualVersion() + " ("
 						+ (pluginInfo.needUpdate() ? "need update" : "last version") + ")!");
-				
+
 				pluginInfo.setPlugin(new Plugin(pluginInfo));
 
 				pluginList.add(pluginInfo);
 			}
 		}
-		
+
 		switch (updateType) {
 		case DOWNLOAD: {
 			runCheck();
@@ -85,7 +85,7 @@ public class Updater {
 			break;
 		}
 		}
-		
+
 		System.exit(0);
 	}
 

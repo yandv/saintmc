@@ -28,11 +28,11 @@ import tk.yallandev.saintmc.common.server.ServerType;
 import tk.yallandev.saintmc.common.utils.string.NameUtils;
 
 @SuppressWarnings("deprecation")
-public class WorldeditCommand implements CommandClass {
+public class BuilderCommand implements CommandClass {
 
 	private WorldeditController controller;
 
-	public WorldeditCommand() {
+	public BuilderCommand() {
 		controller = BukkitMain.getInstance().getWorldeditController();
 	}
 

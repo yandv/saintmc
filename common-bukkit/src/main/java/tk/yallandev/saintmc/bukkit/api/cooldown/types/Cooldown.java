@@ -6,36 +6,51 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import tk.yallandev.saintmc.CommonConst;
+import tk.yallandev.saintmc.common.utils.DateUtils;
 
 @RequiredArgsConstructor
 public class Cooldown {
 
-    @Getter
-    @Setter
-    @NonNull
-    private String name;
+	@Getter
+	@Setter
+	@NonNull
+	private String name;
 
-    @Getter
-    @NonNull
-    private Long duration;
-    @Getter
-    private long startTime = System.currentTimeMillis();
-    
-    public void update(long duration, long startTime) {
-    	this.duration = duration;
-    	this.startTime = startTime;
-    }
+	@Getter
+	private long duration;
+	@Getter
+	private long startTime = System.currentTimeMillis();
 
-    public double getPercentage() {
-        return (getRemaining() * 100) / duration;
-    }
+	public Cooldown(String name, long duration) {
+		this.name = name;
+		this.duration = duration;
+	}
 
-    public double getRemaining() {
-        long endTime = startTime + TimeUnit.SECONDS.toMillis(duration);
-        return (-(System.currentTimeMillis() - endTime)) / 1000D;
-    }
+	public void update(long duration, long startTime) {
+		this.duration = duration;
+		this.startTime = startTime;
+	}
 
-    public boolean expired() {
-        return getRemaining() < 0D;
-    }
+	public double getPercentage() {
+		return (getRemaining() * 100) / duration;
+	}
+
+	public double getRemaining() {
+		long endTime = startTime + TimeUnit.SECONDS.toMillis(duration);
+		return (-(System.currentTimeMillis() - endTime)) / 1000D;
+	}
+
+	public boolean expired() {
+		return getRemaining() < 0D;
+	}
+
+	public static void main(String[] args) {
+		Cooldown cooldown = new Cooldown("penis", 5000l);
+
+		while (true) {
+			System.out.println(
+					DateUtils.formatTime(cooldown.getStartTime() + cooldown.getDuration(), CommonConst.DECIMAL_FORMAT));
+		}
+	}
 }

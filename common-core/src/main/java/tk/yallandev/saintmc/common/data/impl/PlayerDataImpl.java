@@ -10,6 +10,8 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
+import org.bson.conversions.Bson;
+
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
@@ -148,7 +150,7 @@ public class PlayerDataImpl implements PlayerData {
 				@Override
 				public void run() {
 					JsonObject tree = CommonConst.GSON.toJsonTree(member).getAsJsonObject();
-
+					
 					if (tree.has(fieldName)) {
 						JsonElement element = tree.get(fieldName);
 						try (Jedis jedis = redisDatabase.getPool().getResource()) {
@@ -170,6 +172,11 @@ public class PlayerDataImpl implements PlayerData {
 					}
 				}
 			});
+	}
+
+	@Override
+	public int count(Bson bson) {
+		return (int) ((MongoQuery) query).getCollection().countDocuments(bson);
 	}
 
 	@Override

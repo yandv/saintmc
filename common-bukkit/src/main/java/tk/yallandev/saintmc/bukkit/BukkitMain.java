@@ -28,7 +28,6 @@ import org.bukkit.generator.BlockPopulator;
 import org.bukkit.generator.ChunkGenerator;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.plugin.messaging.PluginMessageListener;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import com.comphenix.protocol.ProtocolLibrary;
@@ -59,6 +58,7 @@ import tk.yallandev.saintmc.bukkit.api.vanish.AdminMode;
 import tk.yallandev.saintmc.bukkit.api.worldedit.WorldeditController;
 import tk.yallandev.saintmc.bukkit.command.BukkitCommandFramework;
 import tk.yallandev.saintmc.bukkit.controller.SkinController;
+import tk.yallandev.saintmc.bukkit.event.LocationChangeEvent;
 import tk.yallandev.saintmc.bukkit.exploit.Exploit;
 import tk.yallandev.saintmc.bukkit.networking.packet.BukkitPacketController;
 import tk.yallandev.saintmc.bukkit.networking.redis.BukkitPubSubHandler;
@@ -133,19 +133,24 @@ public class BukkitMain extends JavaPlugin {
 
 	@Override
 	public void onEnable() {
-		UpdatePlugin.Shutdown shutdown = new UpdatePlugin.Shutdown() {
+		try {
+			UpdatePlugin.Shutdown shutdown = new UpdatePlugin.Shutdown() {
 
-			@Override
-			public void stop() {
-				Bukkit.shutdown();
-			}
+				@Override
+				public void stop() {
+					Bukkit.shutdown();
+				}
 
-		};
+			};
 
-		if (UpdatePlugin.update(
-				new File(BukkitMain.class.getProtectionDomain().getCodeSource().getLocation().getPath()),
-				"BukkitCommon", CommonConst.DOWNLOAD_KEY, shutdown))
-			return;
+			if (UpdatePlugin.update(
+					new File(BukkitMain.class.getProtectionDomain().getCodeSource().getLocation().getPath()),
+					"BukkitCommon", CommonConst.DOWNLOAD_KEY, shutdown))
+				return;
+
+		} catch (Exception ex) {
+			CommonGeneral.getInstance().debug("Couldn't connect to http://apidata.saintmc.net/!");
+		}
 
 		try {
 
@@ -216,13 +221,13 @@ public class BukkitMain extends JavaPlugin {
 
 		skinManager = new SkinController();
 		worldeditController = new WorldeditController();
-		
+
 		CheckController checkController = new CheckController();
 		anticheatController = new AnticheatController(checkController, new AlertController());
-		
+
 		checkController.registerCheck(new MovementCheck());
 		checkController.registerCheck(new CombatCheck(this));
-		
+
 		hologramController = new HologramController(getInstance());
 		packetController = new BukkitPacketController();
 
@@ -239,30 +244,30 @@ public class BukkitMain extends JavaPlugin {
 		 * BungeeCord Message Listener
 		 */
 
-		getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
 		getServer().getMessenger().registerOutgoingPluginChannel(this, "server:packet");
-		getServer().getMessenger().registerIncomingPluginChannel(this, "BungeeCord", new PluginMessageListener() {
 
-			@Override
-			public void onPluginMessageReceived(String channel, Player player, byte[] message) {
-				ByteArrayDataInput in = ByteStreams.newDataInput(message);
-				String subchannel = in.readUTF();
+		getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
+		getServer().getMessenger().registerIncomingPluginChannel(this, "BungeeCord",
+				(String channel, Player player, byte[] message) -> {
+					ByteArrayDataInput in = ByteStreams.newDataInput(message);
+					String subchannel = in.readUTF();
 
-				if (subchannel.equalsIgnoreCase("BungeeTeleport")) {
-					String uniqueId = in.readUTF();
+					if (subchannel.equalsIgnoreCase("BungeeTeleport")) {
+						String uniqueId = in.readUTF();
 
-					if (!Member.hasGroupPermission(player.getUniqueId(), Group.YOUTUBERPLUS)) {
-						player.sendMessage("§c§l> §fVocê não tem §cpermissão§f para teletransportar!");
-						return;
+						if (!Member.hasGroupPermission(player.getUniqueId(), Group.YOUTUBERPLUS)) {
+							player.sendMessage("§c§l> §fVocê não tem §cpermissão§f para teletransportar!");
+							return;
+						}
+
+						AdminMode.getInstance().setAdmin(player, Member.getMember(player.getUniqueId()));
+						Player p = BukkitMain.getInstance().getServer().getPlayer(UUID.fromString(uniqueId));
+						player.chat("/tp " + p.getName());
 					}
 
-					AdminMode.getInstance().setAdmin(player, Member.getMember(player.getUniqueId()));
-					Player p = BukkitMain.getInstance().getServer().getPlayer(UUID.fromString(uniqueId));
-					player.chat("/tp " + p.getName());
-				}
-			}
+				});
 
-		});
+		getServer().getMessenger().registerOutgoingPluginChannel(this, "Lunar-Client");
 
 		/*
 		 * Register Listener
@@ -344,7 +349,7 @@ public class BukkitMain extends JavaPlugin {
 		pm.registerEvents(new CharacterListener(), getInstance());
 		pm.registerEvents(new MenuListener(), getInstance());
 		pm.registerEvents(new CooldownController(), getInstance());
-		
+
 		pm.registerEvents(new StorageListener(), getInstance());
 	}
 
@@ -361,15 +366,30 @@ public class BukkitMain extends JavaPlugin {
 		p.sendPluginMessage(getInstance(), "BungeeCord", b.toByteArray());
 	}
 
+	public void sendPlayerToEvent(Player p) {
+		ByteArrayOutputStream b = new ByteArrayOutputStream();
+		DataOutputStream out = new DataOutputStream(b);
+
+		try {
+			out.writeUTF("Event");
+		} catch (Exception e) {
+			e.printStackTrace(System.out);
+		}
+
+		p.sendPluginMessage(getInstance(), "BungeeCord", b.toByteArray());
+	}
+
 	public void sendPlayer(Player p, String server) {
 		ByteArrayOutputStream b = new ByteArrayOutputStream();
 		DataOutputStream out = new DataOutputStream(b);
+
 		try {
 			out.writeUTF("Connect");
 			out.writeUTF(server);
 		} catch (Exception e) {
 			e.printStackTrace(System.out);
 		}
+
 		p.sendPluginMessage(getInstance(), "BungeeCord", b.toByteArray());
 	}
 
@@ -403,6 +423,14 @@ public class BukkitMain extends JavaPlugin {
 	}
 
 	public void registerLocationInConfig(Location location, String config) {
+		if (this.location.containsKey(config)) {
+			LocationChangeEvent event = new LocationChangeEvent(config, this.location.get(config), location);
+			Bukkit.getPluginManager().callEvent(event);
+
+			if (event.isCancelled())
+				return;
+		}
+
 		config = config.toLowerCase();
 		this.location.put(config, location);
 

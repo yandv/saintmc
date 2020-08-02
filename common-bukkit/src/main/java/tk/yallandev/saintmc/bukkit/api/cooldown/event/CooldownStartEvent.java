@@ -7,10 +7,10 @@ import lombok.Getter;
 import lombok.Setter;
 import tk.yallandev.saintmc.bukkit.api.cooldown.types.Cooldown;
 
+@Getter
+@Setter
 public class CooldownStartEvent extends CooldownEvent implements Cancellable {
 	
-	@Getter
-	@Setter
     private boolean cancelled;
 
     public CooldownStartEvent(Player player, Cooldown cooldown) {

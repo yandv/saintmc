@@ -1,5 +1,6 @@
 package tk.yallandev.saintmc.lobby.listener;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
@@ -11,12 +12,8 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.ItemSpawnEvent;
-import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -25,7 +22,6 @@ import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.weather.WeatherChangeEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.util.Vector;
 
 import lombok.Getter;
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -34,7 +30,6 @@ import net.md_5.bungee.api.chat.TextComponent;
 import tk.yallandev.saintmc.CommonConst;
 import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.bukkit.BukkitMain;
-import tk.yallandev.saintmc.bukkit.api.actionbar.ActionBarAPI;
 import tk.yallandev.saintmc.bukkit.api.item.ActionItemStack;
 import tk.yallandev.saintmc.bukkit.api.item.ActionItemStack.ActionType;
 import tk.yallandev.saintmc.bukkit.api.item.ActionItemStack.InteractType;
@@ -44,21 +39,23 @@ import tk.yallandev.saintmc.bukkit.bukkit.BukkitMember;
 import tk.yallandev.saintmc.bukkit.event.account.PlayerChangeGroupEvent;
 import tk.yallandev.saintmc.bukkit.event.account.PlayerChangeLeagueEvent;
 import tk.yallandev.saintmc.bukkit.event.login.PlayerChangeLoginStatusEvent;
-import tk.yallandev.saintmc.bukkit.event.update.UpdateEvent;
 import tk.yallandev.saintmc.common.account.League;
 import tk.yallandev.saintmc.common.account.Member;
 import tk.yallandev.saintmc.common.account.configuration.LoginConfiguration.AccountType;
-import tk.yallandev.saintmc.common.account.status.StatusType;
 import tk.yallandev.saintmc.common.permission.Group;
 import tk.yallandev.saintmc.common.tag.Tag;
+import tk.yallandev.saintmc.common.tournment.TournamentGroup;
 import tk.yallandev.saintmc.lobby.LobbyMain;
+import tk.yallandev.saintmc.lobby.event.PlayerItemReceiveEvent;
 import tk.yallandev.saintmc.lobby.gamer.Gamer;
 import tk.yallandev.saintmc.lobby.menu.collectable.CollectableInventory;
 import tk.yallandev.saintmc.lobby.menu.collectable.CollectableInventory.Page;
 import tk.yallandev.saintmc.lobby.menu.profile.ProfileInventory;
 import tk.yallandev.saintmc.lobby.menu.server.LobbyInventory;
 import tk.yallandev.saintmc.lobby.menu.server.ServerInventory;
+import tk.yallandev.saintmc.lobby.menu.tournament.TournamentInventory;
 
+@SuppressWarnings("deprecation")
 public class PlayerListener implements Listener {
 
 	@Getter
@@ -69,6 +66,7 @@ public class PlayerListener implements Listener {
 	private ActionItemStack compass;
 	private ActionItemStack lobbies;
 	private ActionItemStack collectable;
+	private ActionItemStack tournament;
 
 	public PlayerListener() {
 		tablist = new Tablist(
@@ -128,6 +126,19 @@ public class PlayerListener implements Listener {
 
 				});
 
+		tournament = new ActionItemStack(
+				new ItemBuilder().name("§eTorneio §7(Clique Aqui)").glow().type(Material.DIAMOND).build(),
+				new ActionItemStack.Interact(InteractType.CLICK) {
+
+					@Override
+					public boolean onInteract(Player player, Entity entity, Block block, ItemStack item,
+							ActionType action) {
+						new TournamentInventory(player, null, false, false);
+						return false;
+					}
+
+				});
+
 		playerListener = this;
 	}
 
@@ -138,11 +149,32 @@ public class PlayerListener implements Listener {
 		BukkitMember member = (BukkitMember) CommonGeneral.getInstance().getMemberManager()
 				.getMember(event.getPlayer().getUniqueId());
 
-		if (!member.hasGroupPermission(Group.LIGHT)) {
+		if (member.hasGroupPermission(Group.LIGHT)) {
+
+			player.setAllowFlight(true);
+			player.setFlying(true);
+
+			if (member.getGroup().ordinal() <= Group.YOUTUBER.ordinal()
+					&& member.getGroup().ordinal() >= Group.BLIZZARD.ordinal())
+				Bukkit.broadcastMessage(Tag.valueOf(member.getGroup().name()).getPrefix() + " " + player.getName()
+						+ " §6entrou no lobby!");
+
+		} else {
 			for (Gamer gamer : LobbyMain.getInstance().getPlayerManager().getGamers())
 				if (!gamer.isSeeing())
 					gamer.getPlayer().hidePlayer(player);
+
+			player.setFlying(false);
+			player.setAllowFlight(false);
 		}
+
+		if (member.getTournamentGroup() == null || member.getTournamentGroup() == TournamentGroup.NONE)
+			if (player.hasPermission("tag.torneioplus") && !member.hasGroupPermission(Group.TRIAL)) {
+				member.sendMessage("§aVocê comprou a tag " + Tag.TORNEIOPLUS.getPrefix()
+						+ "§a mas ainda não selecionou seu grupo!");
+				member.sendMessage("§aClique no diamante da hotbar para selecionar o grupo!");
+				member.sendMessage("§c§nCaso você não escolha o grupo, você não participará do torneio!");
+			}
 
 		player.teleport(
 				member.getLoginConfiguration().isLogged() ? BukkitMain.getInstance().getLocationFromConfig("spawn")
@@ -150,9 +182,6 @@ public class PlayerListener implements Listener {
 
 		tablist.addViewer(player);
 		addItem(player, member);
-
-		player.setFlying(false);
-		player.setAllowFlight(false);
 	}
 
 	@EventHandler
@@ -166,9 +195,6 @@ public class PlayerListener implements Listener {
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onPlayerQuit(PlayerQuitEvent e) {
 		LobbyMain.getInstance().getPlayerManager().removeGamer(e.getPlayer());
-
-		if (LobbyMain.getInstance().getPlayerManager().getPlayersInCombat().contains(e.getPlayer()))
-			LobbyMain.getInstance().getPlayerManager().getPlayersInCombat().remove(e.getPlayer());
 
 		tablist.removeViewer(e.getPlayer());
 	}
@@ -200,7 +226,7 @@ public class PlayerListener implements Listener {
 				.getMember(e.getPlayer().getUniqueId());
 
 		if (player.isBuildEnabled())
-			if (player.hasGroupPermission(Group.DEV)) {
+			if (player.hasGroupPermission(Group.DEVELOPER)) {
 				e.setCancelled(false);
 				return;
 			}
@@ -214,7 +240,7 @@ public class PlayerListener implements Listener {
 				.getMember(e.getPlayer().getUniqueId());
 
 		if (player.isBuildEnabled())
-			if (player.hasGroupPermission(Group.DEV)) {
+			if (player.hasGroupPermission(Group.DEVELOPER)) {
 				e.setCancelled(false);
 				return;
 			}
@@ -228,7 +254,7 @@ public class PlayerListener implements Listener {
 				.getMember(event.getPlayer().getUniqueId());
 
 		if (player.isBuildEnabled())
-			if (player.hasGroupPermission(Group.DEV)) {
+			if (player.hasGroupPermission(Group.DEVELOPER)) {
 				event.setCancelled(false);
 				return;
 			}
@@ -243,7 +269,7 @@ public class PlayerListener implements Listener {
 
 	@EventHandler
 	public void onPlayerDropItem(PlayerDropItemEvent event) {
-		if (LobbyMain.getInstance().getPlayerManager().getPlayersInCombat().contains(event.getPlayer()))
+		if (LobbyMain.getInstance().getPlayerManager().isCombat(event.getPlayer()))
 			event.getItemDrop().remove();
 		else
 			event.setCancelled(true);
@@ -255,150 +281,10 @@ public class PlayerListener implements Listener {
 	}
 
 	@EventHandler
-	public void onPlayerDeath(PlayerDeathEvent event) {
-		Player player = event.getEntity();
-
-		boolean killer = false;
-
-		if (LobbyMain.getInstance().getPlayerManager().getPlayersInCombat().contains(player)) {
-			LobbyMain.getInstance().getPlayerManager().getPlayersInCombat().remove(player);
-
-			if (player.getKiller() != null) {
-				killer = true;
-				player.getKiller().getInventory().addItem(new ItemStack(Material.RED_MUSHROOM, 16));
-				player.getKiller().getInventory().addItem(new ItemStack(Material.BROWN_MUSHROOM, 16));
-				player.getKiller().getInventory().addItem(new ItemStack(Material.BOWL, 16));
-
-				new BukkitRunnable() {
-
-					@Override
-					public void run() {
-						CommonGeneral.getInstance().getStatusManager()
-								.loadStatus(player.getKiller().getUniqueId(), StatusType.LOBBY).addKill();
-					}
-				}.runTaskAsynchronously(LobbyMain.getInstance());
-			}
-		}
-
-		player.setHealth(player.getMaxHealth());
-		player.setFoodLevel(20);
-		player.setSaturation(5);
-		player.setFireTicks(0);
-		player.setFallDistance(0);
-		player.setLevel(0);
-		player.setExp(0);
-		player.setVelocity(new Vector(0, 0, 0));
-		player.teleport(BukkitMain.getInstance().getLocationFromConfig("combat"));
-
-		if (killer)
-			new BukkitRunnable() {
-
-				@Override
-				public void run() {
-					CommonGeneral.getInstance().getStatusManager().loadStatus(player.getUniqueId(), StatusType.LOBBY)
-							.addDeath();
-
-					/**
-					 * Wait the next tick to
-					 */
-
-					new BukkitRunnable() {
-
-						@Override
-						public void run() {
-							player.sendMessage("§cVocê morreu!");
-							player.sendMessage("§eVocê está com §b"
-									+ CommonGeneral.getInstance().getStatusManager()
-											.loadStatus(player.getUniqueId(), StatusType.LOBBY).getKills()
-									+ " kills§e!");
-							addItem(player,
-									CommonGeneral.getInstance().getMemberManager().getMember(player.getUniqueId()));
-						}
-					}.runTask(LobbyMain.getInstance());
-				}
-			}.runTaskAsynchronously(LobbyMain.getInstance());
-
-		event.getDrops().clear();
-		event.setDroppedExp(0);
-
-		event.setDeathMessage(null);
-	}
-
-	@EventHandler
 	public void onRespawn(PlayerRespawnEvent event) {
 		addItem(event.getPlayer(),
 				CommonGeneral.getInstance().getMemberManager().getMember(event.getPlayer().getUniqueId()));
 		event.setRespawnLocation(BukkitMain.getInstance().getLocationFromConfig("spawn"));
-	}
-
-	@EventHandler
-	public void onEntityDamage(EntityDamageEvent event) {
-		if (!(event.getEntity() instanceof Player))
-			return;
-
-		Player player = (Player) event.getEntity();
-
-		if (event.getCause() == DamageCause.FALL) {
-			if (!LobbyMain.getInstance().getPlayerManager().getPlayersInCombat().contains(player))
-				if (player.getLocation().getX() > -5 && player.getLocation().getY() < 118
-						&& player.getLocation().getZ() < -40) {
-					player.getInventory().clear();
-					player.getInventory().setItem(0, new ItemStack(Material.STONE_SWORD));
-
-					for (int x = 0; x < 15; x++)
-						player.getInventory().addItem(new ItemStack(Material.MUSHROOM_SOUP));
-
-					player.updateInventory();
-					ActionBarAPI.send(player, "§cVocê entrou na área de combate!");
-
-					new BukkitRunnable() {
-
-						@Override
-						public void run() {
-							CommonGeneral.getInstance().getStatusManager().loadStatus(player.getUniqueId(),
-									StatusType.LOBBY);
-						}
-					}.runTaskAsynchronously(LobbyMain.getInstance());
-
-					LobbyMain.getInstance().getPlayerManager().getPlayersInCombat().add(player);
-				}
-		}
-
-		if (event instanceof EntityDamageByEntityEvent) {
-			EntityDamageByEntityEvent damageEvent = (EntityDamageByEntityEvent) event;
-
-			if (damageEvent.getDamager() instanceof Player) {
-				Player damager = (Player) damageEvent.getDamager();
-
-				if (LobbyMain.getInstance().getPlayerManager().getPlayersInCombat().contains(damager)
-						&& LobbyMain.getInstance().getPlayerManager().getPlayersInCombat().contains(player)) {
-					event.setCancelled(false);
-
-					if (damager.getItemInHand().getType() != null
-							&& damager.getItemInHand().getType().name().contains("SWORD")) {
-						damager.getItemInHand().setDurability((short) 0);
-						event.setDamage(4.0D);
-						damager.updateInventory();
-					}
-
-					return;
-				}
-			}
-		}
-
-		if (event.getCause() == DamageCause.VOID) {
-			if (LobbyMain.getInstance().getPlayerManager().getPlayersInCombat().contains(player)) {
-				LobbyMain.getInstance().getPlayerManager().getPlayersInCombat().remove(player);
-			}
-
-			addItem(player, Member.getMember(player.getUniqueId()));
-			event.getEntity()
-					.teleport(Member.isLogged(player.getUniqueId())
-							? BukkitMain.getInstance().getLocationFromConfig("spawn")
-							: BukkitMain.getInstance().getLocationFromConfig("login"));
-		}
-
-		event.setCancelled(true);
 	}
 
 	@EventHandler
@@ -424,14 +310,9 @@ public class PlayerListener implements Listener {
 	}
 
 	@EventHandler
-	public void onUpdate(UpdateEvent event) {
-		for (Player player : LobbyMain.getInstance().getPlayerManager().getPlayersInCombat()) {
-			ActionBarAPI.send(player,
-					"§eVocê tem §b"
-							+ CommonGeneral.getInstance().getStatusManager()
-									.loadStatus(player.getUniqueId(), StatusType.LOBBY).getKills()
-							+ " kills§e na arena!");
-		}
+	public void onPlayerItemReceive(PlayerItemReceiveEvent event) {
+		addItem(event.getPlayer(),
+				CommonGeneral.getInstance().getMemberManager().getMember(event.getPlayer().getUniqueId()));
 	}
 
 	public void addItem(Player player, Member member) {
@@ -464,6 +345,7 @@ public class PlayerListener implements Listener {
 							}
 
 						}).getItemStack());
+		player.getInventory().setItem(4, tournament.getItemStack());
 		player.getInventory().setItem(7, collectable.getItemStack());
 		player.getInventory().setItem(8, lobbies.getItemStack());
 		player.updateInventory();

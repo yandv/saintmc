@@ -43,8 +43,9 @@ public class SimpleScoreboard implements Scoreboard {
 	}
 
 	public void createScoreboard(Player player) {
-		BukkitMember member = (BukkitMember)CommonGeneral.getInstance().getMemberManager().getMember(player.getUniqueId());
-		
+		BukkitMember member = (BukkitMember) CommonGeneral.getInstance().getMemberManager()
+				.getMember(player.getUniqueId());
+
 		if (member.getAccountConfiguration().isScoreboardEnabled()) {
 			org.bukkit.scoreboard.Scoreboard scoreboard = player.getScoreboard();
 
@@ -65,7 +66,7 @@ public class SimpleScoreboard implements Scoreboard {
 
 				if (team == null)
 					team = scoreboard.registerNewTeam(entry.getValue().getTeamName());
-				
+
 				team.addEntry(entry.getValue().getScoreName());
 				team.setPrefix(entry.getValue().getPrefix());
 				team.setSuffix(entry.getValue().getSuffix());
@@ -73,9 +74,9 @@ public class SimpleScoreboard implements Scoreboard {
 				objective.getScore(entry.getValue().getScoreName()).setScore(entry.getKey());
 			}
 		}
-		
-	    member.setScoreboard(this);
-	    addViewer(member);
+
+		member.setScoreboard(this);
+		addViewer(member);
 	}
 
 	@Override
@@ -105,7 +106,7 @@ public class SimpleScoreboard implements Scoreboard {
 
 		});
 	}
-	
+
 	@Override
 	public void clear() {
 		scoreList.clear();
@@ -125,14 +126,14 @@ public class SimpleScoreboard implements Scoreboard {
 					team.setSuffix(suffix);
 			}
 		}
-		
+
 		for (Score score : scoreList.values()) {
 			if (score.getTeamName().equals(teamName)) {
 				score.setPrefix(prefix);
 				score.setSuffix(suffix);
 			}
 		}
-		
+
 	}
 
 	@Override
@@ -188,11 +189,11 @@ public class SimpleScoreboard implements Scoreboard {
 
 	public SimpleScoreboard clone() {
 		SimpleScoreboard scoreboard = new SimpleScoreboard(getDisplayName());
-		
+
 		scoreboard.setId(getId() + 1);
 		scoreboard.setScoreList(getScoreList());
 		scoreboard.setPlayerList(getPlayerList());
-		
+
 		return scoreboard;
 	}
 

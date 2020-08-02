@@ -12,14 +12,12 @@ import tk.yallandev.saintmc.common.account.Member;
 import tk.yallandev.saintmc.common.account.MemberModel;
 
 @Getter
+@Setter
 public class BungeeMember extends Member {
 
-	@Setter
 	private transient ProxiedPlayer proxiedPlayer;
-	
-	@Setter
+
 	protected boolean screensharing;
-	@Setter
 	protected UUID screenshareStaff;
 
 	public BungeeMember(MemberModel memberModel) {
@@ -29,7 +27,7 @@ public class BungeeMember extends Member {
 	public BungeeMember(String playerName, UUID uniqueId) {
 		super(playerName, uniqueId);
 	}
-	
+
 	@Override
 	public void sendMessage(String message) {
 		if (proxiedPlayer != null)
@@ -53,5 +51,5 @@ public class BungeeMember extends Member {
 		super.setJoinData(playerName, hostString);
 		proxiedPlayer = ProxyServer.getInstance().getPlayer(getUniqueId());
 	}
-	
+
 }

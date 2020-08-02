@@ -46,7 +46,7 @@ public class LobbyInventory {
 		int w = 10;
 
 		for (ProxiedServer server : serverList) {
-			if (!server.isJoinEnabled() && !member.hasGroupPermission(Group.DEV)
+			if (!server.isJoinEnabled() && !member.hasGroupPermission(Group.BUILDER)
 					&& !server.isInWhitelist(member.getPlayerName()))
 				continue;
 

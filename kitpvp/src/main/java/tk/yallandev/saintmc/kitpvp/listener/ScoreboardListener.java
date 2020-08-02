@@ -27,6 +27,7 @@ import tk.yallandev.saintmc.bukkit.event.update.UpdateEvent.UpdateType;
 import tk.yallandev.saintmc.common.account.Member;
 import tk.yallandev.saintmc.common.account.status.Status;
 import tk.yallandev.saintmc.common.account.status.StatusType;
+import tk.yallandev.saintmc.common.account.status.types.normal.NormalStatus;
 import tk.yallandev.saintmc.common.permission.Group;
 import tk.yallandev.saintmc.common.tag.Tag;
 import tk.yallandev.saintmc.kitpvp.GameMain;
@@ -48,9 +49,12 @@ import tk.yallandev.saintmc.kitpvp.warp.types.ShadowWarp;
 public class ScoreboardListener implements Listener {
 
 	public static final Scoreboard DEFAULT_SCOREBOARD;
+
 	public static final Scoreboard SHADOW_SCOREBOARD;
 	public static final Scoreboard FIGHT_SCOREBOARD;
 	public static final Scoreboard SEARCHING_SCOREBOARD;
+
+	public static final Scoreboard LAVA_SCOREBOARD;
 
 	static {
 		DEFAULT_SCOREBOARD = new SimpleScoreboard("§6§lKITPVP");
@@ -108,6 +112,20 @@ public class ScoreboardListener implements Listener {
 		FIGHT_SCOREBOARD.setScore(3, new Score("§fWinstreak: §70", "winstreak"));
 		FIGHT_SCOREBOARD.blankLine(2);
 		FIGHT_SCOREBOARD.setScore(1, new Score("§6" + CommonConst.SITE, "site"));
+
+		LAVA_SCOREBOARD = new SimpleScoreboard("§6§lLAVA CHALLENGE");
+
+		LAVA_SCOREBOARD.blankLine(11);
+		LAVA_SCOREBOARD.setScore(10, new Score("§4Extremo:", "extreme"));
+		LAVA_SCOREBOARD.setScore(9, new Score(" Passou: §a0", "passExtreme"));
+		LAVA_SCOREBOARD.setScore(8, new Score(" Morreu: §c0", "deathExtreme"));
+		LAVA_SCOREBOARD.setScore(7, new Score(" Record: §72m", "recordExtreme"));
+		LAVA_SCOREBOARD.setScore(6, new Score("§cDifícil:", "hard"));
+		LAVA_SCOREBOARD.setScore(5, new Score(" Passou: §a0", "hardExtreme"));
+		LAVA_SCOREBOARD.setScore(4, new Score(" Morreu: §c0", "hardDeath"));
+		LAVA_SCOREBOARD.setScore(3, new Score(" Record: §72m", "hardRecord"));
+		LAVA_SCOREBOARD.blankLine(2);
+		LAVA_SCOREBOARD.setScore(1, new Score("§6" + CommonConst.SITE, "site"));
 	}
 
 	private List<FightPingUpdate> observersList;
@@ -200,8 +218,8 @@ public class ScoreboardListener implements Listener {
 
 		if (updatePlayer) {
 			Player player = event.getPlayer();
-			Status playerStatus = CommonGeneral.getInstance().getStatusManager().loadStatus(player.getUniqueId(),
-					statusType);
+			NormalStatus playerStatus = CommonGeneral.getInstance().getStatusManager().loadStatus(player.getUniqueId(),
+					statusType, NormalStatus.class);
 
 			if (duels) {
 				scoreboard.updateScore(player, new Score("§fVitórias: §e" + playerStatus.getKills(), "wins"));
@@ -218,8 +236,8 @@ public class ScoreboardListener implements Listener {
 
 		if (updateKiller) {
 			Player killer = event.getKiller();
-			Status killerStatus = CommonGeneral.getInstance().getStatusManager().loadStatus(killer.getUniqueId(),
-					statusType);
+			NormalStatus killerStatus = CommonGeneral.getInstance().getStatusManager().loadStatus(killer.getUniqueId(),
+					statusType, NormalStatus.class);
 
 			if (duels) {
 				scoreboard.updateScore(killer, new Score("§fVitórias: §e" + killerStatus.getKills(), "wins"));
@@ -352,12 +370,11 @@ public class ScoreboardListener implements Listener {
 	}
 
 	public void updateScore(Player player, Scoreboard scoreboard, Warp warp) {
-
 		boolean duels = warp instanceof DuelWarp;
 
 		Member member = CommonGeneral.getInstance().getMemberManager().getMember(player.getUniqueId());
-		Status playerStatus = CommonGeneral.getInstance().getStatusManager().loadStatus(player.getUniqueId(),
-				duels ? StatusType.SHADOW : StatusType.PVP);
+		NormalStatus playerStatus = CommonGeneral.getInstance().getStatusManager().loadStatus(player.getUniqueId(),
+				duels ? StatusType.SHADOW : StatusType.PVP, NormalStatus.class);
 
 		if (duels) {
 			scoreboard.updateScore(player, new Score("§fVitórias: §e" + playerStatus.getKills(), "wins"));

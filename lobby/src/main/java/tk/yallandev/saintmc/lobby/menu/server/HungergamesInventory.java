@@ -30,7 +30,7 @@ public class HungergamesInventory {
 
 		MenuInventory menu = new MenuInventory("§8Servidores de HungerGames",
 				2 + (serverList.size() == 0 ? 1 : (serverList.size() / 7) + 1));
-
+		
 		serverList.sort(new Comparator<ProxiedServer>() {
 
 			@Override
@@ -86,9 +86,8 @@ public class HungergamesInventory {
 
 			ItemBuilder builder = new ItemBuilder();
 			builder.type(Material.INK_SACK);
-
-			String name = /* "HG-" + proxiedServer.getServerId().substring(0, 2).toUpperCase() */proxiedServer
-					.getServerId().substring(0, 2).toUpperCase();
+			
+			String name = proxiedServer.getServerId().substring(0, 2).toUpperCase();
 			String nameId = "§a§l" + name;
 			String loreId = null;
 
@@ -118,7 +117,6 @@ public class HungergamesInventory {
 				break;
 			}
 			case NONE: {
-
 				if (!member.hasGroupPermission(Group.TRIAL))
 					continue;
 

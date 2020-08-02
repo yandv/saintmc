@@ -18,6 +18,8 @@ import tk.yallandev.saintmc.bukkit.bukkit.BukkitMember;
 import tk.yallandev.saintmc.bukkit.event.account.PlayerUpdateFieldEvent;
 import tk.yallandev.saintmc.bukkit.event.account.PlayerUpdatedFieldEvent;
 import tk.yallandev.saintmc.bukkit.event.report.ReportReceiveEvent;
+import tk.yallandev.saintmc.bukkit.event.server.ServerPlayerJoinEvent;
+import tk.yallandev.saintmc.bukkit.event.server.ServerPlayerLeaveEvent;
 import tk.yallandev.saintmc.common.account.Member;
 import tk.yallandev.saintmc.common.clan.Clan;
 import tk.yallandev.saintmc.common.data.payload.DataServerMessage;
@@ -68,14 +70,19 @@ public class BukkitPubSubHandler extends JedisPubSub {
 				ProxiedServer server = BukkitMain.getInstance().getServerManager().getServer(source);
 
 				server.joinPlayer(payload.getPayload().getUniqueId());
+				Bukkit.getPluginManager().callEvent(new ServerPlayerJoinEvent(payload.getPayload().getUniqueId(),
+						server.getServerId(), server.getServerType(), server));
 				break;
 			}
 			case LEAVE: {
 				DataServerMessage<LeavePayload> payload = CommonConst.GSON.fromJson(jsonObject,
 						new TypeToken<DataServerMessage<LeavePayload>>() {
 						}.getType());
+
 				ProxiedServer server = BukkitMain.getInstance().getServerManager().getServer(source);
 				server.leavePlayer(payload.getPayload().getUniqueId());
+				Bukkit.getPluginManager().callEvent(new ServerPlayerLeaveEvent(payload.getPayload().getUniqueId(),
+						server.getServerId(), server.getServerType(), server));
 				break;
 			}
 			case JOIN_ENABLE: {

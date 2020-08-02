@@ -11,19 +11,20 @@ import tk.yallandev.saintmc.lobby.LobbyMain;
 import tk.yallandev.saintmc.lobby.listener.PlayerListener;
 
 public class SpawnCommand implements CommandClass {
-	
+
 	@Command(name = "spawn")
 	public void spawnCommand(BukkitCommandArgs cmdArgs) {
 		if (!cmdArgs.isPlayer())
 			return;
-		
+
 		Player player = cmdArgs.getPlayer();
-		
-		if (LobbyMain.getInstance().getPlayerManager().getPlayersInCombat().contains(player))
-			LobbyMain.getInstance().getPlayerManager().getPlayersInCombat().remove(player);
-		
+
+		if (LobbyMain.getInstance().getPlayerManager().isCombat(player))
+			LobbyMain.getInstance().getPlayerManager().getGamer(player).setCombat(false);
+
 		cmdArgs.getPlayer().teleport(BukkitMain.getInstance().getLocationFromConfig("spawn"));
-		PlayerListener.getPlayerListener().addItem(player, CommonGeneral.getInstance().getMemberManager().getMember(player.getUniqueId()));
+		PlayerListener.getPlayerListener().addItem(player,
+				CommonGeneral.getInstance().getMemberManager().getMember(player.getUniqueId()));
 	}
-	
+
 }

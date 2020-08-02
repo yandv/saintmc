@@ -47,12 +47,12 @@ public class WorldListener implements Listener {
 			for (Entity e : world.getEntitiesByClass(Item.class))
 				if (e.getTicksLived() >= 200) {
 					Location location = e.getLocation().clone();
-					
+
 					world.playEffect(location, Effect.NOTE, 1);
 					e.remove();
 				}
 	}
-	
+
 	@EventHandler
 	public void onDrop(PlayerDropItemEvent event) {
 		Item drop = event.getItemDrop();
@@ -62,13 +62,13 @@ public class WorldListener implements Listener {
 			event.setCancelled(true);
 			return;
 		}
-		
+
 		Player player = event.getPlayer();
 		Gamer gamer = GameMain.getInstance().getGamerManager().getGamer(player.getUniqueId());
-		
+
 		if (gamer.hasKit()) {
 			Kit kit = gamer.getKit();
-			
+
 			if (kit.isAbilityItem(item))
 				event.setCancelled(true);
 		}
@@ -99,18 +99,21 @@ public class WorldListener implements Listener {
 			return;
 		}
 	}
-	
+
 	@EventHandler
 	public void onPlayerJoin(PlayerInteractEvent event) {
 		if (event.getAction() == Action.PHYSICAL)
-			event.setCancelled(true);
+			if (event.getClickedBlock().getType() == Material.STONE_PLATE)
+				event.setCancelled(false);
+			else
+				event.setCancelled(true);
 	}
-	
+
 	@EventHandler
 	public void onExplode(BlockBurnEvent event) {
 		event.setCancelled(true);
 	}
-	
+
 	@EventHandler
 	public void onExplode(EntityExplodeEvent event) {
 		Iterator<Block> iterator = event.blockList().iterator();
@@ -134,20 +137,20 @@ public class WorldListener implements Listener {
 	public void onFoodLevelChange(FoodLevelChangeEvent event) {
 		event.setCancelled(true);
 	}
-	
+
 	@EventHandler
 	public void onCreatureSpawnChange(CreatureSpawnEvent event) {
 		if (event.getSpawnReason() != SpawnReason.CUSTOM)
 			event.setCancelled(true);
 	}
-	
+
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onBlockBreak(BlockBreakEvent e) {
 		BukkitMember player = (BukkitMember) CommonGeneral.getInstance().getMemberManager()
 				.getMember(e.getPlayer().getUniqueId());
 
 		if (player.isBuildEnabled())
-			if (player.hasGroupPermission(Group.DEV)) {
+			if (player.hasGroupPermission(Group.DEVELOPER)) {
 				e.setCancelled(false);
 				return;
 			}
@@ -161,12 +164,12 @@ public class WorldListener implements Listener {
 				.getMember(e.getPlayer().getUniqueId());
 
 		if (player.isBuildEnabled())
-			if (player.hasGroupPermission(Group.DEV)) {
+			if (player.hasGroupPermission(Group.DEVELOPER)) {
 				e.setCancelled(false);
 				return;
 			}
 
 		e.setCancelled(true);
 	}
-	
+
 }

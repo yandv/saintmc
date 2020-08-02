@@ -3,12 +3,14 @@ package tk.yallandev.saintmc.bukkit.command.register;
 import java.io.File;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import tk.yallandev.saintmc.CommonConst;
 import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.bukkit.BukkitMain;
+import tk.yallandev.saintmc.bukkit.api.item.ItemBuilder;
 import tk.yallandev.saintmc.bukkit.api.server.chat.ChatState;
 import tk.yallandev.saintmc.bukkit.api.vanish.AdminMode;
 import tk.yallandev.saintmc.bukkit.api.vanish.VanishAPI;
@@ -226,9 +228,9 @@ public class StaffCommand implements CommandClass {
 				return;
 			}
 
-			BukkitMain.getInstance().getServerConfig().setChatState(
-					CommonGeneral.getInstance().getServerType() == ServerType.HUNGERGAMES ? ChatState.STAFF
-							: ChatState.YOUTUBER);
+			BukkitMain.getInstance().getServerConfig()
+					.setChatState(CommonGeneral.getInstance().getServerType() == ServerType.LOBBY ? ChatState.YOUTUBER
+							: ChatState.STAFF);
 			sender.sendMessage(" §a* §fO chat agora está disponível somente para §a"
 					+ BukkitMain.getInstance().getServerConfig().getChatState().name() + "§f!");
 			CommonGeneral.getInstance().getMemberManager().broadcast("§7" + sender.getName() + " desativou o chat!",
@@ -252,6 +254,24 @@ public class StaffCommand implements CommandClass {
 							+ BukkitMain.getInstance().getServerConfig().getChatState().getAvailableTo() + "§f!");
 			return;
 		}
+	}
+
+	@Command(name = "skull", groupToUse = Group.MODPLUS)
+	public void eventoCommand(CommandArgs cmdArgs) {
+		if (!cmdArgs.isPlayer())
+			return;
+
+		BukkitMember sender = (BukkitMember) CommonGeneral.getInstance().getMemberManager()
+				.getMember(cmdArgs.getSender().getUniqueId());
+
+		if (cmdArgs.getArgs().length == 0) {
+			sender.sendMessage(" §e* §fUse §a/skull <playerName>§f para receber a cabeça!");
+			return;
+		}
+
+		sender.getPlayer().getInventory().addItem(new ItemBuilder().type(Material.SKULL_ITEM).durability(3)
+				.name("§a" + cmdArgs.getArgs()[0]).skin(cmdArgs.getArgs()[0]).build());
+		sender.sendMessage("§aCabeça!");
 	}
 
 	@Command(name = "clearchat", aliases = { "limparchat", "cc" }, groupToUse = Group.TRIAL)

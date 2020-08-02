@@ -15,24 +15,24 @@ import tk.yallandev.saintmc.bukkit.api.protocol.ProtocolVersion;
 
 public class ActionBarAPI {
 
-    public static void send(Player player, String text) {
-        ProtocolVersion version = ProtocolGetter.getVersion(player);
-        
-        if (version != ProtocolVersion.MINECRAFT_1_7_5 && version != ProtocolVersion.MINECRAFT_1_7_10) {
-            PacketContainer chatPacket = new PacketContainer(PacketType.Play.Server.CHAT);
-            chatPacket.getChatComponents().write(0, WrappedChatComponent.fromJson("{\"text\":\"" + text + " \"}"));
-            chatPacket.getBytes().write(0, (byte) 2);
-            
-            try {
-                BukkitMain.getInstance().getProcotolManager().sendServerPacket(player, chatPacket);
-            } catch (InvocationTargetException e) {
-                throw new RuntimeException("Cannot send packet " + chatPacket, e);
-            }
-        }
-    }
-    
-    public static void broadcast(String text) {
-        Bukkit.getOnlinePlayers().forEach(p -> send(p, text));
-    }
-    
+	public static void send(Player player, String text) {
+		ProtocolVersion version = ProtocolGetter.getVersion(player);
+
+		if (version.getId() >= ProtocolVersion.MINECRAFT_1_8.getId()) {
+			PacketContainer chatPacket = new PacketContainer(PacketType.Play.Server.CHAT);
+			chatPacket.getChatComponents().write(0, WrappedChatComponent.fromJson("{\"text\":\"" + text + " \"}"));
+			chatPacket.getBytes().write(0, (byte) 2);
+
+			try {
+				BukkitMain.getInstance().getProcotolManager().sendServerPacket(player, chatPacket);
+			} catch (InvocationTargetException e) {
+				throw new RuntimeException("Cannot send packet " + chatPacket, e);
+			}
+		}
+	}
+
+	public static void broadcast(String text) {
+		Bukkit.getOnlinePlayers().forEach(p -> send(p, text));
+	}
+
 }

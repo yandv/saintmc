@@ -10,8 +10,9 @@ import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.bukkit.api.item.ItemBuilder;
 import tk.yallandev.saintmc.bukkit.api.menu.MenuInventory;
 import tk.yallandev.saintmc.common.account.Member;
-import tk.yallandev.saintmc.common.account.status.Status;
 import tk.yallandev.saintmc.common.account.status.StatusType;
+import tk.yallandev.saintmc.common.account.status.types.game.GameStatus;
+import tk.yallandev.saintmc.common.account.status.types.normal.NormalStatus;
 import tk.yallandev.saintmc.common.permission.Group;
 import tk.yallandev.saintmc.common.tag.Tag;
 
@@ -39,21 +40,25 @@ public class StatusInventory {
 	}
 
 	private ItemStack createItem(UUID uuid, StatusType statusType) {
-		Status status = CommonGeneral.getInstance().getStatusManager().loadStatus(uuid, statusType);
-
 		String name = null;
 		String lore = "";
 		Material type = Material.STONE;
 
 		switch (statusType) {
 		case PVP: {
+			NormalStatus status = CommonGeneral.getInstance().getStatusManager().loadStatus(uuid, statusType,
+					NormalStatus.class);
+
 			name = "§1§lKitPvP";
-			lore = "\n§f§fKills: §7" + status.getKills() + "\n§fDeaths: §7" + status.getDeaths()
-					+ "\n§fMaior killstreak: §7" + status.getMaxKillstreak();
+			lore = "\n§f§fKills: §7" + status.getKills() + "\n§fDeaths: §7" + status.getDeaths() + "\n§fKillstreak: §7"
+					+ status.getKillstreak() + "\n§fMaior killstreak: §7" + status.getMaxKillstreak();
 			type = Material.DIAMOND_SWORD;
 			break;
 		}
 		case SHADOW: {
+			NormalStatus status = CommonGeneral.getInstance().getStatusManager().loadStatus(uuid, statusType,
+					NormalStatus.class);
+
 			name = "§9§l1v1";
 			lore = "\n§fPartidas: §7" + (status.getKills() + status.getDeaths()) + "\n§fKills: §7" + status.getKills()
 					+ "\n§fDeaths: §7" + status.getDeaths() + "\n§fKillstreak: §7" + status.getKillstreak()
@@ -62,6 +67,9 @@ public class StatusInventory {
 			break;
 		}
 		case HG: {
+			GameStatus status = CommonGeneral.getInstance().getStatusManager().loadStatus(uuid, statusType,
+					GameStatus.class);
+
 			name = "§a§lHungerGames";
 			lore = "\n§fPartidas: §7" + status.getMatches() + "\n§fKills: §7" + status.getKills() + "\n§fDeaths: §7"
 					+ status.getDeaths() + "\n§fWins: §7" + status.getWins() + "\n§fMaior killstreak: §7"
@@ -69,13 +77,16 @@ public class StatusInventory {
 			type = Material.MUSHROOM_SOUP;
 			break;
 		}
-		case GLADIATOR:
+		case GLADIATOR: {
+			NormalStatus status = CommonGeneral.getInstance().getStatusManager().loadStatus(uuid, statusType,
+					NormalStatus.class);
+
 			name = "§3§lGladiator";
-			lore = "\n§fPartidas: §7" + (status.getKills() + status.getDeaths()) + "\n§fKills: §7" + status.getKills()
-					+ "\n§fDeaths: §7" + status.getDeaths() + "\n§fWins: §7" + status.getWins() + "\n§fKillstreak: §7"
-					+ status.getKillstreak() + "\n§fMaior killstreak: §7" + status.getMaxKillstreak();
+			lore = "\n§fPartidas: §7" + (status.getKills() + status.getDeaths()) + "\n§fWins: §7" + status.getKills()
+					+ "\n§fLosses: §7" + status.getDeaths() + "\n§fMaior killstreak: §7" + status.getMaxKillstreak();
 			type = Material.IRON_FENCE;
 			break;
+		}
 		default:
 			break;
 		}

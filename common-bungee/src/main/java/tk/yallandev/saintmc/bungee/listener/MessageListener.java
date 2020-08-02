@@ -3,13 +3,11 @@ package tk.yallandev.saintmc.bungee.listener;
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteStreams;
 
-import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.connection.Server;
 import net.md_5.bungee.api.event.PluginMessageEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
-import tk.yallandev.saintmc.CommonConst;
 import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.common.account.Member;
 import tk.yallandev.saintmc.common.permission.Group;
@@ -23,22 +21,6 @@ public class MessageListener implements Listener {
 
 	public MessageListener(ServerManager manager) {
 		this.manager = manager;
-	}
-
-	@EventHandler
-	public void onPluginMessageEvent(PluginMessageEvent e) {
-		if (!(e.getSender() instanceof ProxiedPlayer))
-			return;
-
-		ProxiedPlayer player = (ProxiedPlayer) e.getSender();
-
-		if (e.getTag().equalsIgnoreCase("WDL|INIT") || (e.getTag().equalsIgnoreCase("PERMISSIONSREPL")
-				&& new String(e.getData()).contains("mod.worlddownloader"))) {
-			player.disconnect(new TextComponent("§4§l" + CommonConst.KICK_PREFIX
-					+ "\n§f\n§cVocê está bloqueado de entrar no servidor!\n§fMotivo: §eClient/Mod não permitido\n§fEncontrado: §eWorldDownloader"
-					+ "\n§f\n§6Acesse nosso discord para mais informações:\n§b" + CommonConst.DISCORD));
-			return;
-		}
 	}
 
 	@EventHandler
@@ -62,6 +44,13 @@ public class MessageListener implements Listener {
 			event.setCancelled(true);
 
 			if (!searchServer(player, proxiedPlayer, ServerType.HUNGERGAMES))
+				player.sendMessage("§cNenhum servidor encontrado!");
+
+			break;
+		case "Event":
+			event.setCancelled(true);
+
+			if (!searchServer(player, proxiedPlayer, ServerType.EVENTO))
 				player.sendMessage("§cNenhum servidor encontrado!");
 
 			break;

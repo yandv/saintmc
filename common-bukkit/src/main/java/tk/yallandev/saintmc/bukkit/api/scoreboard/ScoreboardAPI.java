@@ -877,7 +877,7 @@ public class ScoreboardAPI {
 
 	public static String getTeamName(Tag tag, League liga, boolean chroma, boolean clanTag, Clan clan) {
 		return chars[tag.ordinal()] + "-" + chars[League.values().length - liga.ordinal()] + "-"
-				+ (clanTag ? clan.getClanAbbreviation().toLowerCase() + "-" : "") + (chroma ? "a" : "b");
+				+ (clanTag ? clan.getClanAbbreviation().toLowerCase() + "-" : "A-") + (chroma ? "a" : "b");
 	}
 
 	public static String getTeamName(Tag tag) {

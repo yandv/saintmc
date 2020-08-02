@@ -20,7 +20,8 @@ import tk.yallandev.saintmc.CommonConst;
 import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.common.account.status.Status;
 import tk.yallandev.saintmc.common.account.status.StatusType;
-import tk.yallandev.saintmc.common.account.status.StatusType.Type;
+import tk.yallandev.saintmc.common.account.status.types.challenge.ChallengeModel;
+import tk.yallandev.saintmc.common.account.status.types.challenge.ChallengeStatus;
 import tk.yallandev.saintmc.common.account.status.types.game.GameModel;
 import tk.yallandev.saintmc.common.account.status.types.game.GameStatus;
 import tk.yallandev.saintmc.common.account.status.types.normal.NormalModel;
@@ -44,9 +45,7 @@ public class StatusDataImpl implements StatusData {
 		if (document == null)
 			return null;
 
-		return statusType.getType() == Type.NORMAL
-				? CommonConst.GSON.fromJson(CommonConst.GSON.toJson(document), NormalStatus.class)
-				: CommonConst.GSON.fromJson(CommonConst.GSON.toJson(document), GameStatus.class);
+		return CommonConst.GSON.fromJson(CommonConst.GSON.toJson(document), statusType.getStatusClass());
 	}
 
 	@Override
@@ -65,6 +64,11 @@ public class StatusDataImpl implements StatusData {
 
 				if (collection.find(Filters.eq("uniqueId", normalModel.getUniqueId().toString())).first() == null)
 					collection.insertOne(Document.parse(CommonConst.GSON.toJson(normalModel)));
+			} else if (status instanceof ChallengeStatus) {
+				ChallengeStatus challengeStatus = new ChallengeStatus((ChallengeModel) status);
+
+				if (collection.find(Filters.eq("uniqueId", challengeStatus.getUniqueId().toString())).first() == null)
+					collection.insertOne(Document.parse(CommonConst.GSON.toJson(challengeStatus)));
 			} else {
 				new NoSuchElementException("Cannot define the type of StatusModel");
 			}
@@ -107,19 +111,19 @@ public class StatusDataImpl implements StatusData {
 			}
 		});
 	}
-	
+
 	@Override
 	public Collection<Object> ranking(StatusType statusType, String fieldName) {
 		MongoCollection<Document> collection = database.getCollection(statusType.getMongoCollection());
-		
+
 		MongoCursor<Document> mongo = collection.find().sort(Filters.eq(fieldName, -1)).limit(10).iterator();
 		List<Object> memberList = new ArrayList<>();
-		
+
 		while (mongo.hasNext()) {
-			String json = CommonConst.GSON.toJson(mongo.next());
-			memberList.add(CommonConst.GSON.fromJson(json, statusType.getType() == Type.NORMAL ? NormalModel.class : GameModel.class));
+			memberList.add(CommonConst.GSON.fromJson(CommonConst.GSON.toJson(CommonConst.GSON.toJson(mongo.next())),
+					statusType.getStatusClass()));
 		}
-		
+
 		return memberList;
 	}
 

@@ -2,6 +2,7 @@ package tk.yallandev.saintmc.bungee.networking.packet;
 
 import java.util.UUID;
 
+import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -26,8 +27,10 @@ public class BungeePacketHandler implements tk.yallandev.saintmc.common.networki
 		if (packet instanceof AnticheatBanPacket) {
 			AnticheatBanPacket anticheatPacket = (AnticheatBanPacket) packet;
 
-			BungeeMain.getInstance().getPunishManager().ban(member, new Ban(member.getUniqueId(), "Spectrum AC",
-					UUID.randomUUID(), "Autoban - " + anticheatPacket.getHackType(), anticheatPacket.getBanTime()));
+			BungeeMain.getInstance().getPunishManager().ban(member,
+					new Ban(player.getUniqueId(), "Spectrum AC", UUID.randomUUID(),
+							"Autoban - " + anticheatPacket.getHackType(), anticheatPacket.getBanTime() == -1 ? -1
+									: anticheatPacket.getBanTime() - System.currentTimeMillis()));
 		} else if (packet instanceof AnticheatAlertPacket) {
 			AnticheatAlertPacket anticheatPacket = (AnticheatAlertPacket) packet;
 			String hackName = anticheatPacket.getHackType();
@@ -39,7 +42,10 @@ public class BungeePacketHandler implements tk.yallandev.saintmc.common.networki
 							"§9Spectrum> §fO jogador §d" + player.getName() + "§f está usando §c" + hackName + " §e("
 									+ anticheatPacket.getAlertIndex() + "/" + anticheatPacket.getMaxAlerts() + ")§f!")
 											.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
-													TextComponent.fromLegacyText("§7Servidor: §f" + m.getServerId())))
+													TextComponent
+															.fromLegacyText("§7Servidor: §f" + member.getServerId())))
+											.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND,
+													"/tp " + member.getPlayerName()))
 											.create()));
 		}
 	}

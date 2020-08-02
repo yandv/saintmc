@@ -88,6 +88,10 @@ public class TagWrapper extends Tag {
 		return new TagWrapper(tagName, prefix, groupToUse, exclusive);
 	}
 
+	public static TagWrapper create(String tagName, String prefix, Group groupToUse, int ordinal) {
+		return new TagWrapper(tagName, prefix, groupToUse, false, ordinal);
+	}
+
 	public static Tag create(String prefix, List<Group> groupList, boolean exclusive) {
 		return new TagWrapper(prefix, groupList, exclusive);
 	}

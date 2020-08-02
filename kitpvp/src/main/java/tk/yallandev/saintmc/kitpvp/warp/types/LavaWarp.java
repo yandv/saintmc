@@ -20,17 +20,15 @@ public class LavaWarp extends Warp {
 
 	public LavaWarp() {
 		super("Lava", BukkitMain.getInstance().getLocationFromConfig("lava"));
-		getWarpSettings().setWarpEnabled(false);
 	}
 
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onEntityDamage(EntityDamageEvent event) {
-		if (!(event.getEntity() instanceof Player)) {
+		if (event.getEntity() instanceof Player) {
 			Player player = (Player) event.getEntity();
 
 			if (inWarp(player)) {
-				if (event.getCause() == DamageCause.FIRE || event.getCause() == DamageCause.FIRE_TICK
-						|| event.getCause() == DamageCause.LAVA)
+				if (event.getCause() == DamageCause.LAVA)
 					event.setCancelled(false);
 				else
 					event.setCancelled(true);
@@ -69,9 +67,6 @@ public class LavaWarp extends Warp {
 		player.setFoodLevel(20);
 		player.setHealth(20D);
 
-		player.getInventory().setItem(0,
-				new ItemBuilder().unbreakable().name("§aEspada de Pedra!").type(Material.STONE_SWORD).build());
-
 		for (int x = 0; x < player.getInventory().getSize(); x++)
 			player.getInventory().addItem(new ItemStack(Material.MUSHROOM_SOUP, 1));
 
@@ -84,7 +79,9 @@ public class LavaWarp extends Warp {
 	@Override
 	public ItemStack getItem() {
 		return new ItemBuilder().name("§aLava Challenge")
-				.lore("\n§7Treine seu refil e recraft complentando\nos desafios de lava propostos.\n\n§a" + GameMain.getInstance().getGamerManager().filter(gamer -> gamer.getWarp() == this).size() + " jogadores")
+				.lore("\n§7Treine seu refil e recraft complentando\nnos desafios de lava propostos.\n\n§a"
+						+ GameMain.getInstance().getGamerManager().filter(gamer -> gamer.getWarp() == this).size()
+						+ " jogadores")
 				.type(Material.LAVA_BUCKET).build();
 	}
 

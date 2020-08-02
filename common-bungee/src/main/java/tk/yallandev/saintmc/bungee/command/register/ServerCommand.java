@@ -164,31 +164,6 @@ public class ServerCommand implements CommandClass {
 		sender.setCooldown("connect-command", 4);
 	}
 
-	@Command(name = "evento", usage = "/evento")
-	public void eventoCommand(BungeeCommandArgs cmdArgs) {
-		if (!cmdArgs.isPlayer())
-			return;
-
-		Member sender = CommonGeneral.getInstance().getMemberManager().getMember(cmdArgs.getSender().getUniqueId());
-
-		if (sender.isOnCooldown("connect-command")) {
-			sender.sendMessage(
-					"§cEspere mais " + DateUtils.formatTime(sender.getCooldown("connect-command"), DECIMAL_FORMAT)
-							+ "s para se conectar novamente!");
-			return;
-		}
-
-		ProxiedServer server = BungeeMain.getInstance().getServerManager().getBalancer(ServerType.EVENTO).next();
-
-		if (server == null || server.getServerInfo() == null) {
-			sender.sendMessage("§cNenhum servidor de Evento disponivel!");
-			return;
-		}
-
-		cmdArgs.getPlayer().connect(server.getServerInfo());
-		sender.setCooldown("connect-command", 4);
-	}
-
 	@Command(name = "clanxclan", aliases = { "cxc" }, usage = "/evento")
 	public void clanCommand(BungeeCommandArgs cmdArgs) {
 		if (!cmdArgs.isPlayer())

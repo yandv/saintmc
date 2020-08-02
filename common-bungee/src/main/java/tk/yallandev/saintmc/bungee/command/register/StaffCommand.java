@@ -64,7 +64,7 @@ public class StaffCommand implements CommandClass {
 				.broadcast("§7O " + sender.getName() + " enviou uma mensagem global!", Group.TRIAL);
 	}
 
-	@Command(name = "maintence", groupToUse = Group.DEV)
+	@Command(name = "maintence", groupToUse = Group.DEVELOPER)
 	public void maintenceCommand(CommandArgs cmdArgs) {
 		BungeeMain.getInstance().setMaintenceMode(!BungeeMain.getInstance().isMaintenceMode());
 		ProxyServer.getInstance()

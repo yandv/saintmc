@@ -24,10 +24,6 @@
       <name>Public dmulloy2 Repository</name>
       <url>http://repo.dmulloy2.net/content/groups/public/</url>
     </repository>
-    <repository>
-      <id>viaversion-repo</id>
-      <url>https://repo.viaversion.com/</url>
-    </repository>
   </repositories>
   <dependencies>
     <dependency>
@@ -75,38 +71,6 @@
         <exclusion>
           <artifactId>BukkitExecutors</artifactId>
           <groupId>com.comphenix.executors</groupId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>us.myles</groupId>
-      <artifactId>viaversion</artifactId>
-      <version>2.2.3</version>
-      <scope>provided</scope>
-      <exclusions>
-        <exclusion>
-          <artifactId>viaversion-common</artifactId>
-          <groupId>us.myles</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>viaversion-bukkit</artifactId>
-          <groupId>us.myles</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>viaversion-bungee</artifactId>
-          <groupId>us.myles</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>viaversion-sponge</artifactId>
-          <groupId>us.myles</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>viaversion-velocity</artifactId>
-          <groupId>us.myles</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>bungeecord-chat</artifactId>
-          <groupId>net.md-5</groupId>
         </exclusion>
       </exclusions>
     </dependency>

@@ -37,9 +37,11 @@ import tk.yallandev.saintmc.bukkit.BukkitMain;
 import tk.yallandev.saintmc.bukkit.api.scoreboard.ScoreboardAPI;
 import tk.yallandev.saintmc.bukkit.api.title.Title;
 import tk.yallandev.saintmc.bukkit.api.title.types.SimpleTitle;
+import tk.yallandev.saintmc.bukkit.api.vanish.AdminMode;
 import tk.yallandev.saintmc.bukkit.event.PlayerMoveUpdateEvent;
 import tk.yallandev.saintmc.bukkit.utils.item.ItemUtils;
 import tk.yallandev.saintmc.common.account.Member;
+import tk.yallandev.saintmc.common.account.status.types.game.GameStatus;
 import tk.yallandev.saintmc.common.permission.Group;
 import tk.yallandev.saintmc.common.server.loadbalancer.server.MinigameState;
 import tk.yallandev.saintmc.skwyars.GameGeneral;
@@ -82,7 +84,7 @@ public class GameListener implements Listener {
 					@Override
 					public void run() {
 						CommonGeneral.getInstance().getStatusManager().loadStatus(gamer.getUniqueId(),
-								GameMain.getInstance().getSkywarsType().getStatusType()).addMatch();
+								GameMain.getInstance().getSkywarsType().getStatusType(), GameStatus.class).addMatch();
 					}
 				}.runTaskAsynchronously(GameMain.getInstance());
 
@@ -230,6 +232,13 @@ public class GameListener implements Listener {
 				ScoreboardAPI.joinTeam(ScoreboardAPI.createTeamIfNotExistsToPlayer(player, "b", "§c", ""), o);
 			}
 		}
+		
+		if (Member.hasGroupPermission(player.getUniqueId(), Group.TRIAL))
+			AdminMode.getInstance().setAdmin(player, Member.getMember(player.getUniqueId()));
+		else
+			if (gamer.isPlaying()) {
+				gamer.setSpectator(true);
+			}
 	}
 
 	@EventHandler

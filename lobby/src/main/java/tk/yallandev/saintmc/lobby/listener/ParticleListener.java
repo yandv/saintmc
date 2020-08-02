@@ -72,13 +72,13 @@ public class ParticleListener implements Listener {
 
 	@EventHandler
 	public void onUpdate(UpdateEvent event) {
-		for (Gamer gamer : LobbyMain.getInstance().getPlayerManager().getGamers().stream().filter(
-				gamer -> !LobbyMain.getInstance().getPlayerManager().getPlayersInCombat().contains(gamer.getPlayer()))
-				.collect(Collectors.toList())) {
+		for (Gamer gamer : LobbyMain.getInstance().getPlayerManager().getGamers().stream()
+				.filter(gamer -> !gamer.isCombat()).collect(Collectors.toList())) {
 
 			if (gamer.isUsingWing()) {
 				if (event.getCurrentTick() % 5 == 0)
-					if (map.containsKey(gamer.getPlayer().getUniqueId()) && map.get(gamer.getPlayer().getUniqueId()) < System.currentTimeMillis()
+					if (map.containsKey(gamer.getPlayer().getUniqueId())
+							&& map.get(gamer.getPlayer().getUniqueId()) < System.currentTimeMillis()
 							|| !map.containsKey(gamer.getPlayer().getUniqueId())) {
 
 						Player player = gamer.getPlayer();
@@ -131,7 +131,7 @@ public class ParticleListener implements Listener {
 							}
 						}
 					}
-				
+
 				continue;
 			}
 

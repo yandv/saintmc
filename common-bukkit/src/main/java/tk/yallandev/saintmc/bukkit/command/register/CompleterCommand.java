@@ -15,13 +15,13 @@ import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.bukkit.api.worldedit.arena.ArenaType;
 import tk.yallandev.saintmc.bukkit.bukkit.BukkitMember;
 import tk.yallandev.saintmc.common.account.Member;
+import tk.yallandev.saintmc.common.account.medal.Medal;
 import tk.yallandev.saintmc.common.clan.ClanInfo;
 import tk.yallandev.saintmc.common.clan.enums.ClanHierarchy;
 import tk.yallandev.saintmc.common.command.CommandArgs;
 import tk.yallandev.saintmc.common.command.CommandClass;
 import tk.yallandev.saintmc.common.command.CommandFramework.Command;
 import tk.yallandev.saintmc.common.command.CommandFramework.Completer;
-import tk.yallandev.saintmc.common.medals.Medal;
 import tk.yallandev.saintmc.common.permission.Group;
 import tk.yallandev.saintmc.common.permission.RankType;
 import tk.yallandev.saintmc.common.tag.Tag;
@@ -220,7 +220,9 @@ public class CompleterCommand implements CommandClass {
 		if (cmdArgs.getArgs().length == 1) {
 			List<String> argList = new ArrayList<>();
 			List<String> avaiableArg = Arrays.asList("current", "all");
-			avaiableArg.addAll(getPlayerList(cmdArgs.getArgs()));
+
+			avaiableArg.addAll(
+					Arrays.asList(Bukkit.getOnlinePlayers().stream().map(Player::getName).toArray(String[]::new)));
 
 			if (cmdArgs.getArgs()[0].isEmpty())
 				for (String arg : avaiableArg)
@@ -332,11 +334,13 @@ public class CompleterCommand implements CommandClass {
 
 				if (cmdArgs.getArgs()[0].isEmpty()) {
 					for (Medal medal : member.getMedalList())
-						medalList.add(medal.name());
+						if (medal != null && medal != Medal.NONE)
+							medalList.add(medal.name());
 				} else {
 					for (Medal medal : member.getMedalList())
-						if (medal.name().startsWith(cmdArgs.getArgs()[0].toUpperCase()))
-							medalList.add(medal.name());
+						if (medal != null && medal != Medal.NONE)
+							if (medal.name().startsWith(cmdArgs.getArgs()[0].toUpperCase()))
+								medalList.add(medal.name());
 				}
 
 				return medalList;

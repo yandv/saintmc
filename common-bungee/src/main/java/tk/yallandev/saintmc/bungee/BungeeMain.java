@@ -3,6 +3,7 @@ package tk.yallandev.saintmc.bungee;
 import java.io.File;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -10,6 +11,7 @@ import java.util.logging.Logger;
 import lombok.Getter;
 import lombok.Setter;
 import net.md_5.bungee.api.ProxyServer;
+import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.config.ListenerInfo;
 import net.md_5.bungee.api.plugin.Plugin;
@@ -17,16 +19,17 @@ import tk.yallandev.saintmc.BungeeConst;
 import tk.yallandev.saintmc.CommonConst;
 import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.bungee.command.BungeeCommandFramework;
+import tk.yallandev.saintmc.bungee.controller.BotController;
 import tk.yallandev.saintmc.bungee.controller.BungeePunishManager;
 import tk.yallandev.saintmc.bungee.controller.BungeeServerManager;
 import tk.yallandev.saintmc.bungee.controller.GiftcodeController;
 import tk.yallandev.saintmc.bungee.controller.StoreController;
 import tk.yallandev.saintmc.bungee.listener.AccountListener;
 import tk.yallandev.saintmc.bungee.listener.ChatListener;
+import tk.yallandev.saintmc.bungee.listener.ClientListener;
 import tk.yallandev.saintmc.bungee.listener.ConnectionListener;
 import tk.yallandev.saintmc.bungee.listener.LoginListener;
 import tk.yallandev.saintmc.bungee.listener.MessageListener;
-import tk.yallandev.saintmc.bungee.listener.MultiserverTeleport;
 import tk.yallandev.saintmc.bungee.listener.PacketListener;
 import tk.yallandev.saintmc.bungee.networking.packet.BungeePacketHandler;
 import tk.yallandev.saintmc.bungee.networking.redis.BungeePubSubHandler;
@@ -38,6 +41,7 @@ import tk.yallandev.saintmc.common.backend.data.ServerData;
 import tk.yallandev.saintmc.common.backend.database.mongodb.MongoConnection;
 import tk.yallandev.saintmc.common.backend.database.redis.RedisDatabase;
 import tk.yallandev.saintmc.common.backend.database.redis.RedisDatabase.PubSubListener;
+import tk.yallandev.saintmc.common.command.CommandSender;
 import tk.yallandev.saintmc.common.controller.PacketController;
 import tk.yallandev.saintmc.common.controller.PunishManager;
 import tk.yallandev.saintmc.common.data.impl.ClanDataImpl;
@@ -62,14 +66,50 @@ public class BungeeMain extends Plugin {
 	private CommonGeneral general;
 
 	private PunishManager punishManager;
+
+	private BotController botController;
+
 	private ServerManager serverManager;
-	private StoreController storeManager;
+
+	private StoreController storeController;
 	private PacketController packetController;
 	private GiftcodeController giftcodeController;
 
 	private DiscordMain discord;
 
 	private PubSubListener pubSubListener;
+	private CommandSender consoleSender = new CommandSender() {
+
+		@Override
+		public void sendMessage(BaseComponent[] fromLegacyText) {
+			ProxyServer.getInstance().getConsole().sendMessage(fromLegacyText);
+		}
+
+		@Override
+		public void sendMessage(BaseComponent str) {
+			ProxyServer.getInstance().getConsole().sendMessage(str);
+		}
+
+		@Override
+		public void sendMessage(String str) {
+			ProxyServer.getInstance().getConsole().sendMessage(str);
+		}
+
+		@Override
+		public boolean isPlayer() {
+			return false;
+		}
+
+		@Override
+		public UUID getUniqueId() {
+			return UUID.randomUUID();
+		}
+
+		@Override
+		public String getName() {
+			return "CONSOLE";
+		}
+	};
 
 	@Setter
 	private boolean maintenceMode;
@@ -84,19 +124,23 @@ public class BungeeMain extends Plugin {
 	@Override
 	public void onEnable() {
 
-		UpdatePlugin.Shutdown shutdown = new UpdatePlugin.Shutdown() {
+		try {
+			UpdatePlugin.Shutdown shutdown = new UpdatePlugin.Shutdown() {
 
-			@Override
-			public void stop() {
-				System.exit(0);
-			}
+				@Override
+				public void stop() {
+					System.exit(0);
+				}
 
-		};
+			};
 
-		if (UpdatePlugin.update(
-				new File(BungeeMain.class.getProtectionDomain().getCodeSource().getLocation().getPath()),
-				"BungeeCommon", CommonConst.DOWNLOAD_KEY, shutdown))
-			return;
+			if (UpdatePlugin.update(
+					new File(BungeeMain.class.getProtectionDomain().getCodeSource().getLocation().getPath()),
+					"BungeeCommon", CommonConst.DOWNLOAD_KEY, shutdown))
+				return;
+		} catch (Exception ex) {
+			CommonGeneral.getInstance().debug("Couldn't connect to http://apidata.saintmc.net/!");
+		}
 
 		/**
 		 * Initializing Database
@@ -158,9 +202,10 @@ public class BungeeMain extends Plugin {
 
 		new BungeeCommandFramework(this).loadCommands("tk.yallandev.saintmc.bungee.command.register");
 
+		botController = new BotController();
 		punishManager = new BungeePunishManager();
 		serverManager = new BungeeServerManager();
-		storeManager = new StoreController();
+		storeController = new StoreController();
 		giftcodeController = new GiftcodeController();
 
 		packetController = new PacketController();
@@ -244,7 +289,7 @@ public class BungeeMain extends Plugin {
 						if (ProxyServer.getInstance().getPlayers().size() > 0) {
 							CommonGeneral.getInstance().debug("Estamos verificando os pedidos!");
 
-							BungeeMain.getInstance().getStoreManager().check();
+//							BungeeMain.getInstance().getStoreController().check(consoleSender);
 						}
 
 						String message = BungeeConst.BROADCAST_MESSAGES[CommonConst.RANDOM
@@ -256,9 +301,9 @@ public class BungeeMain extends Plugin {
 				});
 			}
 		}, 10, 10, TimeUnit.MINUTES);
-		
+
 		ProxyServer.getInstance().getScheduler().runAsync(getInstance(), new Runnable() {
-			
+
 			@Override
 			public void run() {
 				discord = new DiscordMain();
@@ -282,9 +327,9 @@ public class BungeeMain extends Plugin {
 	private void registerListener() {
 		ProxyServer.getInstance().getPluginManager().registerListener(getInstance(), new AccountListener());
 		ProxyServer.getInstance().getPluginManager().registerListener(getInstance(), new ChatListener());
-		ProxyServer.getInstance().getPluginManager().registerListener(getInstance(), new MultiserverTeleport());
 		ProxyServer.getInstance().getPluginManager().registerListener(getInstance(), new LoginListener());
 		ProxyServer.getInstance().getPluginManager().registerListener(getInstance(), new PacketListener());
+		ProxyServer.getInstance().getPluginManager().registerListener(getInstance(), new ClientListener());
 		ProxyServer.getInstance().getPluginManager().registerListener(getInstance(),
 				new ConnectionListener(serverManager));
 		ProxyServer.getInstance().getPluginManager().registerListener(getInstance(),

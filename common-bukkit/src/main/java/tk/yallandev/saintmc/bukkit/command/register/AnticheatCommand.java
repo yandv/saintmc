@@ -40,9 +40,25 @@ public class AnticheatCommand implements CommandClass {
 				sender.sendMessage("§cO jogador " + args[1] + " está offline!");
 				return;
 			}
-
-//			new AnticheatInventory((Player) ((BukkitCommandSender) sender).getSender(), tester);
 		}
+	}
+	
+	@Command(name = "autoban", groupToUse = Group.TRIAL)
+	public void autobanCommand(CommandArgs cmdArgs) {
+		CommandSender sender = cmdArgs.getSender();
+		String[] args = cmdArgs.getArgs();
+
+		if (args.length == 0 || !cmdArgs.isPlayer()) {
+			Member member = CommonGeneral.getInstance().getMemberManager().getMember(sender.getUniqueId());
+
+			member.getAccountConfiguration()
+					.setAnticheatEnabled(!member.getAccountConfiguration().isAnticheatEnabled());
+			member.sendMessage(member.getAccountConfiguration().isAnticheatEnabled()
+					? "§aAs mensagens do anticheat foram ativadas!"
+					: "§cAs mensagens do anticheat foram desativadas!");
+			return;
+		}
+
 	}
 
 }

@@ -12,12 +12,15 @@ C:\Users\Allan\git\saintmc\lobby\src\main\java\tk\yallandev\saintmc\lobby\gamer\
 C:\Users\Allan\git\saintmc\lobby\src\main\java\tk\yallandev\saintmc\lobby\listener\PlayerListener.java
 C:\Users\Allan\git\saintmc\lobby\src\main\java\tk\yallandev\saintmc\lobby\collectable\Point3D.java
 C:\Users\Allan\git\saintmc\lobby\src\main\java\tk\yallandev\saintmc\lobby\manager\PlayerManager.java
+C:\Users\Allan\git\saintmc\lobby\src\main\java\tk\yallandev\saintmc\lobby\menu\tournament\TournamentInventory.java
 C:\Users\Allan\git\saintmc\lobby\src\main\java\tk\yallandev\saintmc\lobby\menu\server\LobbyInventory.java
 C:\Users\Allan\git\saintmc\lobby\src\main\java\tk\yallandev\saintmc\lobby\command\FlyCommand.java
 C:\Users\Allan\git\saintmc\lobby\src\main\java\tk\yallandev\saintmc\lobby\menu\collectable\CollectableInventory.java
 C:\Users\Allan\git\saintmc\lobby\src\main\java\tk\yallandev\saintmc\lobby\menu\profile\ProfileInventory.java
+C:\Users\Allan\git\saintmc\lobby\src\main\java\tk\yallandev\saintmc\lobby\listener\CombatListener.java
 C:\Users\Allan\git\saintmc\lobby\src\main\java\tk\yallandev\saintmc\lobby\listener\ScoreboardListener.java
 C:\Users\Allan\git\saintmc\lobby\src\main\java\tk\yallandev\saintmc\lobby\menu\collectable\ParticleInventory.java
+C:\Users\Allan\git\saintmc\lobby\src\main\java\tk\yallandev\saintmc\lobby\event\PlayerItemReceiveEvent.java
 C:\Users\Allan\git\saintmc\lobby\src\main\java\tk\yallandev\saintmc\lobby\command\SpawnCommand.java
 C:\Users\Allan\git\saintmc\lobby\src\main\java\tk\yallandev\saintmc\lobby\menu\server\ServerInventory.java
 C:\Users\Allan\git\saintmc\lobby\src\main\java\tk\yallandev\saintmc\lobby\listener\ParticleListener.java

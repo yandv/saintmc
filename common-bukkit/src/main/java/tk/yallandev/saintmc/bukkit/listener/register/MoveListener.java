@@ -1,5 +1,6 @@
 package tk.yallandev.saintmc.bukkit.listener.register;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -7,10 +8,12 @@ import java.util.UUID;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 
+import net.minecraft.server.v1_8_R3.PacketPlayOutPosition;
 import tk.yallandev.saintmc.bukkit.event.PlayerMoveUpdateEvent;
 import tk.yallandev.saintmc.bukkit.event.update.UpdateEvent;
 import tk.yallandev.saintmc.bukkit.listener.Listener;
@@ -33,15 +36,19 @@ public class MoveListener extends Listener {
 
 					if (location.getX() != player.getLocation().getX() || location.getZ() != player.getLocation().getZ()
 							|| location.getY() != player.getLocation().getY()) {
-						PlayerMoveUpdateEvent realMoveEvent = new PlayerMoveUpdateEvent(player, location,
+						PlayerMoveUpdateEvent playerMoveUpdateEvent = new PlayerMoveUpdateEvent(player, location,
 								player.getLocation());
-						Bukkit.getPluginManager().callEvent(realMoveEvent);
+						Bukkit.getPluginManager().callEvent(playerMoveUpdateEvent);
 
-						if (realMoveEvent.isCancelled())
-							if (location.clone().subtract(0, 0.15, 0).getBlock().getType() == Material.AIR)
-								player.teleport(location.subtract(0, 0.15, 0));
-							else
-								player.teleport(location);
+						if (playerMoveUpdateEvent.isCancelled()) {
+							((CraftPlayer) player).getHandle().playerConnection.sendPacket(new PacketPlayOutPosition(
+									location.getX(),
+									location.clone().subtract(0, 0.15, 0).getBlock().getType() == Material.AIR
+											? location.getY() - 0.15
+											: location.getY(),
+									location.getZ(), location.getYaw(), location.getPitch(),
+									Collections.<PacketPlayOutPosition.EnumPlayerTeleportFlags>emptySet()));
+						}
 					}
 				}
 

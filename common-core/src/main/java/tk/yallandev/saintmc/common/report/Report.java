@@ -40,7 +40,7 @@ public class Report {
 	}
 
 	public int getReportLevel() {
-		return reportLevel;
+		return reportLevel / playersReason.size();
 	}
 
 	public long getLastReportTime() {
@@ -64,7 +64,7 @@ public class Report {
 	}
 
 	public void setReportLevel(int reportLevel) {
-		this.reportLevel = reportLevel / playersReason.size();
+		this.reportLevel += reportLevel;
 		CommonGeneral.getInstance().getReportData().updateReport(this, "reportLevel");
 	}
 
@@ -172,9 +172,7 @@ public class Report {
 	}
 
 	public void denyPlayer() {
-		
-		
-		
+
 		CommonGeneral.getInstance().getReportData().deleteReport(getPlayerUniqueId());
 		CommonGeneral.getInstance().getReportManager().unloadReport(getPlayerUniqueId());
 	}

@@ -8,11 +8,12 @@ import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.common.account.Member;
 import tk.yallandev.saintmc.common.account.MemberModel;
 import tk.yallandev.saintmc.common.account.MemberVoid;
+import tk.yallandev.saintmc.common.account.medal.Medal;
 import tk.yallandev.saintmc.common.permission.RankType;
 import tk.yallandev.saintmc.common.tag.Tag;
 
 public class BoosterListener extends ListenerAdapter {
-	
+
 	@Override
 	public void onGuildMemberUpdateBoostTime(GuildMemberUpdateBoostTimeEvent event) {
 		User user = event.getUser();
@@ -31,11 +32,12 @@ public class BoosterListener extends ListenerAdapter {
 
 			member.getRanks().put(RankType.DONATOR, System.currentTimeMillis() + (1000 * 60 * 60 * 24 * 14));
 			member.saveRanks();
+			member.addMedal(Medal.BOOSTER);
 			member.sendMessage("§a§l> §fObrigado por ajudar o discord doando §d§lBOOST§f!");
 			member.sendMessage("§a§l> §fVocê recebeu a tag " + Tag.DONATOR.getPrefix() + "§f!");
 		}
 	}
-	
+
 	@Override
 	public void onGuildMemberRemove(GuildMemberRemoveEvent event) {
 		User user = event.getUser();
@@ -57,7 +59,7 @@ public class BoosterListener extends ListenerAdapter {
 			member.saveRanks();
 			member.sendMessage("§a§l> §fVocê perdeu seu grupo " + Tag.DONATOR.getPrefix() + "§f por sair do discord!");
 		}
-		
+
 		member.setDiscordId(0l, "");
 	}
 

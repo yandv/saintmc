@@ -14,14 +14,16 @@ import tk.yallandev.saintmc.CommonConst;
 import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.common.account.configuration.AccountConfiguration;
 import tk.yallandev.saintmc.common.account.configuration.LoginConfiguration;
+import tk.yallandev.saintmc.common.account.medal.Medal;
 import tk.yallandev.saintmc.common.ban.PunishmentHistory;
 import tk.yallandev.saintmc.common.clan.Clan;
+import tk.yallandev.saintmc.common.client.ClientType;
 import tk.yallandev.saintmc.common.command.CommandSender;
-import tk.yallandev.saintmc.common.medals.Medal;
 import tk.yallandev.saintmc.common.permission.Group;
 import tk.yallandev.saintmc.common.permission.RankType;
 import tk.yallandev.saintmc.common.server.ServerType;
 import tk.yallandev.saintmc.common.tag.Tag;
+import tk.yallandev.saintmc.common.tournment.TournamentGroup;
 
 @Getter
 public abstract class Member implements CommandSender {
@@ -59,7 +61,7 @@ public abstract class Member implements CommandSender {
 	 * 
 	 */
 
-	private Long discordId;
+	private long discordId;
 	private String discordName;
 	private DiscordType discordType;
 
@@ -80,6 +82,13 @@ public abstract class Member implements CommandSender {
 
 	private List<Medal> medalList;
 	private Medal medal = Medal.NONE;
+
+	/*
+	 * Tournament
+	 * 
+	 */
+
+	private TournamentGroup tournamentGroup;
 
 	/*
 	 * Status Information
@@ -113,8 +122,8 @@ public abstract class Member implements CommandSender {
 	private String lastServerId;
 	private ServerType lastServerType;
 
+	private ClientType clientType;
 	private boolean online;
-	private boolean bdff;
 
 	public Member(MemberModel memberModel) {
 		playerName = memberModel.getPlayerName();
@@ -146,6 +155,8 @@ public abstract class Member implements CommandSender {
 		medalList = memberModel.getMedalList();
 		medal = memberModel.getMedal();
 
+		tournamentGroup = memberModel.getTournamentGroup();
+
 		money = memberModel.getMoney();
 		xp = memberModel.getXp();
 		league = memberModel.getLeague();
@@ -163,6 +174,7 @@ public abstract class Member implements CommandSender {
 		lastServerId = memberModel.getLastServerId();
 		lastServerType = memberModel.getLastServerType();
 
+		clientType = memberModel.getClientType();
 		online = memberModel.isOnline();
 	}
 
@@ -236,7 +248,7 @@ public abstract class Member implements CommandSender {
 			save("medalList");
 		}
 	}
-	
+
 	public void removeMedal(Medal medal) {
 		if (this.medalList.contains(medal)) {
 			this.medalList.remove(medal);
@@ -273,6 +285,7 @@ public abstract class Member implements CommandSender {
 			}
 
 			cooldown.remove(cooldownKey);
+			save("cooldown");
 		}
 
 		return false;
@@ -301,10 +314,7 @@ public abstract class Member implements CommandSender {
 	 */
 
 	public boolean hasDiscord() {
-		if (discordId == null)
-			discordId = 0l;
-
-		return discordId != 0l;
+		return discordId > 0;
 	}
 
 	public void setDiscordId(Long discordId, String discordName) {
@@ -470,25 +480,29 @@ public abstract class Member implements CommandSender {
 			setXp(getXp() - xp);
 		return xp;
 	}
-	
+
 	public int addMoney(int money) {
 		if (money < 0)
 			money = 0;
-		
+
 		setMoney(getMoney() + money);
 		return money;
 	}
-	
+
 	public int removeMoney(int money) {
 		if (money < 0)
 			money = 0;
-		
+
 		setMoney(getMoney() - money);
 		return money;
 	}
-	
+
 	public void setMoney(int money) {
 		this.money = money;
+
+		if (this.money <= 0)
+			this.money = 0;
+
 		save("money");
 	}
 
@@ -499,7 +513,7 @@ public abstract class Member implements CommandSender {
 			else if (permissions.get(string.toLowerCase()) > System.currentTimeMillis())
 				return true;
 			else
-				return false; // TODO handler
+				return false;
 
 		return false;
 	}
@@ -510,6 +524,19 @@ public abstract class Member implements CommandSender {
 
 		permissions.put(string.toLowerCase(), -1l);
 		save("permissions");
+	}
+
+	public void removePermission(String string) {
+		if (!permissions.containsKey(string.toLowerCase()))
+			return;
+
+		permissions.remove(string.toLowerCase());
+		save("permissions");
+	}
+
+	public void setTournamentGroup(TournamentGroup tournamentGroup) {
+		this.tournamentGroup = tournamentGroup;
+		save("tournamentGroup");
 	}
 
 	/*
@@ -535,11 +562,6 @@ public abstract class Member implements CommandSender {
 	public void setOnline(boolean online) {
 		this.online = online;
 		save("online");
-	}
-	
-	public void setBdff(boolean bdff) {
-		this.bdff = bdff;
-		save("bdf");
 	}
 
 	/*
@@ -570,7 +592,6 @@ public abstract class Member implements CommandSender {
 
 		this.accountConfiguration.setPlayer(this);
 		this.loginConfiguration.setPlayer(this);
-
 		save("playerName", "lastIpAddress", "online");
 	}
 
@@ -607,8 +628,7 @@ public abstract class Member implements CommandSender {
 				if (System.currentTimeMillis() > entry.getValue()) {
 					it.remove();
 
-					sendMessage("§c§l> §fO seu tempo de tag " + Tag.valueOf(entry.getKey().name()).getPrefix()
-							+ "§f expirou!");
+					sendMessage("§c§l> §fO seu rank " + Tag.valueOf(entry.getKey().name()).getPrefix() + "§f expirou!");
 					sendMessage("§c§l> §fVocê pode comprar novamente em §b" + CommonConst.STORE + "§f!");
 					save = true;
 				}
@@ -617,6 +637,11 @@ public abstract class Member implements CommandSender {
 			if (save)
 				saveRanks();
 		}
+	}
+
+	public void setClientType(ClientType clientType) {
+		this.clientType = clientType;
+		save("clientType");
 	}
 
 	public void save(String... fieldName) {

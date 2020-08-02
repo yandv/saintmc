@@ -34,37 +34,31 @@ public class NormalStatus implements Status {
 		this.statusType = statusType;
 	}
 
-	@Override
 	public void setKills(int kills) {
 		this.kills = kills;
 		CommonGeneral.getInstance().getStatusData().updateStatus(this, "kills");
 	}
 
-	@Override
 	public void addKill() {
 		this.kills++;
 		CommonGeneral.getInstance().getStatusData().updateStatus(this, "kills");
 	}
 
-	@Override
 	public void setDeaths(int deaths) {
 		this.deaths = deaths;
 		CommonGeneral.getInstance().getStatusData().updateStatus(this, "deaths");
 	}
 
-	@Override
 	public void addDeath() {
 		this.deaths++;
 		CommonGeneral.getInstance().getStatusData().updateStatus(this, "deaths");
 	}
 
-	@Override
 	public void setKillstreak(int killstreak) {
 		this.killstreak = killstreak;
 		CommonGeneral.getInstance().getStatusData().updateStatus(this, "killstreak");
 	}
 
-	@Override
 	public void addKillstreak() {
 		this.killstreak++;
 
@@ -76,7 +70,6 @@ public class NormalStatus implements Status {
 		CommonGeneral.getInstance().getStatusData().updateStatus(this, "killstreak");
 	}
 
-	@Override
 	public void resetKillstreak() {
 		if (this.killstreak > this.maxKillstreak) {
 			this.maxKillstreak = killstreak;
@@ -85,36 +78,6 @@ public class NormalStatus implements Status {
 
 		this.killstreak = 0;
 		CommonGeneral.getInstance().getStatusData().updateStatus(this, "killstreak");
-	}
-
-	@Override
-	public int getMatches() {
-		return 0;
-	}
-
-	@Override
-	public void setMatch(int match) {
-
-	}
-
-	@Override
-	public void addMatch() {
-
-	}
-
-	@Override
-	public int getWins() {
-		return 0;
-	}
-
-	@Override
-	public void setWins(int win) {
-
-	}
-
-	@Override
-	public void addWin() {
-
 	}
 
 }

@@ -85,7 +85,7 @@ public class CombatCheck extends PacketAdapter implements CheckClass, Listener {
 		Clicks click = clickMap.computeIfAbsent(player, v -> new Clicks());
 
 		if (click.getExpireTime() < System.currentTimeMillis()) {
-			if (click.getClicks() >= 20) {
+			if (click.getClicks() >= 23) {
 				alert(player, AlertType.AUTOCLICK, new AlertMetadata("cps", click.getClicks()));
 			}
 
@@ -150,7 +150,7 @@ public class CombatCheck extends PacketAdapter implements CheckClass, Listener {
 				Entry<Player, Clicks> entry = iterator.next();
 
 				if (entry.getValue().getExpireTime() < System.currentTimeMillis()) {
-					if (entry.getValue().getClicks() >= 19) {
+					if (entry.getValue().getClicks() >= 23) {
 						alert(entry.getKey(), AlertType.AUTOCLICK,
 								new AlertMetadata("cps", entry.getValue().getClicks()));
 					}

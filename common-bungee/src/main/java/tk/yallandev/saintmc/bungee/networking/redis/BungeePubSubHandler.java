@@ -7,11 +7,14 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
 
+import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import redis.clients.jedis.JedisPubSub;
 import tk.yallandev.saintmc.CommonConst;
 import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.bungee.BungeeMain;
+import tk.yallandev.saintmc.bungee.bungee.BungeeMember;
+import tk.yallandev.saintmc.bungee.event.player.PlayerUpdateFieldEvent;
 import tk.yallandev.saintmc.common.account.Member;
 import tk.yallandev.saintmc.common.clan.Clan;
 import tk.yallandev.saintmc.common.data.payload.DataServerMessage;
@@ -100,17 +103,20 @@ public class BungeePubSubHandler extends JedisPubSub {
 			if (p == null)
 				return;
 
-			String field = jsonObject.getAsJsonPrimitive("field").getAsString();
 			Member player = CommonGeneral.getInstance().getMemberManager().getMember(uuid);
 
 			if (player == null)
 				return;
 
 			try {
-				Field f = Reflection.getField(Member.class, field);
-				f.setAccessible(true);
+				Field f = Reflection.getField(Member.class, jsonObject.get("field").getAsString());
+				Object oldObject = f.get(player);
 				Object object = CommonConst.GSON.fromJson(jsonObject.get("value"), f.getGenericType());
+				f.setAccessible(true);
 				f.set(player, object);
+
+				ProxyServer.getInstance().getPluginManager()
+						.callEvent(new PlayerUpdateFieldEvent((BungeeMember) player, f.getName(), oldObject, object));
 			} catch (SecurityException | IllegalArgumentException | IllegalAccessException e) {
 				e.printStackTrace();
 			}

@@ -54,6 +54,7 @@ public class SumoWarp extends Warp implements DuelWarp {
 	
 	public SumoWarp() {
 		super("sumo", BukkitMain.getInstance().getLocationFromConfig("sumo"));
+		getWarpSettings().setWarpEnabled(false);
 		
 		challengeMap = new HashMap<>();
 		playersIn1v1 = new HashMap<>();

@@ -17,7 +17,6 @@ import tk.yallandev.saintmc.common.tag.Tag;
 public class ProfileInventory {
 
 	public ProfileInventory(Player player) {
-
 		Member member = CommonGeneral.getInstance().getMemberManager().getMember(player.getUniqueId());
 
 		ItemBuilder builder = new ItemBuilder();

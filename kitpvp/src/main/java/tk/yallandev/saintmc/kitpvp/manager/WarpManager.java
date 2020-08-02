@@ -21,6 +21,7 @@ import tk.yallandev.saintmc.kitpvp.warp.types.PartyWarp;
 import tk.yallandev.saintmc.kitpvp.warp.types.ShadowWarp;
 import tk.yallandev.saintmc.kitpvp.warp.types.SpawnWarp;
 import tk.yallandev.saintmc.kitpvp.warp.types.SumoWarp;
+import tk.yallandev.saintmc.kitpvp.warp.types.VoidWarp;
 
 public class WarpManager {
 
@@ -37,6 +38,7 @@ public class WarpManager {
 		loadWarp(new MainWarp());
 		loadWarp(new ShadowWarp());
 		loadWarp(new SumoWarp());
+		loadWarp(new VoidWarp());
 
 		loadWarp(new PartyWarp());
 	}

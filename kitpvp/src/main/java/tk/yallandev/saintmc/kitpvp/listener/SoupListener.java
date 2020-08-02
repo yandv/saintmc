@@ -14,6 +14,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import tk.yallandev.saintmc.bukkit.api.item.ItemBuilder;
+import tk.yallandev.saintmc.kitpvp.GameMain;
 
 public class SoupListener implements Listener {
 
@@ -26,62 +27,71 @@ public class SoupListener implements Listener {
 	}
 
 	@EventHandler
-	public void onSignChange(SignChangeEvent e) {
-		if (e.getLine(0).equalsIgnoreCase("sopa")) {
-			e.setLine(0, "§6");
-			e.setLine(1, "§6§lSOPA");
-			e.setLine(2, "§6");
-			e.setLine(3, "§6");
-		} else if (e.getLine(0).equalsIgnoreCase("recraft")) {
-			e.setLine(0, "§6");
-			e.setLine(1, "§b§lRECRAFT");
-			e.setLine(2, "§6");
-			e.setLine(3, "§6");
+	public void onSignChange(SignChangeEvent event) {
+		if (event.getLine(0).equalsIgnoreCase("sopa")) {
+			event.setLine(0, "§6");
+			event.setLine(1, "§6§lSOPA");
+			event.setLine(2, "§6");
+			event.setLine(3, "§6");
+		} else if (event.getLine(0).equalsIgnoreCase("recraft")) {
+			event.setLine(0, "§6");
+			event.setLine(1, "§b§lRECRAFT");
+			event.setLine(2, "§6");
+			event.setLine(3, "§6");
+		} else if (event.getLine(0).equalsIgnoreCase("spawn")) {
+			event.setLine(0, "§6");
+			event.setLine(1, "§5§lSPAWN");
+			event.setLine(2, "§6");
+			event.setLine(3, "§6");
 		}
 
-		if (e.getLine(0).contains("&")) {
-			e.setLine(0, e.getLine(0).replace("&", "§"));
+		if (event.getLine(0).contains("&")) {
+			event.setLine(0, event.getLine(0).replace("&", "§"));
 		}
-		if (e.getLine(1).contains("&")) {
-			e.setLine(1, e.getLine(1).replace("&", "§"));
+		if (event.getLine(1).contains("&")) {
+			event.setLine(1, event.getLine(1).replace("&", "§"));
 		}
-		if (e.getLine(2).contains("&")) {
-			e.setLine(2, e.getLine(2).replace("&", "§"));
+		if (event.getLine(2).contains("&")) {
+			event.setLine(2, event.getLine(2).replace("&", "§"));
 		}
-		if (e.getLine(3).contains("&")) {
-			e.setLine(3, e.getLine(3).replace("&", "§"));
+		if (event.getLine(3).contains("&")) {
+			event.setLine(3, event.getLine(3).replace("&", "§"));
 		}
 	}
 
 	@EventHandler
-	public void onPlayerInteractSoup(PlayerInteractEvent e) {
-		Player p = e.getPlayer();
+	public void onPlayerInteractSoup(PlayerInteractEvent event) {
+		Player player = event.getPlayer();
 
-		if (e.getAction() != Action.RIGHT_CLICK_BLOCK)
-			return;
-		
-		if (e.getClickedBlock() == null)
+		if (event.getAction() != Action.RIGHT_CLICK_BLOCK)
 			return;
 
-		if (e.getClickedBlock().getType() != Material.WALL_SIGN && e.getClickedBlock().getType() != Material.SIGN_POST)
+		if (event.getClickedBlock() == null)
 			return;
 
-		Sign s = (Sign) e.getClickedBlock().getState();
-		String[] lines = s.getLines();
-		
+		if (event.getClickedBlock().getType() != Material.WALL_SIGN && event.getClickedBlock().getType() != Material.SIGN_POST)
+			return;
+
+		Sign sign = (Sign) event.getClickedBlock().getState();
+		String[] lines = sign.getLines();
+
 		if (lines.length < 4)
 			return;
 
 		if (lines[1].toLowerCase().contains("sopa"))
-			openInventory(p, true);
+			openInventory(player, true);
 		else if (lines[1].toLowerCase().contains("recraft"))
-			openInventory(p, false);
+			openInventory(player, false);
+		if (lines[1].toLowerCase().contains("spawn")) {
+			player.teleport(GameMain.getInstance().getGamerManager().getGamer(player.getUniqueId()).getWarp()
+					.getSpawnLocation());
+			player.sendMessage("§aVocê foi teletransportado até o spawn!");
+		}
 	}
-	
+
 	public void openInventory(Player player, boolean soup) {
-		
 		Inventory inv = Bukkit.getServer().createInventory(player, soup ? 54 : 9, soup ? "§8Sopas" : "§8Recraft");
-		
+
 		if (soup) {
 			ItemStack sopas = new ItemStack(Material.MUSHROOM_SOUP);
 
@@ -102,8 +112,8 @@ public class SoupListener implements Listener {
 			inv.setItem(7, red);
 			inv.setItem(8, brown);
 		}
-		
+
 		player.openInventory(inv);
 	}
-	
+
 }

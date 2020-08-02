@@ -42,11 +42,6 @@ public class WaitingListener implements Listener {
 	public void onPlayerLogin(PlayerLoginEvent event) {
 		Member member = CommonGeneral.getInstance().getMemberManager().getMember(event.getPlayer().getUniqueId());
 
-		if (!member.hasGroupPermission(Group.CREATOR)) {
-			event.disallow(PlayerLoginEvent.Result.KICK_OTHER, "§cO servidor está disponível apenas para §1§lBETA§c!");
-			return;
-		}
-
 		if (!member.hasGroupPermission(Group.TRIAL))
 			if (GameGeneral.getInstance().getGamerController().count(g -> g.isPlaying()) >= GameMain.getInstance()
 					.getMaxPlayers())

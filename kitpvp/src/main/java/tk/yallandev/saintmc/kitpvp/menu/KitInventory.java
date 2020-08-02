@@ -42,8 +42,8 @@ public class KitInventory {
 					}
 				});
 
-		menuInventory.setItem(5, new ItemBuilder().name("§aTodos os kits")
-				.durability(inventoryType == InventoryType.ALL ? 10 : 8).type(Material.INK_SACK).build(),
+		menuInventory.setItem(5, new ItemBuilder().name("§aLoja de kits")
+				.durability(inventoryType == InventoryType.SHOP ? 10 : 8).type(Material.INK_SACK).build(),
 				new MenuClickHandler() {
 
 					@Override
@@ -57,7 +57,25 @@ public class KitInventory {
 
 		for (Kit kit : inventoryType == InventoryType.ALL ? GameMain.getInstance().getKitManager().getKitList()
 				: GameMain.getInstance().getKitManager().getKitList()) {
-			if (inventoryType == InventoryType.ALL ? true : gamer.hasKitPermission(kit)) {
+			if (inventoryType == InventoryType.ALL || inventoryType == InventoryType.SHOP) {
+				menuInventory
+						.setItem(i,
+								new MenuItem(
+										new ItemBuilder().type(kit.getKitType()).name("§a" + kit.getKitName())
+												.lore("\n§7" + kit.getKitDescription() + "\n\n"
+														+ (inventoryType == InventoryType.SHOP ? "§eClique para comprar"
+																: "§cClique para selecionar"))
+												.build(),
+										new MenuClickHandler() {
+
+											@Override
+											public void onClick(Player p, Inventory inv, ClickType type,
+													ItemStack stack, int slot) {
+												p.performCommand("kit " + kit.getKitName());
+												p.closeInventory();
+											}
+										}));
+			} else if (gamer.hasKitPermission(kit)) {
 				menuInventory
 						.setItem(i,
 								new MenuItem(
@@ -76,14 +94,14 @@ public class KitInventory {
 												p.closeInventory();
 											}
 										}));
-
-				if (i % 9 == 7) {
-					i += 3;
-					continue;
-				}
-
-				i += 1;
 			}
+
+			if (i % 9 == 7) {
+				i += 3;
+				continue;
+			}
+
+			i += 1;
 		}
 
 		menuInventory.open(player);

@@ -277,20 +277,18 @@ public class ShadowWarp extends Warp implements DuelWarp {
 					"§fTempo: §e" + StringUtils.formatTime((int) (System.currentTimeMillis() - time) / 1000), "time")));
 	}
 
-	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+	@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
 	public void onEntityDamage(EntityDamageEvent event) {
 		if (!(event.getEntity() instanceof Player))
 			return;
 
 		Player player = (Player) event.getEntity();
 
-		if (inWarp(player)) {
-			if (playersIn1v1.containsKey(player)) {
+		if (inWarp(player))
+			if (playersIn1v1.containsKey(player))
 				event.setCancelled(false);
-			} else {
+			else
 				event.setCancelled(true);
-			}
-		}
 	}
 
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

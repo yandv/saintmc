@@ -43,7 +43,12 @@ public class ReportListInventory {
 
 			@Override
 			public int compare(Report o1, Report o2) {
-				int integer = Integer.valueOf(o1.getReportLevel()).compareTo(o2.getReportLevel());
+				int integer = Boolean.valueOf(o1.isOnline()).compareTo(o2.isOnline());
+
+				if (integer != 0)
+					return integer;
+
+				integer = Integer.valueOf(o1.getReportLevel()).compareTo(o2.getReportLevel());
 
 				if (integer != 0)
 					return integer;
@@ -136,10 +141,10 @@ public class ReportListInventory {
 					return;
 				}
 
-				p.spigot().sendMessage(new MessageBuilder("§aClique aqui para teletransportar!")
-						.setClickEvent(
+				p.spigot()
+						.sendMessage(new MessageBuilder("§aClique aqui para teletransportar!").setClickEvent(
 								new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/tp " + report.getPlayerName()))
-						.create());
+								.create());
 				return;
 			}
 

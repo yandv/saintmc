@@ -15,10 +15,12 @@ import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
 
+import lombok.Getter;
 import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.common.backend.Query;
 import tk.yallandev.saintmc.common.utils.json.JsonUtils;
 
+@Getter
 public class MongoQuery implements Query<JsonElement> {
 
 	/**

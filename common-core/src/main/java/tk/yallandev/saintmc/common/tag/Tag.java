@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import net.md_5.bungee.api.ChatColor;
+import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.common.permission.Group;
 
 /**
@@ -22,8 +23,8 @@ import tk.yallandev.saintmc.common.permission.Group;
 
 public abstract class Tag {
 
+	public static final Tag DEVELOPER = TagWrapper.create("§3§lDEVELOPER§3", Group.DEVELOPER);
 	public static final Tag DONO = TagWrapper.create("§4§lDONO§4", Group.DONO);
-	public static final Tag DEV = TagWrapper.create("§3§lDEV§3", Group.DEV);
 	public static final Tag ESTRELA = TagWrapper.create("§1§lESTRELA§1", Group.DIRETOR);
 	public static final Tag DIRETOR = TagWrapper.create("§4§LDIRETOR§4", Group.DIRETOR);
 	public static final Tag ADMIN = TagWrapper.create("§c§lADMIN§c", Group.ADMIN);
@@ -40,13 +41,15 @@ public abstract class Tag {
 	public static final Tag DESIGNER = TagWrapper.create("§2§lDESIGNER§2", Group.DESIGNER, true);
 	public static final Tag YOUTUBER = TagWrapper.create("YOUTUBER", "§b§lYT§b",
 			Arrays.asList(Group.YOUTUBER, Group.YOUTUBERPLUS, Group.STREAMER), true);
-	public static final Tag BETA = TagWrapper.create("§1§lBETA§1", Group.BETA);
+	public static final Tag BETA = TagWrapper.create("§1§lBETA§1", Group.BETA, true);
 	public static final Tag CREATOR = TagWrapper.create("§9§lCREATOR§9",
 			Arrays.asList(Group.CREATOR, Group.YOUTUBER, Group.YOUTUBERPLUS, Group.STREAMER), true);
 	public static final Tag SAINT = TagWrapper.create("§d§lSAINT§d", Group.SAINT);
 	public static final Tag BLIZZARD = TagWrapper.create("§b§lBLIZZARD§b", Group.BLIZZARD);
+	public static final Tag TORNEIOPLUS = TagWrapper.create("TORNEIOPLUS", "§1§lTORNEIO+§1", Group.TORNEIO, true);
 	public static final Tag LIGHT = TagWrapper.create("§a§lLIGHT§a", Group.LIGHT);
 	public static final Tag DONATOR = TagWrapper.create("§d§lDONATOR§d", Group.DONATOR, true);
+	public static final Tag TORNEIO = TagWrapper.create("§1§lTORNEIO§1", null);
 	public static final Tag MEMBRO = TagWrapper.create("MEMBRO", "§7", Group.MEMBRO);
 	public static final Tag RDM = TagWrapper.create("§6§lRDM§6", null);
 
@@ -127,13 +130,14 @@ public abstract class Tag {
 	 */
 
 	public static void registerTag(Tag tag) {
-		if (TAG_MAP.containsKey(tag.getName()))
+		if (TAG_MAP.containsKey(tag.getName().toLowerCase()))
 			throw new IllegalStateException("The tag " + tag.getName() + " already exist!");
 
 		if (TAG_MAP.containsValue(tag))
 			throw new IllegalStateException("The tag " + tag.getName() + " already exist!");
 
-		TAG_MAP.put(tag.getName(), tag);
+		TAG_MAP.put(tag.getName().toLowerCase(), tag);
+		CommonGeneral.getInstance().debug("The tag " + tag.getName() + " has been registered!");
 	}
 
 	public static Collection<Tag> values() {

@@ -1,11 +1,16 @@
 package tk.yallandev.saintmc.kitpvp.command;
 
+import tk.yallandev.saintmc.CommonConst;
+import tk.yallandev.saintmc.CommonGeneral;
+import tk.yallandev.saintmc.bukkit.BukkitMain;
+import tk.yallandev.saintmc.bukkit.bukkit.BukkitMember;
 import tk.yallandev.saintmc.bukkit.command.BukkitCommandArgs;
 import tk.yallandev.saintmc.common.account.Member;
 import tk.yallandev.saintmc.common.command.CommandClass;
 import tk.yallandev.saintmc.common.command.CommandFramework.Command;
 import tk.yallandev.saintmc.common.command.CommandSender;
 import tk.yallandev.saintmc.common.permission.Group;
+import tk.yallandev.saintmc.common.utils.DateUtils;
 import tk.yallandev.saintmc.kitpvp.GameMain;
 import tk.yallandev.saintmc.kitpvp.gamer.Gamer;
 import tk.yallandev.saintmc.kitpvp.warp.types.PartyWarp;
@@ -13,13 +18,14 @@ import tk.yallandev.saintmc.kitpvp.warp.types.party.PartyType;
 
 public class PartyCommand implements CommandClass {
 
-	@Command(name = "evento")
+	@Command(name = "evento", aliases = { "event" })
 	public void partyCommand(BukkitCommandArgs cmdArgs) {
 		String[] args = cmdArgs.getArgs();
 		CommandSender sender = cmdArgs.getSender();
 
 		if (args.length == 0) {
 			sender.sendMessage(" §e* §fUse §a/" + cmdArgs.getLabel() + "§f para entrar no evento.");
+			sender.sendMessage(" §e* §fUse §a/" + cmdArgs.getLabel() + " hg§f para ir ao evento do §aHungerGames§f.");
 
 			if (Member.hasGroupPermission(sender.getUniqueId(), Group.MODPLUS)) {
 				sender.sendMessage(
@@ -32,17 +38,31 @@ public class PartyCommand implements CommandClass {
 		}
 
 		switch (args[0].toLowerCase()) {
+		case "hg": {
+			Member player = CommonGeneral.getInstance().getMemberManager().getMember(cmdArgs.getSender().getUniqueId());
+
+			if (player.isOnCooldown("connect-command")) {
+				player.sendMessage("§cEspere mais "
+						+ DateUtils.formatTime(player.getCooldown("connect-command"), CommonConst.DECIMAL_FORMAT)
+						+ "s para se conectar novamente!");
+				return;
+			}
+
+			BukkitMain.getInstance().sendPlayerToEvent(((BukkitMember) sender).getPlayer());
+			player.setCooldown("connect-command", 4);
+			break;
+		}
 		case "entrar": {
 			if (cmdArgs.isPlayer()) {
 				Gamer gamer = GameMain.getInstance().getGamerManager().getGamer(sender.getUniqueId());
-				
+
 				PartyWarp warp = (PartyWarp) GameMain.getInstance().getWarpManager().getWarpByName("party");
-				
+
 				if (warp.getPartyType() == PartyType.NONE) {
 					sender.sendMessage("§cNenhum evento está acontecendo no momento!");
 					return;
 				}
-				
+
 				gamer.setWarp(warp);
 				gamer.setKit(null);
 				warp.getParty().join(gamer);
@@ -66,19 +86,19 @@ public class PartyCommand implements CommandClass {
 				sender.sendMessage(" §c* §fJá há um evento em andamento!");
 				return;
 			}
-			
+
 			PartyType partyType = PartyType.NONE;
-			
+
 			try {
 				partyType = PartyType.valueOf(args[1].toUpperCase());
 			} catch (Exception ex) {
 			}
-			
+
 			if (partyType == PartyType.NONE) {
 				sender.sendMessage(" §c* §fO evento " + args[1] + " não existe!");
 				return;
 			}
-			
+
 			partyWarp.setPartyType(partyType);
 			sender.sendMessage("§aVocê iniciou o evento " + partyWarp.getName() + "!");
 			break;
@@ -88,20 +108,19 @@ public class PartyCommand implements CommandClass {
 		case "stop": {
 			if (!Member.hasGroupPermission(sender.getUniqueId(), Group.MODPLUS))
 				return;
-			
+
 			if (args.length <= 1) {
-				sender.sendMessage(
-						" §e* §fUse §a/" + cmdArgs.getLabel() + " stop§f para iniciar um evento.");
+				sender.sendMessage(" §e* §fUse §a/" + cmdArgs.getLabel() + " stop§f para iniciar um evento.");
 				return;
 			}
-			
+
 			PartyWarp partyWarp = (PartyWarp) GameMain.getInstance().getWarpManager().getWarpByName("party");
-			
+
 			if (partyWarp.getPartyType() == PartyType.NONE) {
 				sender.sendMessage(" §c* §fNão há evento no momento!");
 				return;
 			}
-			
+
 			partyWarp.getParty().forceEnd(null);
 			break;
 		}
@@ -109,7 +128,7 @@ public class PartyCommand implements CommandClass {
 			if (!Member.hasGroupPermission(sender.getUniqueId(), Group.MODPLUS))
 				return;
 
-			if (args.length < 3) {
+			if (args.length < 2) {
 				sender.sendMessage(" §e* §fUse §a/" + cmdArgs.getLabel() + " settime <time>§f para iniciar um evento.");
 				return;
 			}
@@ -129,7 +148,7 @@ public class PartyCommand implements CommandClass {
 				sender.sendMessage(" §c* §fFormato de tempo inválido!");
 				return;
 			}
-			
+
 			partyWarp.getParty().setTime(time);
 			sender.sendMessage(" §c* §fVocê alterou o tempo do evento para " + time + "!");
 			break;

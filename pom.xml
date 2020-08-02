@@ -120,6 +120,11 @@
 			<id>inventive-repo</id>
 			<url>https://repo.inventivetalent.org/content/repositories/releases</url>
 		</repository>
+
+		<repository>
+			<id>viaversion-repo</id>
+			<url>https://repo.viaversion.com/</url>
+		</repository>
 	</repositories>
 
 	<dependencies>
@@ -147,7 +152,7 @@
 			<version>28.0-jre</version>
 			<scope>provided</scope>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>com.google.code.gson</groupId>
 			<artifactId>gson</artifactId>

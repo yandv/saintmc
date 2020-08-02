@@ -5,11 +5,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import net.md_5.bungee.api.chat.TextComponent;
 import tk.yallandev.saintmc.common.account.Member;
 import tk.yallandev.saintmc.common.account.MemberModel;
 import tk.yallandev.saintmc.common.permission.Group;
 
-public class MemberManager extends StoreController<UUID, Member>{
+public class MemberManager extends StoreController<UUID, Member> {
 
 	public void loadMember(Member account) {
 		load(account.getUniqueId(), account);
@@ -42,24 +43,31 @@ public class MemberManager extends StoreController<UUID, Member>{
 		Member member = getMember(discordId);
 		return member != null ? new MemberModel(member) : null;
 	}
-	
+
 	public void broadcast(String message) {
 		getMembers().forEach(member -> member.sendMessage(message));
-		
+
 		System.out.println(message);
 	}
 
 	public void broadcast(String message, Group group) {
 		getMembers().stream().filter(member -> member.hasGroupPermission(group))
 				.forEach(member -> member.sendMessage(message));
-		
+
+		System.out.println(message);
+	}
+
+	public void broadcast(TextComponent message, Group group) {
+		getMembers().stream().filter(member -> member.hasGroupPermission(group))
+				.forEach(member -> member.sendMessage(message));
+
 		System.out.println(message);
 	}
 
 	public void broadcast(String message, List<Group> groupList) {
 		getMembers().stream().filter(member -> groupList.contains(member.getGroup()))
 				.forEach(member -> member.sendMessage(message));
-		
+
 		System.out.println(message);
 	}
 

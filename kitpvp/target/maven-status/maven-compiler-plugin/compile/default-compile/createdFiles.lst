@@ -38,6 +38,7 @@ tk\yallandev\saintmc\kitpvp\kit\register\ViperKit.class
 tk\yallandev\saintmc\kitpvp\warp\types\SumoWarp$1.class
 tk\yallandev\saintmc\kitpvp\listener\ScoreboardListener$2.class
 tk\yallandev\saintmc\kitpvp\kit\register\StomperKit.class
+tk\yallandev\saintmc\kitpvp\menu\KitInventory$5.class
 tk\yallandev\saintmc\kitpvp\manager\GamerManager.class
 tk\yallandev\saintmc\kitpvp\kit\register\ReaperKit.class
 tk\yallandev\saintmc\kitpvp\warp\types\SumoWarp$1$1.class
@@ -52,6 +53,7 @@ tk\yallandev\saintmc\kitpvp\event\challenge\shadow\ShadowSearchingStartEvent.cla
 tk\yallandev\saintmc\kitpvp\hologram\RankingHologram.class
 tk\yallandev\saintmc\kitpvp\warp\types\ShadowWarp$2$1.class
 tk\yallandev\saintmc\kitpvp\hologram\RankingHologram$1.class
+tk\yallandev\saintmc\kitpvp\kit\register\HulkKit$1.class
 tk\yallandev\saintmc\kitpvp\warp\types\SumoWarp$2.class
 tk\yallandev\saintmc\kitpvp\warp\types\ShadowWarp.class
 tk\yallandev\saintmc\kitpvp\listener\PlayerListener.class
@@ -62,6 +64,7 @@ tk\yallandev\saintmc\kitpvp\listener\ShadowListener$1.class
 tk\yallandev\saintmc\kitpvp\warp\types\FpsWarp.class
 tk\yallandev\saintmc\kitpvp\listener\LauncherListener.class
 tk\yallandev\saintmc\kitpvp\warp\types\SumoWarp.class
+tk\yallandev\saintmc\kitpvp\warp\types\VoidWarp.class
 tk\yallandev\saintmc\kitpvp\event\kit\PlayerSelectKitEvent.class
 tk\yallandev\saintmc\kitpvp\event\warp\PlayerLostProtectionEvent.class
 tk\yallandev\saintmc\kitpvp\menu\KitInventory$3.class

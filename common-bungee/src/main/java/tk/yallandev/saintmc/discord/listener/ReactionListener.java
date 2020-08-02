@@ -5,16 +5,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.bson.Document;
-
 import com.google.common.base.Preconditions;
-import com.mongodb.Block;
 
 import lombok.Getter;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.entities.ChannelType;
-import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageHistory;
@@ -26,9 +22,6 @@ import net.dv8tion.jda.api.events.message.MessageDeleteEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import tk.yallandev.saintmc.CommonConst;
-import tk.yallandev.saintmc.common.account.MemberModel;
-import tk.yallandev.saintmc.common.account.MemberVoid;
-import tk.yallandev.saintmc.common.backend.database.mongodb.MongoConnection;
 import tk.yallandev.saintmc.discord.DiscordMain;
 import tk.yallandev.saintmc.discord.reaction.MessageReaction;
 import tk.yallandev.saintmc.discord.reaction.ReactionEnum;
@@ -40,14 +33,10 @@ public class ReactionListener extends ListenerAdapter {
 
 	private static final HashMap<String, MessageReaction> REACTIONS = new HashMap<>();
 
-	private static MongoConnection mongoConnection = new MongoConnection(
-			CommonConst.MONGO_URL.replace("localhost", "35.198.32.68"));
-
 	private DiscordMain manager;
 
 	public ReactionListener(DiscordMain manager) {
 		this.manager = manager;
-		mongoConnection.connect();
 
 		Map<ReactionEnum, ReactionHandler> handlers = new HashMap<>();
 
@@ -141,49 +130,6 @@ public class ReactionListener extends ListenerAdapter {
 				.build()), handlers, false);
 
 //		create();
-	}
-
-	public void create() {
-		new Thread(new Runnable() {
-
-			@Override
-			public void run() {
-				mongoConnection.getDb().getCollection("account").find().forEach(new Block<Document>() {
-
-					@Override
-					public void apply(Document document) {
-						MemberModel memberModel = CommonConst.GSON.fromJson(CommonConst.GSON.toJson(document),
-								MemberModel.class);
-						MemberVoid memberVoid = new MemberVoid(memberModel);
-						
-						TextChannel textChannel = DiscordMain.getInstance().getJda()
-								.getTextChannelById(731260112601088120l);
-
-						Message message = textChannel.sendMessage(
-								new EmbedBuilder().setTitle(memberVoid.getPlayerName()).appendDescription("").build())
-								.complete();
-
-						MessageReaction messageReaction = new MessageReaction(message, true);
-						messageReaction.addReaction(ReactionEnum.CONCLUIDO, new ReactionHandler() {
-
-							@Override
-							public void onClick(User user, Guild guild, TextChannel textChannel, ReactionEmote reaction,
-									ReactionAction action) {
-								create();
-							}
-						});
-
-						try {
-							Thread.sleep(5000);
-						} catch (InterruptedException e) {
-							e.printStackTrace();
-						}
-					}
-
-				});
-			}
-		}).start();
-
 	}
 
 	public void createMessage(long channelId, MessageBuilder messageBuilder,

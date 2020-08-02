@@ -18,6 +18,7 @@ import com.google.common.base.Joiner;
 
 import net.md_5.bungee.api.ChatColor;
 import net.minecraft.server.v1_8_R3.MinecraftServer;
+import tk.yallandev.saintmc.CommonConst;
 import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.bukkit.BukkitMain;
 import tk.yallandev.saintmc.bukkit.api.scoreboard.Scoreboard;
@@ -42,7 +43,7 @@ public class ServerCommand implements CommandClass {
 		if (!cmdArgs.isPlayer())
 			return;
 
-		Player player = ((BukkitMember)cmdArgs.getSender()).getPlayer();
+		Player player = ((BukkitMember) cmdArgs.getSender()).getPlayer();
 		Member member = CommonGeneral.getInstance().getMemberManager().getMember(player.getUniqueId());
 
 		member.getAccountConfiguration().setScoreboardEnabled(!member.getAccountConfiguration().isScoreboardEnabled());
@@ -65,6 +66,24 @@ public class ServerCommand implements CommandClass {
 
 		player.sendMessage(" §a* §fSua scoreboard foi "
 				+ (member.getAccountConfiguration().isScoreboardEnabled() ? "§aativada" : "§cdesativada") + "§f!");
+	}
+
+	@Command(name = "evento", aliases = { "event" })
+	public void eventoCommand(CommandArgs cmdArgs) {
+		if (!cmdArgs.isPlayer())
+			return;
+
+		Member sender = CommonGeneral.getInstance().getMemberManager().getMember(cmdArgs.getSender().getUniqueId());
+
+		if (sender.isOnCooldown("connect-command")) {
+			sender.sendMessage("§cEspere mais "
+					+ DateUtils.formatTime(sender.getCooldown("connect-command"), CommonConst.DECIMAL_FORMAT)
+					+ "s para se conectar novamente!");
+			return;
+		}
+
+		BukkitMain.getInstance().sendPlayerToEvent(((BukkitMember) sender).getPlayer());
+		sender.setCooldown("connect-command", 4);
 	}
 
 	@Command(name = "shutdown", aliases = { "stop" }, groupToUse = Group.ADMIN)
@@ -240,10 +259,10 @@ public class ServerCommand implements CommandClass {
 	@Command(name = "plugins", aliases = { "pl", "plugin" }, groupToUse = Group.LIGHT)
 	public void pluginCommand(CommandArgs cmdArgs) {
 		cmdArgs.getSender()
-		.sendMessage("Plugins (" + Bukkit.getPluginManager().getPlugins().length + "): "
-				+ Joiner.on("§f, ").join(Arrays.asList(Bukkit.getPluginManager().getPlugins()).stream().map(
-						plugin -> (plugin.isEnabled() ? ChatColor.GREEN : ChatColor.RED) + plugin.getName())
-						.collect(Collectors.toList())));
+				.sendMessage("Plugins (" + Bukkit.getPluginManager().getPlugins().length + "): "
+						+ Joiner.on("§f, ").join(Arrays.asList(Bukkit.getPluginManager().getPlugins()).stream().map(
+								plugin -> (plugin.isEnabled() ? ChatColor.GREEN : ChatColor.RED) + plugin.getName())
+								.collect(Collectors.toList())));
 	}
 
 	private String format(double tps) {

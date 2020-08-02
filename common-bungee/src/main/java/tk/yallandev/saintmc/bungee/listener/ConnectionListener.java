@@ -1,6 +1,5 @@
 package tk.yallandev.saintmc.bungee.listener;
 
-import java.util.Random;
 import java.util.UUID;
 
 import net.md_5.bungee.api.Callback;
@@ -30,7 +29,8 @@ import tk.yallandev.saintmc.common.utils.string.StringCenter;
 
 public class ConnectionListener implements Listener {
 
-	private String[] motdList = new String[] { "§b" + CommonConst.DISCORD, "§b" + CommonConst.WEBSITE };
+	private String[] motdList = new String[] { "§b" + CommonConst.DISCORD, "§b" + CommonConst.WEBSITE,
+			"§6Bem vindo ao novo!" };
 	private ServerManager manager;
 
 	public ConnectionListener(ServerManager manager) {
@@ -163,7 +163,7 @@ public class ConnectionListener implements Listener {
 			serverPing.getPlayers()
 					.setSample(new PlayerInfo[] { new PlayerInfo("§e" + CommonConst.WEBSITE, UUID.randomUUID()) });
 			serverPing.setDescription("      §f﹄ §6§lSaint§f§lMC §f| §eMinecraft Network §7(1.7-1.15) §f﹃\n"
-					+ StringCenter.centered("§cO servidor está em manutenção!", 127));
+					+ StringCenter.centered("§cO servidor está em manutenção, discord.saintmc.net!", 127));
 			return;
 		}
 
@@ -176,7 +176,9 @@ public class ConnectionListener implements Listener {
 			serverPing.getPlayers()
 					.setSample(new PlayerInfo[] { new PlayerInfo("§e" + CommonConst.WEBSITE, UUID.randomUUID()) });
 			serverPing.setDescription("      §f﹄ §6§lSaint§f§lMC §f| §eMinecraft Network §7(1.7-1.15) §f﹃\n"
-					+ StringCenter.centered(motdList[new Random().nextInt(motdList.length)], 127));
+//					+ StringCenter.centered("§aServidor aberto para teste!", 127)
+					+ StringCenter.centered(motdList[CommonConst.RANDOM.nextInt(motdList.length)], 127)
+					);
 			return;
 		}
 
@@ -206,6 +208,11 @@ public class ConnectionListener implements Listener {
 
 	private ProxiedServer searchServer(ProxiedPlayer player) {
 		String serverId = getServerIp(player.getPendingConnection());
+
+		if (!serverId.toLowerCase().endsWith(CommonConst.IP_END)) {
+			player.sendMessage("§cVocê entrou por um ip desconhecido!");
+			player.sendMessage("§aEntre usando " + CommonConst.IP_END + "!");
+		}
 
 		AccountType accountType = player.getAccountType();
 

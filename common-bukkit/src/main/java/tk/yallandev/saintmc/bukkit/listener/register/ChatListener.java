@@ -20,8 +20,8 @@ import tk.yallandev.saintmc.bukkit.listener.Listener;
 import tk.yallandev.saintmc.common.account.League;
 import tk.yallandev.saintmc.common.account.Member;
 import tk.yallandev.saintmc.common.account.configuration.LoginConfiguration.AccountType;
+import tk.yallandev.saintmc.common.account.medal.Medal;
 import tk.yallandev.saintmc.common.ban.constructor.Mute;
-import tk.yallandev.saintmc.common.medals.Medal;
 import tk.yallandev.saintmc.common.permission.Group;
 import tk.yallandev.saintmc.common.server.ServerType;
 import tk.yallandev.saintmc.common.utils.DateUtils;
@@ -77,14 +77,10 @@ public class ChatListener extends Listener {
 		}
 
 		if (event.isCancelled()) {
-			TextComponent text = new TextComponent("§4§l> §fO chat está ");
-			TextComponent disabled = new TextComponent("§cdesativado");
-			disabled.setHoverEvent(
-					new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(disabledFor)));
-			text.addExtra(disabled);
-			text.addExtra("§f!");
-
-			member.sendMessage(text);
+			member.sendMessage(new MessageBuilder("§cO chat está desativado!")
+					.setHoverEvent(
+							new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(disabledFor)))
+					.create());
 			return;
 		}
 
@@ -105,10 +101,10 @@ public class ChatListener extends Listener {
 			if (activeMute == null)
 				return;
 
-			member.sendMessage(
-					"§4§l> §fVocê está mutado " + (activeMute.isPermanent() ? "permanentemente" : "temporariamente")
-							+ " do servidor!" + (activeMute.isPermanent() ? ""
-									: "\n §4§l> §fExpira em §e" + DateUtils.getTime(activeMute.getMuteExpire())));
+			member.sendMessage("§cVocê está mutado "
+					+ (activeMute.isPermanent() ? "permanentemente" : "temporariamente") + " do servidor por "
+					+ activeMute.getReason().toLowerCase() + "!" + (activeMute.isPermanent() ? ""
+							: "\n §4§l> §fExpira em §e" + DateUtils.getTime(activeMute.getMuteExpire())));
 			event.setCancelled(true);
 		}
 	}
@@ -158,11 +154,13 @@ public class ChatListener extends Listener {
 
 		TextComponent textComponent = new TextComponent("");
 
-		if (player.getMedal() != Medal.NONE)
+		if (player.getMedal() != null && player.getMedal() != Medal.NONE)
 			textComponent.addExtra(
 					new MessageBuilder("" + player.getMedal().getChatColor() + player.getMedal().getMedalIcon() + " ")
 							.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
-									TextComponent.fromLegacyText(player.getMedal().getMedalDescription())))
+									TextComponent.fromLegacyText("§fMedalha " + player.getMedal().getMedalName() + "\n"
+											+ player.getMedal().getMedalRarity().getName() + "\n\n§f"
+											+ player.getMedal().getMedalDescription())))
 							.create());
 
 		textComponent.addExtra(player.isUsingFake()
@@ -193,16 +191,25 @@ public class ChatListener extends Listener {
 
 		textComponent.addExtra(new TextComponent(" §7»§f"));
 
-		for (String msg : event.getMessage().split(" ")) {
-			msg = " " + msg;
+		String[] split = event.getMessage().split(" ");
+		TextComponent[] txt = new TextComponent[split.length];
+
+		for (int x = 0; x < split.length; x++) {
+			String msg = " " + (x == 0 ? "" : ChatColor.getLastColors(txt[x - 1].getText())) + split[x];
+
 			List<String> url = StringURLUtils.extractUrls(msg);
 
-			textComponent.addExtra(url.isEmpty() ? new MessageBuilder(msg).setHoverable(true).create()
+			TextComponent t = url.isEmpty() ? new MessageBuilder(msg).setHoverable(true).create()
 					: new MessageBuilder(msg).setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, url.get(0)))
 							.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
 									TextComponent.fromLegacyText(url.get(0))))
-							.create());
+							.create();
+
+			txt[x] = t;
 		}
+
+		for (TextComponent t : txt)
+			textComponent.addExtra(t);
 
 		for (Player r : event.getRecipients()) {
 			try {

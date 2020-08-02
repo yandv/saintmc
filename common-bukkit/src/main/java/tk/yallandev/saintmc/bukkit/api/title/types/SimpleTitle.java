@@ -1,5 +1,6 @@
 package tk.yallandev.saintmc.bukkit.api.title.types;
 
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 
 import org.bukkit.Bukkit;
@@ -7,13 +8,17 @@ import org.bukkit.entity.Player;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
-import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import com.comphenix.protocol.wrappers.EnumWrappers.TitleAction;
+import com.comphenix.protocol.wrappers.WrappedChatComponent;
 
 import lombok.Getter;
+import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.bukkit.BukkitMain;
 import tk.yallandev.saintmc.bukkit.api.packet.PacketBuilder;
+import tk.yallandev.saintmc.bukkit.api.protocol.ProtocolGetter;
 import tk.yallandev.saintmc.bukkit.api.title.Title;
+import tk.yallandev.saintmc.bukkit.bukkit.BukkitMember;
+import tk.yallandev.saintmc.common.client.ClientType;
 
 @Getter
 public class SimpleTitle implements Title {
@@ -41,15 +46,25 @@ public class SimpleTitle implements Title {
 
 	@Override
 	public void send(Player player) {
-		sendPacket(player,
-				new PacketBuilder(PacketType.Play.Server.TITLE).writeTitleAction(0, TitleAction.RESET)
-				.writeInteger(0, fadeInTime)
-				.writeInteger(1, stayTime)
-				.writeInteger(2, fadeOutTime).build());
-		sendPacket(player, new PacketBuilder(PacketType.Play.Server.TITLE).writeTitleAction(0, TitleAction.TITLE)
-				.writeChatComponents(0, WrappedChatComponent.fromText(title)).build());
-		sendPacket(player, new PacketBuilder(PacketType.Play.Server.TITLE).writeTitleAction(0, TitleAction.SUBTITLE)
-				.writeChatComponents(0, WrappedChatComponent.fromText(subtitle)).build());
+		if (ProtocolGetter.getVersion(player).getId() >= 47) {
+			sendPacket(player, new PacketBuilder(PacketType.Play.Server.TITLE).writeTitleAction(0, TitleAction.RESET)
+					.writeInteger(0, fadeInTime).writeInteger(1, stayTime).writeInteger(2, fadeOutTime).build());
+			sendPacket(player, new PacketBuilder(PacketType.Play.Server.TITLE).writeTitleAction(0, TitleAction.TITLE)
+					.writeChatComponents(0, WrappedChatComponent.fromText(title)).build());
+			sendPacket(player, new PacketBuilder(PacketType.Play.Server.TITLE).writeTitleAction(0, TitleAction.SUBTITLE)
+					.writeChatComponents(0, WrappedChatComponent.fromText(subtitle)).build());
+		} else {
+			BukkitMember member = (BukkitMember) CommonGeneral.getInstance().getMemberManager()
+					.getMember(player.getUniqueId());
+
+			if (member.getClientType() == ClientType.LUNAR)
+				try {
+					member.getCustomClient().sendTitle(title, subtitle, 1f, stayTime / 20, fadeInTime / 20,
+							fadeOutTime / 20);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+		}
 	}
 
 	@Override

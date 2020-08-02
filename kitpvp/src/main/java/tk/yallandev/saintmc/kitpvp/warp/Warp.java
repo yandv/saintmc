@@ -14,10 +14,10 @@ import org.bukkit.inventory.ItemStack;
 import lombok.Getter;
 import lombok.Setter;
 import tk.yallandev.saintmc.bukkit.api.scoreboard.Scoreboard;
+import tk.yallandev.saintmc.bukkit.api.scoreboard.impl.SimpleScoreboard;
 import tk.yallandev.saintmc.common.command.CommandClass;
 import tk.yallandev.saintmc.kitpvp.GameMain;
 import tk.yallandev.saintmc.kitpvp.event.warp.PlayerWarpQuitEvent;
-import tk.yallandev.saintmc.kitpvp.listener.ScoreboardListener;
 
 /**
  * 
@@ -36,6 +36,8 @@ public abstract class Warp implements Listener, CommandClass {
 	private double spawnRadius;
 
 	private WarpSetting warpSettings = new WarpSetting();
+	@Setter
+	private Scoreboard scoreboard = new SimpleScoreboard("§6§lKITPVP");
 
 	public Warp(String name, Location location) {
 		this.name = name;
@@ -61,7 +63,7 @@ public abstract class Warp implements Listener, CommandClass {
 	}
 
 	public Scoreboard getScoreboard() {
-		return ScoreboardListener.DEFAULT_SCOREBOARD;
+		return scoreboard;
 	}
 
 	public abstract ItemStack getItem();
@@ -70,8 +72,7 @@ public abstract class Warp implements Listener, CommandClass {
 	public boolean equals(Object obj) {
 		if (!(obj instanceof Warp))
 			return false;
-		Warp compare = (Warp) obj;
-		return compare.getId().equals(this.getId());
+		return ((Warp) obj).getId().equals(this.getId());
 	}
 
 }

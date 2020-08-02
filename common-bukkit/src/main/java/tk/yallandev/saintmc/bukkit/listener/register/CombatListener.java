@@ -110,8 +110,8 @@ public class CombatListener extends Listener {
 				damage += (1 * sword.getEnchantmentLevel(Enchantment.DAMAGE_UNDEAD));
 			}
 			if (sword.containsEnchantment(Enchantment.DAMAGE_ALL)) {
-				damage -= 1.25D * sword.getEnchantmentLevel(Enchantment.DAMAGE_ALL);
-				damage += (1 * sword.getEnchantmentLevel(Enchantment.DAMAGE_ALL));
+				damage -= 0.75D * sword.getEnchantmentLevel(Enchantment.DAMAGE_ALL);
+				damage += (0.25 * sword.getEnchantmentLevel(Enchantment.DAMAGE_ALL));
 			}
 		}
 

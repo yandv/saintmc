@@ -20,7 +20,7 @@ public class FpsWarp extends Warp {
 		super("Fps", BukkitMain.getInstance().getLocationFromConfig("fps"));
 		getWarpSettings().setSpawnProtection(true);
 	}
-	
+
 	@EventHandler
 	public void onPlayerWarpRespawn(PlayerWarpRespawnEvent event) {
 		Player player = event.getPlayer();
@@ -34,13 +34,13 @@ public class FpsWarp extends Warp {
 	@EventHandler
 	public void onPlayerWarpJoin(PlayerWarpJoinEvent event) {
 		Player player = event.getPlayer();
-		
+
 		if (event.getWarp() != this)
 			return;
-		
+
 		handleInventory(player);
 	}
-	
+
 	private void handleInventory(Player player) {
 		player.getInventory().clear();
 		player.getInventory().setArmorContents(new ItemStack[4]);
@@ -61,11 +61,11 @@ public class FpsWarp extends Warp {
 			player.getInventory().setBoots(new ItemBuilder().unbreakable().type(Material.IRON_BOOTS).build());
 		} else
 			player.getInventory().setItem(0, new ItemBuilder().unbreakable().name("§aEspada de Pedra!")
-					.type(Material.STONE_SWORD).build());
+					.type(Material.STONE_SWORD).enchantment(Enchantment.DAMAGE_ALL).build());
 
 		for (int x = 0; x < player.getInventory().getSize(); x++)
 			player.getInventory().addItem(new ItemStack(Material.MUSHROOM_SOUP, 1));
-		
+
 		player.getInventory().setItem(13, new ItemStack(Material.RED_MUSHROOM, 64));
 		player.getInventory().setItem(14, new ItemStack(Material.BROWN_MUSHROOM, 64));
 		player.getInventory().setItem(15, new ItemStack(Material.BOWL, 64));
@@ -75,7 +75,9 @@ public class FpsWarp extends Warp {
 	@Override
 	public ItemStack getItem() {
 		return new ItemBuilder().name("§aFps")
-				.lore("\n§7Arena leve para o seu computador\n\n§a" + GameMain.getInstance().getGamerManager().filter(gamer -> gamer.getWarp() == this).size() + " jogadores")
+				.lore("\n§7Arena leve para o seu computador\n\n§a"
+						+ GameMain.getInstance().getGamerManager().filter(gamer -> gamer.getWarp() == this).size()
+						+ " jogadores")
 				.type(Material.GLASS).build();
 	}
 

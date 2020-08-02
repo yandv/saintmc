@@ -4,6 +4,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
+import net.md_5.bungee.api.chat.ClickEvent;
 import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.bukkit.api.item.ItemBuilder;
 import tk.yallandev.saintmc.bukkit.api.menu.MenuInventory;
@@ -14,6 +15,7 @@ import tk.yallandev.saintmc.common.account.MemberVoid;
 import tk.yallandev.saintmc.common.report.Report;
 import tk.yallandev.saintmc.common.tag.Tag;
 import tk.yallandev.saintmc.common.utils.DateUtils;
+import tk.yallandev.saintmc.common.utils.string.MessageBuilder;
 
 public class ReportInventory {
 
@@ -55,7 +57,17 @@ public class ReportInventory {
 							.name(tag + " " + report.getPlayerName()).skin(report.getPlayerName()).build());
 
 		menu.setItem(29, new ItemBuilder().type(Material.COMPASS).name("§aClique para teletransportar!").build(),
-				(p, inv, type, stack, slot) -> player.chat("/tp " + report.getPlayerName()));
+				(p, inv, type, stack, slot) -> {
+					if (!report.isOnline()) {
+						p.sendMessage(" §c* §fO jogador §a" + report.getPlayerName() + "§f não está online!");
+						return;
+					}
+
+					p.spigot()
+							.sendMessage(new MessageBuilder("§aClique aqui para teletransportar!").setClickEvent(
+									new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/tp " + report.getPlayerName()))
+									.create());
+				});
 
 		menu.setItem(30,
 				new ItemBuilder().type(Material.BOOK_AND_QUILL).name("§aLista de reports")

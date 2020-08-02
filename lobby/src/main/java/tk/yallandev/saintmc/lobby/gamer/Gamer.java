@@ -23,6 +23,8 @@ public class Gamer {
 	private EnumParticle wingParticle;
 	private EnumParticle particle;
 	
+	private transient boolean combat;
+	
 	public Gamer(Player player) {
 		this.player = player;
 	}
@@ -42,5 +44,5 @@ public class Gamer {
 			setWingParticle(particle);
 		}
 	}
-
+	
 }

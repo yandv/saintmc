@@ -1,6 +1,7 @@
 package tk.yallandev.saintmc;
 
 import java.lang.reflect.Modifier;
+import java.text.DecimalFormat;
 import java.util.Random;
 import java.util.regex.Pattern;
 
@@ -22,6 +23,8 @@ public class CommonConst {
 
 	public static final WebHelper DEFAULT_WEB = new ApacheWebImpl();
 
+	public static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.#");
+
 	public static final Pattern NICKNAME_PATTERN = Pattern.compile("[a-zA-Z0-9_]{1,16}");
 
 	public static final String SERVER_NAME = "SaintMC";
@@ -38,6 +41,7 @@ public class CommonConst {
 	public static final String HELPER_FORM = "https://helper.saintmc.net/";
 	public static final String YOUTUBER_FORM = "https://youtuber.saintmc.net/";
 	public static final String APPEAL_FORM = "https://appeal.saintmc.net/";
+	public static final String TORNEIO_DISCORD = "https://torneio.saintmc.net/";
 
 	public static final String API = "http://localhost";
 	public static final String DOWNLOAD_KEY = "kangaroo123";

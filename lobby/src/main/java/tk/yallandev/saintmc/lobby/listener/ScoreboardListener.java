@@ -5,7 +5,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import tk.yallandev.saintmc.CommonConst;
@@ -17,6 +16,8 @@ import tk.yallandev.saintmc.bukkit.api.scoreboard.impl.SimpleScoreboard;
 import tk.yallandev.saintmc.bukkit.event.account.PlayerChangeGroupEvent;
 import tk.yallandev.saintmc.bukkit.event.account.PlayerChangeLeagueEvent;
 import tk.yallandev.saintmc.bukkit.event.player.PlayerScoreboardStateEvent;
+import tk.yallandev.saintmc.bukkit.event.server.ServerPlayerJoinEvent;
+import tk.yallandev.saintmc.bukkit.event.server.ServerPlayerLeaveEvent;
 import tk.yallandev.saintmc.common.account.League;
 import tk.yallandev.saintmc.common.account.Member;
 import tk.yallandev.saintmc.common.permission.Group;
@@ -50,17 +51,17 @@ public class ScoreboardListener implements Listener {
 	}
 
 	@EventHandler(priority = EventPriority.MONITOR)
-	public void onPlayerJoin(PlayerQuitEvent e) {
-		new BukkitRunnable() {
-
-			@Override
-			public void run() {
-				DEFAULT_SCOREBOARD.updateScore(new Score(
-						"Jogadores: §e" + BukkitMain.getInstance().getServerManager().getTotalNumber(), "online"));
-			}
-		}.runTaskLater(LobbyMain.getInstance(), 20l);
+	public void onPlayerJoin(ServerPlayerJoinEvent e) {
+		DEFAULT_SCOREBOARD.updateScore(
+				new Score("Jogadores: §e" + BukkitMain.getInstance().getServerManager().getTotalNumber(), "online"));
 	}
 
+	@EventHandler(priority = EventPriority.MONITOR)
+	public void onPlayerJoin(ServerPlayerLeaveEvent e) {
+		DEFAULT_SCOREBOARD.updateScore(
+				new Score("Jogadores: §e" + BukkitMain.getInstance().getServerManager().getTotalNumber(), "online"));
+	}
+	
 	@EventHandler
 	public void onPlayerChangeGroup(PlayerChangeGroupEvent event) {
 		new BukkitRunnable() {

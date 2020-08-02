@@ -1,7 +1,6 @@
 package tk.yallandev.saintmc.common.utils.mojang;
 
 import java.util.UUID;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.http.conn.ConnectionPoolTimeoutException;
@@ -19,11 +18,11 @@ import tk.yallandev.saintmc.common.utils.web.WebHelper.Method;
 
 public class MojangFetcher {
 
-	private LoadingCache<String, Boolean> cache;
-	private LoadingCache<String, UUID> cacheUuid;
+	private LoadingCache<String, Boolean> crackCache;
+	private LoadingCache<String, UUID> uuidCache;
 
 	public MojangFetcher() {
-		cache = CacheBuilder.newBuilder().expireAfterWrite(1L, TimeUnit.MINUTES)
+		crackCache = CacheBuilder.newBuilder().expireAfterWrite(1L, TimeUnit.MINUTES)
 				.build(new CacheLoader<String, Boolean>() {
 					@Override
 					public Boolean load(String playerName) throws Exception {
@@ -31,7 +30,7 @@ public class MojangFetcher {
 					}
 				});
 
-		cacheUuid = CacheBuilder.newBuilder().expireAfterWrite(6L, TimeUnit.HOURS)
+		uuidCache = CacheBuilder.newBuilder().expireAfterWrite(6L, TimeUnit.HOURS)
 				.build(new CacheLoader<String, UUID>() {
 					@Override
 					public UUID load(String playerName) throws Exception {
@@ -43,7 +42,7 @@ public class MojangFetcher {
 
 	public boolean isCracked(String playerName) {
 		try {
-			return cache.get(playerName);
+			return crackCache.get(playerName);
 		} catch (Exception ex) {
 		}
 
@@ -53,7 +52,7 @@ public class MojangFetcher {
 	public UUID getUuid(String playerName) {
 		if (playerName.matches("[a-zA-Z0-9_]{3,16}")) {
 			try {
-				return cacheUuid.get(playerName);
+				return uuidCache.get(playerName);
 			} catch (Exception ex) {
 				return null;
 			}
@@ -67,13 +66,16 @@ public class MojangFetcher {
 	}
 
 	public void registerUuid(String playerName, UUID uniqueId) {
+		if (uuidCache.asMap().containsKey(playerName))
+			return;
+		
 		JsonObject jsonObject = new JsonObject();
 
 		jsonObject.addProperty("name", playerName);
 		jsonObject.addProperty("uniqueId", uniqueId.toString().replace("-", ""));
 		jsonObject.addProperty("cracked", true);
 		jsonObject.addProperty("time", System.currentTimeMillis() + (1000 * 60 * 60 * 24 * 30));
-		cacheUuid.put(playerName, uniqueId);
+		uuidCache.put(playerName, uniqueId);
 
 		CommonConst.DEFAULT_WEB.doAsyncRequest(CommonConst.MOJANG_FETCHER, Method.POST, jsonObject.toString(),
 				new FutureCallback<JsonElement>() {
@@ -119,12 +121,8 @@ public class MojangFetcher {
 	}
 
 	public void isCracked(String playerName, FutureCallback<Boolean> futureCallback) {
-		if (cache.asMap().containsKey(playerName)) {
-			try {
-				futureCallback.result(cache.get(playerName), null);
-			} catch (ExecutionException e) {
-				futureCallback.result(false, e);
-			}
+		if (crackCache.asMap().containsKey(playerName)) {
+			futureCallback.result(crackCache.getIfPresent(playerName), null);
 			return;
 		}
 
@@ -137,7 +135,7 @@ public class MojangFetcher {
 							if (error == null) {
 								boolean cracked = result.getAsJsonObject().get("cracked").getAsBoolean();
 								futureCallback.result(cracked, error);
-								cache.put(playerName, cracked);
+								crackCache.put(playerName, cracked);
 							} else {
 								futureCallback.result(false, error);
 							}

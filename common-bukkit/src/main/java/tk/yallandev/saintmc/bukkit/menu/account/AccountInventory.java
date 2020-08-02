@@ -28,7 +28,7 @@ public class AccountInventory {
 	public AccountInventory(Player sender, Member player) {
 		MenuInventory menu = new MenuInventory(
 				"§7Conta de " + (player.isUsingFake() ? player.getFakeName() : player.getPlayerName()), 5);
-		boolean isStaff = Member.hasGroupPermission(sender.getUniqueId(), Group.DEV);
+		boolean isStaff = Member.hasGroupPermission(sender.getUniqueId(), Group.DEVELOPER);
 
 		String lore = isStaff
 				? "\n§7Fake: §f" + player.getFakeName() + "\n§7Discord: §f" + player.getDiscordName() + "\n§7Conta: §f"
@@ -36,8 +36,10 @@ public class AccountInventory {
 				: "\n§7";
 
 		menu.setItem(13, new ItemBuilder().type(Material.SKULL_ITEM).durability(3)
-				.name((player.getGroup() == Group.MEMBRO ? "§7" + player.getPlayerName()
-						: Tag.getByName(player.getServerGroup().name()).getPrefix() + " " + player.getPlayerName())
+				.name((player.isUsingFake() ? player.getTag().getPrefix() + " " + player.getFakeName()
+						: player.getGroup() == Group.MEMBRO ? "§7" + player.getPlayerName()
+								: Tag.getByName(player.getServerGroup().name()).getPrefix() + " "
+										+ player.getPlayerName())
 						+ " " + "§7[" + player.getLeague().getColor() + player.getLeague().getSymbol() + "§7]")
 				.lore(lore).skin(player.getPlayerName()).build());
 
