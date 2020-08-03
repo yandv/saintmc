@@ -53,7 +53,7 @@ public class WorldListener implements Listener {
 				}
 	}
 
-	@EventHandler
+	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onDrop(PlayerDropItemEvent event) {
 		Item drop = event.getItemDrop();
 		ItemStack item = drop.getItemStack();
@@ -71,6 +71,8 @@ public class WorldListener implements Listener {
 
 			if (kit.isAbilityItem(item))
 				event.setCancelled(true);
+		} else if (!gamer.getWarp().getWarpSettings().isSpawnEnabled()) {
+			event.getItemDrop().remove();
 		}
 	}
 

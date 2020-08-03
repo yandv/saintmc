@@ -3,8 +3,6 @@ package tk.yallandev.saintmc.bukkit.api.server;
 import java.util.Collection;
 import java.util.List;
 
-import com.github.juliarn.npc.NPCPool;
-
 import tk.yallandev.saintmc.bukkit.api.server.chat.ChatState;
 import tk.yallandev.saintmc.common.profile.Profile;
 
@@ -150,6 +148,4 @@ public interface Server {
 	
 	void setRestoreMode(boolean restoreMode);
 	
-	NPCPool getNpcPool();
-
 }

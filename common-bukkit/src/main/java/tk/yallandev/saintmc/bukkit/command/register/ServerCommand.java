@@ -11,8 +11,6 @@ import org.bukkit.Chunk;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scoreboard.DisplaySlot;
-import org.bukkit.scoreboard.Objective;
 
 import com.google.common.base.Joiner;
 
@@ -21,10 +19,8 @@ import net.minecraft.server.v1_8_R3.MinecraftServer;
 import tk.yallandev.saintmc.CommonConst;
 import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.bukkit.BukkitMain;
-import tk.yallandev.saintmc.bukkit.api.scoreboard.Scoreboard;
 import tk.yallandev.saintmc.bukkit.bukkit.BukkitMember;
 import tk.yallandev.saintmc.bukkit.command.BukkitCommandSender;
-import tk.yallandev.saintmc.bukkit.event.player.PlayerScoreboardStateEvent;
 import tk.yallandev.saintmc.common.account.Member;
 import tk.yallandev.saintmc.common.command.CommandArgs;
 import tk.yallandev.saintmc.common.command.CommandClass;
@@ -37,36 +33,6 @@ import tk.yallandev.saintmc.common.utils.string.StringUtils;
 public class ServerCommand implements CommandClass {
 
 	public static long timingStart = 0L;
-
-	@Command(name = "score", aliases = { "scoreboard" })
-	public void scoreboardCommand(CommandArgs cmdArgs) {
-		if (!cmdArgs.isPlayer())
-			return;
-
-		Player player = ((BukkitMember) cmdArgs.getSender()).getPlayer();
-		Member member = CommonGeneral.getInstance().getMemberManager().getMember(player.getUniqueId());
-
-		member.getAccountConfiguration().setScoreboardEnabled(!member.getAccountConfiguration().isScoreboardEnabled());
-		Bukkit.getServer().getPluginManager().callEvent(
-				new PlayerScoreboardStateEvent(player, member.getAccountConfiguration().isScoreboardEnabled()));
-
-		if (member.getAccountConfiguration().isScoreboardEnabled()) {
-			Scoreboard score = ((BukkitMember) member).getScoreboard();
-
-			if (score != null)
-				score.createScoreboard(player);
-		} else {
-			Objective objective = player.getScoreboard().getObjective("clear");
-
-			if (objective == null)
-				objective = player.getScoreboard().registerNewObjective("clear", "dummy");
-
-			objective.setDisplaySlot(DisplaySlot.SIDEBAR);
-		}
-
-		player.sendMessage(" §a* §fSua scoreboard foi "
-				+ (member.getAccountConfiguration().isScoreboardEnabled() ? "§aativada" : "§cdesativada") + "§f!");
-	}
 
 	@Command(name = "evento", aliases = { "event" })
 	public void eventoCommand(CommandArgs cmdArgs) {

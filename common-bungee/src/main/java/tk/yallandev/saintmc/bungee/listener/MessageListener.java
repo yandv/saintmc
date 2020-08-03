@@ -3,6 +3,7 @@ package tk.yallandev.saintmc.bungee.listener;
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteStreams;
 
+import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.connection.Server;
 import net.md_5.bungee.api.event.PluginMessageEvent;
@@ -21,6 +22,20 @@ public class MessageListener implements Listener {
 
 	public MessageListener(ServerManager manager) {
 		this.manager = manager;
+	}
+
+	@EventHandler
+	public void onPluginMessageEvent(PluginMessageEvent event) {
+		if (!(event.getSender() instanceof ProxiedPlayer))
+			return;
+		
+		ProxiedPlayer proxiedPlayer = (ProxiedPlayer) event.getSender();
+		
+		if (event.getTag().equalsIgnoreCase("WDL|INIT") || (event.getTag().equalsIgnoreCase("PERMISSIONSREPL")
+				&& (new String(event.getData())).contains("mod.worlddownloader"))) {
+			proxiedPlayer.disconnect(TextComponent.fromLegacyText("§cConexão cancelada!"));
+			return;
+		}
 	}
 
 	@EventHandler

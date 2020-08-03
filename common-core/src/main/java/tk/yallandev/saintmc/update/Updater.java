@@ -96,7 +96,7 @@ public class Updater {
 			if (plugin.needUpdate()) {
 				debug("[Checker] The plugin " + plugin.getPluginName() + " need update!");
 
-				plugin.update("kangaroo123");
+				plugin.update(Updater.API, "kangaroo123");
 			}
 		}
 	}
@@ -105,7 +105,7 @@ public class Updater {
 		debug(" ");
 
 		for (PluginInfo plugin : pluginList) {
-			plugin.getPlugin().upload("kangaroo123");
+			plugin.getPlugin().upload(Updater.API, "kangaroo123");
 		}
 	}
 

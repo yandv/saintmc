@@ -71,19 +71,22 @@ public class WarpManager {
 			CommonGeneral.getInstance().getLogger().info("The warp " + warpName + " doesnt exist!");
 			return;
 		}
-		
+
 		Gamer gamer = GameMain.getInstance().getGamerManager().getGamer(player.getUniqueId());
-		
+
 		if (gamer == null)
 			return;
 
 		if (GameMain.getInstance().getGamerManager().getGamers().stream().filter(g -> g.getWarp() == warp)
 				.collect(Collectors.toList()).isEmpty()) {
 			GameMain.getInstance().getServer().getPluginManager().registerEvents(warp, GameMain.getInstance());
+
+			if (warp.getScoreboard() != null)
+				warp.getScoreboard().register();
 		}
 
 		Warp lastWarp = gamer.getWarp();
-		
+
 		if (lastWarp != null)
 			Bukkit.getPluginManager().callEvent(new PlayerWarpQuitEvent(gamer.getPlayer(), lastWarp));
 

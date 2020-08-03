@@ -22,5 +22,6 @@ public class WarpSetting {
 	private boolean swordInfinity = true;
 
 	private boolean warpEnabled = true;
+	private boolean spawnEnabled = true;
 
 }

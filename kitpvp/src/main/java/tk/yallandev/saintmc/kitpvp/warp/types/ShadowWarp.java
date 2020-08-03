@@ -24,15 +24,12 @@ import tk.yallandev.saintmc.bukkit.api.item.ActionItemStack.ActionType;
 import tk.yallandev.saintmc.bukkit.api.item.ActionItemStack.Interact;
 import tk.yallandev.saintmc.bukkit.api.item.ActionItemStack.InteractType;
 import tk.yallandev.saintmc.bukkit.api.item.ItemBuilder;
-import tk.yallandev.saintmc.bukkit.api.scoreboard.Score;
-import tk.yallandev.saintmc.bukkit.api.scoreboard.Scoreboard;
 import tk.yallandev.saintmc.bukkit.event.player.PlayerDamagePlayerEvent;
 import tk.yallandev.saintmc.bukkit.event.update.UpdateEvent;
 import tk.yallandev.saintmc.bukkit.event.update.UpdateEvent.UpdateType;
 import tk.yallandev.saintmc.bukkit.event.vanish.PlayerHideToPlayerEvent;
 import tk.yallandev.saintmc.bukkit.event.vanish.PlayerShowToPlayerEvent;
 import tk.yallandev.saintmc.common.utils.DateUtils;
-import tk.yallandev.saintmc.common.utils.string.StringUtils;
 import tk.yallandev.saintmc.kitpvp.GameMain;
 import tk.yallandev.saintmc.kitpvp.event.challenge.shadow.ShadowSearchingStartEvent;
 import tk.yallandev.saintmc.kitpvp.event.challenge.shadow.ShadowSearchingStopEvent;
@@ -40,12 +37,12 @@ import tk.yallandev.saintmc.kitpvp.event.warp.PlayerWarpDeathEvent;
 import tk.yallandev.saintmc.kitpvp.event.warp.PlayerWarpJoinEvent;
 import tk.yallandev.saintmc.kitpvp.event.warp.PlayerWarpQuitEvent;
 import tk.yallandev.saintmc.kitpvp.event.warp.PlayerWarpRespawnEvent;
-import tk.yallandev.saintmc.kitpvp.listener.ScoreboardListener;
 import tk.yallandev.saintmc.kitpvp.warp.DuelWarp;
 import tk.yallandev.saintmc.kitpvp.warp.Warp;
 import tk.yallandev.saintmc.kitpvp.warp.challenge.Challenge;
 import tk.yallandev.saintmc.kitpvp.warp.challenge.ChallengeType;
 import tk.yallandev.saintmc.kitpvp.warp.challenge.shadow.ShadowChallenge;
+import tk.yallandev.saintmc.kitpvp.warp.scoreboard.types.ShadowScoreboard;
 
 public class ShadowWarp extends Warp implements DuelWarp {
 
@@ -61,7 +58,7 @@ public class ShadowWarp extends Warp implements DuelWarp {
 	private Location secondLocation;
 
 	public ShadowWarp() {
-		super("1v1", BukkitMain.getInstance().getLocationFromConfig("shadow"));
+		super("1v1", BukkitMain.getInstance().getLocationFromConfig("shadow"), new ShadowScoreboard());
 
 		challengeMap = new HashMap<>();
 		playersIn1v1 = new HashMap<>();
@@ -185,12 +182,12 @@ public class ShadowWarp extends Warp implements DuelWarp {
 						Bukkit.getPluginManager().callEvent(searchingStopEvent);
 
 						if (!searchingStopEvent.isCancelled()) {
-							player.setItemInHand(fastChallenge.getItemStack());
-							CooldownController.getInstance().addCooldown(player,
-									new ItemCooldown(player.getItemInHand(), "1v1 rápido", 3l));
-
 							fastQueue.remove(player);
 							player.sendMessage("§a§l> §fVocê §csaiu§f na fila do §a1v1 rápido§f!");
+
+							player.setItemInHand(fastChallenge.getItemStack());
+							CooldownController.getInstance().addCooldown(player,
+									new ItemCooldown(fastChallenge.getItemStack(), "1v1 rápido", 3l));
 						}
 						return false;
 					}
@@ -268,13 +265,15 @@ public class ShadowWarp extends Warp implements DuelWarp {
 
 		firstLocation = BukkitMain.getInstance().getLocationFromConfig("shadow.pos1");
 		secondLocation = BukkitMain.getInstance().getLocationFromConfig("shadow.pos2");
+		getScoreboard().setWarp(this);
+		getWarpSettings().setSpawnEnabled(false);
 	}
 
 	@EventHandler
 	public void onUpdate(UpdateEvent event) {
 		if (event.getType() == UpdateType.SECOND)
-			fastQueue.forEach((player, time) -> ScoreboardListener.SEARCHING_SCOREBOARD.updateScore(player, new Score(
-					"§fTempo: §e" + StringUtils.formatTime((int) (System.currentTimeMillis() - time) / 1000), "time")));
+			fastQueue.forEach((player, time) -> getScoreboard().updateScore(player,
+					(int) (System.currentTimeMillis() - time) / 1000));
 	}
 
 	@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
@@ -412,11 +411,6 @@ public class ShadowWarp extends Warp implements DuelWarp {
 
 		challengeMap.remove(player);
 		fastQueue.remove(player);
-	}
-
-	@Override
-	public Scoreboard getScoreboard() {
-		return ScoreboardListener.SHADOW_SCOREBOARD;
 	}
 
 	@Override

@@ -1,6 +1,5 @@
 package tk.yallandev.saintmc.kitpvp.warp.types;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
@@ -11,12 +10,10 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 
-import tk.yallandev.saintmc.CommonConst;
 import tk.yallandev.saintmc.bukkit.BukkitMain;
 import tk.yallandev.saintmc.bukkit.api.item.ActionItemStack;
 import tk.yallandev.saintmc.bukkit.api.item.ActionItemStack.ActionType;
 import tk.yallandev.saintmc.bukkit.api.item.ItemBuilder;
-import tk.yallandev.saintmc.bukkit.api.scoreboard.Score;
 import tk.yallandev.saintmc.kitpvp.GameMain;
 import tk.yallandev.saintmc.kitpvp.event.warp.PlayerLostProtectionEvent;
 import tk.yallandev.saintmc.kitpvp.event.warp.PlayerWarpJoinEvent;
@@ -27,6 +24,7 @@ import tk.yallandev.saintmc.kitpvp.menu.KitInventory;
 import tk.yallandev.saintmc.kitpvp.menu.KitInventory.InventoryType;
 import tk.yallandev.saintmc.kitpvp.menu.WarpInventory;
 import tk.yallandev.saintmc.kitpvp.warp.Warp;
+import tk.yallandev.saintmc.kitpvp.warp.scoreboard.types.SpawnScoreboard;
 
 public class SpawnWarp extends Warp {
 
@@ -53,22 +51,10 @@ public class SpawnWarp extends Warp {
 			}.setInventoryClick(true));
 
 	public SpawnWarp() {
-		super("Spawn", BukkitMain.getInstance().getLocationFromConfig("spawn"));
+		super("Spawn", BukkitMain.getInstance().getLocationFromConfig("spawn"), new SpawnScoreboard());
 		getWarpSettings().setKitEnabled(true);
 		getWarpSettings().setSpawnProtection(true);
-
-		getScoreboard().blankLine(12);
-		getScoreboard().setScore(11, new Score("§fKills: §e0", "kills"));
-		getScoreboard().setScore(10, new Score("§fDeaths: §e0", "deaths"));
-		getScoreboard().setScore(9, new Score("§fKillstreak: §e0", "killstreak"));
-		getScoreboard().blankLine(8);
-		getScoreboard().setScore(7, new Score("§fRanking: §7(§f-§7)", "rank"));
-		getScoreboard().setScore(6, new Score("§fXp: §a0", "xp"));
-		getScoreboard().blankLine(5);
-		getScoreboard().setScore(4, new Score("§fMoney: §60", "coins"));
-		getScoreboard().setScore(3, new Score("§fJogadores: §b" + Bukkit.getOnlinePlayers().size(), "players"));
-		getScoreboard().blankLine(2);
-		getScoreboard().setScore(1, new Score("§6" + CommonConst.SITE, "site"));
+		getScoreboard().setWarp(this);
 	}
 
 	@EventHandler

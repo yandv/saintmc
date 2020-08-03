@@ -19,6 +19,7 @@ public enum StatusType {
 	SW_TEAM("skywars-team", GameStatus.class), SW_SQUAD("skywars-squad", GameStatus.class);
 
 	private String mongoCollection;
+
 	private Class<? extends Status> statusClass;
 
 }

@@ -3,6 +3,8 @@ package tk.yallandev.saintmc.kitpvp.hologram;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import tk.yallandev.hologramapi.hologram.Hologram;
@@ -10,15 +12,17 @@ import tk.yallandev.hologramapi.hologram.HologramBuilder;
 import tk.yallandev.hologramapi.hologram.impl.SimpleHologram;
 import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.bukkit.BukkitMain;
+import tk.yallandev.saintmc.bukkit.event.LocationChangeEvent;
 import tk.yallandev.saintmc.common.account.Member;
 import tk.yallandev.saintmc.common.account.MemberModel;
 import tk.yallandev.saintmc.common.account.MemberVoid;
 import tk.yallandev.saintmc.common.account.status.StatusType;
-import tk.yallandev.saintmc.common.account.status.types.normal.NormalModel;
+import tk.yallandev.saintmc.common.account.status.types.normal.NormalStatus;
 import tk.yallandev.saintmc.common.tag.Tag;
 import tk.yallandev.saintmc.kitpvp.GameMain;
+import tk.yallandev.saintmc.kitpvp.event.hologram.HologramUpdateEvent;
 
-public class RankingHologram {
+public class RankingHologram implements Listener {
 
 	private Hologram xpHologram;
 	private Hologram killsHologram;
@@ -28,10 +32,23 @@ public class RankingHologram {
 
 			@Override
 			public void run() {
-				createXp();
-				createKills();
+				Bukkit.getPluginManager().callEvent(new HologramUpdateEvent());
 			}
 		}.runTaskTimer(GameMain.getInstance(), 80, 20 * 60 * 30);
+	}
+
+	@EventHandler
+	public void onLocationChange(LocationChangeEvent event) {
+		if (event.getConfigName().equals("hologram-xp"))
+			createXp();
+		else if (event.getConfigName().equals("hologram-kills"))
+			createKills();
+	}
+
+	@EventHandler
+	public void onLocationChange(HologramUpdateEvent event) {
+		createXp();
+		createKills();
 	}
 
 	public void createXp() {
@@ -58,7 +75,7 @@ public class RankingHologram {
 					+ memberModel.getLeague().getSymbol() + "§7) §7- §b" + memberModel.getXp());
 			index++;
 		}
-		
+
 		BukkitMain.getInstance().getHologramController().registerHologram(xpHologram);
 	}
 
@@ -79,38 +96,38 @@ public class RankingHologram {
 		int index = 1;
 
 		for (Object model : CommonGeneral.getInstance().getStatusData().ranking(StatusType.PVP, "kills")) {
-			if (model instanceof NormalModel) {
-				NormalModel normalModel = (NormalModel) model;
+			if (model instanceof NormalStatus) {
+				NormalStatus normalStatus = (NormalStatus) model;
 
-				Member member = CommonGeneral.getInstance().getMemberManager().getMember(normalModel.getUniqueId());
+				Member member = CommonGeneral.getInstance().getMemberManager().getMember(normalStatus.getUniqueId());
 
 				if (member == null) {
 					try {
 						MemberModel loaded = CommonGeneral.getInstance().getPlayerData()
-								.loadMember(normalModel.getUniqueId());
+								.loadMember(normalStatus.getUniqueId());
 
 						if (loaded == null) {
 							CommonGeneral.getInstance().debug("Não foi possível pegar as informações do jogador "
-									+ normalModel.getUniqueId() + "!");
+									+ normalStatus.getUniqueId() + "!");
 						} else {
 							member = new MemberVoid(loaded);
 						}
 
 					} catch (Exception e) {
 						CommonGeneral.getInstance().debug(
-								"Não foi possível pegar as informações do jogador " + normalModel.getUniqueId() + "!");
+								"Não foi possível pegar as informações do jogador " + normalStatus.getUniqueId() + "!");
 					}
 				}
-				
+
 				if (member != null) {
 					killsHologram.addLine("§a" + index + "° §7- "
 							+ ChatColor.getLastColors(Tag.valueOf(member.getGroup().name()).getPrefix())
-							+ member.getPlayerName() + " §7- §3" + normalModel.getKills() + " kills");
+							+ member.getPlayerName() + " §7- §3" + normalStatus.getKills() + " kills");
 				}
 				index++;
 			}
 		}
-		
+
 		BukkitMain.getInstance().getHologramController().registerHologram(killsHologram);
 	}
 

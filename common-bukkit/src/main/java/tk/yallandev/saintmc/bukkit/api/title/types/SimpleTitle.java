@@ -57,7 +57,7 @@ public class SimpleTitle implements Title {
 			BukkitMember member = (BukkitMember) CommonGeneral.getInstance().getMemberManager()
 					.getMember(player.getUniqueId());
 
-			if (member.getClientType() == ClientType.LUNAR)
+			if (member.getClientType() == ClientType.LUNAR && member.getCustomClient() != null)
 				try {
 					member.getCustomClient().sendTitle(title, subtitle, 1f, stayTime / 20, fadeInTime / 20,
 							fadeOutTime / 20);

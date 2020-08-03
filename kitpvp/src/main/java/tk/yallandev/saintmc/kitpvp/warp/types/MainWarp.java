@@ -18,7 +18,7 @@ import tk.yallandev.saintmc.kitpvp.warp.Warp;
 public class MainWarp extends Warp {
 
 	public MainWarp() {
-		super("Main", BukkitMain.getInstance().getLocationFromConfig("main"));
+		super("Main", BukkitMain.getInstance().getLocationFromConfig("main"), null);
 		getWarpSettings().setSpawnProtection(true);
 		getWarpSettings().setWarpEnabled(false);
 	}

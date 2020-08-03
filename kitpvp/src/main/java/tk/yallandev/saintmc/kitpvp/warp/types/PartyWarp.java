@@ -20,7 +20,7 @@ public class PartyWarp extends Warp {
 	private Party party;
 
 	public PartyWarp() {
-		super("Party", new Location(Bukkit.getWorlds().stream().findFirst().orElse(null), 0, 180, 0));
+		super("Party", new Location(Bukkit.getWorlds().stream().findFirst().orElse(null), 0, 180, 0), null);
 	}
 
 	public void setPartyType(PartyType partyType) {

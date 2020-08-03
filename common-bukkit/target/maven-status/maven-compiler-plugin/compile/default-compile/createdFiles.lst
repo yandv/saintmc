@@ -90,6 +90,7 @@ tk\yallandev\saintmc\bukkit\event\account\PlayerChangeLeagueEvent.class
 tk\yallandev\saintmc\bukkit\event\update\UpdateEvent.class
 net\saintmc\anticheat\controller\MemberController.class
 tk\yallandev\saintmc\bukkit\api\menu\types\ConfirmInventory.class
+tk\yallandev\saintmc\bukkit\api\character\CharacterListener$1.class
 net\saintmc\anticheat\check\register\CombatCheck.class
 tk\yallandev\saintmc\bukkit\api\scoreboard\impl\SimpleScoreboard.class
 tk\yallandev\saintmc\bukkit\command\register\ModeratorCommand$3.class
@@ -129,6 +130,7 @@ net\saintmc\anticheat\storage\InteractStorage.class
 tk\yallandev\saintmc\bukkit\command\register\ModeratorCommand$7.class
 tk\yallandev\saintmc\bukkit\event\redis\RedisPubSubMessageEvent.class
 tk\yallandev\saintmc\bukkit\api\worldedit\arena\ArenaResponse.class
+tk\yallandev\saintmc\bukkit\api\character\NPC.class
 tk\yallandev\saintmc\bukkit\api\menu\click\MenuClickHandler.class
 tk\yallandev\saintmc\bukkit\utils\item\ItemUtils.class
 tk\yallandev\saintmc\bukkit\listener\register\FakeListener$2.class

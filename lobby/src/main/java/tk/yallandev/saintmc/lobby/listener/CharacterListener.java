@@ -1,107 +1,135 @@
 package tk.yallandev.saintmc.lobby.listener;
 
-import java.util.UUID;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
-import com.comphenix.protocol.wrappers.EnumWrappers.EntityUseAction;
-import com.github.juliarn.npc.NPC;
+import com.google.common.io.ByteArrayDataOutput;
+import com.google.common.io.ByteStreams;
 
+import lombok.AllArgsConstructor;
+import tk.yallandev.hologramapi.hologram.Hologram;
+import tk.yallandev.hologramapi.hologram.impl.SimpleHologram;
 import tk.yallandev.saintmc.bukkit.BukkitMain;
 import tk.yallandev.saintmc.bukkit.api.character.Character;
 import tk.yallandev.saintmc.bukkit.api.character.Character.Interact;
+import tk.yallandev.saintmc.bukkit.event.server.ServerPlayerJoinEvent;
+import tk.yallandev.saintmc.common.server.ServerType;
+import tk.yallandev.saintmc.lobby.LobbyMain;
 import tk.yallandev.saintmc.lobby.menu.tournament.TournamentInventory;
 
 public class CharacterListener implements Listener {
 
-	private Character tournamentCharacter;
-	private Character hungergamesCharacter;
-	private Character skywarsCharacter;
-	private Character pvpCharacter;
-	private Character gladiatorCharacter;
+	private List<HologramInfo> hologramList;
 
 	public CharacterListener() {
-		createTournament();
-//		createHungergames();
-//		createSkywars();
-//		createKitpvp();
-//		createGladiator();
-	}
+		hologramList = new ArrayList<>();
 
-	private void createTournament() {
-		tournamentCharacter = new Character("§1§lTORNEIO", UUID.randomUUID(),
-				UUID.fromString("8667ba71-b85a-4004-af54-457a9734eed7"),
-				BukkitMain.getInstance().getLocationFromConfig("npc-tournament"), new Interact() {
+		new Character("§1§lTORNEIO", "Steve", BukkitMain.getInstance().getLocationFromConfig("npc-tournament"),
+				new Interact() {
 
 					@Override
-					public boolean onInteract(Player player, NPC npc, EntityUseAction action) {
+					public boolean onInteract(Player player) {
 						new TournamentInventory(player, null, false, false);
 						return false;
 					}
 				});
 
-		tournamentCharacter.getNpc().setLookAtPlayer(true);
+		createCharacter("§bHungerGames", "yukiritoBDF", "npc-hg", new Interact() {
+
+			@Override
+			public boolean onInteract(Player player) {
+
+				ByteArrayDataOutput out = ByteStreams.newDataOutput();
+				out.writeUTF("Hungergames");
+				player.sendPluginMessage(LobbyMain.getInstance(), "BungeeCord", out.toByteArray());
+				player.closeInventory();
+
+				return false;
+			}
+		}, ServerType.HUNGERGAMES);
+
+		createCharacter("§bSkywars", "DoutorBiscoito", "npc-skywars", new Interact() {
+
+			@Override
+			public boolean onInteract(Player player) {
+
+				ByteArrayDataOutput out = ByteStreams.newDataOutput();
+				out.writeUTF("SWSolo");
+				player.sendPluginMessage(LobbyMain.getInstance(), "BungeeCord", out.toByteArray());
+				player.closeInventory();
+
+				return false;
+			}
+		}, ServerType.SW_SOLO, ServerType.SW_SQUAD, ServerType.SW_TEAM);
+
+		createCharacter("§bKitPvP", "broowk", "npc-pvp", new Interact() {
+
+			@Override
+			public boolean onInteract(Player player) {
+
+				ByteArrayDataOutput out = ByteStreams.newDataOutput();
+				out.writeUTF("PVP");
+				player.sendPluginMessage(LobbyMain.getInstance(), "BungeeCord", out.toByteArray());
+				player.closeInventory();
+
+				return false;
+			}
+		}, ServerType.FULLIRON, ServerType.SIMULATOR);
+
+		createCharacter("§bGladiator", "SpectroPlayer", "npc-gladiator", new Interact() {
+
+			@Override
+			public boolean onInteract(Player player) {
+				ByteArrayDataOutput out = ByteStreams.newDataOutput();
+				out.writeUTF("Gladiator");
+				player.sendPluginMessage(LobbyMain.getInstance(), "BungeeCord", out.toByteArray());
+				player.closeInventory();
+				return false;
+			}
+		}, ServerType.GLADIATOR);
+
 	}
 
-	private void createHungergames() {
-		hungergamesCharacter = new Character("§bHungerGames", UUID.randomUUID(),
-				UUID.fromString("4aca31f6-7bf8-4704-b35b-ef37a730f506"),
-				BukkitMain.getInstance().getLocationFromConfig("npc-hg"), new Interact() {
+	@EventHandler
+	public void onServerPlayerJoin(ServerPlayerJoinEvent event) {
+		HologramInfo entry = hologramList.stream().filter(info -> info.typeList.contains(event.getServerType()))
+				.findFirst().orElse(null);
 
-					@Override
-					public boolean onInteract(Player player, NPC npc, EntityUseAction action) {
-						new TournamentInventory(player, null, false, false);
-						return false;
-					}
-				});
+		if (entry != null) {
 
-		hungergamesCharacter.getNpc().setLookAtPlayer(true);
+			int playerCount = 0;
+
+			for (int integer : entry.typeList.stream().map(serverType -> BukkitMain.getInstance().getServerManager()
+					.getBalancer(event.getServerType()).getTotalNumber()).collect(Collectors.toList()))
+				playerCount += integer;
+
+			entry.hologram.setDisplayName("§e" + playerCount + " jogadores!");
+		}
 	}
 
-	private void createSkywars() {
-		skywarsCharacter = new Character("§bSkywars", UUID.randomUUID(),
-				UUID.fromString("1ad70885-4704-4eaa-86f2-b5f1484f1843"),
-				BukkitMain.getInstance().getLocationFromConfig("npc-skywars"), new Interact() {
+	public void createCharacter(String displayName, String skinName, String configName, Interact interact,
+			ServerType... serverType) {
+		new Character(displayName, skinName, BukkitMain.getInstance().getLocationFromConfig(configName), interact);
 
-					@Override
-					public boolean onInteract(Player player, NPC npc, EntityUseAction action) {
-						new TournamentInventory(player, null, false, false);
-						return false;
-					}
-				});
+		Hologram hologram = new SimpleHologram(displayName,
+				BukkitMain.getInstance().getLocationFromConfig(configName).add(0, 0.25, 0));
 
-		skywarsCharacter.getNpc().setLookAtPlayer(true);
+		hologramList
+				.add(new HologramInfo(Arrays.asList(serverType), hologram.addLine("§cNenhum servidor disponível!")));
+		hologram.spawn();
 	}
 
-	private void createKitpvp() {
-		pvpCharacter = new Character("§bKitPvP", UUID.randomUUID(),
-				UUID.fromString("8667ba71-b85a-4004-af54-457a9734eed7"),
-				BukkitMain.getInstance().getLocationFromConfig("npc-pvp"), new Interact() {
+	@AllArgsConstructor
+	public class HologramInfo {
 
-					@Override
-					public boolean onInteract(Player player, NPC npc, EntityUseAction action) {
-						new TournamentInventory(player, null, false, false);
-						return false;
-					}
-				});
+		private List<ServerType> typeList;
+		private Hologram hologram;
 
-		pvpCharacter.getNpc().setLookAtPlayer(true);
 	}
-
-	private void createGladiator() {
-		gladiatorCharacter = new Character("§bKitPvP", UUID.randomUUID(),
-				UUID.fromString("90d331e4-066d-4f45-bb5e-bd895f2bc257"),
-				BukkitMain.getInstance().getLocationFromConfig("npc-gladiator"), new Interact() {
-
-					@Override
-					public boolean onInteract(Player player, NPC npc, EntityUseAction action) {
-						new TournamentInventory(player, null, false, false);
-						return false;
-					}
-				});
-
-		gladiatorCharacter.getNpc().setLookAtPlayer(true);
-	}
-
 }

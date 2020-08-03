@@ -38,7 +38,7 @@
 			<scope>system</scope>
 			<systemPath>C:/Users/Allan/Desktop/Coisas do Allan/Aula/libraries/PaperSpigot.jar</systemPath>
 		</dependency>
-
+		
 		<dependency>
 			<groupId>org.spigotmc</groupId>
 			<artifactId>spigot-api</artifactId>
@@ -66,13 +66,6 @@
 			<artifactId>ProtocolLib</artifactId>
 			<version>4.2.1</version>
 			<scope>provided</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>com.github.juliarn</groupId>
-			<artifactId>npc-lib</artifactId>
-			<version>2.3-RELEASE</version>
-			<scope>compile</scope>
 		</dependency>
 
 		<dependency>

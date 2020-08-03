@@ -1,8 +1,6 @@
 
 package tk.yallandev.saintmc.kitpvp.warp;
 
-import java.util.stream.Collectors;
-
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -13,11 +11,10 @@ import org.bukkit.inventory.ItemStack;
 
 import lombok.Getter;
 import lombok.Setter;
-import tk.yallandev.saintmc.bukkit.api.scoreboard.Scoreboard;
-import tk.yallandev.saintmc.bukkit.api.scoreboard.impl.SimpleScoreboard;
 import tk.yallandev.saintmc.common.command.CommandClass;
 import tk.yallandev.saintmc.kitpvp.GameMain;
 import tk.yallandev.saintmc.kitpvp.event.warp.PlayerWarpQuitEvent;
+import tk.yallandev.saintmc.kitpvp.warp.scoreboard.WarpScoreboard;
 
 /**
  * 
@@ -36,14 +33,14 @@ public abstract class Warp implements Listener, CommandClass {
 	private double spawnRadius;
 
 	private WarpSetting warpSettings = new WarpSetting();
-	@Setter
-	private Scoreboard scoreboard = new SimpleScoreboard("§6§lKITPVP");
+	private WarpScoreboard scoreboard;
 
-	public Warp(String name, Location location) {
+	public Warp(String name, Location location, WarpScoreboard warpScoreboard) {
 		this.name = name;
 
 		this.spawnLocation = location;
 		this.spawnRadius = 10;
+		this.scoreboard = warpScoreboard;
 	}
 
 	public String getId() {
@@ -58,12 +55,10 @@ public abstract class Warp implements Listener, CommandClass {
 	public void removePlayer(PlayerWarpQuitEvent event) {
 		if (inWarp(event.getPlayer()))
 			if (GameMain.getInstance().getGamerManager().getGamers().stream().filter(gamer -> inWarp(gamer.getPlayer()))
-					.collect(Collectors.toList()).isEmpty())
+					.count() == 0l) {
 				HandlerList.unregisterAll(this);
-	}
-
-	public Scoreboard getScoreboard() {
-		return scoreboard;
+				scoreboard.unregister();
+			}
 	}
 
 	public abstract ItemStack getItem();

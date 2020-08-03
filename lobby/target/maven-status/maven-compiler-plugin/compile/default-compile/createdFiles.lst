@@ -70,6 +70,7 @@ tk\yallandev\saintmc\lobby\menu\tournament\TournamentInventory$2.class
 tk\yallandev\saintmc\lobby\menu\server\ServerInventory$SendClick.class
 tk\yallandev\saintmc\lobby\menu\server\SkywarsInventory$2.class
 tk\yallandev\saintmc\lobby\collectable\Collectables$Head.class
+tk\yallandev\saintmc\lobby\listener\CharacterListener$HologramInfo.class
 tk\yallandev\saintmc\lobby\listener\CombatListener$1.class
 tk\yallandev\saintmc\lobby\menu\collectable\WingInventory$2.class
 tk\yallandev\saintmc\lobby\listener\LoginListener.class

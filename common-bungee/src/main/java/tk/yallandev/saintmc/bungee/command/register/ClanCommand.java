@@ -30,8 +30,8 @@ import tk.yallandev.saintmc.common.clan.enums.ClanHierarchy;
 import tk.yallandev.saintmc.common.command.CommandArgs;
 import tk.yallandev.saintmc.common.command.CommandClass;
 import tk.yallandev.saintmc.common.command.CommandFramework.Command;
-import tk.yallandev.saintmc.common.permission.Group;
 import tk.yallandev.saintmc.common.command.CommandSender;
+import tk.yallandev.saintmc.common.permission.Group;
 import tk.yallandev.saintmc.common.tag.Tag;
 import tk.yallandev.saintmc.common.utils.string.MessageBuilder;
 
@@ -257,7 +257,8 @@ public class ClanCommand implements CommandClass {
 						}
 					}
 
-					if (map.values().stream().filter(clanInvite -> !clanInvite.hasExpired()).count() >= 12) {
+					if (map.values().stream().filter(clanInvite -> !clanInvite.hasExpired())
+							.count() >= Clan.MAX_MEMBERS) {
 						player.sendMessage(
 								"§cVocê enviou muitos convites simultâneos, aguarde para enviar outro convite!");
 						return;
@@ -365,7 +366,7 @@ public class ClanCommand implements CommandClass {
 						}
 					}
 
-					if (clan.getMemberMap().size() + 1 > 12) {
+					if (clan.getMemberMap().size() + 1 > Clan.MAX_MEMBERS) {
 						player.sendMessage("§cO clan está cheio!");
 						return;
 					}

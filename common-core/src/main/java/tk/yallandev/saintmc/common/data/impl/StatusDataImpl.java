@@ -65,10 +65,10 @@ public class StatusDataImpl implements StatusData {
 				if (collection.find(Filters.eq("uniqueId", normalModel.getUniqueId().toString())).first() == null)
 					collection.insertOne(Document.parse(CommonConst.GSON.toJson(normalModel)));
 			} else if (status instanceof ChallengeStatus) {
-				ChallengeStatus challengeStatus = new ChallengeStatus((ChallengeModel) status);
+				ChallengeModel challengeModel = new ChallengeModel((ChallengeStatus) status);
 
-				if (collection.find(Filters.eq("uniqueId", challengeStatus.getUniqueId().toString())).first() == null)
-					collection.insertOne(Document.parse(CommonConst.GSON.toJson(challengeStatus)));
+				if (collection.find(Filters.eq("uniqueId", challengeModel.getUniqueId().toString())).first() == null)
+					collection.insertOne(Document.parse(CommonConst.GSON.toJson(challengeModel)));
 			} else {
 				new NoSuchElementException("Cannot define the type of StatusModel");
 			}
@@ -106,6 +106,19 @@ public class StatusDataImpl implements StatusData {
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
+			} else if (status instanceof ChallengeStatus) {
+				try {
+					ChallengeModel challenegModel = new ChallengeModel((ChallengeStatus) status);
+					JsonObject object = jsonTree(challenegModel);
+
+					if (object.has(fieldName)) {
+						Object value = elementToBson(object.get(fieldName));
+						collection.updateOne(Filters.eq("uniqueId", challenegModel.getUniqueId().toString()),
+								new Document("$set", new Document(fieldName, value)));
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			} else {
 				new NoSuchElementException("Cannot define the type of StatusModel");
 			}
@@ -120,8 +133,8 @@ public class StatusDataImpl implements StatusData {
 		List<Object> memberList = new ArrayList<>();
 
 		while (mongo.hasNext()) {
-			memberList.add(CommonConst.GSON.fromJson(CommonConst.GSON.toJson(CommonConst.GSON.toJson(mongo.next())),
-					statusType.getStatusClass()));
+			memberList
+					.add(CommonConst.GSON.fromJson(CommonConst.GSON.toJson(mongo.next()), statusType.getStatusClass()));
 		}
 
 		return memberList;

@@ -227,11 +227,11 @@ public class PluginInfo {
 				|| major <= actualMajor && minor <= actualMinor && build > actualBuild;
 	}
 
-	public boolean update(String key) {
+	public boolean update(String api, String key) {
 		if (getPlugin() == null)
 			throw new IllegalStateException();
 
-		return getPlugin().update(key);
+		return getPlugin().update(api, key);
 	}
 
 	public Plugin getPlugin() {

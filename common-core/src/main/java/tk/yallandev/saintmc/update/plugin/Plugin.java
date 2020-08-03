@@ -30,13 +30,13 @@ public class Plugin implements Updateable {
 	}
 
 	@Override
-	public boolean update(String key) {
+	public boolean update(String api, String key) {
 
 		String filePath = pluginInfo.getPluginFile().getAbsolutePath();
 
 		try {
 			HttpGet request = new HttpGet(
-					Updater.API + "/plugin/download/?pluginName=" + pluginInfo.getPluginName() + "&key=" + key);
+					api + "/plugin/download/?pluginName=" + pluginInfo.getPluginName() + "&key=" + key);
 
 			CloseableHttpResponse response = ((ApacheWebImpl) CommonConst.DEFAULT_WEB).getCloseableHttpClient()
 					.execute(request);
@@ -83,8 +83,8 @@ public class Plugin implements Updateable {
 	}
 
 	@Override
-	public boolean upload(String key) {
-		HttpPost httppost = new HttpPost(Updater.API + "/plugin/?pluginName=" + pluginInfo.getPluginName() + "&version="
+	public boolean upload(String api, String key) {
+		HttpPost httppost = new HttpPost(api + "/plugin/?pluginName=" + pluginInfo.getPluginName() + "&version="
 				+ pluginInfo.getActualVersion() + "");
 
 		MultipartEntityBuilder mpEntity = MultipartEntityBuilder.create();

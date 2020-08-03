@@ -133,24 +133,19 @@ public class BukkitMain extends JavaPlugin {
 
 	@Override
 	public void onEnable() {
-		try {
-			UpdatePlugin.Shutdown shutdown = new UpdatePlugin.Shutdown() {
+		UpdatePlugin.Shutdown shutdown = new UpdatePlugin.Shutdown() {
 
-				@Override
-				public void stop() {
-					Bukkit.shutdown();
-				}
+			@Override
+			public void stop() {
+				Bukkit.shutdown();
+			}
 
-			};
+		};
 
-			if (UpdatePlugin.update(
-					new File(BukkitMain.class.getProtectionDomain().getCodeSource().getLocation().getPath()),
-					"BukkitCommon", CommonConst.DOWNLOAD_KEY, shutdown))
-				return;
-
-		} catch (Exception ex) {
-			CommonGeneral.getInstance().debug("Couldn't connect to http://apidata.saintmc.net/!");
-		}
+		if (UpdatePlugin.update(
+				new File(BukkitMain.class.getProtectionDomain().getCodeSource().getLocation().getPath()),
+				"BukkitCommon", CommonConst.DOWNLOAD_KEY, shutdown))
+			return;
 
 		try {
 

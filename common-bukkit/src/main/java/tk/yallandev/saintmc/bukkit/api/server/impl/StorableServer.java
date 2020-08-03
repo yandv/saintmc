@@ -9,42 +9,34 @@ import java.util.Map;
 
 import org.bukkit.plugin.java.JavaPlugin;
 
-import com.github.juliarn.npc.NPCPool;
-
 import lombok.Getter;
 import lombok.Setter;
-import tk.yallandev.saintmc.bukkit.BukkitMain;
 import tk.yallandev.saintmc.bukkit.api.server.Server;
 import tk.yallandev.saintmc.bukkit.api.server.chat.ChatState;
 import tk.yallandev.saintmc.common.profile.Profile;
 
 public class StorableServer implements Server {
-	
+
 	private List<Profile> whiteList;
 	private Map<Profile, Long> blackMap;
-	
+
 	@Getter
 	@Setter
 	private ChatState chatState = ChatState.ENABLED;
-	
-	@Getter
-	private NPCPool npcPool;
-	
+
 	private boolean whitelist;
 	@Getter
 	@Setter
 	private boolean restoreMode;
-	
+
 	public StorableServer() {
 		whiteList = new ArrayList<>();
 		blackMap = new HashMap<>();
-		npcPool = new NPCPool(BukkitMain.getInstance());
 	}
-	
+
 	public StorableServer(JavaPlugin javaPlugin) {
 		whiteList = new ArrayList<>();
 		blackMap = new HashMap<>();
-		npcPool = new NPCPool(javaPlugin);
 	}
 
 	@Override
@@ -69,12 +61,12 @@ public class StorableServer implements Server {
 	public boolean hasWhitelist(Profile profile) {
 		return whiteList.contains(profile);
 	}
-	
+
 	@Override
 	public boolean isWhitelist() {
 		return whitelist;
 	}
-	
+
 	@Override
 	public void setWhitelist(boolean whitelistState) {
 		this.whitelist = whitelistState;
@@ -92,10 +84,10 @@ public class StorableServer implements Server {
 				return true;
 			else
 				unblacklist(profile);
-		
+
 		return false;
 	}
-	
+
 	@Override
 	public long getBlacklistTime(Profile profile) {
 		return isBlackedlist(profile) ? blackMap.get(profile) : -1;
@@ -106,7 +98,7 @@ public class StorableServer implements Server {
 		if (!blackMap.containsKey(profile))
 			blackMap.put(profile, time);
 	}
-	
+
 	@Override
 	public void unblacklist(Profile profile) {
 		if (blackMap.containsKey(profile))
@@ -117,5 +109,5 @@ public class StorableServer implements Server {
 	public Collection<Profile> getBlackList() {
 		return Collections.unmodifiableSet(blackMap.keySet());
 	}
-	
+
 }

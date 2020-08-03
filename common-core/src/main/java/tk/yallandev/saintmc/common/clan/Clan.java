@@ -23,6 +23,8 @@ import tk.yallandev.saintmc.common.clan.event.member.MemberOnlineEvent;
 @Getter
 public abstract class Clan {
 
+	public static final int MAX_MEMBERS = 16;
+
 	public static final String MESSAGE_PREFIX = "§9Clan> ";
 	public static final String CLANCHAT_PREFIX = "§9§l[CLAN-CHAT]";
 

@@ -13,12 +13,14 @@ import tk.yallandev.saintmc.kitpvp.GameMain;
 import tk.yallandev.saintmc.kitpvp.event.warp.PlayerWarpJoinEvent;
 import tk.yallandev.saintmc.kitpvp.event.warp.PlayerWarpRespawnEvent;
 import tk.yallandev.saintmc.kitpvp.warp.Warp;
+import tk.yallandev.saintmc.kitpvp.warp.scoreboard.types.FpsScoreboard;
 
 public class FpsWarp extends Warp {
 
 	public FpsWarp() {
-		super("Fps", BukkitMain.getInstance().getLocationFromConfig("fps"));
+		super("Fps", BukkitMain.getInstance().getLocationFromConfig("fps"), new FpsScoreboard());
 		getWarpSettings().setSpawnProtection(true);
+		getScoreboard().setWarp(this);
 	}
 
 	@EventHandler

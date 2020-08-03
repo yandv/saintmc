@@ -21,13 +21,15 @@ import tk.yallandev.saintmc.kitpvp.event.warp.PlayerWarpJoinEvent;
 import tk.yallandev.saintmc.kitpvp.event.warp.PlayerWarpQuitEvent;
 import tk.yallandev.saintmc.kitpvp.event.warp.PlayerWarpRespawnEvent;
 import tk.yallandev.saintmc.kitpvp.warp.Warp;
+import tk.yallandev.saintmc.kitpvp.warp.scoreboard.types.VoidScoreboard;
 
 public class VoidWarp extends Warp {
 
 	private Map<UUID, Long> playerMap;
 
 	public VoidWarp() {
-		super("Void", BukkitMain.getInstance().getLocationFromConfig("void"));
+		super("Void", BukkitMain.getInstance().getLocationFromConfig("void"), new VoidScoreboard());
+		getScoreboard().setWarp(this);
 		playerMap = new HashMap<>();
 	}
 
@@ -42,6 +44,8 @@ public class VoidWarp extends Warp {
 
 					if (!playerMap.containsKey(player.getUniqueId()))
 						playerMap.put(player.getUniqueId(), System.currentTimeMillis());
+					
+					getScoreboard().updateScore(player, playerMap.get(player.getUniqueId()));
 				} else
 					event.setCancelled(true);
 			}
@@ -70,6 +74,7 @@ public class VoidWarp extends Warp {
 						(int) ((System.currentTimeMillis() - playerMap.get(event.getPlayer().getUniqueId())) / 1000))
 						+ " no void!");
 				playerMap.remove(event.getPlayer().getUniqueId());
+				getScoreboard().updateScore(event.getPlayer(), -1l);
 			}
 		}
 	}

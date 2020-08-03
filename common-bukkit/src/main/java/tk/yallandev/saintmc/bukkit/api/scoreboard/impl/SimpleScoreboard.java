@@ -133,7 +133,6 @@ public class SimpleScoreboard implements Scoreboard {
 				score.setSuffix(suffix);
 			}
 		}
-
 	}
 
 	@Override

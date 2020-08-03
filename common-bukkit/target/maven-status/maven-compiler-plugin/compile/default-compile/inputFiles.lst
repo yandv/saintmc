@@ -169,6 +169,7 @@ C:\Users\Allan\git\saintmc\common-bukkit\src\main\java\tk\yallandev\saintmc\bukk
 C:\Users\Allan\git\saintmc\common-bukkit\src\main\java\tk\yallandev\saintmc\bukkit\event\server\ServerPlayerLeaveEvent.java
 C:\Users\Allan\git\saintmc\common-bukkit\src\main\java\tk\yallandev\saintmc\bukkit\event\account\PlayerChangeMedalEvent.java
 C:\Users\Allan\git\saintmc\common-bukkit\src\main\java\tk\yallandev\saintmc\bukkit\api\client\CustomClient.java
+C:\Users\Allan\git\saintmc\common-bukkit\src\main\java\tk\yallandev\saintmc\bukkit\api\character\NPC.java
 C:\Users\Allan\git\saintmc\common-bukkit\src\main\java\tk\yallandev\saintmc\bukkit\api\cooldown\event\CooldownFinishEvent.java
 C:\Users\Allan\git\saintmc\common-bukkit\src\main\java\net\saintmc\anticheat\AnticheatController.java
 C:\Users\Allan\git\saintmc\common-bukkit\src\main\java\tk\yallandev\saintmc\bukkit\listener\register\EnchantListener.java

@@ -23,7 +23,6 @@ import tk.yallandev.saintmc.bukkit.api.item.ActionItemStack.ActionType;
 import tk.yallandev.saintmc.bukkit.api.item.ActionItemStack.Interact;
 import tk.yallandev.saintmc.bukkit.api.item.ActionItemStack.InteractType;
 import tk.yallandev.saintmc.bukkit.api.item.ItemBuilder;
-import tk.yallandev.saintmc.bukkit.api.scoreboard.Scoreboard;
 import tk.yallandev.saintmc.bukkit.event.player.PlayerDamagePlayerEvent;
 import tk.yallandev.saintmc.bukkit.event.vanish.PlayerHideToPlayerEvent;
 import tk.yallandev.saintmc.bukkit.event.vanish.PlayerShowToPlayerEvent;
@@ -32,7 +31,6 @@ import tk.yallandev.saintmc.kitpvp.event.warp.PlayerWarpDeathEvent;
 import tk.yallandev.saintmc.kitpvp.event.warp.PlayerWarpJoinEvent;
 import tk.yallandev.saintmc.kitpvp.event.warp.PlayerWarpQuitEvent;
 import tk.yallandev.saintmc.kitpvp.event.warp.PlayerWarpRespawnEvent;
-import tk.yallandev.saintmc.kitpvp.listener.ScoreboardListener;
 import tk.yallandev.saintmc.kitpvp.warp.DuelWarp;
 import tk.yallandev.saintmc.kitpvp.warp.Warp;
 import tk.yallandev.saintmc.kitpvp.warp.challenge.Challenge;
@@ -53,7 +51,7 @@ public class SumoWarp extends Warp implements DuelWarp {
 	private Location secondLocation;
 	
 	public SumoWarp() {
-		super("sumo", BukkitMain.getInstance().getLocationFromConfig("sumo"));
+		super("sumo", BukkitMain.getInstance().getLocationFromConfig("sumo"), null);
 		getWarpSettings().setWarpEnabled(false);
 		
 		challengeMap = new HashMap<>();
@@ -368,11 +366,6 @@ public class SumoWarp extends Warp implements DuelWarp {
 		fastQueue.remove(player);
 	}
 	
-	@Override
-	public Scoreboard getScoreboard() {
-		return ScoreboardListener.SHADOW_SCOREBOARD;
-	}
-
 	@Override
 	public ItemStack getItem() {
 		return new ItemBuilder().name("§aSumo")
