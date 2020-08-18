@@ -1,12 +1,18 @@
 package tk.yallandev.saintmc.bungee;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import com.google.common.io.ByteStreams;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -15,6 +21,10 @@ import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.config.ListenerInfo;
 import net.md_5.bungee.api.plugin.Plugin;
+import net.md_5.bungee.api.scheduler.ScheduledTask;
+import net.md_5.bungee.config.Configuration;
+import net.md_5.bungee.config.ConfigurationProvider;
+import net.md_5.bungee.config.YamlConfiguration;
 import tk.yallandev.saintmc.BungeeConst;
 import tk.yallandev.saintmc.CommonConst;
 import tk.yallandev.saintmc.CommonGeneral;
@@ -77,6 +87,8 @@ public class BungeeMain extends Plugin {
 
 	private DiscordMain discord;
 
+	private RedisDatabase redis;
+
 	private PubSubListener pubSubListener;
 	private CommandSender consoleSender = new CommandSender() {
 
@@ -111,8 +123,12 @@ public class BungeeMain extends Plugin {
 		}
 	};
 
+	private Configuration config;
+
 	@Setter
 	private boolean maintenceMode;
+
+	private ScheduledTask redisTask;
 
 	@Override
 	public void onLoad() {
@@ -142,6 +158,8 @@ public class BungeeMain extends Plugin {
 			CommonGeneral.getInstance().debug("Couldn't connect to http://apidata.saintmc.net/!");
 		}
 
+		loadConfiguration();
+
 		/**
 		 * Initializing Database
 		 */
@@ -152,8 +170,10 @@ public class BungeeMain extends Plugin {
 			 * Backend Initialize
 			 */
 
-			MongoConnection mongo = new MongoConnection(BungeeConst.MONGO_URL);
-			RedisDatabase redis = new RedisDatabase(BungeeConst.REDIS_HOSTNAME, BungeeConst.REDIS_PASSWORD, 6379);
+			MongoConnection mongo = new MongoConnection(
+					BungeeConst.MONGO_URL.replace("127.0.0.1", getConfig().getString("mongodb-address", "127.0.0.1")));
+			redis = new RedisDatabase(BungeeConst.REDIS_HOSTNAME.replace("127.0.0.1",
+					getConfig().getString("mongodb-address", "127.0.0.1")), BungeeConst.REDIS_PASSWORD, 6379);
 
 			mongo.connect();
 			redis.connect();
@@ -169,14 +189,6 @@ public class BungeeMain extends Plugin {
 			general.setReportData(reportData);
 			general.setPunishData(punishData);
 			general.setClanData(clanData);
-
-			/*
-			 * Server Network Info
-			 */
-
-			getProxy().getScheduler().runAsync(getInstance(),
-					pubSubListener = new PubSubListener(redis, new BungeePubSubHandler(), "server-info",
-							"account-field", "clan-field", "report-field", "report-action"));
 
 		} catch (Exception ex) {
 			ex.printStackTrace();
@@ -277,7 +289,7 @@ public class BungeeMain extends Plugin {
 
 		general.debug("The server has been loaded all the reports!");
 
-		ProxyServer.getInstance().getScheduler().schedule(getInstance(), new Runnable() {
+		ProxyServer.getInstance().getScheduler().schedule(this, new Runnable() {
 
 			@Override
 			public void run() {
@@ -289,7 +301,7 @@ public class BungeeMain extends Plugin {
 						if (ProxyServer.getInstance().getPlayers().size() > 0) {
 							CommonGeneral.getInstance().debug("Estamos verificando os pedidos!");
 
-//							BungeeMain.getInstance().getStoreController().check(consoleSender);
+							getStoreController().check(consoleSender);
 						}
 
 						String message = BungeeConst.BROADCAST_MESSAGES[CommonConst.RANDOM
@@ -302,7 +314,7 @@ public class BungeeMain extends Plugin {
 			}
 		}, 10, 10, TimeUnit.MINUTES);
 
-		ProxyServer.getInstance().getScheduler().runAsync(getInstance(), new Runnable() {
+		ProxyServer.getInstance().getScheduler().runAsync(this, new Runnable() {
 
 			@Override
 			public void run() {
@@ -314,6 +326,21 @@ public class BungeeMain extends Plugin {
 		System.setProperty("DB.TRACE", "false");
 
 		registerListener();
+
+		/*
+		 * Server Network Info
+		 */
+
+		loadRedis();
+	}
+
+	public void loadRedis() {
+		if (redisTask != null)
+			redisTask.cancel();
+
+		redisTask = getProxy().getScheduler().runAsync(this,
+				pubSubListener = new PubSubListener(redis, new BungeePubSubHandler(), "server-info", "account-field",
+						"clan-field", "report-field", "report-action"));
 	}
 
 	@Override
@@ -334,6 +361,32 @@ public class BungeeMain extends Plugin {
 				new ConnectionListener(serverManager));
 		ProxyServer.getInstance().getPluginManager().registerListener(getInstance(),
 				new MessageListener(serverManager));
+	}
+
+	private void loadConfiguration() {
+		try {
+			if (!getDataFolder().exists()) {
+				getDataFolder().mkdir();
+			}
+
+			File configFile = new File(getDataFolder(), "config.yml");
+
+			if (!configFile.exists()) {
+				try {
+					configFile.createNewFile();
+					try (InputStream is = getResourceAsStream("config.yml");
+							OutputStream os = new FileOutputStream(configFile)) {
+						ByteStreams.copy(is, os);
+					}
+				} catch (IOException e) {
+					throw new RuntimeException("Unable to create configuration file", e);
+				}
+			}
+
+			config = ConfigurationProvider.getProvider(YamlConfiguration.class).load(configFile);
+		} catch (IOException ex) {
+			ex.printStackTrace();
+		}
 	}
 
 	public static BungeeMain getPlugin() {

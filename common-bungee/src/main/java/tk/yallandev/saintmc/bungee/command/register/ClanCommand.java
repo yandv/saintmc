@@ -9,6 +9,7 @@ import java.util.Map.Entry;
 import java.util.UUID;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.google.common.base.Joiner;
 
@@ -205,7 +206,7 @@ public class ClanCommand implements CommandClass {
 						player.sendMessage("§4§lNão é possível desfazer essa ação!");
 					}
 				else {
-					player.sendMessage("§cSomente o " + Tag.DONO.getPrefix() + "§f do clan pode fazer isso!");
+					player.sendMessage("§cSomente o " + ClanHierarchy.OWNER.getTag() + "§f do clan pode fazer isso!");
 				}
 			}
 
@@ -474,54 +475,23 @@ public class ClanCommand implements CommandClass {
 						.map(clanInfo -> (CommonGeneral.getInstance().getMemberManager()
 								.containsKey(clanInfo.getPlayerId()) ? "§a" : "§c") + clanInfo.getPlayerName())
 						.findFirst().orElse("§cNinguém")));
-				player.sendMessage("§a§l> " + ClanHierarchy.ADMIN.getTag()
-						+ (clan.getMemberMap().values().stream()
-								.filter(clanInfo -> clanInfo.getClanHierarchy() == ClanHierarchy.ADMIN).count() == 1
-										? ""
-										: "S")
-						+ "§f: "
-						+ (clan.getMemberMap().values().stream()
-								.filter(clanInfo -> clanInfo.getClanHierarchy() == ClanHierarchy.ADMIN).findFirst()
-								.isPresent()
-										? Joiner.on(", ").join(clan.getMemberMap().values().stream()
-												.filter(clanInfo -> clanInfo.getClanHierarchy() == ClanHierarchy.ADMIN)
+
+				for (ClanHierarchy clanHierarchy : Arrays.asList(ClanHierarchy.ADMIN, ClanHierarchy.RECRUTER,
+						ClanHierarchy.MEMBER)) {
+					Stream<ClanInfo> stream = clan.getMemberMap().values().stream()
+							.filter(clanInfo -> clanInfo.getClanHierarchy() == clanHierarchy);
+
+					if (stream.findFirst().isPresent())
+						player.sendMessage("§a§l> " + clanHierarchy.getTag() + (stream.count() > 1 ? "" : "S") + "§f: "
+								+ Joiner.on(", ")
+										.join(clan.getMemberMap().values().stream()
+												.filter(clanInfo -> clanInfo.getClanHierarchy() == clanHierarchy)
 												.map(clanInfo -> (CommonGeneral.getInstance().getMemberManager()
 														.containsKey(clanInfo.getPlayerId()) ? "§a" : "§c")
 														+ clanInfo.getPlayerName())
-												.collect(Collectors.toList()))
-										: ""));
-				player.sendMessage("§a§l> " + ClanHierarchy.RECRUTER.getTag()
-						+ (clan.getMemberMap().values().stream()
-								.filter(clanInfo -> clanInfo.getClanHierarchy() == ClanHierarchy.RECRUTER).count() == 1
-										? ""
-										: "S")
-						+ "§f: "
-						+ (clan.getMemberMap().values().stream()
-								.filter(clanInfo -> clanInfo.getClanHierarchy() == ClanHierarchy.RECRUTER).findFirst()
-								.isPresent()
-										? Joiner.on(", ").join(clan.getMemberMap().values().stream().filter(
-												clanInfo -> clanInfo.getClanHierarchy() == ClanHierarchy.RECRUTER)
-												.map(clanInfo -> (CommonGeneral.getInstance().getMemberManager()
-														.containsKey(clanInfo.getPlayerId()) ? "§a" : "§c")
-														+ clanInfo.getPlayerName())
-												.collect(Collectors.toList()))
-										: ""));
-				player.sendMessage("§a§l> " + ClanHierarchy.MEMBER.getTag()
-						+ (clan.getMemberMap().values().stream()
-								.filter(clanInfo -> clanInfo.getClanHierarchy() == ClanHierarchy.MEMBER).count() == 1
-										? ""
-										: "S")
-						+ "§f: "
-						+ (clan.getMemberMap().values().stream()
-								.filter(clanInfo -> clanInfo.getClanHierarchy() == ClanHierarchy.MEMBER).findFirst()
-								.isPresent()
-										? Joiner.on(", ").join(clan.getMemberMap().values().stream()
-												.filter(clanInfo -> clanInfo.getClanHierarchy() == ClanHierarchy.MEMBER)
-												.map(clanInfo -> (CommonGeneral.getInstance().getMemberManager()
-														.containsKey(clanInfo.getPlayerId()) ? "§a" : "§c")
-														+ clanInfo.getPlayerName())
-												.collect(Collectors.toList()))
-										: ""));
+												.collect(Collectors.toList())));
+				}
+
 				player.sendMessage(" ");
 				player.sendMessage("§6Ranking: ");
 				player.sendMessage(" ");
@@ -572,6 +542,18 @@ public class ClanCommand implements CommandClass {
 			}
 			break;
 		}
+		case "chat": {
+
+			if (haveClan(player)) {
+				player.getAccountConfiguration()
+						.setClanChatEnabled(!player.getAccountConfiguration().isClanChatEnabled());
+				player.sendMessage(
+						player.getAccountConfiguration().isClanChatEnabled() ? "§aO chat do clan foi ativado!"
+								: "§cO chat do clan foi desativado!");
+			}
+
+			break;
+		}
 		default: {
 			handleUsage(player, cmdArgs.getLabel());
 			break;
@@ -579,7 +561,7 @@ public class ClanCommand implements CommandClass {
 		}
 	}
 
-	@Command(name = "clan.chat", aliases = { "clanchat", "cchat" })
+	@Command(name = "clanchat", aliases = { "cchat" })
 	public void clanchatCommand(CommandArgs cmdArgs) {
 		if (!(cmdArgs.isPlayer()))
 			return;
@@ -629,7 +611,7 @@ public class ClanCommand implements CommandClass {
 
 	public boolean dontHaveClan(Member member) {
 		if (member.getClanUniqueId() != null) {
-			member.sendMessage("§cVocê já tem um clan!");
+			member.sendMessage("§cVocê não tem um clan!	");
 			return false;
 		}
 

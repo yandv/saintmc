@@ -31,6 +31,7 @@ public class HologramListener implements Listener {
 				createKills();
 			}
 		}.runTaskTimer(LobbyMain.getInstance(), 80, 20 * 60 * 10);
+		createPvP();
 	}
 
 	@EventHandler

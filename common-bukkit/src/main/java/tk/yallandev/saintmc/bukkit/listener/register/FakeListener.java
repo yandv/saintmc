@@ -18,7 +18,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import tk.yallandev.saintmc.CommonGeneral;
-import tk.yallandev.saintmc.bukkit.api.player.FakePlayerAPI;
+import tk.yallandev.saintmc.bukkit.api.player.PlayerAPI;
 import tk.yallandev.saintmc.bukkit.listener.Listener;
 import tk.yallandev.saintmc.common.account.Member;
 import tk.yallandev.saintmc.common.server.ServerType;
@@ -91,7 +91,7 @@ public class FakeListener extends Listener {
 			if (member.isLastServer(ServerType.PRIVATE_SERVER)) {
 				member.setFakeName(member.getPlayerName());
 			} else {
-				FakePlayerAPI.changePlayerName(player, member.getFakeName());
+				PlayerAPI.changePlayerName(player, member.getFakeName());
 				member.sendMessage("§aVocê está usando o fake " + member.getFakeName() + "!");
 			}
 
@@ -99,7 +99,7 @@ public class FakeListener extends Listener {
 			if (member.getSessionTime() <= 5000)
 				member.sendMessage("§aSua skin foi alterada!");
 
-			FakePlayerAPI.changePlayerSkin(player, skinCache.getIfPresent(player.getUniqueId()), true);
+			PlayerAPI.changePlayerSkin(player, skinCache.getIfPresent(player.getUniqueId()), true);
 		}
 	}
 

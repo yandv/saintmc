@@ -38,6 +38,7 @@ tk\yallandev\saintmc\bukkit\controller\SkinController.class
 tk\yallandev\saintmc\bukkit\api\item\ActionItemStack$ActionType.class
 tk\yallandev\saintmc\bukkit\api\listener\ManualRegisterableListener.class
 tk\yallandev\saintmc\bukkit\permission\injector\regexperm\PermissibleInjector.class
+tk\yallandev\saintmc\bukkit\api\player\TextureFetcher.class
 tk\yallandev\saintmc\bukkit\event\restore\RestoreEvent.class
 tk\yallandev\saintmc\bukkit\event\player\PlayerDamagePlayerEvent.class
 tk\yallandev\saintmc\bukkit\event\restore\RestoreStopEvent.class
@@ -57,10 +58,12 @@ tk\yallandev\saintmc\bukkit\api\worldedit\arena\ArenaType$3.class
 tk\yallandev\saintmc\bukkit\bukkit\BukkitMember.class
 tk\yallandev\test\ChromaTest$1.class
 tk\yallandev\saintmc\bukkit\BukkitMain$1.class
+tk\yallandev\saintmc\bukkit\api\player\TextureFetcher$1.class
 tk\yallandev\saintmc\bukkit\api\packet\PacketBuilder.class
 net\saintmc\anticheat\check\register\VapeCheck.class
 tk\yallandev\saintmc\bukkit\permission\injector\CraftBukkitInterface.class
 tk\yallandev\saintmc\bukkit\api\worldedit\block\future\FutureListener.class
+tk\yallandev\saintmc\bukkit\api\player\PlayerAPI.class
 tk\yallandev\saintmc\bukkit\listener\register\ChatListener$2.class
 net\saintmc\anticheat\check\register\CombatCheck$1.class
 tk\yallandev\saintmc\bukkit\BukkitPlatform.class
@@ -146,7 +149,6 @@ tk\yallandev\saintmc\bukkit\menu\report\ReportListInventory$2.class
 tk\yallandev\saintmc\bukkit\api\menu\types\ConfirmInventory$2.class
 tk\yallandev\saintmc\bukkit\listener\Listener.class
 tk\yallandev\saintmc\bukkit\networking\redis\BukkitPubSubHandler$1.class
-tk\yallandev\saintmc\bukkit\api\player\TextureAPI$1.class
 tk\yallandev\saintmc\bukkit\api\server\Server.class
 tk\yallandev\saintmc\bukkit\api\protocol\ProtocolGetter.class
 net\saintmc\anticheat\check\CheckController$CheckHandler.class
@@ -170,12 +172,9 @@ tk\yallandev\saintmc\bukkit\api\vanish\AdminMode.class
 tk\yallandev\saintmc\bukkit\event\vanish\PlayerHideToPlayerEvent.class
 tk\yallandev\saintmc\bukkit\command\register\ModeratorCommand.class
 tk\yallandev\saintmc\bukkit\command\register\YoutubeCommand.class
-tk\yallandev\saintmc\bukkit\permission\injector\loader\LoaderNetUtil.class
 net\saintmc\anticheat\alert\Alert.class
 tk\yallandev\saintmc\bukkit\menu\account\AccountInventory$1.class
 tk\yallandev\saintmc\bukkit\api\cooldown\event\CooldownFinishEvent.class
-tk\yallandev\saintmc\bukkit\api\player\FakePlayerAPI$1.class
-tk\yallandev\saintmc\bukkit\api\player\TextureAPI.class
 tk\yallandev\saintmc\bukkit\bukkit\BukkitClan.class
 tk\yallandev\saintmc\bukkit\api\client\lunar\LunarClient.class
 tk\yallandev\saintmc\bukkit\permission\listener\PermissionListener$1.class
@@ -188,7 +187,6 @@ tk\yallandev\saintmc\bukkit\menu\report\ReportListInventory$ReportClickHandler.c
 tk\yallandev\saintmc\bukkit\api\character\Character$1.class
 tk\yallandev\saintmc\bukkit\BukkitMain.class
 tk\yallandev\saintmc\bukkit\command\register\AnticheatCommand.class
-tk\yallandev\saintmc\bukkit\api\menu\types\ConfirmInventory$3.class
 tk\yallandev\saintmc\bukkit\api\character\CharacterListener.class
 tk\yallandev\saintmc\bukkit\menu\account\AccountInventory.class
 net\saintmc\anticheat\check\register\MovementCheck.class
@@ -214,6 +212,7 @@ tk\yallandev\saintmc\bukkit\listener\register\ChatListener$1.class
 tk\yallandev\saintmc\bukkit\command\register\StaffCommand$1.class
 tk\yallandev\saintmc\bukkit\api\cooldown\CooldownController$CooldownListener.class
 tk\yallandev\saintmc\bukkit\anticheat\alert\AlertController.class
+tk\yallandev\saintmc\bukkit\api\player\PlayerAPI$1.class
 tk\yallandev\saintmc\bukkit\menu\report\ReportListInventory.class
 tk\yallandev\saintmc\bukkit\api\worldedit\WorldeditController$1.class
 tk\yallandev\saintmc\bukkit\api\character\Character$InteractType.class
@@ -224,7 +223,6 @@ tk\yallandev\saintmc\BukkitConst.class
 tk\yallandev\saintmc\bukkit\command\register\TagCommand.class
 net\saintmc\anticheat\check\CheckController$CheckType.class
 net\saintmc\anticheat\utils\Util.class
-tk\yallandev\saintmc\bukkit\api\player\FakePlayerAPI.class
 tk\yallandev\saintmc\bukkit\listener\register\CommandListener.class
 tk\yallandev\saintmc\bukkit\permission\injector\regexperm\PEXPermissionSubscriptionMap.class
 net\saintmc\anticheat\check\CheckController.class

@@ -83,7 +83,22 @@ public class PluginInfo {
 			this.version = pluginInfo.version == null ? actualVersion : pluginInfo.version;
 			this.downloadUrl = pluginInfo.downloadUrl;
 		} catch (Exception e) {
-			e.printStackTrace();
+
+			try {
+				JsonElement json = CommonConst.DEFAULT_WEB
+						.doRequest("http://localhost/plugin/?pluginName=" + pluginName, Method.GET);
+
+				JsonObject jsonObject = (JsonObject) json;
+
+				PluginInfo pluginInfo = CommonConst.GSON.fromJson(jsonObject, PluginInfo.class);
+
+				if (pluginInfo.getPluginName() != null)
+					this.pluginName = pluginInfo.pluginName;
+				this.version = pluginInfo.version == null ? actualVersion : pluginInfo.version;
+				this.downloadUrl = pluginInfo.downloadUrl;
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
 		}
 	}
 
@@ -126,7 +141,46 @@ public class PluginInfo {
 				System.out.println("Not found!");
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			try {
+				JsonElement json = CommonConst.DEFAULT_WEB
+						.doRequest("http://localhost/plugin/?pluginName=" + pluginName, Method.GET);
+
+				JsonObject jsonObject = (JsonObject) json;
+
+				PluginInfo pluginInfo = CommonConst.GSON.fromJson(jsonObject, PluginInfo.class);
+
+				this.pluginName = pluginInfo.pluginName == null ? pluginName : pluginInfo.getPluginName();
+				this.version = pluginInfo.version;
+				this.downloadUrl = pluginInfo.downloadUrl;
+
+				if (path.endsWith(".jar")) {
+					this.pluginFile = new File(path);
+				} else {
+					File file = new File(path);
+
+					if (file.isDirectory()) {
+						if (!path.endsWith("plugins")) {
+							path = path + "\\plugins";
+							file = new File(path);
+
+							if (!file.exists())
+								file.mkdirs();
+						}
+					}
+
+					this.pluginFile = new File(path + "\\" + pluginName + ".jar");
+				}
+
+				if (this.pluginFile.exists()) {
+					this.actualVersion = actualVersion();
+					System.out.println("Found!");
+				} else {
+					this.actualVersion = "0.0";
+					System.out.println("Not found!");
+				}
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
 		}
 	}
 
@@ -202,7 +256,7 @@ public class PluginInfo {
 		int major = 0;
 		int minor = 0;
 		int build = 0;
-		
+
 		if (this.version.contains(".")) {
 			major = Integer.valueOf(this.version.split("\\.")[0]);
 			minor = Integer.valueOf(this.version.split("\\.")[1]);
@@ -222,7 +276,7 @@ public class PluginInfo {
 			if (this.actualVersion.split("\\.").length >= 3)
 				actualBuild = Integer.valueOf(this.actualVersion.split("\\.")[2]);
 		}
-		
+
 		return major > actualMajor || major <= actualMajor && minor > actualMinor
 				|| major <= actualMajor && minor <= actualMinor && build > actualBuild;
 	}

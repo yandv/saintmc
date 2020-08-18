@@ -7,6 +7,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 
@@ -90,6 +91,16 @@ public class SpawnWarp extends Warp {
 
 		if (gamer.getWarp() == this)
 			event.setDamage(Integer.MAX_VALUE);
+	}
+
+	@EventHandler
+	public void onPlayerDropItem(PlayerDropItemEvent event) {
+		if (inWarp(event.getPlayer()))
+			if (GameMain.getInstance().getGamerManager().getGamer(event.getPlayer().getUniqueId()).isSpawnProtection())
+				if (event.getItemDrop().getItemStack().getType() == Material.CHEST
+						|| event.getItemDrop().getItemStack().getType() == Material.COMPASS) {
+					event.setCancelled(true);
+				}
 	}
 
 	@EventHandler

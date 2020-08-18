@@ -12,18 +12,17 @@ import lombok.Getter;
 import net.md_5.bungee.api.chat.BaseComponent;
 import tk.yallandev.saintmc.CommonConst;
 import tk.yallandev.saintmc.CommonGeneral;
+import tk.yallandev.saintmc.common.account.client.ClientType;
 import tk.yallandev.saintmc.common.account.configuration.AccountConfiguration;
 import tk.yallandev.saintmc.common.account.configuration.LoginConfiguration;
 import tk.yallandev.saintmc.common.account.medal.Medal;
 import tk.yallandev.saintmc.common.ban.PunishmentHistory;
 import tk.yallandev.saintmc.common.clan.Clan;
-import tk.yallandev.saintmc.common.client.ClientType;
 import tk.yallandev.saintmc.common.command.CommandSender;
 import tk.yallandev.saintmc.common.permission.Group;
 import tk.yallandev.saintmc.common.permission.RankType;
 import tk.yallandev.saintmc.common.server.ServerType;
 import tk.yallandev.saintmc.common.tag.Tag;
-import tk.yallandev.saintmc.common.tournment.TournamentGroup;
 
 @Getter
 public abstract class Member implements CommandSender {
@@ -97,6 +96,7 @@ public abstract class Member implements CommandSender {
 
 	private int money;
 	private int xp;
+	private int position = -1;
 	private League league;
 
 	private int reputation;
@@ -159,6 +159,7 @@ public abstract class Member implements CommandSender {
 
 		money = memberModel.getMoney();
 		xp = memberModel.getXp();
+		position = memberModel.getPosition();
 		league = memberModel.getLeague();
 
 		reputation = memberModel.getReputation();
@@ -488,6 +489,15 @@ public abstract class Member implements CommandSender {
 		setMoney(getMoney() + money);
 		return money;
 	}
+	
+	public void setPosition(int position) {
+		this.position = position;
+		save("position");
+	}
+	
+	public String getRanking() {
+		return this.position < 0 ? ">15000" : "" + position;
+	}
 
 	public int removeMoney(int money) {
 		if (money < 0)
@@ -588,7 +598,6 @@ public abstract class Member implements CommandSender {
 	public void setJoinData(String playerName, String hostString) {
 		this.playerName = playerName;
 		this.lastIpAddress = hostString;
-		this.online = true;
 
 		this.accountConfiguration.setPlayer(this);
 		this.loginConfiguration.setPlayer(this);

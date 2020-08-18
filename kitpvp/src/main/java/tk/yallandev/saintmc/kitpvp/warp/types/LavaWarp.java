@@ -77,7 +77,7 @@ public class LavaWarp extends Warp {
 					event.setCancelled(false);
 					getScoreboard().updateScore(player, entry.getValue());
 				} else {
-					if (event.getCause() == DamageCause.FIRE_TICK || event.getCause() == DamageCause.FIRE) {
+					if (event.getCause() == DamageCause.FIRE_TICK) {
 						if (challengeMap.containsKey(player.getUniqueId())) {
 							Entry<ChallengeStage, ChallengeInfo> entry = challengeMap.get(player.getUniqueId());
 
@@ -91,15 +91,19 @@ public class LavaWarp extends Warp {
 									else {
 										if (BukkitMain.getInstance()
 												.getLocationFromConfig(entry.getKey().getEndConfig())
-												.distanceSquared(player.getLocation()) < 5)
+												.distance(player.getLocation()) < 8) {
 											Bukkit.getPluginManager().callEvent(new PlayerFinishChallengeEvent(player,
 													entry.getKey(), entry.getValue()));
-										else
+											System.out
+													.println(entry.getKey().getName() + " " + player.getName() + " 1");
+										} else {
 											Bukkit.getPluginManager().callEvent(new PlayerStopChallengeEvent(player,
 													entry.getKey(), entry.getValue()));
+											System.out
+													.println(entry.getKey().getName() + " " + player.getName() + " 2");
+										}
 									}
 
-									entry.getValue().setFinished(true);
 								}
 							}
 						}
@@ -112,69 +116,70 @@ public class LavaWarp extends Warp {
 	}
 
 	@EventHandler
+	public void onPlayerFinishChallenge(PlayerFinishChallengeEvent event) {
+		Player player = event.getPlayer();
+
+		ChallengeStatus challengeStatus = CommonGeneral.getInstance().getStatusManager()
+				.loadStatus(player.getUniqueId(), StatusType.LAVA, ChallengeStatus.class);
+		ChallengeType challengeType = ChallengeType.valueOf(event.getChallengeType().name());
+
+		challengeStatus.addWin(ChallengeType.valueOf(event.getChallengeType().name()));
+
+		int time = (int) ((event.getChallengeInfo().getLastDamage() - event.getChallengeInfo().getStartTime()) / 1000);
+
+		player.sendMessage("§aVocê passou o lava challenge "
+				+ NameUtils.formatString(event.getChallengeType().getName()) + " em "
+				+ formatTime(event.getChallengeInfo().getLastDamage(), event.getChallengeInfo().getStartTime()) + "!");
+
+		if (challengeStatus.getTime(challengeType) == 0) {
+			player.sendMessage("§aVocê estabeleceu o record de " + StringUtils.formatTime(time) + " nesse modo!");
+			challengeStatus.setTime(challengeType, time);
+		} else if (time < challengeStatus.getTime(challengeType)) {
+			player.sendMessage("§aVocê ultrapassou o seu record nesse modo!");
+			challengeStatus.setTime(challengeType, time);
+		} else
+			player.sendMessage("§aO seu record neste modo é §7"
+					+ StringUtils.formatTime(challengeStatus.getTime(challengeType)) + "§a!");
+
+		player.teleport(getSpawnLocation());
+
+		if (event.getChallengeType().ordinal() >= ChallengeStage.HARD.ordinal()) {
+			FireworkAPI.spawn(player.getLocation().add(0, 0, 1), Color.AQUA, true);
+			FireworkAPI.spawn(player.getLocation().add(1, 0, 0), Color.AQUA, true);
+			FireworkAPI.spawn(player.getLocation().add(-1, 0, 0), Color.AQUA, true);
+			FireworkAPI.spawn(player.getLocation().add(0, 0, -1), Color.AQUA, true);
+		}
+
+		if (event.getChallengeType() == ChallengeStage.HARDCORE) {
+			for (Player p : Bukkit.getOnlinePlayers()) {
+				p.sendMessage("§9Lava Challenge> §fO jogador §a" + player.getName()
+						+ "§f passou o desafio de lava §4Extreme§f!");
+				p.playSound(p.getLocation(), Sound.ENDERDRAGON_GROWL, 1f, 1f);
+			}
+		}
+
+		handleInventory(player);
+	}
+
+	@EventHandler
 	public void onChallengeFinish(PlayerStopChallengeEvent event) {
 		Player player = event.getPlayer();
 
-		if (event instanceof PlayerFinishChallengeEvent) {
-			ChallengeStatus challengeStatus = CommonGeneral.getInstance().getStatusManager()
-					.loadStatus(player.getUniqueId(), StatusType.LAVA, ChallengeStatus.class);
-			ChallengeType challengeType = ChallengeType.valueOf(event.getChallengeType().name());
-
-			challengeStatus.addWin(ChallengeType.valueOf(event.getChallengeType().name()));
-
-			int time = (int) ((event.getChallengeInfo().getLastDamage() - event.getChallengeInfo().getStartTime())
-					/ 1000);
-
-			player.sendMessage("§aVocê passou o lava challenge "
-					+ NameUtils.formatString(event.getChallengeType().getName()) + " em "
+		if (event.isDeath()) {
+			player.sendMessage("§cVocê morreu no " + NameUtils.formatString(event.getChallengeType().getName()) + "!");
+			player.sendMessage("§cVocê ficou vivo por "
 					+ formatTime(event.getChallengeInfo().getLastDamage(), event.getChallengeInfo().getStartTime())
 					+ "!");
 
-			if (challengeStatus.getTime(challengeType) == 0) {
-				player.sendMessage("§aVocê estabeleceu o record de " + StringUtils.formatTime(time) + " nesse modo!");
-				challengeStatus.setTime(challengeType, time);
-			} else if (time < challengeStatus.getTime(challengeType)) {
-				player.sendMessage("§aVocê ultrapassou o seu record nesse modo!");
-				challengeStatus.setTime(challengeType, time);
-			} else
-				player.sendMessage("§aO seu record neste modo é §7"
-						+ StringUtils.formatTime(challengeStatus.getTime(challengeType)) + "§a!");
-
-			handleInventory(player);
-			player.teleport(getSpawnLocation());
-
-			if (event.getChallengeType().ordinal() >= ChallengeStage.HARD.ordinal()) {
-				FireworkAPI.spawn(player.getLocation().add(0, 0, 1), Color.AQUA, true);
-				FireworkAPI.spawn(player.getLocation().add(1, 0, 0), Color.AQUA, true);
-				FireworkAPI.spawn(player.getLocation().add(-1, 0, 0), Color.AQUA, true);
-				FireworkAPI.spawn(player.getLocation().add(0, 0, -1), Color.AQUA, true);
-			}
-
-			if (event.getChallengeType() == ChallengeStage.HARDCORE) {
-				for (Player p : Bukkit.getOnlinePlayers()) {
-					p.sendMessage("§9Lava Challenge> §fO jogador §a" + player.getName()
-							+ "§f passou o desafio de lava §4Extreme§f!");
-					p.playSound(p.getLocation(), Sound.ENDERDRAGON_GROWL, 1f, 1f);
-				}
-			}
+			CommonGeneral.getInstance().getStatusManager()
+					.loadStatus(player.getUniqueId(), StatusType.LAVA, ChallengeStatus.class)
+					.addAttemp(ChallengeType.valueOf(event.getChallengeType().name()));
 		} else {
-			if (event.isDeath()) {
-				player.sendMessage(
-						"§cVocê morreu no " + NameUtils.formatString(event.getChallengeType().getName()) + "!");
-				player.sendMessage("§cVocê ficou vivo por "
-						+ formatTime(event.getChallengeInfo().getLastDamage(), event.getChallengeInfo().getStartTime())
-						+ "!");
-
-				CommonGeneral.getInstance().getStatusManager()
-						.loadStatus(player.getUniqueId(), StatusType.LAVA, ChallengeStatus.class)
-						.addAttemp(ChallengeType.valueOf(event.getChallengeType().name()));
-			} else {
-				player.sendMessage("§cVocê saiu do desafio de lava "
-						+ NameUtils.formatString(event.getChallengeType().getName()) + "!");
-				player.sendMessage("§cVocê ficou vivo por "
-						+ formatTime(event.getChallengeInfo().getLastDamage(), event.getChallengeInfo().getStartTime())
-						+ "!");
-			}
+			player.sendMessage("§cVocê saiu do desafio de lava "
+					+ NameUtils.formatString(event.getChallengeType().getName()) + "!");
+			player.sendMessage("§cVocê ficou vivo por "
+					+ formatTime(event.getChallengeInfo().getLastDamage(), event.getChallengeInfo().getStartTime())
+					+ "!");
 		}
 	}
 
@@ -192,10 +197,12 @@ public class LavaWarp extends Warp {
 			if (challengeMap.containsKey(player.getUniqueId())) {
 				Entry<ChallengeStage, ChallengeInfo> entry = challengeMap.get(player.getUniqueId());
 
-				if (entry.getValue().isRunning()) {
+				if (entry.getValue().isRunning() && !entry.getValue().isFinished()) {
 					challengeMap.remove(player.getUniqueId());
 					Bukkit.getPluginManager()
 							.callEvent(new PlayerStopChallengeEvent(player, entry.getKey(), entry.getValue()).death());
+					entry.getValue().setFinished(true);
+					System.out.println(entry.getKey().getName() + " " + player.getName() + " 3");
 				}
 			}
 		}

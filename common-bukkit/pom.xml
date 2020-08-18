@@ -32,16 +32,16 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>org.spigotmc</groupId>
-			<artifactId>spigot</artifactId>
+			<groupId>org.github.paperspigot</groupId>
+			<artifactId>paperspigot</artifactId>
 			<version>1.8.8-R0.1-SNAPSHOT</version>
 			<scope>system</scope>
-			<systemPath>C:/Users/Allan/Desktop/Coisas do Allan/Aula/libraries/PaperSpigot.jar</systemPath>
+			<systemPath>C:/Users/Allan/Desktop/Coisas do Allan/Aula/libraries/paperspigot-1.8.8-R0.1-SNAPSHOT.jar</systemPath>
 		</dependency>
 		
 		<dependency>
-			<groupId>org.spigotmc</groupId>
-			<artifactId>spigot-api</artifactId>
+			<groupId>org.github.paperspigot</groupId>
+			<artifactId>paperspigot-api</artifactId>
 			<version>1.8.8-R0.1-SNAPSHOT</version>
 			<type>jar</type>
 			<scope>provided</scope>

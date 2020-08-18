@@ -42,7 +42,6 @@ public class SchedulerController {
 	}
 
 	public void pulse() {
-
 		Iterator<Schedule> iterator = scheduleList.iterator();
 
 		while (iterator.hasNext()) {

@@ -35,54 +35,55 @@ public class ChatListener implements Listener {
 		String[] message = event.getMessage().trim().split(" ");
 		String command = message[0].replace("/", "").toLowerCase();
 
-		if (command.startsWith("teleport") || command.startsWith("tp")) {
-			Member player = CommonGeneral.getInstance().getMemberManager()
-					.getMember(((ProxiedPlayer) event.getSender()).getUniqueId());
+		if (event.isCommand())
+			if (command.startsWith("teleport") || command.startsWith("tp")) {
+				Member player = CommonGeneral.getInstance().getMemberManager()
+						.getMember(((ProxiedPlayer) event.getSender()).getUniqueId());
 
-			if (!player.hasGroupPermission(Group.YOUTUBERPLUS))
-				return;
+				if (!player.hasGroupPermission(Group.YOUTUBERPLUS))
+					return;
 
-			String[] args = new String[message.length - 1];
+				String[] args = new String[message.length - 1];
 
-			for (int i = 1; i < message.length; i++) {
-				args[i - 1] = message[i];
-			}
-
-			if (args.length == 1) {
-				String target = args[0];
-				ProxiedPlayer targetPlayer;
-
-				if (target.length() == 32 || target.length() == 36) {
-					targetPlayer = BungeeMain.getPlugin().getProxy()
-							.getPlayer(CommonGeneral.getInstance().getUuid(target));
-				} else {
-					targetPlayer = BungeeMain.getPlugin().getProxy().getPlayer(target);
+				for (int i = 1; i < message.length; i++) {
+					args[i - 1] = message[i];
 				}
 
-				if (targetPlayer == null)
+				if (args.length == 1) {
+					String target = args[0];
+					ProxiedPlayer targetPlayer;
+
+					if (target.length() == 32 || target.length() == 36) {
+						targetPlayer = BungeeMain.getPlugin().getProxy()
+								.getPlayer(CommonGeneral.getInstance().getUuid(target));
+					} else {
+						targetPlayer = BungeeMain.getPlugin().getProxy().getPlayer(target);
+					}
+
+					if (targetPlayer == null)
+						return;
+
+					if (targetPlayer.getServer() == null || targetPlayer.getServer().getInfo() == null)
+						return;
+
+					if (targetPlayer.getServer().getInfo().getName()
+							.equals(((ProxiedPlayer) event.getSender()).getServer().getInfo().getName()))
+						return;
+
+					event.setCancelled(true);
+
+					((ProxiedPlayer) event.getSender()).connect(BungeeMain.getPlugin().getProxy()
+							.getServerInfo(targetPlayer.getServer().getInfo().getName()));
+
+					ProxyServer.getInstance().getScheduler().schedule(BungeeMain.getPlugin(), () -> {
+						ByteArrayDataOutput out = ByteStreams.newDataOutput();
+						out.writeUTF("BungeeTeleport");
+						out.writeUTF(targetPlayer.getUniqueId().toString());
+						((ProxiedPlayer) event.getSender()).getServer().sendData("BungeeCord", out.toByteArray());
+					}, 300, TimeUnit.MILLISECONDS);
 					return;
-
-				if (targetPlayer.getServer() == null || targetPlayer.getServer().getInfo() == null)
-					return;
-
-				if (targetPlayer.getServer().getInfo().getName()
-						.equals(((ProxiedPlayer) event.getSender()).getServer().getInfo().getName()))
-					return;
-
-				event.setCancelled(true);
-
-				((ProxiedPlayer) event.getSender()).connect(
-						BungeeMain.getPlugin().getProxy().getServerInfo(targetPlayer.getServer().getInfo().getName()));
-
-				ProxyServer.getInstance().getScheduler().schedule(BungeeMain.getPlugin(), () -> {
-					ByteArrayDataOutput out = ByteStreams.newDataOutput();
-					out.writeUTF("BungeeTeleport");
-					out.writeUTF(targetPlayer.getUniqueId().toString());
-					((ProxiedPlayer) event.getSender()).getServer().sendData("BungeeCord", out.toByteArray());
-				}, 300, TimeUnit.MILLISECONDS);
+				}
 			}
-			return;
-		}
 
 		BungeeMember player = (BungeeMember) CommonGeneral.getInstance().getMemberManager()
 				.getMember(((ProxiedPlayer) event.getSender()).getUniqueId());
@@ -105,7 +106,6 @@ public class ChatListener implements Listener {
 			}
 
 			if (!player.getLoginConfiguration().isLogged()) {
-
 				if (!allowedCommands.contains(command)) {
 					event.setCancelled(true);
 					player.sendMessage("§4§l> §fVocê não pode §cexecutar§f esse comando enquanto não estiver logado!");

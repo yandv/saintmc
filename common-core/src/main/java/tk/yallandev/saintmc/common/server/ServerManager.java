@@ -46,7 +46,6 @@ public class ServerManager {
 		balancers.put(ServerType.PRIVATE_SERVER, new MostConnection<>());
 		balancers.put(ServerType.CLANXCLAN, new MostConnection<>());
 		balancers.put(ServerType.EVENTO, new MostConnection<>());
-		balancers.put(ServerType.PEAK, new MostConnection<>());
 
 		balancers.put(ServerType.SW_SOLO, new MostConnection<>());
 		balancers.put(ServerType.SW_TEAM, new MostConnection<>());
@@ -98,8 +97,17 @@ public class ServerManager {
 		return server;
 	}
 
-	public ProxiedServer getServer(String str) {
-		return activeServers.get(str.toLowerCase());
+	public ProxiedServer getServer(String serverName) {
+		return activeServers.get(serverName.toLowerCase());
+	}
+	
+	public ProxiedServer getServerByName(String serverName) {
+		for (ProxiedServer proxiedServer : activeServers.values()) {
+			if (proxiedServer.getServerId().toLowerCase().startsWith(serverName.toLowerCase()))
+				return proxiedServer;
+		}
+		
+		return activeServers.get(serverName.toLowerCase());
 	}
 
 	public Collection<ProxiedServer> getServers() {

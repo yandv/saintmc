@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 
 import org.bukkit.GameMode;
 import org.bukkit.Material;
@@ -23,6 +22,7 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
+import com.comphenix.protocol.wrappers.EnumWrappers.EntityUseAction;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -63,14 +63,9 @@ public class CombatCheck extends PacketAdapter implements CheckClass, Listener {
 						if (player.getGameMode() == GameMode.CREATIVE || player.getGameMode() == GameMode.SPECTATOR)
 							return;
 
-						try {
-							if (player.getTargetBlock((Set<Material>) null, 4).getType() != Material.AIR)
-								return;
-						} catch (IllegalStateException ex) {
-							return;
+						if (event.getPacket().getEntityUseActions().read(0) == EntityUseAction.ATTACK) {
+							handle(player);
 						}
-
-						handle(player);
 					}
 
 				});

@@ -273,7 +273,8 @@ public class BukkitCommandFramework implements CommandFramework {
 			this.owningPlugin = owner;
 			this.usageMessage = "";
 			this.group = group;
-			this.timings = new org.spigotmc.CustomTimingsHandler("** Common-Command: " + fallbackPrefix);
+			this.timings = co.aikar.timings.TimingsManager.getCommandTiming("** Common-Command: " + fallbackPrefix,
+					this);
 		}
 
 		@Override

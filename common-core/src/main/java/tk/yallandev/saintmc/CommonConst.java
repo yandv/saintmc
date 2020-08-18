@@ -43,7 +43,7 @@ public class CommonConst {
 	public static final String APPEAL_FORM = "https://appeal.saintmc.net/";
 	public static final String TORNEIO_DISCORD = "https://torneio.saintmc.net/";
 
-	public static final String API = "http://localhost";
+	public static final String API = "http://minhapicaaoquadrado.yandv.com.br";
 	public static final String DOWNLOAD_KEY = "kangaroo123";
 
 	public static final String SKIN_URL = API + "/skin/";
@@ -56,7 +56,7 @@ public class CommonConst {
 
 	public static final String MONGO_URL = "mongodb://localhost/saintmc-common?retryWrites=true&w=majority";
 
-	public static final String REDIS_HOSTNAME = "localhost";
+	public static final String REDIS_HOSTNAME = "127.0.0.1";
 	public static final String REDIS_PASSWORD = "";
 
 }

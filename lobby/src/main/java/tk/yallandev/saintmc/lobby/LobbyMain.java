@@ -23,6 +23,7 @@ import tk.yallandev.saintmc.lobby.collectable.Collectables;
 import tk.yallandev.saintmc.lobby.listener.CharacterListener;
 import tk.yallandev.saintmc.lobby.listener.CombatListener;
 import tk.yallandev.saintmc.lobby.listener.HologramListener;
+import tk.yallandev.saintmc.lobby.listener.LauncherListener;
 import tk.yallandev.saintmc.lobby.listener.LoginListener;
 import tk.yallandev.saintmc.lobby.listener.ParticleListener;
 import tk.yallandev.saintmc.lobby.listener.PlayerListener;
@@ -66,17 +67,6 @@ public class LobbyMain extends JavaPlugin {
 				"Lobby", CommonConst.DOWNLOAD_KEY, shutdown))
 			return;
 
-		Bukkit.getPluginManager().registerEvents(new PlayerListener(), getInstance());
-		Bukkit.getPluginManager().registerEvents(new ParticleListener(), getInstance());
-		Bukkit.getPluginManager().registerEvents(new MoveListener(), getInstance());
-		Bukkit.getPluginManager().registerEvents(new ScoreboardListener(), getInstance());
-		Bukkit.getPluginManager().registerEvents(new CombatListener(), getInstance());
-		Bukkit.getPluginManager().registerEvents(new CharacterListener(), getInstance());
-		Bukkit.getPluginManager().registerEvents(new HologramListener(), getInstance());
-
-		if (CommonGeneral.getInstance().isLoginServer())
-			Bukkit.getPluginManager().registerEvents(new LoginListener(), getInstance());
-
 		for (Entry<String, Map<String, String>> entry : CommonGeneral.getInstance().getServerData().loadServers()
 				.entrySet()) {
 			try {
@@ -100,8 +90,6 @@ public class LobbyMain extends JavaPlugin {
 						ServerType.valueOf(entry.getValue().get("type").toUpperCase()),
 						Integer.valueOf(entry.getValue().get("maxplayers")));
 
-				System.out.println(server.getServerId() + " - " + server.getServerType());
-
 				BukkitMain.getInstance().getServerManager().getServer(entry.getKey())
 						.setOnlinePlayers(CommonGeneral.getInstance().getServerData().getPlayers(entry.getKey()));
 				BukkitMain.getInstance().getServerManager().getServer(entry.getKey())
@@ -110,7 +98,6 @@ public class LobbyMain extends JavaPlugin {
 				if (server instanceof MinigameServer) {
 					MinigameServer minigameServer = (MinigameServer) server;
 
-					System.out.print(CommonGeneral.getInstance().getServerData().getTime(entry.getKey()));
 					minigameServer.setTime(CommonGeneral.getInstance().getServerData().getTime(entry.getKey()));
 					minigameServer.setMap(CommonGeneral.getInstance().getServerData().getMap(entry.getKey()));
 					minigameServer.setState(CommonGeneral.getInstance().getServerData().getState(entry.getKey()));
@@ -148,6 +135,18 @@ public class LobbyMain extends JavaPlugin {
 
 		BukkitMain.getInstance().setServerLog(true);
 		BukkitMain.getInstance().setRemovePlayerDat(true);
+
+		Bukkit.getPluginManager().registerEvents(new PlayerListener(), getInstance());
+		Bukkit.getPluginManager().registerEvents(new ParticleListener(), getInstance());
+		Bukkit.getPluginManager().registerEvents(new MoveListener(), getInstance());
+		Bukkit.getPluginManager().registerEvents(new ScoreboardListener(), getInstance());
+		Bukkit.getPluginManager().registerEvents(new CombatListener(), getInstance());
+		Bukkit.getPluginManager().registerEvents(new CharacterListener(), getInstance());
+		Bukkit.getPluginManager().registerEvents(new HologramListener(), getInstance());
+		Bukkit.getPluginManager().registerEvents(new LauncherListener(), getInstance());
+		
+		if (CommonGeneral.getInstance().isLoginServer())
+			Bukkit.getPluginManager().registerEvents(new LoginListener(), getInstance());
 
 		super.onEnable();
 	}

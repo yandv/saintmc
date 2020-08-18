@@ -83,8 +83,10 @@ public class CooldownController implements Listener {
 				try {
 					BukkitMember member = (BukkitMember) CommonGeneral.getInstance().getMemberManager()
 							.getMember(player.getUniqueId());
-					member.getCustomClient().sendCooldown(cooldown.getName(),
-							((ItemCooldown) cooldown).getItem().getType(), (int) cooldown.getDuration());
+
+					if (member.getCustomClient() != null)
+						member.getCustomClient().sendCooldown(cooldown.getName(),
+								((ItemCooldown) cooldown).getItem().getType(), (int) cooldown.getDuration());
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
@@ -226,7 +228,7 @@ public class CooldownController implements Listener {
 			if (event.getType() != UpdateType.TICK)
 				return;
 
-			if (event.getCurrentTick() % 2 > 0)
+			if (event.getCurrentTick() % 5 == 0)
 				return;
 
 			for (UUID uuid : map.keySet()) {

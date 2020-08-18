@@ -1,17 +1,24 @@
 package tk.yallandev.saintmc.common.backend.database.mongodb;
 
+import java.util.Date;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
+import org.bson.Document;
+
+import com.mongodb.Block;
 import com.mongodb.MongoClientURI;
+import com.mongodb.client.model.Filters;
 
 import lombok.Getter;
 import tk.yallandev.saintmc.CommonConst;
 import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.CommonPlatform;
+import tk.yallandev.saintmc.common.account.MemberModel;
+import tk.yallandev.saintmc.common.account.MemberVoid;
+import tk.yallandev.saintmc.common.account.status.StatusType;
 import tk.yallandev.saintmc.common.backend.Database;
 import tk.yallandev.saintmc.common.backend.data.ClanData;
 import tk.yallandev.saintmc.common.backend.data.PlayerData;
@@ -86,9 +93,10 @@ public class MongoConnection implements Database {
 	}
 
 	public static void main(String[] args) {
-		MongoConnection mongoConnection = new MongoConnection(CommonConst.MONGO_URL
-//				.replace("localhost", "45.61.143.104")
-		);
+
+		System.out.println(new Date(1596069705979l));
+
+		MongoConnection mongoConnection = new MongoConnection(CommonConst.MONGO_URL);
 		RedisDatabase redisDatabase = new RedisDatabase("localhost", "", 6379);
 
 		redisDatabase.connect();
@@ -156,30 +164,26 @@ public class MongoConnection implements Database {
 		general.setClanData(clanData);
 		general.setStatusData(statusData);
 
-		AtomicInteger x = new AtomicInteger(0);
-		
-//		mongoConnection.getDb().getCollection("account").find().forEach(new Block<Document>() {
-//
-//			@Override
-//			public void apply(Document t) {
-//				MemberModel memberModel = CommonConst.GSON.fromJson(CommonConst.GSON.toJson(t), MemberModel.class);
-//				MemberVoid memberVoid = new MemberVoid(memberModel);
-//
-//				Iterator<Entry<RankType, Long>> iterator = memberVoid.getRanks().entrySet().iterator();
-//
-//				while (iterator.hasNext()) {
-//					Entry<RankType, Long> entry = iterator.next();
-//
-//					entry.setValue(entry.getValue() + (1000 * 60 * 60 * 24 * 3l));
-//					System.out.println(memberVoid.getName());
-//				}
-//
-//				memberVoid.saveRanks();
-//			}
-//
-//		});
+		System.out.println(CommonConst.GSON.toJson(CommonGeneral.getInstance().getStatusManager()
+				.loadStatus(UUID.fromString("fa1a1461-8e39-4536-89ba-6a54143ddaeb"), StatusType.SHADOW)));
 
-		System.out.println(x.get());
+//		AtomicInteger x = new AtomicInteger(0);
+//
+		mongoConnection.getDb().getCollection("account").find(Filters.eq("playerName", "yandv"))
+				.forEach(new Block<Document>() {
+
+					@Override
+					public void apply(Document t) {
+						MemberModel memberModel = CommonConst.GSON.fromJson(CommonConst.GSON.toJson(t),
+								MemberModel.class);
+						MemberVoid memberVoid = new MemberVoid(memberModel);
+
+						memberVoid.setClanUniqueId(UUID.fromString("0b83ad08-7510-4f12-a218-706a6a5cbe90"));
+					}
+
+				});
+//
+//		System.out.println(x.get());
 
 		System.exit(0);
 	}

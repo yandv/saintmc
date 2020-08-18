@@ -18,7 +18,7 @@ import tk.yallandev.saintmc.kitpvp.event.warp.PlayerWarpRespawnEvent;
 import tk.yallandev.saintmc.kitpvp.warp.scoreboard.WarpScoreboard;
 
 public class SpawnScoreboard extends WarpScoreboard {
-	
+
 	public SpawnScoreboard() {
 		super(new SimpleScoreboard("§6§lKITPVP"));
 
@@ -34,7 +34,7 @@ public class SpawnScoreboard extends WarpScoreboard {
 		scoreboard.setScore(3, new Score("§fJogadores: §b" + Bukkit.getOnlinePlayers().size(), "players"));
 		scoreboard.blankLine(2);
 		scoreboard.setScore(1, new Score("§6" + CommonConst.SITE, "site"));
-		
+
 	}
 
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -44,9 +44,12 @@ public class SpawnScoreboard extends WarpScoreboard {
 
 	@EventHandler
 	public void onPlayerWarp(PlayerWarpRespawnEvent event) {
-		if (event.getWarp() == warp)
-			getScoreboard().updateScore(event.getPlayer(), new Score("§fCoins: §6" + CommonGeneral.getInstance()
-					.getMemberManager().getMember(event.getPlayer().getUniqueId()).getMoney(), "coins"));
+		if (event.getWarp() == warp) {
+			Member member = CommonGeneral.getInstance().getMemberManager().getMember(event.getPlayer().getUniqueId());
+
+			if (member != null)
+				getScoreboard().updateScore(event.getPlayer(), new Score("§fCoins: §6" + member.getMoney(), "coins"));
+		}
 	}
 
 	@Override

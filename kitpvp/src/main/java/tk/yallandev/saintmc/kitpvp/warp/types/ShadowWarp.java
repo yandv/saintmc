@@ -306,7 +306,7 @@ public class ShadowWarp extends Warp implements DuelWarp {
 		}
 	}
 
-	@EventHandler
+	@EventHandler(priority = EventPriority.MONITOR)
 	public void onPlayerWarpDeath(PlayerWarpDeathEvent event) {
 		Player player = event.getPlayer();
 

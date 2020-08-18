@@ -23,12 +23,12 @@ import tk.yallandev.saintmc.common.permission.Group;
 
 public abstract class Tag {
 
-	public static final Tag DEVELOPER = TagWrapper.create("§3§lDEVELOPER§3", Group.DEVELOPER);
+	public static final Tag DEVELOPER = TagWrapper.create("§3§lDEVELOPER§3", Group.DONO);
 	public static final Tag DONO = TagWrapper.create("§4§lDONO§4", Group.DONO);
 	public static final Tag ESTRELA = TagWrapper.create("§1§lESTRELA§1", Group.DIRETOR);
 	public static final Tag DIRETOR = TagWrapper.create("§4§LDIRETOR§4", Group.DIRETOR);
-	public static final Tag ADMIN = TagWrapper.create("§c§lADMIN§c", Group.ADMIN);
 	public static final Tag GERENTE = TagWrapper.create("§c§lGERENTE§c", Group.GERENTE);
+	public static final Tag ADMIN = TagWrapper.create("§c§lADMIN§c", Group.ADMIN);
 	public static final Tag MODPLUS = TagWrapper.create("MODPLUS", "§5§LMOD+§5", Group.MODPLUS);
 	public static final Tag MODGC = TagWrapper.create("§5§lMODGC§5", Group.MODGC);
 	public static final Tag MOD = TagWrapper.create("§5§lMOD§5", Group.MOD);

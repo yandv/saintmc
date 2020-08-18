@@ -3,6 +3,7 @@ package tk.yallandev.saintmc.lobby.listener;
 import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -38,32 +39,6 @@ public class CombatListener implements Listener {
 		Player player = (Player) event.getEntity();
 		Gamer gamer = LobbyMain.getInstance().getPlayerManager().getGamer(player);
 
-		if (event.getCause() == DamageCause.FALL) {
-			if (!gamer.isCombat())
-				if (player.getLocation().getX() > -5 && player.getLocation().getY() < 118
-						&& player.getLocation().getZ() < -40) {
-					player.getInventory().clear();
-					player.getInventory().setItem(0, new ItemStack(Material.STONE_SWORD));
-
-					for (int x = 0; x < 15; x++)
-						player.getInventory().addItem(new ItemStack(Material.MUSHROOM_SOUP));
-
-					player.updateInventory();
-					ActionBarAPI.send(player, "§cVocê entrou na área de combate!");
-
-					new BukkitRunnable() {
-
-						@Override
-						public void run() {
-							CommonGeneral.getInstance().getStatusManager().loadStatus(player.getUniqueId(),
-									StatusType.LOBBY);
-						}
-					}.runTaskAsynchronously(LobbyMain.getInstance());
-
-					LobbyMain.getInstance().getPlayerManager().getGamer(player).setCombat(true);
-				}
-		}
-
 		if (event instanceof EntityDamageByEntityEvent) {
 			EntityDamageByEntityEvent damageEvent = (EntityDamageByEntityEvent) event;
 
@@ -76,7 +51,6 @@ public class CombatListener implements Listener {
 					if (damager.getItemInHand().getType() != null
 							&& damager.getItemInHand().getType().name().contains("SWORD")) {
 						damager.getItemInHand().setDurability((short) 0);
-						event.setDamage(4.0D);
 						damager.updateInventory();
 					}
 
@@ -104,6 +78,29 @@ public class CombatListener implements Listener {
 		if (LobbyMain.getInstance().getPlayerManager().isCombat(event.getPlayer()))
 			return;
 
+		Location spawnLocation = BukkitMain.getInstance().getLocationFromConfig("combat-start");
+
+		Location to = event.getTo();
+		double distX = to.getX() - spawnLocation.getX();
+		double distZ = to.getZ() - spawnLocation.getZ();
+
+		double distance = (distX * distX) + (distZ * distZ);
+		double spawnRadius = 6 * 6;
+
+		if (distance < spawnRadius && to.getY() < spawnLocation.getY()) {
+			Player player = event.getPlayer();
+
+			player.getInventory().clear();
+			player.getInventory().setItem(0, new ItemStack(Material.STONE_SWORD));
+
+			for (int x = 0; x <= 14; x++)
+				player.getInventory().addItem(new ItemStack(Material.MUSHROOM_SOUP));
+
+			player.updateInventory();
+			player.setAllowFlight(false);
+			ActionBarAPI.send(player, "§cVocê entrou na área de combate!");
+			LobbyMain.getInstance().getPlayerManager().getGamer(player).setCombat(true);
+		}
 	}
 
 	@EventHandler

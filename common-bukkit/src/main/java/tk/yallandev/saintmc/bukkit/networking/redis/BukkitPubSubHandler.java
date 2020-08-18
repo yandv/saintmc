@@ -69,6 +69,9 @@ public class BukkitPubSubHandler extends JedisPubSub {
 						}.getType());
 				ProxiedServer server = BukkitMain.getInstance().getServerManager().getServer(source);
 
+				if (server == null)
+					return;
+
 				server.joinPlayer(payload.getPayload().getUniqueId());
 				Bukkit.getPluginManager().callEvent(new ServerPlayerJoinEvent(payload.getPayload().getUniqueId(),
 						server.getServerId(), server.getServerType(), server));
@@ -80,6 +83,10 @@ public class BukkitPubSubHandler extends JedisPubSub {
 						}.getType());
 
 				ProxiedServer server = BukkitMain.getInstance().getServerManager().getServer(source);
+
+				if (server == null)
+					return;
+
 				server.leavePlayer(payload.getPayload().getUniqueId());
 				Bukkit.getPluginManager().callEvent(new ServerPlayerLeaveEvent(payload.getPayload().getUniqueId(),
 						server.getServerId(), server.getServerType(), server));
@@ -89,8 +96,13 @@ public class BukkitPubSubHandler extends JedisPubSub {
 				DataServerMessage<JoinEnablePayload> payload = CommonConst.GSON.fromJson(jsonObject,
 						new TypeToken<DataServerMessage<JoinEnablePayload>>() {
 						}.getType());
-				BukkitMain.getInstance().getServerManager().getServer(source)
-						.setJoinEnabled(payload.getPayload().isEnable());
+
+				ProxiedServer server = BukkitMain.getInstance().getServerManager().getServer(source);
+
+				if (server == null)
+					return;
+
+				server.setJoinEnabled(payload.getPayload().isEnable());
 				break;
 			}
 			case START: {
@@ -115,6 +127,10 @@ public class BukkitPubSubHandler extends JedisPubSub {
 						new TypeToken<DataServerMessage<UpdatePayload>>() {
 						}.getType());
 				ProxiedServer server = BukkitMain.getInstance().getServerManager().getServer(source);
+
+				if (server == null)
+					return;
+
 				if (server instanceof MinigameServer) {
 					((MinigameServer) server).setState(payload.getPayload().getState());
 					((MinigameServer) server).setTime(payload.getPayload().getTime());
@@ -131,8 +147,12 @@ public class BukkitPubSubHandler extends JedisPubSub {
 					break;
 				}
 
-				BukkitMain.getInstance().getServerManager().getServer(source)
-						.addWhitelist(payload.getPayload().getProfile());
+				ProxiedServer server = BukkitMain.getInstance().getServerManager().getServer(source);
+
+				if (server == null)
+					return;
+
+				server.addWhitelist(payload.getPayload().getProfile());
 				break;
 			}
 			case WHITELIST_REMOVE: {
@@ -144,8 +164,12 @@ public class BukkitPubSubHandler extends JedisPubSub {
 					break;
 				}
 
-				BukkitMain.getInstance().getServerManager().getServer(source)
-						.removeWhitelist(payload.getPayload().getProfile());
+				ProxiedServer server = BukkitMain.getInstance().getServerManager().getServer(source);
+
+				if (server == null)
+					return;
+
+				server.removeWhitelist(payload.getPayload().getProfile());
 				break;
 			}
 			default:

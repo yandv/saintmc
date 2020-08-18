@@ -16,7 +16,7 @@ public class PlayerStopChallengeEvent extends NormalEvent {
 	private final ChallengeStage challengeType;
 	private final ChallengeInfo challengeInfo;
 
-	private boolean death = false;
+	private boolean death;
 
 	public PlayerStopChallengeEvent death() {
 		this.death = !death;

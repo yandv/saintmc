@@ -28,15 +28,16 @@ public class HulkKit extends Kit {
 			if (event.getRightClicked() instanceof Player) {
 				Player clicked = (Player) event.getRightClicked();
 
-				if (!player.isInsideVehicle() && !clicked.isInsideVehicle()
-						&& player.getItemInHand().getType() == Material.AIR) {
+				if (!GameMain.getInstance().getGamerManager().getGamer(clicked.getUniqueId()).isSpawnProtection())
+					if (!player.isInsideVehicle() && !clicked.isInsideVehicle()
+							&& player.getItemInHand().getType() == Material.AIR) {
 
-					if (isCooldown(player))
-						return;
+						if (isCooldown(player))
+							return;
 
-					addCooldown(player, 12l);
-					player.setPassenger((Entity) clicked);
-				}
+						addCooldown(player, 12l);
+						player.setPassenger((Entity) clicked);
+					}
 			}
 	}
 

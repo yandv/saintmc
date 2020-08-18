@@ -72,18 +72,16 @@ public class GladiatorInventory {
 				continue;
 
 			ItemBuilder builder = new ItemBuilder();
-
 			builder.type(Material.INK_SACK);
-			builder.lore(
-					"\n§7Modo: §e" + (server.getServerType() == ServerType.FULLIRON ? "FullIron" : "Simulator") + "\n");
 
 			if (server.isFull()) {
 				builder.name("§c§l" + server.getServerId().substring(0, 2).toUpperCase());
-				builder.lore("\n§a" + server.getOnlinePlayers() + " jogadores online\n§cEsse servidor está lotado!");
+				builder.lore(
+						"\n§3§l" + server.getOnlinePlayers() + " §7jogadores conectados\n§cEsse servidor está lotado!");
 				builder.durability(1);
 			} else {
 				builder.name("§a§l" + server.getServerId().substring(0, 2).toUpperCase());
-				builder.lore("\n§a" + server.getOnlinePlayers() + " jogadores online");
+				builder.lore("\n§3§l" + server.getOnlinePlayers() + " §7jogadores conectados");
 				builder.durability(8);
 			}
 

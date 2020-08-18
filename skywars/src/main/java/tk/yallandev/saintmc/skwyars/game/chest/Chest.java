@@ -27,11 +27,23 @@ public class Chest {
 	private int z;
 
 	private ChestType chestType;
+	
+	/**
+	 * Clear chest
+	 * 
+	 * @param world
+	 */
 
 	public void clear(World world) {
 		getChest(world).getBlockInventory().clear();
 	}
 
+	/**
+	 * Fill the chest
+	 * 
+	 * @param world
+	 */
+	
 	public void fill(World world) {
 		org.bukkit.block.Chest chest = getChest(world);
 
@@ -218,6 +230,10 @@ public class Chest {
 
 		return false;
 	}
+	
+	/**
+	 * Prevent duplicated chest
+	 */
 
 	@Override
 	public boolean equals(Object obj) {

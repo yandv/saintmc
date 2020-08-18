@@ -44,8 +44,11 @@ public class AccountListener extends Listener {
 	 * @param event
 	 */
 
-	@EventHandler(priority = EventPriority.LOWEST)
+	@EventHandler(priority = EventPriority.LOW)
 	public void onAsyncPlayerPreLogin(AsyncPlayerPreLoginEvent event) {
+		if (event.getLoginResult() != AsyncPlayerPreLoginEvent.Result.ALLOWED)
+			return;
+		
 		if (BukkitMain.getInstance().getServerConfig().isRestoreMode()
 				&& !restoreProfile.contains(new Profile(event.getName(), event.getUniqueId()))) {
 			event.disallow(Result.KICK_OTHER,

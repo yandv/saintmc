@@ -116,7 +116,10 @@ public class WarpListener implements Listener {
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onPlayerWarpRespawn(PlayerWarpRespawnEvent event) {
 		Gamer gamer = GameMain.getInstance().getGamerManager().getGamer(event.getPlayer().getUniqueId());
-
+		
+		if (gamer == null)
+			return;
+		
 		gamer.setKit(null);
 	}
 

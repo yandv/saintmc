@@ -168,12 +168,13 @@ public class MongoQuery implements Query<JsonElement> {
 				if (jsonObject.has("fieldName") && jsonObject.has("value")) {
 					Object object = JsonUtils.elementToBson(jsonObject.get("value"));
 
-					collection.updateOne(Filters.eq(key, value),
-							new Document("$set", new Document(jsonObject.get("fieldName").getAsString(), object)));
-					return;
+					if (object == null)
+						collection.updateOne(Filters.eq(key, value), new Document("$unset",
+								new Document(jsonObject.get("fieldName").getAsString(), object)));
+					else
+						collection.updateOne(Filters.eq(key, value),
+								new Document("$set", new Document(jsonObject.get("fieldName").getAsString(), object)));
 				}
-
-				collection.updateOne(Filters.eq(key, value), Document.parse(t.toString()));
 			}
 		});
 	}

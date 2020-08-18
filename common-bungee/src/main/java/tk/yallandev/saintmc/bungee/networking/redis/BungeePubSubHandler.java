@@ -117,6 +117,7 @@ public class BungeePubSubHandler extends JedisPubSub {
 
 				ProxyServer.getInstance().getPluginManager()
 						.callEvent(new PlayerUpdateFieldEvent((BungeeMember) player, f.getName(), oldObject, object));
+				System.out.println(object);
 			} catch (SecurityException | IllegalArgumentException | IllegalAccessException e) {
 				e.printStackTrace();
 			}
@@ -127,15 +128,20 @@ public class BungeePubSubHandler extends JedisPubSub {
 
 			ServerType sourceType = ServerType.valueOf(jsonObject.get("serverType").getAsString());
 			Action action = Action.valueOf(jsonObject.get("action").getAsString());
+
+			if (sourceType == ServerType.NETWORK)
+				break;
+
 			switch (action) {
 			case JOIN: {
 				DataServerMessage<JoinPayload> payload = CommonConst.GSON.fromJson(jsonObject,
 						new TypeToken<DataServerMessage<JoinPayload>>() {
 						}.getType());
-				if (sourceType == ServerType.NETWORK) {
-					break;
-				}
 				ProxiedServer server = BungeeMain.getPlugin().getServerManager().getServer(source);
+
+				if (server == null)
+					return;
+
 				server.joinPlayer(payload.getPayload().getUniqueId());
 				break;
 			}
@@ -143,10 +149,11 @@ public class BungeePubSubHandler extends JedisPubSub {
 				DataServerMessage<LeavePayload> payload = CommonConst.GSON.fromJson(jsonObject,
 						new TypeToken<DataServerMessage<LeavePayload>>() {
 						}.getType());
-				if (sourceType == ServerType.NETWORK) {
-					break;
-				}
 				ProxiedServer server = BungeeMain.getPlugin().getServerManager().getServer(source);
+
+				if (server == null)
+					return;
+
 				server.leavePlayer(payload.getPayload().getUniqueId());
 				break;
 			}
@@ -154,20 +161,18 @@ public class BungeePubSubHandler extends JedisPubSub {
 				DataServerMessage<JoinEnablePayload> payload = CommonConst.GSON.fromJson(jsonObject,
 						new TypeToken<DataServerMessage<JoinEnablePayload>>() {
 						}.getType());
-				if (sourceType == ServerType.NETWORK) {
-					break;
-				}
-				BungeeMain.getPlugin().getServerManager().getServer(source)
-						.setJoinEnabled(payload.getPayload().isEnable());
+				ProxiedServer server = BungeeMain.getPlugin().getServerManager().getServer(source);
+
+				if (server == null)
+					return;
+
+				server.setJoinEnabled(payload.getPayload().isEnable());
 				break;
 			}
 			case START: {
 				DataServerMessage<StartPayload> payload = CommonConst.GSON.fromJson(jsonObject,
 						new TypeToken<DataServerMessage<StartPayload>>() {
 						}.getType());
-				if (sourceType == ServerType.NETWORK) {
-					break;
-				}
 				BungeeMain.getPlugin().getServerManager().addActiveServer(payload.getPayload().getServerAddress(),
 						payload.getPayload().getServer().getServerId(), sourceType,
 						payload.getPayload().getServer().getMaxPlayers());
@@ -189,10 +194,11 @@ public class BungeePubSubHandler extends JedisPubSub {
 				DataServerMessage<UpdatePayload> payload = CommonConst.GSON.fromJson(jsonObject,
 						new TypeToken<DataServerMessage<UpdatePayload>>() {
 						}.getType());
-				if (sourceType == ServerType.NETWORK) {
-					break;
-				}
 				ProxiedServer server = BungeeMain.getPlugin().getServerManager().getServer(source);
+
+				if (server == null)
+					return;
+
 				if (server instanceof MinigameServer) {
 					((MinigameServer) server).setState(payload.getPayload().getState());
 					((MinigameServer) server).setTime(payload.getPayload().getTime());
@@ -204,13 +210,12 @@ public class BungeePubSubHandler extends JedisPubSub {
 						new TypeToken<DataServerMessage<WhitelistAddPayload>>() {
 						}.getType());
 
-				if (sourceType == ServerType.NETWORK) {
-					break;
-				}
+				ProxiedServer server = BungeeMain.getPlugin().getServerManager().getServer(source);
 
-				BungeeMain.getPlugin().getServerManager().getServer(source)
-						.addWhitelist(payload.getPayload().getProfile());
-				;
+				if (server == null)
+					return;
+
+				server.addWhitelist(payload.getPayload().getProfile());
 				break;
 			}
 			case WHITELIST_REMOVE: {
@@ -218,13 +223,12 @@ public class BungeePubSubHandler extends JedisPubSub {
 						new TypeToken<DataServerMessage<WhitelistRemovePayload>>() {
 						}.getType());
 
-				if (sourceType == ServerType.NETWORK) {
-					break;
-				}
+				ProxiedServer server = BungeeMain.getPlugin().getServerManager().getServer(source);
 
-				BungeeMain.getPlugin().getServerManager().getServer(source)
-						.removeWhitelist(payload.getPayload().getProfile());
-				;
+				if (server == null)
+					return;
+
+				server.removeWhitelist(payload.getPayload().getProfile());
 				break;
 			}
 			default:
@@ -233,8 +237,6 @@ public class BungeePubSubHandler extends JedisPubSub {
 			break;
 		}
 		}
-
-		super.onMessage(channel, message);
 	}
 
 }

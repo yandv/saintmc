@@ -6,17 +6,16 @@ import java.util.Map;
 import java.util.UUID;
 
 import lombok.Getter;
+import tk.yallandev.saintmc.common.account.client.ClientType;
 import tk.yallandev.saintmc.common.account.configuration.AccountConfiguration;
 import tk.yallandev.saintmc.common.account.configuration.LoginConfiguration;
 import tk.yallandev.saintmc.common.account.medal.Medal;
 import tk.yallandev.saintmc.common.ban.PunishmentHistory;
-import tk.yallandev.saintmc.common.client.ClientType;
 import tk.yallandev.saintmc.common.permission.Group;
 import tk.yallandev.saintmc.common.permission.RankType;
 import tk.yallandev.saintmc.common.server.ServerType;
 //import tk.yallandev.saintmc.discord.account.DiscordType;
 import tk.yallandev.saintmc.common.tag.Tag;
-import tk.yallandev.saintmc.common.tournment.TournamentGroup;
 
 @Getter
 public class MemberModel {
@@ -89,6 +88,7 @@ public class MemberModel {
 
 	private int money;
 	private int xp;
+	private int position;
 	private League league;
 
 	private int reputation;
@@ -151,6 +151,7 @@ public class MemberModel {
 
 		money = member.getMoney();
 		xp = member.getXp();
+		position = member.getPosition();
 		league = member.getLeague();
 		reputation = member.getReputation();
 

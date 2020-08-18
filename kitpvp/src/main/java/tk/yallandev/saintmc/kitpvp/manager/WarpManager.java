@@ -3,7 +3,6 @@ package tk.yallandev.saintmc.kitpvp.manager;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -77,24 +76,24 @@ public class WarpManager {
 		if (gamer == null)
 			return;
 
-		if (GameMain.getInstance().getGamerManager().getGamers().stream().filter(g -> g.getWarp() == warp)
-				.collect(Collectors.toList()).isEmpty()) {
-			GameMain.getInstance().getServer().getPluginManager().registerEvents(warp, GameMain.getInstance());
+		warp.registerListener();
 
-			if (warp.getScoreboard() != null)
-				warp.getScoreboard().register();
-		}
+		if (warp.getScoreboard() != null)
+			warp.getScoreboard().register();
 
 		Warp lastWarp = gamer.getWarp();
 
-		if (lastWarp != null)
+		if (lastWarp != null) {
 			Bukkit.getPluginManager().callEvent(new PlayerWarpQuitEvent(gamer.getPlayer(), lastWarp));
+			CommonGeneral.getInstance().debug(gamer.getPlayer().getName() + " leave from " + lastWarp.getName());
+		}
 
 		gamer.setWarp(warp);
 		gamer.setKit(null);
 		gamer.getPlayer().teleport(warp.getSpawnLocation());
 
 		Bukkit.getPluginManager().callEvent(new PlayerWarpJoinEvent(gamer.getPlayer(), warp));
+		CommonGeneral.getInstance().debug(gamer.getPlayer().getName() + " join in " + warp.getName());
 	}
 
 	public void removeWarp(Gamer gamer) {

@@ -28,17 +28,16 @@ import com.comphenix.protocol.wrappers.WrappedSignedProperty;
 import tk.yallandev.saintmc.CommonConst;
 import tk.yallandev.saintmc.bukkit.BukkitMain;
 
-public class FakePlayerAPI {
-	
+public class PlayerAPI {
+
 	public static void changePlayerName(Player player, String name) {
 		changePlayerName(player, name, true);
 	}
 
 	public static void changePlayerName(Player player, String name, boolean respawn) {
-
 		if (respawn)
 			removeFromTab(player);
-		
+
 		try {
 			Object minecraftServer = MinecraftReflection.getMinecraftServerClass().getMethod("getServer").invoke(null);
 			Object playerList = minecraftServer.getClass().getMethod("getPlayerList").invoke(minecraftServer);
@@ -56,6 +55,7 @@ public class FakePlayerAPI {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+
 		if (respawn)
 			respawnPlayer(player);
 	}
@@ -76,7 +76,7 @@ public class FakePlayerAPI {
 				| NoSuchMethodException | SecurityException | NoSuchFieldException e1) {
 			e1.printStackTrace();
 		}
-		
+
 		for (Player online : players) {
 			if (!online.canSee(player))
 				continue;
@@ -117,10 +117,11 @@ public class FakePlayerAPI {
 
 	public static void respawnPlayer(Player player) {
 		respawnSelf(player);
+
 		for (Player online : Bukkit.getOnlinePlayers()) {
-			if (online.equals(player) || !online.canSee(player)) {
+			if (online.equals(player) || !online.canSee(player))
 				continue;
-			}
+
 			online.hidePlayer(player);
 			online.showPlayer(player);
 		}
@@ -157,7 +158,7 @@ public class FakePlayerAPI {
 		respawnPlayer.getGameModes().write(0, NativeGameMode.fromBukkit(player.getGameMode()));
 		respawnPlayer.getWorldTypeModifier().write(0, player.getWorld().getWorldType());
 		boolean flying = player.isFlying();
-		
+
 		try {
 			BukkitMain.getInstance().getProcotolManager().sendServerPacket(player, removePlayerInfo);
 			BukkitMain.getInstance().getProcotolManager().sendServerPacket(player, addPlayerInfo);
@@ -170,9 +171,9 @@ public class FakePlayerAPI {
 		} catch (InvocationTargetException e) {
 			e.printStackTrace();
 		}
-		
+
 		new BukkitRunnable() {
-			
+
 			@Override
 			public void run() {
 				player.updateInventory();
@@ -184,25 +185,33 @@ public class FakePlayerAPI {
 		WrappedSignedProperty property = null;
 		WrappedGameProfile gameProfile = WrappedGameProfile.fromPlayer(player);
 		gameProfile.getProperties().clear();
-		
-		try {
-			gameProfile.getProperties().put("textures", property = TextureAPI.textures.get(new WrappedGameProfile(uuid, name)));
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		
+
+		gameProfile.getProperties().put("textures",
+				property = TextureFetcher.loadTexture(new WrappedGameProfile(uuid, name)));
+
 		if (respawn)
 			respawnPlayer(player);
-		
+
 		return property;
 	}
-	
+
+	public static WrappedSignedProperty changePlayerSkin(Player player, WrappedSignedProperty wrappedSignedProperty) {
+		WrappedGameProfile gameProfile = WrappedGameProfile.fromPlayer(player);
+
+		gameProfile.getProperties().clear();
+		gameProfile.getProperties().put("textures", wrappedSignedProperty);
+
+		respawnPlayer(player);
+
+		return wrappedSignedProperty;
+	}
+
 	public static void changePlayerSkin(Player player, WrappedSignedProperty property, boolean respawn) {
 		WrappedGameProfile gameProfile = WrappedGameProfile.fromPlayer(player);
 		gameProfile.getProperties().clear();
-		
+
 		gameProfile.getProperties().put("textures", property);
-		
+
 		if (respawn)
 			respawnPlayer(player);
 	}
@@ -214,7 +223,7 @@ public class FakePlayerAPI {
 	public static void removePlayerSkin(Player player, boolean respawn) {
 		WrappedGameProfile gameProfile = WrappedGameProfile.fromPlayer(player);
 		gameProfile.getProperties().clear();
-		
+
 		if (respawn) {
 			respawnPlayer(player);
 		}

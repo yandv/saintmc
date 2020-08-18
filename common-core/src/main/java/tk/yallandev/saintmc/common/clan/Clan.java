@@ -73,7 +73,7 @@ public abstract class Clan {
 	}
 
 	public boolean removeMember(Member member) {
-		if (this.memberMap.containsKey(member.getUniqueId()))
+		if (!this.memberMap.containsKey(member.getUniqueId()))
 			return false;
 
 		sendMessage("§cO " + member.getPlayerName() + " saiu do clan!");

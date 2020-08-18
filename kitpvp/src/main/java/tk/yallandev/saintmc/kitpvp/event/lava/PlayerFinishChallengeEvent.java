@@ -2,13 +2,18 @@ package tk.yallandev.saintmc.kitpvp.event.lava;
 
 import org.bukkit.entity.Player;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import tk.yallandev.saintmc.bukkit.event.NormalEvent;
 import tk.yallandev.saintmc.kitpvp.warp.lava.ChallengeInfo;
 import tk.yallandev.saintmc.kitpvp.warp.lava.ChallengeStage;
 
-public class PlayerFinishChallengeEvent extends PlayerStopChallengeEvent {
+@RequiredArgsConstructor
+@Getter
+public class PlayerFinishChallengeEvent extends NormalEvent {
 
-	public PlayerFinishChallengeEvent(Player player, ChallengeStage challengeType, ChallengeInfo challengeInfo) {
-		super(player, challengeType, challengeInfo);
-	}
-	
+	private final Player player;
+	private final ChallengeStage challengeType;
+	private final ChallengeInfo challengeInfo;
+
 }

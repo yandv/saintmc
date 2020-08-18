@@ -5,11 +5,11 @@ package tk.yallandev.saintmc.bukkit.permission.injector;
  * Este codigo pertence ao criador do PermissionEX
  * 
  */
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.regex.Pattern;
 
-import tk.yallandev.saintmc.bukkit.permission.injector.loader.LoaderNetUtil;
 import tk.yallandev.saintmc.bukkit.permission.injector.loader.LoaderNormal;
 
 public class RegExpMatcher implements PermissionMatcher {
@@ -24,11 +24,7 @@ public class RegExpMatcher implements PermissionMatcher {
 			Object obj = cacheBuilder.getMethod("newBuilder").invoke(null);
 			Method maximumSize = obj.getClass().getMethod("maximumSize", long.class);
 			Object obj2 = maximumSize.invoke(obj, 500);
-			Object loader = null;
-			if (hasNetUtil())
-				loader = new LoaderNetUtil();
-			else
-				loader = new LoaderNormal();
+			Object loader = new LoaderNormal();
 			Method build = obj2.getClass().getMethod("build", cacheLoader);
 			patternCache = build.invoke(obj2, loader);
 		} catch (Exception e) {

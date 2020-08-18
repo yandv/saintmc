@@ -19,6 +19,7 @@
 		<module>anticheat</module>
 		<module>login</module>
 		<module>skywars</module>
+		<module>ranking-component</module>
 	</modules>
 
 	<build>

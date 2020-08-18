@@ -61,7 +61,7 @@ public class ScoreboardListener implements Listener {
 		DEFAULT_SCOREBOARD.updateScore(
 				new Score("Jogadores: §e" + BukkitMain.getInstance().getServerManager().getTotalNumber(), "online"));
 	}
-	
+
 	@EventHandler
 	public void onPlayerChangeGroup(PlayerChangeGroupEvent event) {
 		new BukkitRunnable() {
@@ -100,6 +100,11 @@ public class ScoreboardListener implements Listener {
 
 	private void handleScoreboard(Player player) {
 		Member member = CommonGeneral.getInstance().getMemberManager().getMember(player.getUniqueId());
+
+		if (member == null) {
+			player.kickPlayer("§cSua conta não foi carregada!");
+			return;
+		}
 
 		DEFAULT_SCOREBOARD.createScoreboard(player);
 

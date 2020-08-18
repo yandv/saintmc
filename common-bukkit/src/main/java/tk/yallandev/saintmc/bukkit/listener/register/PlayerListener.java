@@ -11,6 +11,7 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.event.player.PlayerAchievementAwardedEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
@@ -127,6 +128,11 @@ public class PlayerListener extends Listener {
 
 	@EventHandler
 	public void onPlayerQuit(PlayerAchievementAwardedEvent event) {
+		event.setCancelled(true);
+	}
+	
+	@EventHandler
+	public void onEntityRegainHealth(EntityRegainHealthEvent event) {
 		event.setCancelled(true);
 	}
 

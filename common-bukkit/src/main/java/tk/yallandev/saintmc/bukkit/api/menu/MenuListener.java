@@ -21,9 +21,9 @@ import tk.yallandev.saintmc.bukkit.event.player.MenuOpenEvent;
 import tk.yallandev.saintmc.bukkit.event.update.UpdateEvent;
 
 public class MenuListener implements Listener {
-	
+
 	private Map<Player, InventoryHolder> playerMap;
-	
+
 	public MenuListener() {
 		playerMap = new HashMap<>();
 	}
@@ -35,24 +35,12 @@ public class MenuListener implements Listener {
 
 		Inventory inv = event.getInventory();
 
-		if (inv.getType() != InventoryType.CHEST)
-			return;
-
-		if (inv.getHolder() == null)
-			return;
-
-		if (!(inv.getHolder() instanceof MenuHolder))
+		if (inv.getType() != InventoryType.CHEST || inv.getHolder() == null || !(inv.getHolder() instanceof MenuHolder))
 			return;
 
 		event.setCancelled(true);
 
-		if (event.getClickedInventory() != inv)
-			return;
-
-		if (!(event.getWhoClicked() instanceof Player))
-			return;
-
-		if (event.getSlot() < 0)
+		if (event.getClickedInventory() != inv || !(event.getWhoClicked() instanceof Player) || event.getSlot() < 0)
 			return;
 
 		MenuHolder holder = (MenuHolder) inv.getHolder();
@@ -68,33 +56,33 @@ public class MenuListener implements Listener {
 			event.setCancelled(true);
 		}
 	}
-	
+
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onMenuOpen(MenuOpenEvent event) {
 		if (event.getInventory() == null)
 			return;
-		
+
 		Inventory inventory = event.getInventory();
-		
+
 		if (inventory.getHolder() instanceof MenuHolder) {
 			MenuInventory menu = ((MenuHolder) inventory.getHolder()).getMenu();
-			
+
 			if (menu.getUpdateHandler() != null)
 				playerMap.put((Player) event.getPlayer(), inventory.getHolder());
 		}
 	}
-	
+
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onInventoryClose(InventoryCloseEvent event) {
 		if (event.getInventory() == null)
 			return;
-		
+
 		Inventory inventory = event.getInventory();
-		
+
 		if (inventory.getHolder() instanceof MenuHolder)
 			playerMap.remove((Player) event.getPlayer());
 	}
-	
+
 	@EventHandler
 	public void onPlayerQuit(PlayerQuitEvent event) {
 		playerMap.remove(event.getPlayer());
@@ -104,10 +92,10 @@ public class MenuListener implements Listener {
 	public void onUpdate(UpdateEvent event) {
 		if (event.getType() != UpdateEvent.UpdateType.SECOND)
 			return;
-		
+
 		for (Entry<Player, InventoryHolder> entry : playerMap.entrySet()) {
 			MenuInventory menu = ((MenuHolder) entry.getValue()).getMenu();
-			
+
 			if (menu.getUpdateHandler() != null)
 				menu.getUpdateHandler().onUpdate(entry.getKey(), menu);
 		}

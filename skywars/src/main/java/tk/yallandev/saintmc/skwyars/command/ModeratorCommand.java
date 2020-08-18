@@ -87,6 +87,10 @@ public class ModeratorCommand implements CommandClass {
 		}
 
 		final ChestType chestType = chest;
+		
+		/**
+		 * foda-se
+		 */
 
 		player.getInventory().addItem(new ActionItemStack(
 				new ItemBuilder().name("§a" + NameUtils.formatString(chestType.name())).type(chestType == ChestType.DEFAULT ? Material.DIAMOND

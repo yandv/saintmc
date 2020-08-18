@@ -2,9 +2,9 @@ package tk.yallandev.saintmc;
 
 public class BungeeConst {
 	
-	public static final String MONGO_URL = "mongodb://localhost/saintmc-common?retryWrites=true&w=majority";
+	public static final String MONGO_URL = "mongodb://127.0.0.1/saintmc-common?retryWrites=true&w=majority";
 	
-	public static final String REDIS_HOSTNAME = "localhost";
+	public static final String REDIS_HOSTNAME = "127.0.0.1";
 	public static final String REDIS_PASSWORD = "";
 	
 	public static final String[] BROADCAST_MESSAGES = new String[] {

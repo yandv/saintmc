@@ -49,7 +49,6 @@ import tk.yallandev.saintmc.bukkit.anticheat.alert.AlertController;
 import tk.yallandev.saintmc.bukkit.api.character.CharacterListener;
 import tk.yallandev.saintmc.bukkit.api.cooldown.CooldownController;
 import tk.yallandev.saintmc.bukkit.api.item.ActionItemListener;
-import tk.yallandev.saintmc.bukkit.api.listener.ManualRegisterableListener;
 import tk.yallandev.saintmc.bukkit.api.menu.MenuListener;
 import tk.yallandev.saintmc.bukkit.api.protocol.ProtocolGetter;
 import tk.yallandev.saintmc.bukkit.api.server.Server;
@@ -149,11 +148,11 @@ public class BukkitMain extends JavaPlugin {
 
 		try {
 
-			MongoConnection mongo = new MongoConnection(Bukkit.getIp().equals("0.0.0.0") ? CommonConst.MONGO_URL
-					: CommonConst.MONGO_URL.replace("localhost", "35.198.32.68"));
+			MongoConnection mongo = new MongoConnection(
+					CommonConst.MONGO_URL.replace("localhost", getConfig().getString("mongodb-address", "localhost")));
 			RedisDatabase redis = new RedisDatabase(
-					Bukkit.getIp().equals("0.0.0.0") ? CommonConst.REDIS_HOSTNAME
-							: CommonConst.REDIS_HOSTNAME.replace("localhost", "35.198.32.68"),
+					CommonConst.REDIS_HOSTNAME.replace("localhost", getConfig().getString("redis-address", "localhost"))
+							.replace("127.0.0.1", getConfig().getString("redis-address", "localhost")),
 					CommonConst.REDIS_PASSWORD, 6379);
 
 			mongo.connect();
@@ -327,8 +326,7 @@ public class BukkitMain extends JavaPlugin {
 
 		for (Class<?> classes : ClassGetter.getClassesForPackage(getClass(),
 				"tk.yallandev.saintmc.bukkit.listener.register")) {
-			if (Listener.class.isAssignableFrom(classes)
-					&& !ManualRegisterableListener.class.isAssignableFrom(classes)) {
+			if (Listener.class.isAssignableFrom(classes)) {
 				try {
 					Listener listener = (Listener) classes.newInstance();
 					Bukkit.getPluginManager().registerEvents(listener, getInstance());
@@ -348,17 +346,17 @@ public class BukkitMain extends JavaPlugin {
 		pm.registerEvents(new StorageListener(), getInstance());
 	}
 
-	public void sendPlayerToLobby(Player p) {
+	public void sendPlayerToLobby(Player player) {
 		ByteArrayOutputStream b = new ByteArrayOutputStream();
 		DataOutputStream out = new DataOutputStream(b);
-
+		
 		try {
 			out.writeUTF("Lobby");
 		} catch (Exception e) {
 			e.printStackTrace(System.out);
 		}
 
-		p.sendPluginMessage(getInstance(), "BungeeCord", b.toByteArray());
+		player.sendPluginMessage(getInstance(), "BungeeCord", b.toByteArray());
 	}
 
 	public void sendPlayerToEvent(Player p) {

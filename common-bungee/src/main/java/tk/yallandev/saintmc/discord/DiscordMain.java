@@ -22,16 +22,12 @@ public class DiscordMain {
 
 	private JDA jda;
 	private CommandFramework commandFramework;
-	
+
 	private GuildManager guildManager;
-	
-	public static void main(String[] args) {
-		new DiscordMain();
-	}
-	
+
 	public DiscordMain() {
-		instance = this; 
-		
+		instance = this;
+
 		JDABuilder builder = JDABuilder.createDefault("NzIxNDUxNjQ3MjkyOTMyMjE2.XuUuWA.ywS34PZ6E9dG-U19W8nvbW4wMyY");
 
 		builder.setActivity(Activity.playing("minecraft no saintmc.net"));
@@ -41,13 +37,13 @@ public class DiscordMain {
 		} catch (LoginException | InterruptedException e) {
 			e.printStackTrace();
 		}
-		
+
 		commandFramework = new DiscordCommandFramework(getInstance());
 		commandFramework.registerCommands(new DiscordCommand());
 		commandFramework.registerCommands(new SayCommand());
-		
+
 		guildManager = new GuildManager();
-		
+
 		jda.addEventListener(new MemberListener());
 		jda.addEventListener(new BoosterListener());
 		jda.addEventListener(new ReactionListener(getInstance()));

@@ -47,9 +47,9 @@ public class RedisDatabase implements Database {
 			pool.destroy();
 		}
 	}
-	
+
 	public static class PubSubListener implements Runnable {
-		
+
 		private RedisDatabase redis;
 		private JedisPubSub jpsh;
 
@@ -63,10 +63,11 @@ public class RedisDatabase implements Database {
 
 		@Override
 		public void run() {
-			boolean broken = false;
-			try (Jedis rsc = redis.getPool().getResource()) {
+			CommonGeneral.getInstance().getLogger().log(Level.INFO, "Loading jedis!");
+
+			try (Jedis jedis = redis.getPool().getResource()) {
 				try {
-					rsc.subscribe(jpsh, channels);
+					jedis.subscribe(jpsh, channels);
 				} catch (Exception e) {
 					CommonGeneral.getInstance().getLogger().log(Level.INFO, "PubSub error, attempting to recover.", e);
 					try {
@@ -74,12 +75,8 @@ public class RedisDatabase implements Database {
 					} catch (Exception e1) {
 
 					}
-					broken = true;
+					run();
 				}
-			}
-
-			if (broken) {
-				run();
 			}
 		}
 

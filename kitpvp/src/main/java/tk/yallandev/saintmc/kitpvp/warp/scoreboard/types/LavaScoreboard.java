@@ -13,6 +13,7 @@ import tk.yallandev.saintmc.common.account.status.StatusType;
 import tk.yallandev.saintmc.common.account.status.types.challenge.ChallengeStatus;
 import tk.yallandev.saintmc.common.account.status.types.challenge.ChallengeType;
 import tk.yallandev.saintmc.common.utils.string.StringUtils;
+import tk.yallandev.saintmc.kitpvp.event.lava.PlayerFinishChallengeEvent;
 import tk.yallandev.saintmc.kitpvp.event.lava.PlayerStartChallengeEvent;
 import tk.yallandev.saintmc.kitpvp.event.lava.PlayerStopChallengeEvent;
 import tk.yallandev.saintmc.kitpvp.warp.lava.ChallengeInfo;
@@ -84,6 +85,14 @@ public class LavaScoreboard extends WarpScoreboard {
 	}
 
 	@EventHandler
+	public void onPlayerFinishChallenge(PlayerFinishChallengeEvent event) {
+		scoreboard.createScoreboard(event.getPlayer());
+		updateScore(event.getPlayer(), UpdateType.STATUS);
+		challengeScoreboard.removeViewer((BukkitMember) CommonGeneral.getInstance().getMemberManager()
+				.getMember(event.getPlayer().getUniqueId()));
+	}
+
+	@EventHandler
 	public void onPlayerStopChallenge(PlayerStopChallengeEvent event) {
 		scoreboard.createScoreboard(event.getPlayer());
 		updateScore(event.getPlayer(), UpdateType.STATUS);
@@ -137,7 +146,7 @@ public class LavaScoreboard extends WarpScoreboard {
 							"death1"));
 			scoreboard.updateScore(player, new Score(
 					" Tempo record: §7" + StringUtils.formatTime(status.getTime(ChallengeType.HARD)), "record1"));
-			
+
 			scoreboard.updateScore(player, new Score(" Passou: §a" + status.getWins(ChallengeType.MEDIUM), "pass2"));
 			scoreboard.updateScore(player,
 					new Score(
@@ -146,7 +155,7 @@ public class LavaScoreboard extends WarpScoreboard {
 							"death2"));
 			scoreboard.updateScore(player, new Score(
 					" Tempo record: §7" + StringUtils.formatTime(status.getTime(ChallengeType.MEDIUM)), "record2"));
-			
+
 			scoreboard.updateScore(player, new Score(" Passou: §a" + status.getWins(ChallengeType.EASY), "pass3"));
 			scoreboard.updateScore(player,
 					new Score(

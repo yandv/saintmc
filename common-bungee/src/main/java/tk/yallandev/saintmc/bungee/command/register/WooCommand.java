@@ -8,7 +8,7 @@ import tk.yallandev.saintmc.common.permission.Group;
 
 public class WooCommand implements CommandClass {
 
-    @Command(name = "woo", groupToUse = Group.GERENTE, runAsync = true)
+    @Command(name = "woo", groupToUse = Group.ADMIN, runAsync = true)
     public void wooCommand(CommandArgs cmdArgs) {
     	String[] args = cmdArgs.getArgs();
     	

@@ -41,10 +41,10 @@ import tk.yallandev.saintmc.bukkit.event.account.PlayerChangeLeagueEvent;
 import tk.yallandev.saintmc.bukkit.event.login.PlayerChangeLoginStatusEvent;
 import tk.yallandev.saintmc.common.account.League;
 import tk.yallandev.saintmc.common.account.Member;
+import tk.yallandev.saintmc.common.account.TournamentGroup;
 import tk.yallandev.saintmc.common.account.configuration.LoginConfiguration.AccountType;
 import tk.yallandev.saintmc.common.permission.Group;
 import tk.yallandev.saintmc.common.tag.Tag;
-import tk.yallandev.saintmc.common.tournment.TournamentGroup;
 import tk.yallandev.saintmc.lobby.LobbyMain;
 import tk.yallandev.saintmc.lobby.event.PlayerItemReceiveEvent;
 import tk.yallandev.saintmc.lobby.gamer.Gamer;
@@ -149,16 +149,14 @@ public class PlayerListener implements Listener {
 		BukkitMember member = (BukkitMember) CommonGeneral.getInstance().getMemberManager()
 				.getMember(event.getPlayer().getUniqueId());
 
-		if (member.hasGroupPermission(Group.LIGHT)) {
-
+		if (member.hasGroupPermission(Group.DONATOR)) {
 			player.setAllowFlight(true);
 			player.setFlying(true);
 
 			if (member.getGroup().ordinal() <= Group.YOUTUBER.ordinal()
-					&& member.getGroup().ordinal() >= Group.BLIZZARD.ordinal())
+					&& member.getGroup().ordinal() >= Group.DONATOR.ordinal())
 				Bukkit.broadcastMessage(Tag.valueOf(member.getGroup().name()).getPrefix() + " " + player.getName()
 						+ " §6entrou no lobby!");
-
 		} else {
 			for (Gamer gamer : LobbyMain.getInstance().getPlayerManager().getGamers())
 				if (!gamer.isSeeing())

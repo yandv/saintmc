@@ -26,6 +26,7 @@ import tk.yallandev.saintmc.kitpvp.event.challenge.shadow.ShadowFightFinishEvent
 import tk.yallandev.saintmc.kitpvp.event.challenge.shadow.ShadowFightStartEvent;
 import tk.yallandev.saintmc.kitpvp.event.challenge.shadow.ShadowSearchingStartEvent;
 import tk.yallandev.saintmc.kitpvp.event.challenge.shadow.ShadowSearchingStopEvent;
+import tk.yallandev.saintmc.kitpvp.event.warp.PlayerWarpDeathEvent;
 import tk.yallandev.saintmc.kitpvp.warp.scoreboard.WarpScoreboard;
 
 public class ShadowScoreboard extends WarpScoreboard {
@@ -62,7 +63,7 @@ public class ShadowScoreboard extends WarpScoreboard {
 
 		fightScoreboard.blankLine(8);
 		fightScoreboard.setScore(7, new Score("§9Ninguém: §e0ms", "playerPing"));
-		fightScoreboard.setScore(5, new Score("§cNinguém: §e0ms", "targetPing"));
+		fightScoreboard.setScore(6, new Score("§cNinguém: §e0ms", "targetPing"));
 		fightScoreboard.blankLine(5);
 		fightScoreboard.setScore(4, new Score("Warp: §a1v1", "warp"));
 		fightScoreboard.setScore(3, new Score("Winstreak: §70", "winstreak"));
@@ -103,6 +104,16 @@ public class ShadowScoreboard extends WarpScoreboard {
 		fightScoreboard.createScoreboard(player);
 		fightScoreboard.createScoreboard(target);
 
+		fightScoreboard.updateScore(player,
+				new Score("Winstreak: §7" + CommonGeneral.getInstance().getStatusManager()
+						.loadStatus(player.getUniqueId(), StatusType.SHADOW, NormalStatus.class).getKillstreak(),
+						"winstreak"));
+
+		fightScoreboard.updateScore(target,
+				new Score("Winstreak: §7" + CommonGeneral.getInstance().getStatusManager()
+						.loadStatus(target.getUniqueId(), StatusType.SHADOW, NormalStatus.class).getKillstreak(),
+						"winstreak"));
+
 		observersList.add(new FightPingUpdate(player, target) {
 
 			@Override
@@ -127,16 +138,23 @@ public class ShadowScoreboard extends WarpScoreboard {
 				((CraftPlayer) target).getHandle().ping));
 	}
 
-	@EventHandler
+	@EventHandler(priority = EventPriority.MONITOR)
 	public void onShadowFightFinish(ShadowFightFinishEvent event) {
 		observersList
 				.removeIf(update -> update.getTarget() == event.getPlayer() || update.getTarget() == event.getTarget());
 
-		loadScoreboard(event.getPlayer());
-		loadScoreboard(event.getTarget());
+		fightScoreboard.removeViewer((BukkitMember) CommonGeneral.getInstance().getMemberManager()
+				.getMember(event.getPlayer().getUniqueId()));
+		fightScoreboard.removeViewer((BukkitMember) CommonGeneral.getInstance().getMemberManager()
+				.getMember(event.getTarget().getUniqueId()));
+	}
 
-		updateScore(event.getPlayer(), UpdateType.STATUS);
-		updateScore(event.getTarget(), UpdateType.STATUS);
+	@EventHandler
+	public void onPlayerWarpDeath(PlayerWarpDeathEvent event) {
+		loadScoreboard(event.getPlayer());
+
+		if (event.getKiller() instanceof Player)
+			loadScoreboard(event.getKiller());
 	}
 
 	@Override
@@ -176,12 +194,12 @@ public class ShadowScoreboard extends WarpScoreboard {
 		}
 		case STATUS: {
 			Member member = CommonGeneral.getInstance().getMemberManager().getMember(player.getUniqueId());
-			NormalStatus killerStatus = CommonGeneral.getInstance().getStatusManager().loadStatus(player.getUniqueId(),
+			NormalStatus normalStatus = CommonGeneral.getInstance().getStatusManager().loadStatus(player.getUniqueId(),
 					StatusType.SHADOW, NormalStatus.class);
 
-			scoreboard.updateScore(player, new Score("Vitórias: §e" + killerStatus.getKills(), "kills"));
-			scoreboard.updateScore(player, new Score("Derrotas: §e" + killerStatus.getDeaths(), "deaths"));
-			scoreboard.updateScore(player, new Score("Winstreak: §e" + killerStatus.getKillstreak(), "killstreak"));
+			scoreboard.updateScore(player, new Score("Vitórias: §e" + normalStatus.getKills(), "kills"));
+			scoreboard.updateScore(player, new Score("Derrotas: §e" + normalStatus.getDeaths(), "deaths"));
+			scoreboard.updateScore(player, new Score("Winstreak: §e" + normalStatus.getKillstreak(), "killstreak"));
 
 			scoreboard.updateScore(player, new Score("Xp: §a" + member.getXp(), "xp"));
 			scoreboard.updateScore(player, new Score("Coins: §6" + member.getMoney(), "coins"));

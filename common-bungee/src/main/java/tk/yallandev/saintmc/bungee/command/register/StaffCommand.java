@@ -27,7 +27,7 @@ import tk.yallandev.saintmc.common.tag.Tag;
 
 public class StaffCommand implements CommandClass {
 
-	@Command(name = "glist", groupToUse = Group.GERENTE, usage = "/<command>", aliases = { "onlines", "online" })
+	@Command(name = "glist", groupToUse = Group.TRIAL, usage = "/<command>", aliases = { "onlines", "online" })
 	public void glistCommand(CommandArgs cmdArgs) {
 		cmdArgs.getSender().sendMessage(" §a* §fJogadores online no servidor: §a"
 				+ ProxyServer.getInstance().getOnlineCount() + " jogadores! §7(No total)");
@@ -38,7 +38,7 @@ public class StaffCommand implements CommandClass {
 		cmdArgs.getSender().sendMessage("");
 	}
 
-	@Command(name = "broadcast", groupToUse = Group.GERENTE, usage = "/<command> <mesage>", aliases = { "bc", "aviso",
+	@Command(name = "broadcast", groupToUse = Group.MODPLUS, usage = "/<command> <mesage>", aliases = { "bc", "aviso",
 			"alert" })
 	public void broadcastCommand(CommandArgs cmdArgs) {
 		CommandSender sender = cmdArgs.getSender();
@@ -64,7 +64,7 @@ public class StaffCommand implements CommandClass {
 				.broadcast("§7O " + sender.getName() + " enviou uma mensagem global!", Group.TRIAL);
 	}
 
-	@Command(name = "maintence", groupToUse = Group.DEVELOPER)
+	@Command(name = "maintence", aliases = { "manutencao" }, groupToUse = Group.DEVELOPER)
 	public void maintenceCommand(CommandArgs cmdArgs) {
 		BungeeMain.getInstance().setMaintenceMode(!BungeeMain.getInstance().isMaintenceMode());
 		ProxyServer.getInstance()

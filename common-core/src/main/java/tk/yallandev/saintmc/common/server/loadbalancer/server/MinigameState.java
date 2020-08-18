@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Getter
 public enum MinigameState {
 
-	PREGAME(true), WAITING(true), PREPARING(true), STARTING(true), INVINCIBILITY(true), INGAME, GAMETIME, WINNING, NONE;
+	STARTING(true), PREGAME(true), WAITING(true), INVINCIBILITY(true), GAMETIME, WINNING, NONE;
 
 	private boolean decrementTime;
 
@@ -17,34 +17,27 @@ public enum MinigameState {
 		switch (this) {
 		case STARTING:
 		case WAITING:
-		case PREPARING:
 		case PREGAME:
 			return true;
 		default:
 			return false;
 		}
 	}
-	
+
 	public boolean isInvencibility() {
 		if (this == INVINCIBILITY)
 			return true;
 		return false;
 	}
-	
+
 	public boolean isGametime() {
-		if (this == GAMETIME || this == INGAME)
-			return true;
-		
-		return false;
+		return this == GAMETIME;
 	}
-	
+
 	public boolean isEnding() {
-		if (this == WINNING)
-			return true;
-		
-		return false;
+		return this == WINNING;
 	}
-	
+
 	public boolean isState(MinigameState state) {
 		return this == state;
 	}

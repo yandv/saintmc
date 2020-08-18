@@ -59,11 +59,12 @@ public class LobbyInventory {
 			if (server.isFull()) {
 				builder.name("§c§l" + server.getServerId().substring(0, 2).toUpperCase());
 				builder.durability(8);
-				builder.lore("\n§a" + server.getOnlinePlayers() + " jogadores online\n§cEsse servidor está lotado!");
+				builder.lore(
+						"\n§3§l" + server.getOnlinePlayers() + " §7jogadores conectados\n§cEsse servidor está lotado!");
 			} else {
 				builder.name("§a§l" + server.getServerId().substring(0, 2).toUpperCase());
 				builder.durability(10);
-				builder.lore("\n§a" + server.getOnlinePlayers() + " jogadores online");
+				builder.lore("\n§3§l" + server.getOnlinePlayers() + " §7jogadores conectados");
 			}
 
 			builder.amount(server.getOnlinePlayers());

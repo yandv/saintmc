@@ -39,7 +39,7 @@ public class Character {
 		return new Character(name, skinName, location, new Interact() {
 
 			@Override
-			public boolean onInteract(Player player) {
+			public boolean onInteract(Player player, boolean right) {
 				return false;
 			}
 		});
@@ -82,7 +82,7 @@ public class Character {
 	@Getter
 	public static abstract class Interact {
 
-		public abstract boolean onInteract(Player player);
+		public abstract boolean onInteract(Player player, boolean right);
 
 	}
 

@@ -4,6 +4,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerLoginEvent.Result;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -22,6 +23,16 @@ public class PlayerListener implements Listener {
 		Gamer gamer = new Gamer(player);
 
 		GameMain.getInstance().getGamerManager().loadGamer(player.getUniqueId(), gamer);
+	}
+	
+	@EventHandler
+	public void onPlayerJoin(PlayerJoinEvent event) {
+		Player player = event.getPlayer();
+		Gamer gamer = GameMain.getInstance().getGamerManager().getGamer(player.getUniqueId());
+		
+		if (gamer == null) {
+			player.kickPlayer("§cNão foi possível carregar sua conta!");
+		}
 	}
 	
 	@EventHandler

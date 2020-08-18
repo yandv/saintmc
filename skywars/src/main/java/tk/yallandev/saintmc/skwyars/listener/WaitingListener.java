@@ -43,6 +43,9 @@ public class WaitingListener implements Listener {
 		Member member = CommonGeneral.getInstance().getMemberManager().getMember(event.getPlayer().getUniqueId());
 
 		if (!member.hasGroupPermission(Group.TRIAL))
+			/**
+			 * Teste
+			 */
 			if (GameGeneral.getInstance().getGamerController().count(g -> g.isPlaying()) >= GameMain.getInstance()
 					.getMaxPlayers())
 				event.disallow(PlayerLoginEvent.Result.KICK_OTHER, "§cO jogo está cheio!");

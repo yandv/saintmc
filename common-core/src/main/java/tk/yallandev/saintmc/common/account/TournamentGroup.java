@@ -1,4 +1,4 @@
-package tk.yallandev.saintmc.common.tournment;
+package tk.yallandev.saintmc.common.account;
 
 public enum TournamentGroup {
 

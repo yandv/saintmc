@@ -82,7 +82,7 @@ public class ReportInventory {
 					new ConfirmInventory(player, "§7Remover report", new ConfirmHandler() {
 
 						@Override
-						public void onCofirm(boolean confirmed) {
+						public void onConfirm(boolean confirmed) {
 							if (confirmed) {
 								report.expire();
 								new ReportListInventory(p, 1);

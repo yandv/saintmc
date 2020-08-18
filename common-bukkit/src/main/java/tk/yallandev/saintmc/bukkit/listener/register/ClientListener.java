@@ -16,7 +16,7 @@ import tk.yallandev.saintmc.bukkit.BukkitMain;
 import tk.yallandev.saintmc.bukkit.api.client.lunar.LunarClient;
 import tk.yallandev.saintmc.bukkit.api.client.lunar.NotificationLevel;
 import tk.yallandev.saintmc.bukkit.bukkit.BukkitMember;
-import tk.yallandev.saintmc.common.client.ClientType;
+import tk.yallandev.saintmc.common.account.client.ClientType;
 import tk.yallandev.saintmc.common.utils.BufferUtils;
 
 public class ClientListener implements Listener {

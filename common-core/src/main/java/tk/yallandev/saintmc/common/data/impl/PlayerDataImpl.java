@@ -137,20 +137,16 @@ public class PlayerDataImpl implements PlayerData {
 	@Override
 	public void updateMember(Member member, String fieldName) {
 		MemberModel memberModel = new MemberModel(member);
-		JsonObject object = JsonUtils.jsonTree(memberModel);
+		JsonObject tree = JsonUtils.jsonTree(memberModel);
 
-		if (object.has(fieldName)) {
-			query.updateOne("uniqueId", member.getUniqueId().toString(),
-					new JsonBuilder().addProperty("fieldName", fieldName).add("value", object.get(fieldName)).build());
-		}
+		query.updateOne("uniqueId", member.getUniqueId().toString(),
+				new JsonBuilder().addProperty("fieldName", fieldName).add("value", tree.get(fieldName)).build());
 
 		if (CommonGeneral.getInstance().getServerType().canSendData())
 			CommonGeneral.getInstance().getCommonPlatform().runAsync(new Runnable() {
 
 				@Override
 				public void run() {
-					JsonObject tree = CommonConst.GSON.toJsonTree(member).getAsJsonObject();
-					
 					if (tree.has(fieldName)) {
 						JsonElement element = tree.get(fieldName);
 						try (Jedis jedis = redisDatabase.getPool().getResource()) {
@@ -223,6 +219,8 @@ public class PlayerDataImpl implements PlayerData {
 			if (jedis.ttl(key) >= 0) {
 				bool = jedis.persist(key) == 1;
 			}
+		} catch (Exception ex) {
+			ex.printStackTrace();
 		}
 
 		if (bool)

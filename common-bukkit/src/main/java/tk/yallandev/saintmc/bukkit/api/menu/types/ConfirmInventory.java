@@ -19,7 +19,7 @@ public class ConfirmInventory {
 
 			@Override
 			public void onClick(Player p, Inventory inv, ClickType type, ItemStack stack, int slot) {
-				handler.onCofirm(true);
+				handler.onConfirm(true);
 			}
 		};
 
@@ -27,37 +27,39 @@ public class ConfirmInventory {
 
 			@Override
 			public void onClick(Player p, Inventory inv, ClickType type, ItemStack stack, int slot) {
-				handler.onCofirm(false);
-			}
-		};
+				handler.onConfirm(false);
 
-		menu.setItem(11, new ItemBuilder().type(Material.REDSTONE_BLOCK).name("§cNegar").build(), noHandler);
-		menu.setItem(12, new ItemBuilder().type(Material.REDSTONE_BLOCK).name("§cNegar").build(), noHandler);
-		menu.setItem(20, new ItemBuilder().type(Material.REDSTONE_BLOCK).name("§cNegar").build(), noHandler);
-		menu.setItem(21, new ItemBuilder().type(Material.REDSTONE_BLOCK).name("§cNegar").build(), noHandler);
-
-		menu.setItem(14, new ItemBuilder().type(Material.EMERALD_BLOCK).name("§aAceitar").build(), yesHandler);
-		menu.setItem(15, new ItemBuilder().type(Material.EMERALD_BLOCK).name("§aAceitar").build(), yesHandler);
-		menu.setItem(23, new ItemBuilder().type(Material.EMERALD_BLOCK).name("§aAceitar").build(), yesHandler);
-		menu.setItem(24, new ItemBuilder().type(Material.EMERALD_BLOCK).name("§aAceitar").build(), yesHandler);
-
-		menu.setItem(39, new ItemBuilder().type(Material.ARROW).name("§aVoltar").build(), new MenuClickHandler() {
-
-			@Override
-			public void onClick(Player p, Inventory inv, ClickType type, ItemStack stack, int slot) {
 				if (topInventory != null)
 					topInventory.open(p);
 				else
 					menu.close(p);
 			}
-		});
+		};
+
+		menu.setItem(10, new ItemBuilder().type(Material.STAINED_GLASS_PANE).durability(14).name("§cRejeitar").build(),
+				noHandler);
+		menu.setItem(11, new ItemBuilder().type(Material.STAINED_GLASS_PANE).durability(14).name("§cRejeitar").build(),
+				noHandler);
+		menu.setItem(19, new ItemBuilder().type(Material.STAINED_GLASS_PANE).durability(14).name("§cRejeitar").build(),
+				noHandler);
+		menu.setItem(20, new ItemBuilder().type(Material.STAINED_GLASS_PANE).durability(14).name("§cRejeitar").build(),
+				noHandler);
+
+		menu.setItem(15, new ItemBuilder().type(Material.STAINED_GLASS_PANE).durability(5).name("§aAceitar").build(),
+				yesHandler);
+		menu.setItem(16, new ItemBuilder().type(Material.STAINED_GLASS_PANE).durability(5).name("§aAceitar").build(),
+				yesHandler);
+		menu.setItem(24, new ItemBuilder().type(Material.STAINED_GLASS_PANE).durability(5).name("§aAceitar").build(),
+				yesHandler);
+		menu.setItem(25, new ItemBuilder().type(Material.STAINED_GLASS_PANE).durability(5).name("§aAceitar").build(),
+				yesHandler);
 
 		menu.open(player);
 	}
 
 	public static interface ConfirmHandler {
 
-		public void onCofirm(boolean confirmed);
+		public void onConfirm(boolean confirmed);
 
 	}
 }

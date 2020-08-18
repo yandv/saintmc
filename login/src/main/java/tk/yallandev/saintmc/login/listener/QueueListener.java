@@ -115,6 +115,9 @@ public class QueueListener implements Listener {
 	public void handleQueue(Player player, boolean priority) {
 		if (queueList.containsKey(player))
 			return;
+		
+		if (player == null)
+			queueList.remove(player);
 
 		if (priority) {
 			queueList.put(player, true);

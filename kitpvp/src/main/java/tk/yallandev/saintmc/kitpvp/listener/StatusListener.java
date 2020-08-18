@@ -20,9 +20,9 @@ import tk.yallandev.saintmc.common.utils.string.MessageBuilder;
 import tk.yallandev.saintmc.kitpvp.event.warp.PlayerWarpDeathEvent;
 import tk.yallandev.saintmc.kitpvp.utils.RewardCalculator;
 import tk.yallandev.saintmc.kitpvp.warp.DuelWarp;
+import tk.yallandev.saintmc.kitpvp.warp.types.LavaWarp;
 import tk.yallandev.saintmc.kitpvp.warp.types.PartyWarp;
 import tk.yallandev.saintmc.kitpvp.warp.types.ShadowWarp;
-import tk.yallandev.saintmc.kitpvp.warp.types.SumoWarp;
 
 public class StatusListener implements Listener {
 
@@ -31,21 +31,13 @@ public class StatusListener implements Listener {
 		Player player = event.getPlayer();
 		Player killer = event.getKiller();
 
-		if (killer == null) {
-			player.sendMessage("§c§l> §fVocê §cmorreu§f!");
+		if (killer == null || !(event.getWarp() instanceof LavaWarp)) {
+			player.sendMessage("§cVocê morreu!");
 			return;
 		}
 
 		if (event.getWarp() instanceof PartyWarp)
 			return;
-
-		if (event.getWarp() instanceof SumoWarp) {
-
-			player.sendMessage("§c§l> §fVocê §cmorreu§f para o §c" + killer.getName() + "§f!");
-			killer.sendMessage("§a§l> §fVocê matou o §a" + player.getName() + "§f!");
-
-			return;
-		}
 
 		boolean duels = (event.getWarp() instanceof DuelWarp);
 		StatusType statusType = duels ? StatusType.SHADOW : StatusType.PVP;
@@ -60,13 +52,14 @@ public class StatusListener implements Listener {
 		if (duels)
 			winnerXp *= 1.5;
 
-		int winnerMoney = RewardCalculator.calculateReward(player, playerStatus, killer, killerStatus);
+		int winnerMoney = 50 * (CommonGeneral.getInstance().getMemberManager().getMember(killer.getUniqueId())
+				.hasGroupPermission(Group.BLIZZARD) ? 2 : 1);
 
 		if (duels)
 			winnerMoney *= 1.5;
 
 		int lostXp = CommonConst.RANDOM.nextInt(8) + 1;
-		int lostMoney = 50 * (CommonGeneral.getInstance().getMemberManager().getMember(killer.getUniqueId())
+		int lostMoney = 20 * (CommonGeneral.getInstance().getMemberManager().getMember(killer.getUniqueId())
 				.hasGroupPermission(Group.BLIZZARD) ? 2 : 1);
 
 		player.spigot()

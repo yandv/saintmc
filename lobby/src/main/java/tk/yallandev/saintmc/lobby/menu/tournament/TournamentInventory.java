@@ -17,10 +17,11 @@ import tk.yallandev.saintmc.bukkit.api.menu.MenuInventory;
 import tk.yallandev.saintmc.bukkit.api.menu.MenuUpdateHandler;
 import tk.yallandev.saintmc.bukkit.api.menu.click.ClickType;
 import tk.yallandev.saintmc.bukkit.api.menu.click.MenuClickHandler;
+import tk.yallandev.saintmc.bukkit.api.menu.types.ConfirmInventory;
 import tk.yallandev.saintmc.bukkit.bukkit.BukkitMember;
 import tk.yallandev.saintmc.common.account.Member;
+import tk.yallandev.saintmc.common.account.TournamentGroup;
 import tk.yallandev.saintmc.common.tag.Tag;
-import tk.yallandev.saintmc.common.tournment.TournamentGroup;
 import tk.yallandev.saintmc.common.utils.string.NameUtils;
 
 public class TournamentInventory {
@@ -76,7 +77,7 @@ public class TournamentInventory {
 					item.lore("", "§7Você está com a tag " + Tag.TORNEIOPLUS.getPrefix());
 				}
 
-				inventory.setItem(11,
+				inventory.setItem(10,
 						new ItemBuilder()
 								.name(member.hasPermission("tag.torneioplus")
 										? Tag.TORNEIOPLUS.getPrefix() + " " + member.getPlayerName()
@@ -84,15 +85,53 @@ public class TournamentInventory {
 								.type(Material.SKULL_ITEM).durability(3).skin(member.getPlayerName())
 								.lore("", "§7Grupo: §f" + (member.getTournamentGroup().name().split("_")[1])).build());
 
-				inventory.setItem(12, item.build(), member.hasPermission("tag.torneioplus")
+				inventory.setItem(11, item.build(), member.hasPermission("tag.torneioplus")
 						? (Player p, Inventory inv, ClickType type, ItemStack stack, int slot) -> {
 							player.sendMessage(
 									"§aVocê já possui o pacote da tag " + Tag.TORNEIOPLUS.getPrefix() + "§a!");
+
+							player.closeInventory();
 						}
 						: (Player p, Inventory inv, ClickType type, ItemStack stack, int slot) -> {
 							if (!member.hasPermission("tag.torneioplus"))
 								player.sendMessage("§a§l> §fCompre o ingresso do " + Tag.TORNEIOPLUS.getPrefix()
 										+ "§f em §bhttps://" + CommonConst.STORE + "/torneio/");
+
+							player.closeInventory();
+						});
+
+				inventory.setItem(12, new ItemBuilder().name("§cDesinscrever-se do Torneio").lore(
+						"\n§7Caso você queira sair do torneio, sua tag será mantida por ter participado, e seu grupo será removido, dando o lugar para outra pessoa jogar")
+						.type(Material.TNT).build(),
+						(Player p, Inventory inv, ClickType type, ItemStack stack, int slot) -> {
+
+							new ConfirmInventory(player, "§cSair da copa!", new ConfirmInventory.ConfirmHandler() {
+
+								@Override
+								public void onConfirm(boolean confirmed) {
+									if (confirmed) {
+										player.sendMessage("§cVocê saiu do seu grupo!");
+										member.setTournamentGroup(TournamentGroup.NONE);
+
+										switch (member.getTournamentGroup()) {
+										case GROUP_A:
+											GROUP_A--;
+											break;
+										case GROUP_B:
+											GROUP_B--;
+											break;
+										case GROUP_C:
+											GROUP_C--;
+											break;
+										case GROUP_D:
+											GROUP_D--;
+											break;
+										default:
+											break;
+										}
+									}
+								}
+							}, inventory);
 						});
 
 				inventory.setItem(14, REWARD);
@@ -244,7 +283,8 @@ public class TournamentInventory {
 							: "§cIngressos esgotados!")));
 		} else
 			builder.lore("\n" + ((MAX_TICKET - remaining) > 0 ? "§7Ingressos restantes: §f" + (MAX_TICKET - remaining)
-					: "§cIngressos esgotados!\n\n§fAdquiria " + Tag.TORNEIOPLUS + "§f para entrar nesse grupo!"));
+					: "§cIngressos esgotados!\n\n§fAdquiria " + Tag.TORNEIOPLUS.getPrefix()
+							+ "§f para entrar nesse grupo!"));
 
 		builder.name((a ? "§a" : "§c")
 				+ Joiner.on(" ").join(Arrays.asList(tournamentGroup.name().replace("GROUP", "Grupo").split("_"))

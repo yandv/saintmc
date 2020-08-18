@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.MessageChannel;
@@ -49,13 +50,14 @@ public class DiscordCommandFramework implements CommandFramework {
 
 				GuildConfiguration config = DiscordMain.getInstance().getGuildManager().getGuild(guild.getIdLong());
 
-				if (config.getChatMap().containsKey("command")) {
-					if (config.getChatMap().get("command") != textChannel.getIdLong()) {
-						MessageUtils.sendMessage(textChannel,
-								"Você não pode executar comandos no canal ``" + textChannel.getName() + "``.", 5);
-						return true;
+				if (!sender.getAsMember().hasPermission(Permission.ADMINISTRATOR))
+					if (config.getChatMap().containsKey("command")) {
+						if (config.getChatMap().get("command") != textChannel.getIdLong()) {
+							MessageUtils.sendMessage(textChannel,
+									"Você não pode executar comandos no canal ``" + textChannel.getName() + "``.", 5);
+							return true;
+						}
 					}
-				}
 
 				if (command.runAsync()) {
 					CommonGeneral.getInstance().getCommonPlatform().runAsync(new Runnable() {

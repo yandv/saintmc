@@ -6,12 +6,14 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import com.comphenix.protocol.wrappers.WrappedGameProfile;
 import com.comphenix.protocol.wrappers.WrappedSignedProperty;
 
 import tk.yallandev.saintmc.CommonConst;
 import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.bukkit.BukkitMain;
-import tk.yallandev.saintmc.bukkit.api.player.FakePlayerAPI;
+import tk.yallandev.saintmc.bukkit.api.player.PlayerAPI;
+import tk.yallandev.saintmc.bukkit.api.player.TextureFetcher;
 import tk.yallandev.saintmc.bukkit.api.scoreboard.ScoreboardAPI;
 import tk.yallandev.saintmc.bukkit.bukkit.BukkitMember;
 import tk.yallandev.saintmc.bukkit.command.BukkitCommandArgs;
@@ -50,7 +52,6 @@ public class YoutubeCommand implements CommandClass {
 						: args.getArgs()[0];
 
 		if (Bukkit.getPlayer(fakeName) != null) {
-
 			if (args.getArgs()[0].equalsIgnoreCase("random"))
 				while (Bukkit.getPlayer(fakeName) != null)
 					fakeName = args.getArgs()[0].equals("#") ? member.getPlayerName()
@@ -63,7 +64,7 @@ public class YoutubeCommand implements CommandClass {
 			return;
 		}
 
-		if (!FakePlayerAPI.validateName(fakeName)) {
+		if (!PlayerAPI.validateName(fakeName)) {
 			player.sendMessage(" §c* §fO nickname que você colocou está inválido!");
 			return;
 		}
@@ -86,6 +87,7 @@ public class YoutubeCommand implements CommandClass {
 		}
 
 		String playerName = fakeName;
+		WrappedSignedProperty property = BukkitMain.getInstance().getSkinManager().getSkin(playerName);
 
 		new BukkitRunnable() {
 
@@ -94,21 +96,19 @@ public class YoutubeCommand implements CommandClass {
 				if (member.getPlayerName().equals(playerName)) {
 					ScoreboardAPI.leaveCurrentTeamForOnlinePlayers(player);
 
-					WrappedSignedProperty property = BukkitMain.getInstance().getSkinManager().getSkin(playerName);
-
 					if (property == null)
-						FakePlayerAPI.changePlayerSkin(player, playerName, member.getUniqueId(), false);
+						PlayerAPI.changePlayerSkin(player, playerName, member.getUniqueId(), false);
 					else
-						FakePlayerAPI.changePlayerSkin(player, property, false);
+						PlayerAPI.changePlayerSkin(player, property, false);
 
-					FakePlayerAPI.changePlayerName(player, playerName);
+					PlayerAPI.changePlayerName(player, playerName);
 					member.setTag(member.getTag());
 					member.setFakeName(member.getPlayerName());
-					player.sendMessage(" §a* §fO seu fake foi removido");
+					player.sendMessage(" §a* §fO seu fake foi removido!");
 				} else {
 					ScoreboardAPI.leaveCurrentTeamForOnlinePlayers(player);
-					FakePlayerAPI.changePlayerName(player, playerName);
-					FakePlayerAPI.removePlayerSkin(player);
+					PlayerAPI.changePlayerName(player, playerName);
+					PlayerAPI.removePlayerSkin(player);
 					member.setTag(Tag.MEMBRO);
 					member.setFakeName(playerName);
 					player.sendMessage(" §a* §fSeu fake foi alterado para §a" + playerName + "§f!");
@@ -124,9 +124,8 @@ public class YoutubeCommand implements CommandClass {
 
 	@Command(name = "changeskin", aliases = { "skin" }, groupToUse = Group.MEMBRO, runAsync = true)
 	public void changeskinCommand(BukkitCommandArgs args) {
-		if (!args.isPlayer()) {
+		if (!args.isPlayer())
 			return;
-		}
 
 		Player player = args.getPlayer();
 		Member member = CommonGeneral.getInstance().getMemberManager().getMember(player.getUniqueId());
@@ -151,7 +150,7 @@ public class YoutubeCommand implements CommandClass {
 
 		String playerName = args.getArgs()[0];
 
-		if (!FakePlayerAPI.validateName(playerName) && !playerName.equals("#")) {
+		if (!PlayerAPI.validateName(playerName) && !playerName.equals("#")) {
 			player.sendMessage(" §c* §fO nickname que você colocou está inválido!");
 			return;
 		}
@@ -163,11 +162,13 @@ public class YoutubeCommand implements CommandClass {
 			return;
 		}
 
+		WrappedSignedProperty property = TextureFetcher.loadTexture(new WrappedGameProfile(uuid, playerName));
+
 		new BukkitRunnable() {
 
 			@Override
 			public void run() {
-				WrappedSignedProperty property = FakePlayerAPI.changePlayerSkin(player, playerName, uuid, true);
+				PlayerAPI.changePlayerSkin(player, property, true);
 				player.sendMessage(" §a* §fSua skin foi alterada para a do §a" + playerName + "§f!");
 
 				if (playerName.equals("#") || member.getPlayerName().equals(playerName))

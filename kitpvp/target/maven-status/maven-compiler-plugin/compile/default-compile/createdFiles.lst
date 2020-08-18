@@ -36,6 +36,7 @@ tk\yallandev\saintmc\kitpvp\event\warp\PlayerWarpDeathEvent.class
 tk\yallandev\saintmc\kitpvp\kit\register\TimelordKit.class
 tk\yallandev\saintmc\kitpvp\event\warp\PlayerWarpQuitEvent.class
 tk\yallandev\saintmc\kitpvp\kit\Kit.class
+tk\yallandev\saintmc\kitpvp\kit\register\AnchorKit$1.class
 tk\yallandev\saintmc\kitpvp\warp\DuelWarp.class
 tk\yallandev\saintmc\kitpvp\listener\ProtectionListener.class
 tk\yallandev\saintmc\kitpvp\event\challenge\FightStartEvent.class

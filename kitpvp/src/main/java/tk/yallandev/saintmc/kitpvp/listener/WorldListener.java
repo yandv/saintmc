@@ -65,6 +65,9 @@ public class WorldListener implements Listener {
 
 		Player player = event.getPlayer();
 		Gamer gamer = GameMain.getInstance().getGamerManager().getGamer(player.getUniqueId());
+		
+		if (gamer == null)
+			return;
 
 		if (gamer.hasKit()) {
 			Kit kit = gamer.getKit();

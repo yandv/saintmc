@@ -160,7 +160,7 @@ public class BanCommand implements CommandClass {
 		}
 	}
 
-	@Command(name = "unban", aliases = { "desbanir" }, runAsync = true, groupToUse = Group.GERENTE)
+	@Command(name = "unban", aliases = { "desbanir" }, runAsync = true, groupToUse = Group.ADMIN)
 	public void unbanCommand(BungeeCommandArgs cmdArgs) {
 		CommandSender sender = cmdArgs.getSender();
 		String[] args = cmdArgs.getArgs();
@@ -351,7 +351,7 @@ public class BanCommand implements CommandClass {
 		}
 	}
 
-	@Command(name = "unmute", runAsync = true, groupToUse = Group.TRIAL)
+	@Command(name = "unmute", runAsync = true, groupToUse = Group.MODPLUS)
 	public void unmuteCommand(BungeeCommandArgs cmdArgs) {
 		CommandSender sender = cmdArgs.getSender();
 		String[] args = cmdArgs.getArgs();

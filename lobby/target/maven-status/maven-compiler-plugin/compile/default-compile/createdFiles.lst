@@ -16,11 +16,12 @@ tk\yallandev\saintmc\lobby\LobbyMain$1.class
 tk\yallandev\saintmc\lobby\listener\PlayerListener$7.class
 tk\yallandev\saintmc\lobby\command\SpawnCommand.class
 tk\yallandev\saintmc\lobby\menu\server\KitpvpInventory.class
+tk\yallandev\saintmc\lobby\listener\LauncherListener.class
 tk\yallandev\saintmc\lobby\menu\collectable\CollectableInventory$4.class
-tk\yallandev\saintmc\lobby\listener\CombatListener$3$1.class
 tk\yallandev\saintmc\lobby\menu\profile\ProfileInventory$1.class
 tk\yallandev\saintmc\lobby\listener\PlayerListener$4.class
 tk\yallandev\saintmc\lobby\menu\collectable\ParticleInventory.class
+tk\yallandev\saintmc\lobby\menu\tournament\TournamentInventory$6.class
 tk\yallandev\saintmc\lobby\menu\collectable\WingInventory.class
 tk\yallandev\saintmc\lobby\menu\collectable\HeadInventory$1.class
 tk\yallandev\saintmc\lobby\listener\CharacterListener$2.class
@@ -48,7 +49,6 @@ tk\yallandev\saintmc\lobby\listener\PlayerListener$5.class
 tk\yallandev\saintmc\lobby\menu\server\KitpvpInventory$1.class
 tk\yallandev\saintmc\lobby\menu\profile\ProfileInventory.class
 tk\yallandev\saintmc\lobby\menu\server\SkywarsInventory$1.class
-tk\yallandev\saintmc\lobby\listener\CombatListener$3.class
 tk\yallandev\saintmc\lobby\listener\PlayerListener.class
 tk\yallandev\saintmc\lobby\collectable\Collectables$Particles.class
 tk\yallandev\saintmc\lobby\menu\collectable\CollectableInventory$5.class
@@ -89,6 +89,7 @@ tk\yallandev\saintmc\lobby\menu\profile\PreferencesInventory$2.class
 tk\yallandev\saintmc\lobby\listener\PlayerListener$3.class
 tk\yallandev\saintmc\lobby\listener\CharacterListener.class
 tk\yallandev\saintmc\lobby\listener\PlayerListener$2.class
+tk\yallandev\saintmc\lobby\listener\CombatListener$2$1.class
 tk\yallandev\saintmc\lobby\menu\profile\ProfileInventory$2.class
 tk\yallandev\saintmc\lobby\listener\ScoreboardListener$2.class
 tk\yallandev\saintmc\lobby\menu\collectable\HeadInventory$2.class

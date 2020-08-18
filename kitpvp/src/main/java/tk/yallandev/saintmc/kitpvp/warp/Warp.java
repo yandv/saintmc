@@ -5,12 +5,11 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import org.bukkit.event.HandlerList;
-import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 
 import lombok.Getter;
 import lombok.Setter;
+import tk.yallandev.saintmc.bukkit.api.listener.ManualRegisterableListener;
 import tk.yallandev.saintmc.common.command.CommandClass;
 import tk.yallandev.saintmc.kitpvp.GameMain;
 import tk.yallandev.saintmc.kitpvp.event.warp.PlayerWarpQuitEvent;
@@ -23,7 +22,7 @@ import tk.yallandev.saintmc.kitpvp.warp.scoreboard.WarpScoreboard;
  */
 
 @Getter
-public abstract class Warp implements Listener, CommandClass {
+public abstract class Warp extends ManualRegisterableListener implements CommandClass {
 
 	private String name;
 
@@ -55,8 +54,8 @@ public abstract class Warp implements Listener, CommandClass {
 	public void removePlayer(PlayerWarpQuitEvent event) {
 		if (inWarp(event.getPlayer()))
 			if (GameMain.getInstance().getGamerManager().getGamers().stream().filter(gamer -> inWarp(gamer.getPlayer()))
-					.count() == 0l) {
-				HandlerList.unregisterAll(this);
+					.count() - 1 == 0l) {
+				unregisterListener();
 				scoreboard.unregister();
 			}
 	}

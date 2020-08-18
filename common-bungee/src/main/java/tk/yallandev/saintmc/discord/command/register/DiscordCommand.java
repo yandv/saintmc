@@ -22,13 +22,13 @@ import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
-import net.md_5.bungee.api.connection.ProxiedPlayer;
+import tk.yallandev.saintmc.CommonConst;
 import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.bungee.listener.AccountListener;
-import tk.yallandev.saintmc.common.account.DiscordType;
 import tk.yallandev.saintmc.common.account.Member;
 import tk.yallandev.saintmc.common.account.MemberModel;
 import tk.yallandev.saintmc.common.account.MemberVoid;
+import tk.yallandev.saintmc.common.account.TournamentGroup;
 import tk.yallandev.saintmc.common.command.CommandClass;
 import tk.yallandev.saintmc.common.command.CommandFramework.Command;
 import tk.yallandev.saintmc.common.permission.Group;
@@ -37,6 +37,7 @@ import tk.yallandev.saintmc.discord.DiscordMain;
 import tk.yallandev.saintmc.discord.command.DiscordCommandArgs;
 import tk.yallandev.saintmc.discord.command.DiscordCommandSender;
 import tk.yallandev.saintmc.discord.guild.GuildConfiguration;
+import tk.yallandev.saintmc.discord.utils.MessageUtils;
 
 public class DiscordCommand implements CommandClass {
 
@@ -69,6 +70,74 @@ public class DiscordCommand implements CommandClass {
 
 		AccountListener.PLAYER_LIST.add(playerName);
 		sender.sendMessage("O nick " + playerName + " foi adicionado ao servidor!");
+	}
+
+	@Command(name = "torneio", runAsync = false)
+	public void torneioCommand(DiscordCommandArgs cmdArgs) {
+		DiscordCommandSender sender = cmdArgs.getSender();
+
+		if (sender.getMessageChannel().getIdLong() != 735305135139455077l)
+			return;
+
+		Member member = CommonGeneral.getInstance().getMemberManager().getMember(sender.getUser().getIdLong());
+
+		if (member == null) {
+			MemberModel memberModel = CommonGeneral.getInstance().getPlayerData()
+					.loadMember(sender.getUser().getIdLong());
+
+			if (memberModel == null) {
+				sender.sendMessage("Você precisa sincronizar sua conta antes de executar essa ação!"
+						+ "\nUse /discord sync <playerName> para sincronizar o discord com o servidor!");
+				return;
+			}
+
+			member = new MemberVoid(memberModel);
+		}
+
+		if (member.getTournamentGroup() == null || member.getTournamentGroup() == TournamentGroup.NONE) {
+			sender.sendMessage("Você não está participando do torneio!");
+			return;
+		}
+
+		long roleId = 0l;
+
+		switch (member.getTournamentGroup()) {
+		case GROUP_A: {
+			roleId = 731140402362449983l;
+			break;
+		}
+		case GROUP_B: {
+			roleId = 731140490367598612l;
+			break;
+		}
+		case GROUP_C: {
+			roleId = 731140580972953690l;
+			break;
+		}
+		case GROUP_D: {
+			roleId = 731140667408908338l;
+			break;
+		}
+		default: {
+			break;
+		}
+		}
+
+		Role role = sender.getGuild().getRoleById(roleId);
+
+		if (sender.getMember().getRoles().contains(role)) {
+			MessageUtils.sendMessage(sender.getMessageChannel(), "Você está no "
+					+ (member.getTournamentGroup().name().replace("GROUP", "Grupo").replace("_", " ")) + "!", 5);
+			return;
+		}
+
+		if (role == null)
+			MessageUtils.sendMessage(sender.getMessageChannel(), "Não foi possível encontrar o role do seu grupo!", 5);
+		else {
+			sender.getGuild().addRoleToMember(sender.getMember(), role).complete();
+			MessageUtils.sendMessage(sender.getMessageChannel(), "Você recebeu o cargo do "
+					+ (member.getTournamentGroup().name().replace("GROUP", "Grupo").replace("_", " ")) + "!", 5);
+		}
 	}
 
 	@Command(name = "discord", runAsync = true)
@@ -106,62 +175,59 @@ public class DiscordCommand implements CommandClass {
 			}
 
 			if (args[1].equalsIgnoreCase("discord")) {
-				if (member.getDiscordType() == DiscordType.ROLE_SYNCRONIZED) {
-					if (DiscordMain.getInstance().getGuildManager().getGuild(sender.getGuild().getIdLong())
-							.isStaffChat()) {
-						sender.sendMessage("Esse comando não é permitido no staffchat!");
-					} else {
-						Guild guild = sender.getGuild();
-						net.dv8tion.jda.api.entities.Member discordMember = sender.getAsMember();
-						GuildConfiguration configuration = DiscordMain.getInstance().getGuildManager()
-								.getGuild(sender.getGuild().getIdLong());
-
-						List<String> addedList = new ArrayList<>();
-						List<String> removedList = new ArrayList<>();
-
-						for (Entry<String, Long> roleEntry : configuration.getRoleMap().entrySet()) {
-							try {
-								if (discordMember.getRoles()
-										.removeIf(role -> roleEntry.getValue() == role.getIdLong())) {
-									removedList.add(Group.valueOf(roleEntry.getKey().toUpperCase()).name());
-									guild.removeRoleFromMember(discordMember, guild.getRoleById(roleEntry.getValue()))
-											.complete();
-								}
-							} catch (Exception ex) {
-								ex.printStackTrace();
-							}
-						}
-
-						for (Entry<RankType, Long> entryRank : member.getRanks().entrySet()) {
-							if (configuration.getRoleMap().containsKey(entryRank.getKey().name().toLowerCase())) {
-
-								System.out.println(
-										configuration.getRoleMap().get(entryRank.getKey().name().toLowerCase()));
-
-								Role role = guild.getRoleById(
-										configuration.getRoleMap().get(entryRank.getKey().name().toLowerCase()));
-
-								if (role == null) {
-									CommonGeneral.getInstance().debug("The server hasn't found the role "
-											+ entryRank.getKey().name().toLowerCase() + " in discord");
-								} else {
-									guild.addRoleToMember(discordMember, role).complete();
-
-									addedList.add(Group.valueOf(entryRank.getKey().name()).name());
-								}
-
-							} else {
-								CommonGeneral.getInstance().debug("The server hasn't found the role "
-										+ entryRank.getKey().name().toLowerCase() + " in map");
-							}
-						}
-
-						sender.sendMessage("Sua conta foi sincronizada!");
-					}
+//				if (member.getDiscordType() == DiscordType.ROLE_SYNCRONIZED) {
+				if (DiscordMain.getInstance().getGuildManager().getGuild(sender.getGuild().getIdLong()).isStaffChat()) {
+					sender.sendMessage("Esse comando não é permitido no staffchat!");
 				} else {
-					sender.sendMessage(
-							"A sua conta não pode ser sincronizada com o discord, peça para um administrador setar seu cargo manualmente!");
+					Guild guild = sender.getGuild();
+					net.dv8tion.jda.api.entities.Member discordMember = sender.getAsMember();
+					GuildConfiguration configuration = DiscordMain.getInstance().getGuildManager()
+							.getGuild(sender.getGuild().getIdLong());
+
+					List<String> addedList = new ArrayList<>();
+					List<String> removedList = new ArrayList<>();
+
+					for (Entry<String, Long> roleEntry : configuration.getRoleMap().entrySet()) {
+						try {
+							if (discordMember.getRoles().removeIf(role -> roleEntry.getValue() == role.getIdLong())) {
+								removedList.add(Group.valueOf(roleEntry.getKey().toUpperCase()).name());
+								guild.removeRoleFromMember(discordMember, guild.getRoleById(roleEntry.getValue()))
+										.complete();
+							}
+						} catch (Exception ex) {
+							ex.printStackTrace();
+						}
+					}
+
+					for (Entry<RankType, Long> entryRank : member.getRanks().entrySet()) {
+						if (configuration.getRoleMap().containsKey(entryRank.getKey().name().toLowerCase())) {
+
+							System.out.println(configuration.getRoleMap().get(entryRank.getKey().name().toLowerCase()));
+
+							Role role = guild.getRoleById(
+									configuration.getRoleMap().get(entryRank.getKey().name().toLowerCase()));
+
+							if (role == null) {
+								CommonGeneral.getInstance().debug("The server hasn't found the role "
+										+ entryRank.getKey().name().toLowerCase() + " in discord");
+							} else {
+								guild.addRoleToMember(discordMember, role).complete();
+
+								addedList.add(Group.valueOf(entryRank.getKey().name()).name());
+							}
+
+						} else {
+							CommonGeneral.getInstance().debug("The server hasn't found the role "
+									+ entryRank.getKey().name().toLowerCase() + " in map");
+						}
+					}
+
+					sender.sendMessage("Sua conta foi sincronizada!");
 				}
+//				} else {
+//					sender.sendMessage(
+//							"A sua conta não pode ser sincronizada com o discord, peça para um administrador setar seu cargo manualmente!");
+//				}
 			} else {
 				sender.sendMessage("A sincronização do discord com o servidor está desativada!");
 			}
@@ -247,11 +313,12 @@ public class DiscordCommand implements CommandClass {
 
 	@Command(name = "glist", aliases = { "globallist" }, runAsync = true)
 	public void glistCommand(DiscordCommandArgs cmdArgs) {
-		EmbedBuilder builder = new EmbedBuilder().setTitle("Temos " + ProxyServer.getInstance().getPlayers().size())
-				.setColor(Color.YELLOW).appendDescription(Joiner.on(", ").join(ProxyServer.getInstance().getPlayers()
-						.stream().map(ProxiedPlayer::getName).collect(Collectors.toList())));
-
-		cmdArgs.getTextChannel().sendMessage(builder.build()).complete();
+		cmdArgs.getTextChannel()
+				.sendMessage(new EmbedBuilder().setTitle("SaintMC").setColor(Color.YELLOW)
+						.appendDescription("Há " + ProxyServer.getInstance().getOnlineCount()
+								+ " jogadores online em nossa rede nesse momento.")
+						.setFooter("Conecte-se usando o ip " + CommonConst.IP_END).build())
+				.complete();
 	}
 
 	@Command(name = "broadcast", aliases = { "bc" }, runAsync = true)
@@ -277,6 +344,8 @@ public class DiscordCommand implements CommandClass {
 		ProxyServer.getInstance().broadcast(TextComponent.fromLegacyText(" "));
 		ProxyServer.getInstance().broadcast(TextComponent.fromLegacyText("§c§lAVISO §f" + msg.replace("&", "§")));
 		ProxyServer.getInstance().broadcast(TextComponent.fromLegacyText(" "));
+		CommonGeneral.getInstance().getMemberManager()
+				.broadcast("§7Mensagem global enviada pelo discord (" + sender.getName() + ")!", Group.TRIAL);
 		sender.sendMessage("");
 	}
 

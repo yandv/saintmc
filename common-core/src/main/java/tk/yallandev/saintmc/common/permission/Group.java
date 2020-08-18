@@ -18,9 +18,8 @@ public enum Group {
 
 	MEMBRO, TORNEIO, DONATOR, LIGHT, BLIZZARD, SAINT, CREATOR, BETA, YOUTUBER, DESIGNER, BUILDER, HELPER,
 	YOUTUBERPLUS(new StreamerGroup()), STREAMER(new StreamerGroup()), TRIAL(new ModeratorGroup()),
-	MOD(new ModeratorGroup()), MODGC(new ModeratorGroup()), MODPLUS(new ModeratorGroup()),
-	GERENTE(new ModeratorGroup()), ADMIN(new OwnerGroup()), DIRETOR(new OwnerGroup()), DEVELOPER(new OwnerGroup()),
-	DONO(new OwnerGroup());
+	MOD(new ModeratorGroup()), MODGC(new ModeratorGroup()), MODPLUS(new ModeratorGroup()), ADMIN(new ModeratorGroup()),
+	GERENTE(new OwnerGroup()), DIRETOR(new OwnerGroup()), DEVELOPER(new OwnerGroup()), DONO(new OwnerGroup());
 
 	private GroupInterface group;
 

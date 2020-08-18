@@ -26,13 +26,15 @@ public class CharacterListener implements Listener {
 
 						Player player = event.getPlayer();
 
-						if (event.getPacket().getEntityUseActions().read(0) == EntityUseAction.INTERACT) {
+						if (event.getPacket().getEntityUseActions().read(0) == EntityUseAction.INTERACT
+								|| event.getPacket().getEntityUseActions().read(0) == EntityUseAction.ATTACK) {
 							int entityId = event.getPacket().getIntegers().read(0);
 
 							Character character = Character.getCharacter(entityId);
 
 							if (character != null)
-								character.getInteractHandler().onInteract(player);
+								character.getInteractHandler().onInteract(player,
+										event.getPacket().getEntityUseActions().read(0) == EntityUseAction.INTERACT);
 						}
 
 					}

@@ -1,12 +1,18 @@
 package tk.yallandev.saintmc.discord.command.register;
 
 import java.awt.Color;
+import java.time.Instant;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.TextChannel;
+import tk.yallandev.saintmc.CommonGeneral;
+import tk.yallandev.saintmc.common.account.Member;
+import tk.yallandev.saintmc.common.account.MemberModel;
+import tk.yallandev.saintmc.common.account.MemberVoid;
 import tk.yallandev.saintmc.common.command.CommandClass;
 import tk.yallandev.saintmc.common.command.CommandFramework.Command;
+import tk.yallandev.saintmc.common.permission.Group;
 import tk.yallandev.saintmc.discord.command.DiscordCommandArgs;
 import tk.yallandev.saintmc.discord.command.DiscordCommandSender;
 
@@ -21,7 +27,7 @@ public class SayCommand implements CommandClass {
 		String[] args = cmdArgs.getArgs();
 
 		if (args.length < 2) {
-			sender.sendMessage("Use /" + cmdArgs.getLabel() + " <textChannel> <message> para enviar uma mensagem");
+			sender.sendMessage("Use " + cmdArgs.getLabel() + " <textChannel> <message> para enviar uma mensagem");
 			return;
 		}
 
@@ -45,9 +51,155 @@ public class SayCommand implements CommandClass {
 		for (int i = 1; i < args.length; i++)
 			stringBuilder.append(args[i]).append(" ");
 
-		textChannel.sendMessage(
-				new EmbedBuilder().setColor(Color.YELLOW).appendDescription(stringBuilder.toString().trim()).build())
-				.complete();
+		String avatarUrl = "";
+		String userName = cmdArgs.getSender().getAsMember().getEffectiveName();
+
+		Member member = CommonGeneral.getInstance().getMemberManager().getMember(sender.getUser().getIdLong());
+
+		if (member == null) {
+			MemberModel memberModel = CommonGeneral.getInstance().getPlayerData()
+					.loadMember(sender.getUser().getIdLong());
+
+			if (memberModel != null) {
+				member = new MemberVoid(memberModel);
+			}
+
+			if (member == null) {
+				avatarUrl = cmdArgs.getSender().getAsMember().getUser().getAvatarUrl();
+			} else {
+				avatarUrl = "https://mc-heads.net/avatar/" + member.getPlayerName();
+				userName = member.getPlayerName();
+			}
+		}
+
+		textChannel.sendMessage(new EmbedBuilder().setColor(Color.YELLOW)
+				.setThumbnail("https://cdn.discordapp.com/attachments/700661469032874014/744615850111270992/logo.png")
+				.setFooter("Enviado por " + userName, avatarUrl).setTimestamp(Instant.now())
+				.appendDescription(stringBuilder.toString().trim()).build()).complete();
+	}
+
+	@Command(name = "anuncio", runAsync = true)
+	public void anuncioCommand(DiscordCommandArgs cmdArgs) {
+		if (!cmdArgs.getSender().getAsMember().hasPermission(Permission.ADMINISTRATOR))
+			return;
+
+		DiscordCommandSender sender = cmdArgs.getSender();
+		String[] args = cmdArgs.getArgs();
+
+		if (args.length < 2) {
+			sender.sendMessage("Use " + cmdArgs.getLabel() + " <textChannel> <message> para enviar uma mensagem");
+			return;
+		}
+
+		TextChannel textChannel = cmdArgs.getGuild().getTextChannelsByName(args[0], true).stream().findFirst()
+				.orElse(null);
+
+		if (textChannel == null) {
+			try {
+				textChannel = cmdArgs.getGuild().getTextChannelById(Long.valueOf(args[0]));
+			} catch (Exception ex) {
+			}
+
+			if (textChannel == null) {
+				sender.sendMessage("O canal de texto " + args[0] + " não existe!");
+				return;
+			}
+		}
+
+		StringBuilder stringBuilder = new StringBuilder();
+
+		for (int i = 1; i < args.length; i++)
+			stringBuilder.append(args[i]).append(" ");
+
+		String avatarUrl = "";
+		String userName = cmdArgs.getSender().getAsMember().getEffectiveName();
+
+		Member member = CommonGeneral.getInstance().getMemberManager().getMember(sender.getUser().getIdLong());
+
+		if (member == null) {
+			MemberModel memberModel = CommonGeneral.getInstance().getPlayerData()
+					.loadMember(sender.getUser().getIdLong());
+
+			if (memberModel != null) {
+				member = new MemberVoid(memberModel);
+			}
+
+			if (member == null) {
+				avatarUrl = cmdArgs.getSender().getAsMember().getUser().getAvatarUrl();
+			} else {
+				avatarUrl = "https://mc-heads.net/avatar/" + member.getPlayerName();
+				userName = member.getPlayerName();
+			}
+		}
+
+		textChannel.sendMessage(new EmbedBuilder().setColor(Color.YELLOW).setAuthor("Anuncio - SaintMC",
+				"https://saintmc.net/",
+				"https://images-ext-1.discordapp.net/external/U5hoGi1CnPwEv32Y7zs6r7xV2K0R_maVFO-J5-eTsKY/%3Fv%3D1/https/cdn.discordapp.com/emojis/506833797367595037.gif")
+				.setThumbnail("https://cdn.discordapp.com/attachments/700661469032874014/744615850111270992/logo.png")
+				.setFooter("Atenciosamente, " + userName, avatarUrl).setTimestamp(Instant.now())
+				.appendDescription(stringBuilder.toString().trim()).build()).complete();
+	}
+
+	@Command(name = "evento", runAsync = true)
+	public void eventoCommand(DiscordCommandArgs cmdArgs) {
+		DiscordCommandSender sender = cmdArgs.getSender();
+		Member member = CommonGeneral.getInstance().getMemberManager().getMember(sender.getUser().getIdLong());
+
+		if (member == null) {
+			MemberModel memberModel = CommonGeneral.getInstance().getPlayerData()
+					.loadMember(sender.getUser().getIdLong());
+
+			if (memberModel != null) {
+				member = new MemberVoid(memberModel);
+			}
+
+			if (member == null) {
+				sender.sendMessage("Você precisa ter a sua conta vinculada com o discord para executar esse comando!");
+				return;
+			}
+		}
+
+		if (!member.hasGroupPermission(Group.MODPLUS)) {
+			sender.sendMessage("Você não tem permissão para executar esse comando!");
+			return;
+		}
+
+		String[] args = cmdArgs.getArgs();
+
+		if (args.length < 2) {
+			sender.sendMessage("Use " + cmdArgs.getLabel() + " <textChannel> <message> para enviar uma mensagem");
+			return;
+		}
+
+		TextChannel textChannel = cmdArgs.getGuild().getTextChannelsByName(args[0], true).stream().findFirst()
+				.orElse(null);
+
+		if (textChannel == null) {
+			try {
+				textChannel = cmdArgs.getGuild().getTextChannelById(Long.valueOf(args[0]));
+			} catch (Exception ex) {
+			}
+
+			if (textChannel == null) {
+				sender.sendMessage("O canal de texto " + args[0] + " não existe!");
+				return;
+			}
+		}
+
+		StringBuilder stringBuilder = new StringBuilder();
+
+		for (int i = 1; i < args.length; i++)
+			stringBuilder.append(args[i]).append(" ");
+
+		String avatarUrl = "https://mc-heads.net/avatar/" + member.getPlayerName();
+		String userName = member.getPlayerName();
+
+		textChannel.sendMessage(new EmbedBuilder().setColor(Color.YELLOW).setAuthor("Evento - SaintMC",
+				"https://saintmc.net/",
+				"https://images-ext-1.discordapp.net/external/U5hoGi1CnPwEv32Y7zs6r7xV2K0R_maVFO-J5-eTsKY/%3Fv%3D1/https/cdn.discordapp.com/emojis/506833797367595037.gif")
+				.setThumbnail("https://cdn.discordapp.com/attachments/700661469032874014/744615850111270992/logo.png")
+				.setFooter("Atenciosamente, " + userName, avatarUrl).setTimestamp(Instant.now())
+				.appendDescription(stringBuilder.toString().trim()).build()).complete();
 	}
 
 }

@@ -18,7 +18,7 @@ import tk.yallandev.saintmc.bukkit.api.packet.PacketBuilder;
 import tk.yallandev.saintmc.bukkit.api.protocol.ProtocolGetter;
 import tk.yallandev.saintmc.bukkit.api.title.Title;
 import tk.yallandev.saintmc.bukkit.bukkit.BukkitMember;
-import tk.yallandev.saintmc.common.client.ClientType;
+import tk.yallandev.saintmc.common.account.client.ClientType;
 
 @Getter
 public class SimpleTitle implements Title {

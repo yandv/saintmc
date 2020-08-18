@@ -11,19 +11,16 @@ import java.util.concurrent.TimeUnit;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 
-import net.md_5.bungee.api.Callback;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.event.ClientConnectEvent;
 import net.md_5.bungee.api.event.PlayerDisconnectEvent;
 import net.md_5.bungee.api.event.PreLoginEvent;
 import net.md_5.bungee.api.plugin.Listener;
-import net.md_5.bungee.connection.InitialHandler;
 import net.md_5.bungee.event.EventHandler;
 import net.md_5.bungee.event.EventPriority;
-import net.md_5.bungee.http.HttpClient;
 import tk.yallandev.saintmc.CommonConst;
 import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.bungee.BungeeMain;
@@ -31,6 +28,7 @@ import tk.yallandev.saintmc.bungee.bungee.BotMember;
 import tk.yallandev.saintmc.bungee.event.BlockAddressEvent;
 import tk.yallandev.saintmc.bungee.event.ClearVerifyingEvent;
 import tk.yallandev.saintmc.bungee.event.UnblockAddressEvent;
+import tk.yallandev.saintmc.common.utils.supertype.FutureCallback;
 import tk.yallandev.saintmc.common.utils.web.WebHelper.Method;
 
 /**
@@ -149,39 +147,56 @@ public class LoginListener implements Listener {
 			}
 
 		event.registerIntent(BungeeMain.getPlugin());
-		try {
-			HttpClient.get(CommonConst.MOJANG_FETCHER + "session/?ip=" + URLEncoder.encode(ipAddress, "UTF-8"),
-					((InitialHandler) event.getConnection()).getChannelWrapper().getHandle().eventLoop(),
-					new Callback<String>() {
-						@Override
-						public void done(String result, Throwable error) {
-							if (error == null) {
-								JsonObject jsonObject = JsonParser.parseString(result).getAsJsonObject();
+		ProxyServer.getInstance().getScheduler().runAsync(BungeeMain.getPlugin(), new Runnable() {
+			@Override
+			public void run() {
+				/*
+				 * Verify if the player is cracked or premium
+				 */
 
-								if (!jsonObject.get("allow").getAsBoolean()) {
-									event.setCancelled(true);
-									event.setCancelReason("§4§l" + CommonConst.KICK_PREFIX
-											+ "\n§f\n§cSeu endereço de ip foi bloqueado!" + "\n\n§fMotivo: §7"
-											+ jsonObject.get("message").getAsString() + "\n§f\n§6Mais informação em: §b"
-											+ CommonConst.DISCORD);
-									blockAddress(ipAddress);
+				try {
+					CommonConst.DEFAULT_WEB.doRequest(
+							CommonConst.MOJANG_FETCHER + "session/?ip=" + URLEncoder.encode(ipAddress, "UTF-8"),
+							Method.GET, new FutureCallback<JsonElement>() {
+
+								@Override
+								public void result(JsonElement result, Throwable error) {
+									if (error == null) {
+										JsonObject jsonObject = result.getAsJsonObject();
+
+										if (!jsonObject.get("allow").getAsBoolean()) {
+											event.setCancelled(true);
+											event.setCancelReason("§4§l" + CommonConst.KICK_PREFIX
+													+ "\n§f\n§cSeu endereço de ip foi bloqueado!" + "\n\n§fMotivo: §7"
+													+ jsonObject.get("message").getAsString()
+													+ "\n§f\n§6Mais informação em: §b" + CommonConst.DISCORD);
+											blockAddress(ipAddress);
+										}
+
+										cache.put(ipAddress, jsonObject);
+									} else {
+										error.printStackTrace();
+										event.setCancelled(true);
+										event.setCancelReason("§4§l" + CommonConst.KICK_PREFIX
+												+ "\n§f\n§fNão foi possível verificar o seu ip!§f\n§6Mais informação em: §b"
+												+ CommonConst.DISCORD);
+									}
+
+									event.completeIntent(BungeeMain.getPlugin());
+									verifyingAddresses--;
 								}
 
-								cache.put(ipAddress, jsonObject);
-							} else {
-								event.setCancelled(true);
-								event.setCancelReason("§4§l" + CommonConst.KICK_PREFIX
-										+ "\n§f\n§fNão foi possível verificar o seu ip!§f\n§6Mais informação em: §b"
-										+ CommonConst.DISCORD);
-							}
-
-							event.completeIntent(BungeeMain.getPlugin());
-							verifyingAddresses--;
-						}
-					});
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
-		}
+							});
+				} catch (UnsupportedEncodingException e) {
+					event.setCancelled(true);
+					event.setCancelReason("§4§l" + CommonConst.KICK_PREFIX
+							+ "\n§f\n§fNão foi possível verificar o seu ip!§f\n§6Mais informação em: §b"
+							+ CommonConst.DISCORD);
+					event.completeIntent(BungeeMain.getPlugin());
+					verifyingAddresses--;
+				}
+			}
+		});
 	}
 
 	@EventHandler

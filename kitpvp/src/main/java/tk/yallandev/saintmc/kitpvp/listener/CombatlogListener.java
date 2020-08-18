@@ -8,7 +8,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
@@ -44,13 +43,9 @@ public class CombatlogListener implements Listener {
 		damagerGamer.setCombat();
 	}
 
-	@EventHandler
+	@EventHandler(priority = EventPriority.LOWEST)
 	public void onPlayerQuit(PlayerQuitEvent event) {
 		if (GameMain.getInstance().getGamerManager().getGamer(event.getPlayer().getUniqueId()).isInCombat())
-			if (event.getPlayer().getLastDamageCause() instanceof EntityDamageByEntityEvent) {
-				event.getPlayer().damage(Integer.MAX_VALUE,
-						((EntityDamageByEntityEvent) event.getPlayer().getLastDamageCause()).getDamager());
-			} else
 				event.getPlayer().damage(Integer.MAX_VALUE);
 	}
 

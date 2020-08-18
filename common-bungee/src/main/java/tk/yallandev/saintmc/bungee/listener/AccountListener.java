@@ -25,6 +25,7 @@ import net.md_5.bungee.api.event.PlayerDisconnectEvent;
 import net.md_5.bungee.api.event.PostLoginEvent;
 import net.md_5.bungee.api.event.PreLoginEvent;
 import net.md_5.bungee.api.plugin.Listener;
+import net.md_5.bungee.connection.InitialHandler;
 import net.md_5.bungee.connection.LoginResult;
 import net.md_5.bungee.event.EventHandler;
 import net.md_5.bungee.event.EventPriority;
@@ -35,12 +36,12 @@ import tk.yallandev.saintmc.bungee.bungee.BungeeClan;
 import tk.yallandev.saintmc.bungee.bungee.BungeeMember;
 import tk.yallandev.saintmc.common.account.Member;
 import tk.yallandev.saintmc.common.account.MemberModel;
+import tk.yallandev.saintmc.common.account.client.ClientType;
 import tk.yallandev.saintmc.common.account.configuration.LoginConfiguration.AccountType;
 import tk.yallandev.saintmc.common.ban.constructor.Ban;
 import tk.yallandev.saintmc.common.clan.Clan;
 import tk.yallandev.saintmc.common.clan.ClanModel;
 import tk.yallandev.saintmc.common.clan.event.member.MemberOnlineEvent;
-import tk.yallandev.saintmc.common.client.ClientType;
 import tk.yallandev.saintmc.common.permission.Group;
 import tk.yallandev.saintmc.common.report.Report;
 import tk.yallandev.saintmc.common.server.ServerType;
@@ -69,7 +70,7 @@ public class AccountListener implements Listener {
 					return null;
 				}
 
-			});;
+			});
 
 	/*
 	 * Change the onlineMode status
@@ -245,7 +246,6 @@ public class AccountListener implements Listener {
 					 */
 
 					member.setJoinData(playerName, ipAddress.getHostString());
-					member.updateTime();
 					member.setFakeName(member.getPlayerName());
 					member.setServerType(ServerType.NONE);
 
@@ -357,7 +357,7 @@ public class AccountListener implements Listener {
 				}
 
 				if (BungeeMain.getInstance().isMaintenceMode()) {
-					if (!member.hasGroupPermission(Group.SAINT)) {
+					if (!member.hasGroupPermission(Group.BETA)) {
 						event.setCancelled(true);
 						event.setCancelReason("§4§l" + CommonConst.KICK_PREFIX
 								+ "\n§f\n§cO servidor está em modo manutenção\n§f\n§6Mais informação em: §b"
@@ -422,6 +422,8 @@ public class AccountListener implements Listener {
 				}
 
 				member.setClientType(ClientType.VANILLA);
+				member.setOnline(true);
+				member.updateTime();
 
 				event.completeIntent(BungeeMain.getPlugin());
 			}
@@ -448,7 +450,7 @@ public class AccountListener implements Listener {
 				.getMember(event.getPlayer().getUniqueId());
 
 		member.setProxiedPlayer(event.getPlayer());
-
+		
 //		if (!member.isBdff()) {
 //			if (member.getLoginConfiguration().getAccountType() == AccountType.ORIGINAL)
 //				if (member.getPlayerName().toLowerCase().endsWith("bdf")
@@ -534,6 +536,11 @@ public class AccountListener implements Listener {
 	}
 
 	public void loadTexture(PendingConnection connection, JsonObject jsonObject) {
+		InitialHandler initialHandler = (InitialHandler) connection;
+		LoginResult loginProfile = initialHandler.getLoginProfile();
+
+		LoginResult.Property property = null;
+
 		if (jsonObject.has("properties")) {
 			JsonArray jsonArray = jsonObject.get("properties").getAsJsonArray();
 
@@ -541,23 +548,29 @@ public class AccountListener implements Listener {
 				JsonObject json = (JsonObject) jsonArray.get(x);
 
 				if (json.get("name").getAsString().equalsIgnoreCase("textures")) {
-					try {
-						Class<?> initialHandlerClass = connection.getClass();
-						Field loginProfile = initialHandlerClass.getDeclaredField("loginProfile");
-
-						LoginResult.Property property = new LoginResult.Property("textures",
-								json.get("value").getAsString(), json.get("signature").getAsString());
-						LoginResult loginResult = new LoginResult(connection.getUniqueId().toString(),
-								connection.getName(), new LoginResult.Property[] { property });
-
-						loginProfile.setAccessible(true);
-						loginProfile.set(connection, loginResult);
-					} catch (Exception ex) {
-
-					}
+					property = new LoginResult.Property("textures", json.get("value").getAsString(),
+							json.get("signature").getAsString());
 					break;
 				}
 			}
+		}
+
+		if (loginProfile == null || (loginProfile == null && property == null)) {
+			LoginResult loginResult = new LoginResult(connection.getUniqueId().toString().replace("-", ""),
+					connection.getName(),
+					property == null ? new LoginResult.Property[] {} : new LoginResult.Property[] { property });
+
+			try {
+				Class<?> initialHandlerClass = connection.getClass();
+				Field profileField = initialHandlerClass.getDeclaredField("loginProfile");
+				profileField.setAccessible(true);
+				profileField.set(connection, loginResult);
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+		} else {
+			if (property != null)
+				loginProfile.setProperties(new LoginResult.Property[] { property });
 		}
 	}
 
