@@ -26,7 +26,7 @@ public class LoginCommand implements CommandClass {
 		Member player = CommonGeneral.getInstance().getMemberManager().getMember(cmdArgs.getSender().getUniqueId());
 
 		if (player.getLoginConfiguration().getAccountType() == AccountType.ORIGINAL) {
-			player.sendMessage(" §a* §fVocê não pode §cexecutar§f esse comando!");
+			player.sendMessage("§cVocê não pode executar esse comando!");
 			return;
 		}
 
@@ -34,7 +34,7 @@ public class LoginCommand implements CommandClass {
 		String[] args = cmdArgs.getArgs();
 
 		if (args.length == 0) {
-			sender.sendMessage(" §a* §fUse §a/login <senha>§f para se logar!");
+			sender.sendMessage(" §e* §fUse §a/login <senha>§f para se logar!");
 			return;
 		}
 
@@ -50,11 +50,18 @@ public class LoginCommand implements CommandClass {
 
 		if (args[0].equals(player.getLoginConfiguration().getPassword())) {
 			player.getLoginConfiguration().login(player.getLastIpAddress());
-			player.sendMessage(" §a* §fSua conta foi logada com sucesso!");
+
+			player.sendMessage("§aVocê se logou com sucesso!");
+
+			if (player.getLoginConfiguration().startSession(player.getLastIpAddress()))
+				player.sendMessage("§aAgora você possui uma sessão ativa no servidor!");
+			else {
+				player.sendMessage("§cNão foi possível estabelecer uma sessão no servidor!");
+			}
 
 			Bukkit.getPluginManager().callEvent(new PlayerChangeLoginStatusEvent(cmdArgs.getPlayer(), player, true));
 		} else {
-			player.sendMessage(" §a* §cSenha incorreta!");
+			player.sendMessage("§cSua senha está incorreta!");
 		}
 	}
 
@@ -66,7 +73,7 @@ public class LoginCommand implements CommandClass {
 		Member player = CommonGeneral.getInstance().getMemberManager().getMember(cmdArgs.getSender().getUniqueId());
 
 		if (player.getLoginConfiguration().getAccountType() == AccountType.ORIGINAL) {
-			player.sendMessage(" §a* §fVocê não pode §cexecutar§f esse comando!");
+			player.sendMessage("§cVocê não pode executar esse comando!");
 			return;
 		}
 
@@ -79,7 +86,7 @@ public class LoginCommand implements CommandClass {
 		}
 
 		if (player.getLoginConfiguration().isRegistred()) {
-			player.sendMessage(" §a* §fSua conta está registrada no servidor!");
+			player.sendMessage("§cSua conta está registrada no servidor!");
 			return;
 		}
 
@@ -87,9 +94,9 @@ public class LoginCommand implements CommandClass {
 
 		if (!PASSWORD_PATTERN.matcher(password).matches() || password.equals("minecraft")
 				|| password.equals("abc123")) {
-			player.sendMessage(" §c* §fSenha muito fraca!");
-			player.sendMessage(" §c* §fVocê precisa colocar pelo menos 8 caracteres!");
-			player.sendMessage(" §c* §fVocê pode usar letras, numeros e underline!");
+			player.sendMessage("§cSenha muito fraca!");
+			player.sendMessage("§cVocê precisa colocar pelo menos 8 caracteres!");
+			player.sendMessage("§cVocê pode usar letras, numeros e underline!");
 			return;
 		}
 

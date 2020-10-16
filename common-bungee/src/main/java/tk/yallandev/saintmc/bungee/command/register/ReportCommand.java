@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.MessageBuilder;
+import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
@@ -114,7 +115,7 @@ public class ReportCommand implements CommandClass {
 
 		Member target = m;
 
-		if (!target.isOnline()) {
+		if (ProxyServer.getInstance().getPlayer(target.getUniqueId()) == null) {
 			sender.sendMessage(" §c* §fO jogador §a" + args[0] + "§f não existe!");
 			return;
 		}

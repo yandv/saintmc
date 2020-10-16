@@ -1,7 +1,10 @@
 package tk.yallandev.saintmc.bungee.listener;
 
+import java.util.AbstractMap;
+import java.util.Map.Entry;
 import java.util.UUID;
 
+import net.md_5.bungee.api.AccountType;
 import net.md_5.bungee.api.Callback;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.ServerPing;
@@ -10,7 +13,6 @@ import net.md_5.bungee.api.ServerPing.Protocol;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.PendingConnection;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
-import net.md_5.bungee.api.connection.ProxiedPlayer.AccountType;
 import net.md_5.bungee.api.event.ProxyPingEvent;
 import net.md_5.bungee.api.event.SearchServerEvent;
 import net.md_5.bungee.api.event.ServerConnectEvent;
@@ -22,6 +24,7 @@ import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.bungee.BungeeMain;
 import tk.yallandev.saintmc.bungee.bungee.BungeeMember;
 import tk.yallandev.saintmc.common.permission.Group;
+import tk.yallandev.saintmc.common.profile.Profile;
 import tk.yallandev.saintmc.common.server.ServerManager;
 import tk.yallandev.saintmc.common.server.ServerType;
 import tk.yallandev.saintmc.common.server.loadbalancer.server.ProxiedServer;
@@ -71,27 +74,52 @@ public class ConnectionListener implements Listener {
 
 	@EventHandler
 	public void onSearchServer(SearchServerEvent event) {
-		ProxiedServer server = searchServer(event.getPlayer());
+		boolean logged = event.getPlayer().getAccountType() == AccountType.CRACKED ? CommonGeneral.getInstance()
+				.getMemberManager().getMember(event.getPlayer().getUniqueId()).getLoginConfiguration().isLogged()
+				: true;
+		Entry<ProxiedServer, ServerType> entry = searchServer(event.getPlayer(), logged, true);
+
+		ProxiedServer server = entry.getKey();
+
+		if (entry.getValue() == ServerType.HUNGERGAMES)
+			if (server == null || server.getServerInfo() == null) {
+				server = searchServer(event.getPlayer(), logged, false).getKey();
+				event.getPlayer().sendMessage("§cNenhum servidor de Hungergames disponível!");
+			}
 
 		if (server == null || server.getServerInfo() == null) {
 			event.setCancelled(true);
 			event.setCancelMessage("§4§l" + CommonConst.KICK_PREFIX
-					+ (event.getPlayer().getAccountType() == AccountType.CRACKED ? "§4§l"
-							+ "\n§f\n§fNenhum servidor de §alogin§f está disponível no momento!\n§f\n§6Acesse nosso discord para mais informações:\n§b"
-							+ CommonConst.DISCORD
-							: "\n\n§fNenhum servidor de §alobby§f está disponível no momento!\n§f\n§6Acesse nosso discord para mais informações:\n§b"
-									+ CommonConst.DISCORD));
+					+ (event.getPlayer().getAccountType() == AccountType.CRACKED
+							? "§4§l" + "\n§f\n§fNenhum servidor de §alogin§f está disponível no momento!\n"
+									+ "§f\n§6Acesse nosso discord para mais informações:\n§b" + CommonConst.DISCORD
+							: "\n\n§fNenhum servidor de §alobby§f está disponível no momento!\n"
+									+ "§f\n§6Acesse nosso discord para mais informações:\n§b" + CommonConst.DISCORD));
+
 			return;
 		}
 
-		if (server.getServerType() == ServerType.LOGIN)
-			if (server.isFull()) {
-				event.setCancelled(true);
-				event.setCancelMessage("§4§l" + CommonConst.KICK_PREFIX
-						+ "\n§f\n§fO servidor de §alogin§f está cheio no momento!\n§f\n§6Acesse nosso discord para mais informações:\n§b"
-						+ CommonConst.DISCORD);
-				return;
-			}
+//		if (server.getServerType() == ServerType.LOGIN) {
+//			Member member = CommonGeneral.getInstance().getMemberManager().getMember(event.getPlayer().getUniqueId());
+//
+//			if (member.getLoginConfiguration().hasSession(member.getLastIpAddress())) {
+//				member.getLoginConfiguration().login(member.getLastIpAddress());
+//
+//				ProxiedServer lobbyServer = BungeeMain.getInstance().getServerManager().getBalancer(ServerType.LOBBY)
+//						.next();
+//
+//				if (lobbyServer != null)
+//					server = lobbyServer;
+//			}
+//		}
+
+		if (server.isFull()) {
+			event.setCancelled(true);
+			event.setCancelMessage("§4§l" + CommonConst.KICK_PREFIX
+					+ "\n§f\n§fO servidor no qual você foi redirecionado está cheio no momento!\n"
+					+ "§f\n§6Acesse nosso discord para mais informações:\n§b" + CommonConst.DISCORD);
+			return;
+		}
 
 		event.setServer(server.getServerInfo());
 	}
@@ -157,28 +185,25 @@ public class ConnectionListener implements Listener {
 		ServerPing serverPing = event.getResponse();
 
 		if (BungeeMain.getInstance().isMaintenceMode()) {
-			serverPing.getPlayers().setMax(ProxyServer.getInstance().getOnlineCount() + 1);
-			serverPing.getPlayers().setOnline(ProxyServer.getInstance().getOnlineCount());
 			serverPing.setVersion(new Protocol("§cMantencao!", -1));
 			serverPing.getPlayers()
 					.setSample(new PlayerInfo[] { new PlayerInfo("§e" + CommonConst.WEBSITE, UUID.randomUUID()) });
 			serverPing.setDescription("      §f﹄ §6§lSaint§f§lMC §f| §eMinecraft Network §7(1.7-1.15) §f﹃\n"
-					+ StringCenter.centered("§cO servidor está em manutenção, discord.saintmc.net!", 127));
+					+ StringCenter.centered("§cO servidor está em manutenção!", 127));
 			return;
 		}
 
 		String serverIp = getServerIp(event.getConnection());
 		ProxiedServer server = manager.getServer(serverIp);
 
+		serverPing.getPlayers().setMax(900);
+		serverPing.getPlayers().setOnline(ProxyServer.getInstance().getOnlineCount());
+
 		if (server == null) {
-			serverPing.getPlayers().setMax(ProxyServer.getInstance().getOnlineCount() + 1);
-			serverPing.getPlayers().setOnline(ProxyServer.getInstance().getOnlineCount());
 			serverPing.getPlayers()
 					.setSample(new PlayerInfo[] { new PlayerInfo("§e" + CommonConst.WEBSITE, UUID.randomUUID()) });
 			serverPing.setDescription("      §f﹄ §6§lSaint§f§lMC §f| §eMinecraft Network §7(1.7-1.15) §f﹃\n"
-//					+ StringCenter.centered("§aServidor aberto para teste!", 127)
-					+ StringCenter.centered(motdList[CommonConst.RANDOM.nextInt(motdList.length)], 127)
-					);
+					+ StringCenter.centered(motdList[CommonConst.RANDOM.nextInt(motdList.length)], 127));
 			return;
 		}
 
@@ -192,8 +217,6 @@ public class ConnectionListener implements Listener {
 					serverPing.getPlayers().setOnline(realPing.getPlayers().getOnline());
 					serverPing.setDescription(realPing.getDescription());
 				} else {
-					serverPing.getPlayers().setMax(ProxyServer.getInstance().getOnlineCount() + 1);
-					serverPing.getPlayers().setOnline(ProxyServer.getInstance().getOnlineCount());
 					serverPing.getPlayers().setSample(
 							new PlayerInfo[] { new PlayerInfo("§e" + CommonConst.WEBSITE, UUID.randomUUID()) });
 					serverPing.setDescription("    §f﹄ §6§lSaint§f§lMC §f| §eMinecraft Network §7(1.7-1.15) §f﹃\n"
@@ -206,26 +229,24 @@ public class ConnectionListener implements Listener {
 		});
 	}
 
-	private ProxiedServer searchServer(ProxiedPlayer player) {
+	private Entry<ProxiedServer, ServerType> searchServer(ProxiedPlayer player, boolean logged, boolean minigame) {
 		String serverId = getServerIp(player.getPendingConnection());
 
-		if (!serverId.toLowerCase().endsWith(CommonConst.IP_END)) {
-			player.sendMessage("§cVocê entrou por um ip desconhecido!");
-			player.sendMessage("§aEntre usando " + CommonConst.IP_END + "!");
-		}
+		if (!logged)
+			return new AbstractMap.SimpleEntry<>(
+					manager.getBalancer(
+							CommonGeneral.getInstance().isLoginServer() ? ServerType.LOGIN : ServerType.LOBBY).next(),
+					CommonGeneral.getInstance().isLoginServer() ? ServerType.LOGIN : ServerType.LOBBY);
 
-		AccountType accountType = player.getAccountType();
+		if (minigame)
+			if (serverId.toLowerCase().startsWith("hg"))
+				return new AbstractMap.SimpleEntry<>(manager.getBalancer(ServerType.HUNGERGAMES).next(),
+						ServerType.HUNGERGAMES);
 
-		if (accountType != AccountType.PREMIUM)
-			return manager
-					.getBalancer(CommonGeneral.getInstance().isLoginServer() ? ServerType.LOGIN : ServerType.LOBBY)
-					.next();
-
-		if (serverId.toLowerCase().toLowerCase().contains("hg"))
-			return manager.getBalancer(ServerType.HUNGERGAMES).next();
-
-		return manager.getServer(serverId) == null ? manager.getBalancer(ServerType.LOBBY).next()
-				: manager.getServer(serverId);
+		return new AbstractMap.SimpleEntry<>(
+				manager.getServer(serverId) == null ? manager.getBalancer(ServerType.LOBBY).next()
+						: manager.getServer(serverId),
+				manager.getServer(serverId) == null ? ServerType.LOBBY : manager.getServer(serverId).getServerType());
 	}
 
 	private String getServerIp(PendingConnection con) {

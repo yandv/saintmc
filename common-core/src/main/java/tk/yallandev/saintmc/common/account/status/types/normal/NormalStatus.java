@@ -34,6 +34,12 @@ public class NormalStatus implements Status {
 		this.statusType = statusType;
 	}
 
+	@Override
+	public void setUniqueId(UUID uniqueId) {
+		this.uniqueId = uniqueId;
+		CommonGeneral.getInstance().getStatusData().updateStatus(this, "uniqueId");
+	}
+
 	public void setKills(int kills) {
 		this.kills = kills;
 		CommonGeneral.getInstance().getStatusData().updateStatus(this, "kills");

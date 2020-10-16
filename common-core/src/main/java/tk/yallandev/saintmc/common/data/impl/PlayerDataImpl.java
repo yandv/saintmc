@@ -3,6 +3,7 @@ package tk.yallandev.saintmc.common.data.impl;
 import static tk.yallandev.saintmc.common.utils.json.JsonUtils.elementToString;
 import static tk.yallandev.saintmc.common.utils.json.JsonUtils.mapToObject;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -62,6 +63,51 @@ public class PlayerDataImpl implements PlayerData {
 		}
 
 		return memberModel;
+	}
+
+	@Override
+	public <T extends Member> T loadMember(UUID uniqueId, Class<T> clazz) {
+		MemberModel memberModel = CommonGeneral.getInstance().getMemberManager().getMemberAsMemberModel(uniqueId);
+
+		if (memberModel == null) {
+			memberModel = getRedisPlayer(uniqueId);
+
+			if (memberModel == null) {
+				JsonElement found = query.findOne("uniqueId", uniqueId.toString());
+
+				if (found != null) {
+					memberModel = CommonConst.GSON.fromJson(CommonConst.GSON.toJson(found), MemberModel.class);
+				}
+			}
+		}
+
+		try {
+			return memberModel == null ? null : clazz.getConstructor(MemberModel.class).newInstance(memberModel);
+		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
+				| NoSuchMethodException | SecurityException e) {
+			e.printStackTrace();
+		}
+
+		return null;
+	}
+
+	@Override
+	public <T extends Member> T loadMember(String playerName, Class<T> clazz) {
+		JsonElement jsonElement = query.findOne("playerName", Pattern.compile(playerName, Pattern.CASE_INSENSITIVE));
+
+		if (jsonElement != null) {
+			MemberModel memberModel = CommonConst.GSON.fromJson(CommonConst.GSON.toJson(jsonElement),
+					MemberModel.class);
+
+			try {
+				return memberModel == null ? null : clazz.getConstructor(MemberModel.class).newInstance(memberModel);
+			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
+					| InvocationTargetException | NoSuchMethodException | SecurityException e) {
+				e.printStackTrace();
+			}
+		}
+
+		return null;
 	}
 
 	@Override
@@ -131,7 +177,14 @@ public class PlayerDataImpl implements PlayerData {
 					}
 				}
 			});
+	}
 
+	@Override
+	public void deleteMember(UUID uniqueId) {
+		boolean exist = query.findOne("uniqueId", uniqueId.toString()) != null;
+
+		if (exist)
+			query.deleteOne("uniqueId", uniqueId.toString());
 	}
 
 	@Override
@@ -223,10 +276,6 @@ public class PlayerDataImpl implements PlayerData {
 			ex.printStackTrace();
 		}
 
-		if (bool)
-			CommonGeneral.getInstance().debug("REDIS > SHOULD REMOVE");
-		else
-			CommonGeneral.getInstance().debug("REDIS > SUB-SERVER");
 		return bool;
 	}
 
@@ -236,7 +285,7 @@ public class PlayerDataImpl implements PlayerData {
 	}
 
 	public static Query<JsonElement> createDefault(MongoConnection mongoConnection) {
-		return new MongoQuery(mongoConnection, "account");
+		return new MongoQuery(mongoConnection, "saintmc-common", "account");
 	}
 
 }

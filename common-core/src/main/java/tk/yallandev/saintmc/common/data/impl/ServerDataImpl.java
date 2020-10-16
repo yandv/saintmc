@@ -312,7 +312,7 @@ public class ServerDataImpl implements ServerData {
 	}
 
 	public static Query<JsonElement> createDefault(MongoConnection mongoConnection) {
-		return new MongoQuery(mongoConnection, "serverId");
+		return new MongoQuery(mongoConnection, "saintmc-common", "serverId");
 	}
 
 }

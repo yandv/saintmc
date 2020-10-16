@@ -14,8 +14,8 @@ import tk.yallandev.saintmc.common.tag.Tag;
 
 public class ScoreboardAPI {
 
-	private static char[] chars = { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q',
-			'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z' };
+	private static String[] chars = { "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p",
+			"q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "za", "zb", "zc", "zd", "ze", "zf", "zg", "zh", "zi" };
 
 	public static Team getTeamFromPlayer(Player player, String teamID) {
 		if (teamID.length() > 16) {
@@ -876,6 +876,11 @@ public class ScoreboardAPI {
 	}
 
 	public static String getTeamName(Tag tag, League liga, boolean chroma, boolean clanTag, Clan clan) {
+
+		System.out.println(tag == null);
+		System.out.println(liga == null);
+		System.out.println(clan == null);
+
 		return chars[tag.ordinal()] + "-" + chars[League.values().length - liga.ordinal()] + "-"
 				+ (clanTag ? clan.getClanAbbreviation().toLowerCase() + "-" : "A-") + (chroma ? "a" : "b");
 	}

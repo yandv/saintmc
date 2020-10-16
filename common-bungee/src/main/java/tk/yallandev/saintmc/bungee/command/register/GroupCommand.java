@@ -65,15 +65,15 @@ public class GroupCommand implements CommandClass {
 
 		if (cmdArgs.isPlayer()) {
 			switch (playerGroup) {
-			case GERENTE: {
-				if (group.ordinal() >= Group.MOD.ordinal()) {
+			case ADMIN: {
+				if (group.ordinal() > Group.MOD.ordinal()) {
 					sender.sendMessage(" §c* §fVocê só pode manejar o grupo §5§lMOD§f ou inferior!");
 					return;
 				}
 				break;
 			}
-			case ADMIN: {
-				if (group.ordinal() >= Group.MODPLUS.ordinal()) {
+			case GERENTE: {
+				if (group.ordinal() > Group.MODPLUS.ordinal()) {
 					sender.sendMessage(" §c* §fVocê só pode manejar o grupo §5§lMOD+§f ou inferior!");
 					return;
 				}

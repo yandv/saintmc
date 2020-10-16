@@ -81,15 +81,16 @@ public class ReactionListener extends ListenerAdapter {
 
 		handlers.put(ReactionEnum.RIGHT_POINTING_MAGNIFYING_GLASS, (user, guild, textChannel, reaction, action) -> {
 
-			user.openPrivateChannel().complete().sendMessage("Para denunciar um bug, dirija-se ao yandv (Allan#2856)!")
+			user.openPrivateChannel().complete().sendMessage(
+					"Para denunciar um jogador anonimamente preencha o formulário: https://denuncias.saintmc.net/")
 					.complete();
 
 		});
 
 		handlers.put(ReactionEnum.WRENCH, (user, guild, textChannel, reaction, action) -> {
 
-			user.openPrivateChannel().complete().sendMessage("Para denunciar um bug, dirija-se ao yandv (Allan#2856)!")
-					.complete();
+			user.openPrivateChannel().complete()
+					.sendMessage("Para denunciar um bug, dirija-se ao yandv (<@477643841999077378>)!").complete();
 
 		});
 

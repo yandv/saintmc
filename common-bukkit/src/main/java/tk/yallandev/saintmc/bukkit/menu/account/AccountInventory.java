@@ -25,9 +25,12 @@ public class AccountInventory {
 
 	private static final DateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 
-	public AccountInventory(Player sender, Member player) {
-		MenuInventory menu = new MenuInventory(
-				"§7Conta de " + (player.isUsingFake() ? player.getFakeName() : player.getPlayerName()), 5);
+	public AccountInventory(Player sender, Member player, String playerName) {
+
+		boolean fake = player.isUsingFake() ? player.getFakeName().equals(playerName) : false;
+
+		MenuInventory menu = new MenuInventory("§7Conta de " + (fake ? player.getFakeName() : player.getPlayerName()),
+				5);
 		boolean isStaff = Member.hasGroupPermission(sender.getUniqueId(), Group.DEVELOPER);
 
 		String lore = isStaff
@@ -36,7 +39,7 @@ public class AccountInventory {
 				: "\n§7";
 
 		menu.setItem(13, new ItemBuilder().type(Material.SKULL_ITEM).durability(3)
-				.name((player.isUsingFake() ? player.getTag().getPrefix() + " " + player.getFakeName()
+				.name((fake ? player.getTag().getPrefix() + " " + player.getFakeName()
 						: player.getGroup() == Group.MEMBRO ? "§7" + player.getPlayerName()
 								: Tag.getByName(player.getServerGroup().name()).getPrefix() + " "
 										+ player.getPlayerName())

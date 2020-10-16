@@ -4,53 +4,58 @@ import org.bukkit.Bukkit;
 
 import lombok.Getter;
 import lombok.Setter;
-import tk.yallandev.saintmc.common.server.loadbalancer.server.MinigameState;
 import tk.yallandev.saintmc.skwyars.controller.AbilityController;
+import tk.yallandev.saintmc.skwyars.controller.EventController;
 import tk.yallandev.saintmc.skwyars.controller.GamerController;
 import tk.yallandev.saintmc.skwyars.controller.LocationController;
 import tk.yallandev.saintmc.skwyars.controller.SchedulerController;
 import tk.yallandev.saintmc.skwyars.controller.TeamController;
 import tk.yallandev.saintmc.skwyars.event.game.GameStateChangeEvent;
 import tk.yallandev.saintmc.skwyars.event.game.GameTimeEvent;
+import tk.yallandev.saintmc.skwyars.scheduler.MinigameState;
 import tk.yallandev.saintmc.skwyars.scheduler.types.WaitingScheduler;
 
 @Getter
 public class GameGeneral {
-	
+
 	@Getter
 	private static GameGeneral instance;
-	
+
 	private GamerController gamerController;
 	private SchedulerController schedulerController;
 	private LocationController locationController;
 	private AbilityController abilityController;
 	private TeamController teamController;
-	
+
+	private EventController eventController;
+
 	private MinigameState minigameState = MinigameState.WAITING;
 	private int time = getDefaultTime(getMinigameState());
 	@Setter
 	private boolean countTime;
-	
+
 	public void onLoad() {
 		instance = this;
 	}
-	
+
 	public void onEnable() {
 		gamerController = new GamerController();
-		
+
 		schedulerController = new SchedulerController();
 		schedulerController.addSchedule(new WaitingScheduler());
-		
+
 		abilityController = new AbilityController();
 		abilityController.registerKits();
-		
+
 		locationController = new LocationController();
-		
+
 		teamController = new TeamController();
+
+		eventController = new EventController();
 	}
-	
+
 	public void onDisable() {
-		
+
 	}
 
 	public void setGameState(MinigameState minigameState) {
@@ -82,7 +87,7 @@ public class GameGeneral {
 				setTime(getTime() - 1);
 		}
 	}
-	
+
 	private boolean isUpTime(MinigameState minigameState) {
 		return !minigameState.isDecrementTime();
 	}

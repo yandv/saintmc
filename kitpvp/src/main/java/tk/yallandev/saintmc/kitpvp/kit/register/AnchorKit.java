@@ -16,7 +16,7 @@ import tk.yallandev.saintmc.kitpvp.kit.Kit;
 public class AnchorKit extends Kit {
 
 	public AnchorKit() {
-		super("Anchor", "Se prenda ao chão e não saia dele", Material.ANVIL, new ArrayList<>());
+		super("Anchor", "Se prenda ao chão e não saia dele", Material.ANVIL, 9000, new ArrayList<>());
 	}
 
 	@EventHandler

@@ -34,7 +34,7 @@ public class ReportDataImpl implements ReportData {
 	private MongoCollection<Document> reportCollection;
 
 	public ReportDataImpl(MongoConnection mongoDatabase, RedisDatabase redisDatabase) {
-		com.mongodb.client.MongoDatabase database = mongoDatabase.getDb();
+		com.mongodb.client.MongoDatabase database = mongoDatabase.getDatabase("saintmc-punish");
 		reportCollection = database.getCollection("report");
 		this.redisDatabase = redisDatabase;
 	}
@@ -64,10 +64,10 @@ public class ReportDataImpl implements ReportData {
 
 	@Override
 	public void saveReport(Report report) {
-		CommonGeneral.getInstance().getCommonPlatform().runAsync(() -> {
-			if (reportCollection.find(Filters.eq("uniqueId", report.getPlayerUniqueId().toString())).first() == null)
-				reportCollection.insertOne(Document.parse(CommonConst.GSON.toJson(report)));
+		if (reportCollection.find(Filters.eq("uniqueId", report.getPlayerUniqueId().toString())).first() == null)
+			reportCollection.insertOne(Document.parse(CommonConst.GSON.toJson(report)));
 
+		CommonGeneral.getInstance().getCommonPlatform().runAsync(() -> {
 			if (CommonGeneral.getInstance().getServerType() != ServerType.PRIVATE_SERVER)
 				try (Jedis jedis = redisDatabase.getPool().getResource()) {
 					Pipeline pipeline = jedis.pipelined();
@@ -84,16 +84,16 @@ public class ReportDataImpl implements ReportData {
 
 	@Override
 	public void saveReport(Report report, Callback<Report> callback) {
+		Document document = reportCollection.find(Filters.eq("uniqueId", report.getPlayerUniqueId().toString()))
+				.first();
+
+		if (document == null) {
+			reportCollection.insertOne(Document.parse(CommonConst.GSON.toJson(report)));
+			callback.callback(null);
+		} else
+			callback.callback(CommonConst.GSON.fromJson(CommonConst.GSON.toJson(document), Report.class));
+
 		CommonGeneral.getInstance().getCommonPlatform().runAsync(() -> {
-			Document document = reportCollection.find(Filters.eq("uniqueId", report.getPlayerUniqueId().toString()))
-					.first();
-
-			if (document == null) {
-				reportCollection.insertOne(Document.parse(CommonConst.GSON.toJson(report)));
-				callback.callback(null);
-			} else
-				callback.callback(CommonConst.GSON.fromJson(CommonConst.GSON.toJson(document), Report.class));
-
 			if (CommonGeneral.getInstance().getServerType() != ServerType.PRIVATE_SERVER)
 				try (Jedis jedis = redisDatabase.getPool().getResource()) {
 					Pipeline pipeline = jedis.pipelined();
@@ -110,9 +110,9 @@ public class ReportDataImpl implements ReportData {
 
 	@Override
 	public void deleteReport(UUID uniqueId) {
-		CommonGeneral.getInstance().getCommonPlatform().runAsync(() -> {
-			reportCollection.deleteOne(Filters.eq("uniqueId", uniqueId.toString()));
+		reportCollection.deleteOne(Filters.eq("uniqueId", uniqueId.toString()));
 
+		CommonGeneral.getInstance().getCommonPlatform().runAsync(() -> {
 			if (CommonGeneral.getInstance().getServerType() != ServerType.PRIVATE_SERVER)
 				try (Jedis jedis = redisDatabase.getPool().getResource()) {
 					Pipeline pipeline = jedis.pipelined();
@@ -128,20 +128,20 @@ public class ReportDataImpl implements ReportData {
 
 	@Override
 	public void updateReport(Report report, String fieldName) {
-		CommonGeneral.getInstance().getCommonPlatform().runAsync(() -> {
-			JsonObject object = jsonTree(report);
+		JsonObject object = jsonTree(report);
 
-			try {
+		try {
 
-				if (object.has(fieldName)) {
-					Object value = elementToBson(object.get(fieldName));
-					reportCollection.updateOne(Filters.eq("uniqueId", report.getPlayerUniqueId().toString()),
-							new Document("$set", new Document(fieldName, value)));
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
+			if (object.has(fieldName)) {
+				Object value = elementToBson(object.get(fieldName));
+				reportCollection.updateOne(Filters.eq("uniqueId", report.getPlayerUniqueId().toString()),
+						new Document("$set", new Document(fieldName, value)));
 			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
+		CommonGeneral.getInstance().getCommonPlatform().runAsync(() -> {
 			if (CommonGeneral.getInstance().getServerType() != ServerType.PRIVATE_SERVER)
 				try (Jedis jedis = redisDatabase.getPool().getResource()) {
 					JsonElement element = object.get(fieldName);

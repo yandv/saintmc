@@ -100,13 +100,13 @@ public class ServerManager {
 	public ProxiedServer getServer(String serverName) {
 		return activeServers.get(serverName.toLowerCase());
 	}
-	
+
 	public ProxiedServer getServerByName(String serverName) {
 		for (ProxiedServer proxiedServer : activeServers.values()) {
 			if (proxiedServer.getServerId().toLowerCase().startsWith(serverName.toLowerCase()))
 				return proxiedServer;
 		}
-		
+
 		return activeServers.get(serverName.toLowerCase());
 	}
 

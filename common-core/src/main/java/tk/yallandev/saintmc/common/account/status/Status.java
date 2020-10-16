@@ -6,6 +6,8 @@ public interface Status {
 
 	UUID getUniqueId();
 	
+	void setUniqueId(UUID uniqueId);
+	
 	StatusType getStatusType();
 	
 }

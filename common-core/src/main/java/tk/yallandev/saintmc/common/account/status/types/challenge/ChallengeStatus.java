@@ -29,6 +29,12 @@ public class ChallengeStatus implements Status {
 		
 		this.challengeInfo = new HashMap<>();
 	}
+	
+	@Override
+	public void setUniqueId(UUID uniqueId) {
+		this.uniqueId = uniqueId;
+		CommonGeneral.getInstance().getStatusData().updateStatus(this, "uniqueId");
+	}
 
 	public void addAttemp(ChallengeType challengeType) {
 		this.challengeInfo.computeIfAbsent(challengeType, v -> new ChallengeInfo()).addAttemps();

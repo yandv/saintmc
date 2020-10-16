@@ -1,9 +1,12 @@
 package tk.yallandev.saintmc.common.account.configuration;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import lombok.Getter;
 import lombok.Setter;
-import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.common.account.Member;
+import tk.yallandev.saintmc.common.utils.ip.Session;
 
 @Getter
 public class LoginConfiguration {
@@ -19,10 +22,16 @@ public class LoginConfiguration {
 	private long lastLogin = -1l;
 	private String lastIp;
 
+	private Map<String, Session> sessionMap;
+
+	private long lastVerify = System.currentTimeMillis();
+
 	public LoginConfiguration(Member player) {
 		this.player = player;
 
 		this.accountType = AccountType.NONE;
+
+		this.sessionMap = new HashMap<>();
 
 		this.logged = false;
 		this.password = "";
@@ -36,19 +45,57 @@ public class LoginConfiguration {
 		this.lastIp = ipAddress;
 		this.lastLogin = System.currentTimeMillis();
 		this.logged = true;
-		CommonGeneral.getInstance().getPlayerData().updateMember(player, "loginConfiguration");
+		save();
 	}
 
 	public void login(String ipAddress) {
 		this.lastIp = ipAddress;
 		this.lastLogin = System.currentTimeMillis();
 		this.logged = true;
-		CommonGeneral.getInstance().getPlayerData().updateMember(player, "loginConfiguration");
+		save();
+	}
+
+	public boolean changePassword(String password, String newPassword) {
+		this.password = newPassword;
+		startSession(getPlayer().getLastIpAddress());
+		return false;
+	}
+
+	public boolean clearSessions() {
+		if (sessionMap == null)
+			sessionMap = new HashMap<>();
+
+		sessionMap.clear();
+		save();
+		return true;
+	}
+
+	public boolean startSession(String ipAddress) {
+		if (sessionMap == null)
+			sessionMap = new HashMap<>();
+
+		Session session = sessionMap.get(ipAddress);
+
+		if (session == null) {
+			session = new Session();
+			sessionMap.put(ipAddress, session);
+		} else
+			session.updateSession();
+
+		save();
+		return true;
+	}
+
+	public boolean hasSession(String ipAddress) {
+		if (sessionMap == null)
+			sessionMap = new HashMap<>();
+
+		return sessionMap.containsKey(ipAddress) ? !sessionMap.get(ipAddress).hasExpired() : false;
 	}
 
 	public void logOut() {
 		this.logged = false;
-		CommonGeneral.getInstance().getPlayerData().updateMember(player, "loginConfiguration");
+		save();
 	}
 
 	public void setAccountType(AccountType accountType) {
@@ -57,17 +104,21 @@ public class LoginConfiguration {
 		}
 
 		this.accountType = accountType;
-		CommonGeneral.getInstance().getPlayerData().updateMember(player, "loginConfiguration");
+		save();
 	}
 
-	public boolean needLogin(String ipAddress) {
-		if (lastLogin - (1000 * 60 * 60 * 3) < System.currentTimeMillis()) {
-			if (lastIp != null && lastIp.equals(ipAddress)) {
-				return false;
-			}
+	public void save() {
+		this.player.save("loginConfiguration");
+	}
+
+	public AccountType verify() {
+		if (lastVerify + (1000 * 60 * 60 * 24) > System.currentTimeMillis()) {
+			return this.accountType;
 		}
 
-		return true;
+		AccountType accountType = AccountType.NONE;
+
+		return accountType;
 	}
 
 	public boolean isRegistred() {

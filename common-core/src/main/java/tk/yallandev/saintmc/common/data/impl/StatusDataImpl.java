@@ -17,7 +17,6 @@ import com.mongodb.client.MongoCursor;
 import com.mongodb.client.model.Filters;
 
 import tk.yallandev.saintmc.CommonConst;
-import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.common.account.status.Status;
 import tk.yallandev.saintmc.common.account.status.StatusType;
 import tk.yallandev.saintmc.common.account.status.types.challenge.ChallengeModel;
@@ -50,79 +49,75 @@ public class StatusDataImpl implements StatusData {
 
 	@Override
 	public void saveStatus(Status status) {
-		CommonGeneral.getInstance().getCommonPlatform().runAsync(() -> {
-			MongoCollection<Document> collection = database.getCollection(status.getStatusType().getMongoCollection());
+		MongoCollection<Document> collection = database.getCollection(status.getStatusType().getMongoCollection());
 
-			if (status instanceof GameStatus) {
-				GameModel gameModel = new GameModel((GameStatus) status);
+		if (status instanceof GameStatus) {
+			GameModel gameModel = new GameModel((GameStatus) status);
 
-				if (collection.find(Filters.eq("uniqueId", gameModel.getUniqueId().toString())).first() == null)
-					collection.insertOne(Document.parse(CommonConst.GSON.toJson(gameModel)));
+			if (collection.find(Filters.eq("uniqueId", gameModel.getUniqueId().toString())).first() == null)
+				collection.insertOne(Document.parse(CommonConst.GSON.toJson(gameModel)));
 
-			} else if (status instanceof NormalStatus) {
-				NormalModel normalModel = new NormalModel((NormalStatus) status);
+		} else if (status instanceof NormalStatus) {
+			NormalModel normalModel = new NormalModel((NormalStatus) status);
 
-				if (collection.find(Filters.eq("uniqueId", normalModel.getUniqueId().toString())).first() == null)
-					collection.insertOne(Document.parse(CommonConst.GSON.toJson(normalModel)));
-			} else if (status instanceof ChallengeStatus) {
-				ChallengeModel challengeModel = new ChallengeModel((ChallengeStatus) status);
+			if (collection.find(Filters.eq("uniqueId", normalModel.getUniqueId().toString())).first() == null)
+				collection.insertOne(Document.parse(CommonConst.GSON.toJson(normalModel)));
+		} else if (status instanceof ChallengeStatus) {
+			ChallengeModel challengeModel = new ChallengeModel((ChallengeStatus) status);
 
-				if (collection.find(Filters.eq("uniqueId", challengeModel.getUniqueId().toString())).first() == null)
-					collection.insertOne(Document.parse(CommonConst.GSON.toJson(challengeModel)));
-			} else {
-				new NoSuchElementException("Cannot define the type of StatusModel");
-			}
-		});
+			if (collection.find(Filters.eq("uniqueId", challengeModel.getUniqueId().toString())).first() == null)
+				collection.insertOne(Document.parse(CommonConst.GSON.toJson(challengeModel)));
+		} else {
+			new NoSuchElementException("Cannot define the type of StatusModel");
+		}
 	}
 
 	@Override
 	public void updateStatus(Status status, String fieldName) {
-		CommonGeneral.getInstance().getCommonPlatform().runAsync(() -> {
-			MongoCollection<Document> collection = database.getCollection(status.getStatusType().getMongoCollection());
+		MongoCollection<Document> collection = database.getCollection(status.getStatusType().getMongoCollection());
 
-			if (status instanceof GameStatus) {
-				try {
-					GameModel gameModel = new GameModel((GameStatus) status);
-					JsonObject object = jsonTree(gameModel);
+		if (status instanceof GameStatus) {
+			try {
+				GameModel gameModel = new GameModel((GameStatus) status);
+				JsonObject object = jsonTree(gameModel);
 
-					if (object.has(fieldName)) {
-						Object value = elementToBson(object.get(fieldName));
-						collection.updateOne(Filters.eq("uniqueId", gameModel.getUniqueId().toString()),
-								new Document("$set", new Document(fieldName, value)));
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
+				if (object.has(fieldName)) {
+					Object value = elementToBson(object.get(fieldName));
+					collection.updateOne(Filters.eq("uniqueId", gameModel.getUniqueId().toString()),
+							new Document("$set", new Document(fieldName, value)));
 				}
-			} else if (status instanceof NormalStatus) {
-				try {
-					NormalModel normalModel = new NormalModel((NormalStatus) status);
-					JsonObject object = jsonTree(normalModel);
-
-					if (object.has(fieldName)) {
-						Object value = elementToBson(object.get(fieldName));
-						collection.updateOne(Filters.eq("uniqueId", normalModel.getUniqueId().toString()),
-								new Document("$set", new Document(fieldName, value)));
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			} else if (status instanceof ChallengeStatus) {
-				try {
-					ChallengeModel challenegModel = new ChallengeModel((ChallengeStatus) status);
-					JsonObject object = jsonTree(challenegModel);
-
-					if (object.has(fieldName)) {
-						Object value = elementToBson(object.get(fieldName));
-						collection.updateOne(Filters.eq("uniqueId", challenegModel.getUniqueId().toString()),
-								new Document("$set", new Document(fieldName, value)));
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			} else {
-				new NoSuchElementException("Cannot define the type of StatusModel");
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
-		});
+		} else if (status instanceof NormalStatus) {
+			try {
+				NormalModel normalModel = new NormalModel((NormalStatus) status);
+				JsonObject object = jsonTree(normalModel);
+
+				if (object.has(fieldName)) {
+					Object value = elementToBson(object.get(fieldName));
+					collection.updateOne(Filters.eq("uniqueId", normalModel.getUniqueId().toString()),
+							new Document("$set", new Document(fieldName, value)));
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		} else if (status instanceof ChallengeStatus) {
+			try {
+				ChallengeModel challenegModel = new ChallengeModel((ChallengeStatus) status);
+				JsonObject object = jsonTree(challenegModel);
+
+				if (object.has(fieldName)) {
+					Object value = elementToBson(object.get(fieldName));
+					collection.updateOne(Filters.eq("uniqueId", challenegModel.getUniqueId().toString()),
+							new Document("$set", new Document(fieldName, value)));
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		} else {
+			new NoSuchElementException("Cannot define the type of StatusModel");
+		}
 	}
 
 	@Override
@@ -138,6 +133,11 @@ public class StatusDataImpl implements StatusData {
 		}
 
 		return memberList;
+	}
+
+	@Override
+	public void deleteStatus(UUID uniqueId, StatusType status) {
+		database.getCollection(status.getMongoCollection()).deleteOne(Filters.eq("uniqueId", uniqueId.toString()));
 	}
 
 }

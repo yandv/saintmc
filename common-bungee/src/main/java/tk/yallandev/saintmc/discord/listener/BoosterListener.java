@@ -33,8 +33,10 @@ public class BoosterListener extends ListenerAdapter {
 			member.getRanks().put(RankType.DONATOR, System.currentTimeMillis() + (1000 * 60 * 60 * 24 * 14));
 			member.saveRanks();
 			member.addMedal(Medal.BOOSTER);
-			member.sendMessage("§a§l> §fObrigado por ajudar o discord doando §d§lBOOST§f!");
-			member.sendMessage("§a§l> §fVocê recebeu a tag " + Tag.DONATOR.getPrefix() + "§f!");
+			member.sendMessage("§aObrigado por ajudar o discord doando §d§lBOOST§a!");
+			member.sendMessage("§aVocê recebeu a tag " + Tag.DONATOR.getPrefix() + "§a!");
+			member.sendMessage(
+					"§aVocê recebeu a medalha " + Medal.BOOSTER.getChatColor() + Medal.BOOSTER.getMedalName() + "§a!");
 		}
 	}
 

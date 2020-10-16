@@ -22,11 +22,11 @@ public class PunishmentHistory {
 	}
 	
 	public Ban getActiveBan() {
-		for (Ban ban : banList)
-			if (!ban.hasExpired() && !ban.isUnbanned())
-				return ban;
-		
-		return null;
+//		for (Ban ban : banList)
+//			if (!ban.hasExpired() && !ban.isUnbanned())
+//				return ban;
+//		
+		return banList.stream().filter(ban -> !ban.hasExpired() && !ban.isUnbanned()).findFirst().orElse(null);
 	}
 	
 	public Mute getActiveMute() {

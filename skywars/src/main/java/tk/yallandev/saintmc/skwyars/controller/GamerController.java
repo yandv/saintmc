@@ -4,7 +4,6 @@ import java.util.UUID;
 
 import org.bukkit.entity.Player;
 
-import tk.yallandev.saintmc.common.controller.StoreController;
 import tk.yallandev.saintmc.skwyars.gamer.Gamer;
 
 public class GamerController extends StoreController<UUID, Gamer> {

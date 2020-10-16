@@ -35,17 +35,47 @@ public class ChatListener extends Listener {
 		Player player = event.getPlayer();
 		Member member = CommonGeneral.getInstance().getMemberManager().getMember(player.getUniqueId());
 
-		if (!member.getLoginConfiguration().isLogged()) {
-			event.setCancelled(true);
+		if (member == null) {
+			new BukkitRunnable() {
 
-			if (member.getLoginConfiguration().isRegistred())
-				member.sendMessage("§4§l> §fLogue-se para ter o acesso ao chat liberado!");
-			else
-				member.sendMessage("§4§l> §fRegistre-se para ter o acesso ao chat liberado!");
+				@Override
+				public void run() {
+					player.kickPlayer("§cSua conta não foi carregada!");
+				}
+
+			}.runTask(getMain());
 			return;
 		}
 
-		String disabledFor = "§aO chat está ativado!";
+		if (!member.getLoginConfiguration().isLogged()) {
+			event.setCancelled(true);
+
+			if (member.getLoginConfiguration().getAccountType() == AccountType.NONE)
+				member.getLoginConfiguration()
+						.setAccountType(CommonGeneral.getInstance().getMojangFetcher().isCracked(member.getPlayerName())
+								? AccountType.CRACKED
+								: AccountType.ORIGINAL);
+			else {
+				if (member.getLoginConfiguration().isRegistred())
+					member.sendMessage("§cLogue-se para ter o acesso ao chat liberado!");
+				else
+					member.sendMessage("§cRegistre-se para ter o acesso ao chat liberado!");
+			}
+			return;
+		}
+
+		if (member.getLoginConfiguration().getAccountType() != AccountType.ORIGINAL) {
+			if (member.getOnlineTime() + member.getSessionTime() <= 1000 * 60 * 10) {
+				member.sendMessage("§cVocê precisa ficar online por mais "
+						+ DateUtils.getTime(System.currentTimeMillis()
+								+ ((1000 * 60 * 10) - (member.getOnlineTime() + member.getSessionTime())))
+						+ " para ter o chat liberado!");
+				event.setCancelled(true);
+				return;
+			}
+		}
+
+		String disabledFor;
 
 		switch (getServerConfig().getChatState()) {
 		case DISABLED: {
@@ -72,8 +102,10 @@ public class ChatListener extends Listener {
 			disabledFor = "§cO chat está ativado apenas para pessoas da equipe!";
 			break;
 		}
-		default:
+		default: {
+			disabledFor = "§aO chat está ativado!";
 			break;
+		}
 		}
 
 		if (event.isCancelled()) {
@@ -82,17 +114,6 @@ public class ChatListener extends Listener {
 							new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(disabledFor)))
 					.create());
 			return;
-		}
-
-		if (member.getLoginConfiguration().getAccountType() != AccountType.ORIGINAL) {
-			if (member.getOnlineTime() + member.getSessionTime() <= 1000 * 60 * 10) {
-				member.sendMessage("§cVocê precisa ficar online por mais "
-						+ DateUtils.getTime(System.currentTimeMillis()
-								+ ((1000 * 60 * 10) - (member.getOnlineTime() + member.getSessionTime())))
-						+ " para ter o chat liberado!");
-				event.setCancelled(true);
-				return;
-			}
 		}
 
 		if (CommonGeneral.getInstance().getServerType() != ServerType.SCREENSHARE) {
@@ -104,7 +125,7 @@ public class ChatListener extends Listener {
 			member.sendMessage("§cVocê está mutado "
 					+ (activeMute.isPermanent() ? "permanentemente" : "temporariamente") + " do servidor por "
 					+ activeMute.getReason().toLowerCase() + "!" + (activeMute.isPermanent() ? ""
-							: "\n §4§l> §fExpira em §e" + DateUtils.getTime(activeMute.getMuteExpire())));
+							: "\n§cExpira em " + DateUtils.getTime(activeMute.getMuteExpire())));
 			event.setCancelled(true);
 		}
 	}
@@ -137,7 +158,7 @@ public class ChatListener extends Listener {
 		BukkitMember player = (BukkitMember) CommonGeneral.getInstance().getMemberManager()
 				.getMember(event.getPlayer().getUniqueId());
 
-		if (!player.hasGroupPermission(Group.HELPER)) {
+		if (!player.hasGroupPermission(Group.SAINT)) {
 			if (player.isOnCooldown("chat-delay")) {
 				event.setCancelled(true);
 				player.sendMessage("§4§l> §fAguarde §e" + DateUtils.getTime(player.getCooldown("chat-delay"))
@@ -146,7 +167,7 @@ public class ChatListener extends Listener {
 			}
 
 			player.setCooldown("chat-delay",
-					System.currentTimeMillis() + (player.hasGroupPermission(Group.YOUTUBER) ? 1000l : 3000l));
+					System.currentTimeMillis() + (player.hasGroupPermission(Group.BLIZZARD) ? 1000l : 3000l));
 		}
 
 		if (player.hasGroupPermission(Group.LIGHT))
@@ -226,7 +247,7 @@ public class ChatListener extends Listener {
 							if (p == null || !p.isOnline())
 								return;
 
-							p.kickPlayer("ERROR");
+							p.kickPlayer("§cSua conta não foi carregada!");
 						}
 
 					}.runTask(getMain());

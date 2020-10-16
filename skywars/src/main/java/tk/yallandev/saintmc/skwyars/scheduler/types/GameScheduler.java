@@ -6,9 +6,11 @@ import java.util.List;
 import org.bukkit.event.Listener;
 
 import lombok.Getter;
-import tk.yallandev.saintmc.common.server.loadbalancer.server.MinigameState;
 import tk.yallandev.saintmc.skwyars.GameGeneral;
+import tk.yallandev.saintmc.skwyars.listener.EventListener;
 import tk.yallandev.saintmc.skwyars.listener.GameListener;
+import tk.yallandev.saintmc.skwyars.listener.SpectatorListener;
+import tk.yallandev.saintmc.skwyars.scheduler.MinigameState;
 
 public class GameScheduler implements GameSchedule {
 
@@ -18,7 +20,7 @@ public class GameScheduler implements GameSchedule {
 
 	public GameScheduler() {
 		this.gameGeneral = GameGeneral.getInstance();
-		this.listenerList = Arrays.asList(new GameListener());
+		this.listenerList = Arrays.asList(new GameListener(), new EventListener(), new SpectatorListener());
 		registerListener();
 	}
 
@@ -30,7 +32,6 @@ public class GameScheduler implements GameSchedule {
 				gameGeneral.setGameState(MinigameState.GAMETIME);
 			}
 		}
-
 	}
 
 }

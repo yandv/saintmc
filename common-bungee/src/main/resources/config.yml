@@ -1,3 +1,11 @@
 serverAddress: '0.0.0.0'
-mongodb-address: '127.0.0.1'
-redis-address: '127.0.0.1'
+
+mongodb:
+  hostname: '127.0.0.1'
+  username: 'admin'
+  database: 'admin'
+  password: 'erANIaNutYpNeUBl'
+  
+redis:
+  hostname: '127.0.0.1'
+  username: 'yandv123'

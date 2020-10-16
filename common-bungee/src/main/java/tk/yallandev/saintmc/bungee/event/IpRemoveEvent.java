@@ -6,8 +6,8 @@ import net.md_5.bungee.api.plugin.Event;
 
 @Getter
 @AllArgsConstructor
-public class UnblockAddressEvent extends Event {
-	
+public class IpRemoveEvent extends Event {
+
 	private String ipAddress;
 
 }

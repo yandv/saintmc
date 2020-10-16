@@ -19,11 +19,12 @@ import tk.yallandev.saintmc.common.clan.event.member.MemberChatEvent;
 import tk.yallandev.saintmc.common.clan.event.member.MemberJoinEvent;
 import tk.yallandev.saintmc.common.clan.event.member.MemberLeaveEvent;
 import tk.yallandev.saintmc.common.clan.event.member.MemberOnlineEvent;
+import tk.yallandev.saintmc.common.permission.Group;
 
 @Getter
 public abstract class Clan {
 
-	public static final int MAX_MEMBERS = 16;
+	public static final int MAX_MEMBERS = 32;
 
 	public static final String MESSAGE_PREFIX = "§9Clan> ";
 	public static final String CLANCHAT_PREFIX = "§9§l[CLAN-CHAT]";
@@ -39,6 +40,7 @@ public abstract class Clan {
 	private int xp;
 
 	private long disbanTime;
+	private int maxMembers = 16;
 
 	public Clan(UUID uniqueId, String clanName, String clanAbbreviation, Member owner) {
 		this.uniqueId = uniqueId;
@@ -134,6 +136,17 @@ public abstract class Clan {
 	public boolean isMember(String playerName) {
 		return this.memberMap.values().stream().filter(clanInfo -> clanInfo.getPlayerName().equals(playerName))
 				.findFirst().isPresent();
+	}
+
+	public void calculateMembers() {
+		if (this.memberMap.size() > maxMembers)
+			maxMembers = this.memberMap.size();
+		else {
+			long paymentMembers = this.memberMap.values().stream()
+					.filter(member -> member.getGroup().ordinal() >= Group.DONATOR.ordinal()).count();
+
+			maxMembers = 16 + (int) paymentMembers;
+		}
 	}
 
 	public boolean disband() {

@@ -10,8 +10,6 @@ import tk.yallandev.saintmc.common.permission.group.StreamerGroup;
  * 
  * @author yandv
  * 
- *         In this plugin
- *
  */
 
 public enum Group {

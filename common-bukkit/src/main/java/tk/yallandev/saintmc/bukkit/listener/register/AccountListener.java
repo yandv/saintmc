@@ -48,19 +48,13 @@ public class AccountListener extends Listener {
 	public void onAsyncPlayerPreLogin(AsyncPlayerPreLoginEvent event) {
 		if (event.getLoginResult() != AsyncPlayerPreLoginEvent.Result.ALLOWED)
 			return;
-		
+
 		if (BukkitMain.getInstance().getServerConfig().isRestoreMode()
 				&& !restoreProfile.contains(new Profile(event.getName(), event.getUniqueId()))) {
 			event.disallow(Result.KICK_OTHER,
 					"§cO servidor está em modo restauração, somente jogadores que já estavam no servidor podem entrar!");
 			return;
 		}
-
-		if (Bukkit.getOnlinePlayers().size() >= Bukkit.getMaxPlayers() + 20) {
-			event.disallow(Result.KICK_OTHER, "§cO servidor está cheio!");
-			return;
-		}
-
 		if (event.getAddress().getAddress().toString().startsWith("0.0")) {
 			event.disallow(Result.KICK_OTHER, "§4§l" + CommonConst.KICK_PREFIX + "\n\n§fEndereço de host inválido!");
 			return;
@@ -161,6 +155,22 @@ public class AccountListener extends Listener {
 				.getMember(event.getPlayer().getUniqueId());
 
 		member.setPlayer(event.getPlayer());
+
+		if (event.getResult() == PlayerLoginEvent.Result.KICK_FULL) {
+			if (member.hasGroupPermission(Group.LIGHT))
+				event.setResult(PlayerLoginEvent.Result.ALLOWED);
+			else {
+				event.disallow(PlayerLoginEvent.Result.KICK_OTHER, "§cO servidor está cheio!");
+				return;
+			}
+		}
+
+		if (!member.hasGroupPermission(Group.TRIAL)) {
+			if (Bukkit.getOnlinePlayers().size() >= Bukkit.getMaxPlayers() + 20) {
+				event.disallow(PlayerLoginEvent.Result.KICK_OTHER, "§cO servidor está lotado!");
+				return;
+			}
+		}
 	}
 
 	@EventHandler(priority = EventPriority.MONITOR)
@@ -175,17 +185,7 @@ public class AccountListener extends Listener {
 
 		if (event.getResult() == PlayerLoginEvent.Result.ALLOWED) {
 			member.connect(CommonGeneral.getInstance().getServerId(), CommonGeneral.getInstance().getServerType());
-			return;
 		}
-
-		if (event.getResult() == PlayerLoginEvent.Result.KICK_FULL && member.hasGroupPermission(Group.LIGHT)) {
-			event.allow();
-			return;
-		} else
-			event.disallow(PlayerLoginEvent.Result.KICK_OTHER, "§cO servidor está cheio!");
-
-		if (CommonGeneral.getInstance().getMemberManager().containsKey(event.getPlayer().getUniqueId()))
-			CommonGeneral.getInstance().getMemberManager().unload(event.getPlayer().getUniqueId());
 	}
 
 	@EventHandler
@@ -198,12 +198,13 @@ public class AccountListener extends Listener {
 			}
 
 		}.runTaskAsynchronously(BukkitMain.getInstance());
+
+		CommonGeneral.getInstance().getMemberManager().getMember(event.getPlayer().getUniqueId()).checkRanks();
 	}
 
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onLeave(PlayerQuitEvent event) {
-		Bukkit.getScheduler().runTaskAsynchronously(BukkitMain.getInstance(),
-				() -> removePlayer(event.getPlayer().getUniqueId()));
+		removePlayer(event.getPlayer().getUniqueId());
 		event.setQuitMessage(null);
 	}
 
@@ -282,16 +283,23 @@ public class AccountListener extends Listener {
 		if (player == null)
 			return;
 
-		if (player.isCacheOnQuit())
-			CommonGeneral.getInstance().getPlayerData().cacheMember(uniqueId);
-
-		CommonGeneral.getInstance().getServerData().leavePlayer(uniqueId);
 		CommonGeneral.getInstance().getMemberManager().unloadMember(uniqueId);
 
 		Clan clan = CommonGeneral.getInstance().getClanManager().getClan(player.getClanUniqueId());
 
 		if (clan != null)
 			handleUnload(clan);
+
+		CommonGeneral.getInstance().getCommonPlatform().runAsync(new Runnable() {
+
+			@Override
+			public void run() {
+				if (player.isCacheOnQuit())
+					CommonGeneral.getInstance().getPlayerData().cacheMember(uniqueId);
+
+				CommonGeneral.getInstance().getServerData().leavePlayer(uniqueId);
+			}
+		});
 	}
 
 	private void handleUnload(Clan clan) {

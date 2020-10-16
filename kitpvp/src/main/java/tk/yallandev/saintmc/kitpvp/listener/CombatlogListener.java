@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -16,6 +17,7 @@ import tk.yallandev.saintmc.bukkit.api.actionbar.ActionBarAPI;
 import tk.yallandev.saintmc.bukkit.event.player.PlayerCommandEvent;
 import tk.yallandev.saintmc.bukkit.event.player.PlayerDamagePlayerEvent;
 import tk.yallandev.saintmc.kitpvp.GameMain;
+import tk.yallandev.saintmc.kitpvp.event.warp.PlayerWarpDeathEvent;
 import tk.yallandev.saintmc.kitpvp.gamer.Gamer;
 
 public class CombatlogListener implements Listener {
@@ -46,7 +48,9 @@ public class CombatlogListener implements Listener {
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onPlayerQuit(PlayerQuitEvent event) {
 		if (GameMain.getInstance().getGamerManager().getGamer(event.getPlayer().getUniqueId()).isInCombat())
-				event.getPlayer().damage(Integer.MAX_VALUE);
+			Bukkit.getPluginManager()
+					.callEvent(new PlayerWarpDeathEvent(event.getPlayer(), event.getPlayer().getKiller(),
+							GameMain.getInstance().getGamerManager().getGamer(event.getPlayer().getUniqueId()).getWarp()));
 	}
 
 	@EventHandler
@@ -60,7 +64,10 @@ public class CombatlogListener implements Listener {
 
 	@EventHandler
 	public void onTeleport(PlayerTeleportEvent event) {
-		GameMain.getInstance().getGamerManager().getGamer(event.getPlayer().getUniqueId()).removeCombat();
+		Gamer gamer = GameMain.getInstance().getGamerManager().getGamer(event.getPlayer().getUniqueId());
+
+		if (gamer != null)
+			gamer.removeCombat();
 	}
 
 	@EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
@@ -71,7 +78,7 @@ public class CombatlogListener implements Listener {
 			String command = event.getCommandLabel();
 
 			if (blockedCommands.contains(command.toLowerCase())) {
-				event.getPlayer().sendMessage("§c§l> §fVocê não pode usar comandos em combate!");
+				event.getPlayer().sendMessage("§cVocê não pode usar comandos em combate!");
 				event.setCancelled(true);
 			}
 		}

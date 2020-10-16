@@ -13,7 +13,7 @@ import tk.yallandev.saintmc.bukkit.api.menu.click.MenuClickHandler;
 public class ConfirmInventory {
 
 	public ConfirmInventory(Player player, String confirmTitle, ConfirmHandler handler, MenuInventory topInventory) {
-		MenuInventory menu = new MenuInventory(confirmTitle, 5);
+		MenuInventory menu = new MenuInventory(confirmTitle, 4);
 
 		MenuClickHandler yesHandler = new MenuClickHandler() {
 

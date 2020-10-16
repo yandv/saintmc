@@ -78,6 +78,9 @@ public class BungeePunishManager implements PunishManager {
 						new AbstractMap.SimpleEntry<UUID, Ban>(member.getUniqueId(), ban));
 			}
 
+		ban.setId(CommonGeneral.getInstance().getPunishData().getTotalBan());
+		CommonGeneral.getInstance().getPunishData().addBan(ban);
+
 		ProxiedPlayer proxiedPlayer = ProxyServer.getInstance().getPlayer(member.getUniqueId());
 
 		if (proxiedPlayer != null)
@@ -95,11 +98,11 @@ public class BungeePunishManager implements PunishManager {
 	@Override
 	public boolean mute(Member member, Mute mute) {
 		Mute activeMute = member.getPunishmentHistory().getActiveMute();
-		
+
 		if (activeMute != null)
 			if (activeMute.isPermanent())
 				return false;
-		
+
 		member.getPunishmentHistory().mute(mute);
 
 		CommonGeneral.getInstance().getMemberManager().getMembers().stream().forEach(m -> {
@@ -140,7 +143,7 @@ public class BungeePunishManager implements PunishManager {
 				.collect(Collectors.toList());
 
 		if (list.size() >= 3) {
-			Ban ban = new Ban(member.getUniqueId(), warn.getWarnedBy(), warn.getWarnedByUuid(),
+			Ban ban = new Ban(member.getUniqueId(), member.getPlayerName(), warn.getWarnedBy(), warn.getWarnedByUuid(),
 					"Excesso de avisos (3/3)", System.currentTimeMillis() + (1000 * 60 * 60 * 3));
 
 			member.getPunishmentHistory().warn(warn);

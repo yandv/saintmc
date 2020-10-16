@@ -72,23 +72,23 @@ public class TagWrapper extends Tag {
 		return new TagWrapper(name, prefix, groupToUse, exclusive, id);
 	}
 
-	public static TagWrapper create(String tagName, String prefix, Group groupToUse) {
+	public static Tag create(String tagName, String prefix, Group groupToUse) {
 		return new TagWrapper(tagName, prefix, groupToUse, false);
 	}
 
-	public static TagWrapper create(String prefix, Group groupToUse) {
+	public static Tag create(String prefix, Group groupToUse) {
 		return new TagWrapper(prefix, groupToUse, false);
 	}
 
-	public static TagWrapper create(String prefix, Group groupToUse, boolean exclusive) {
+	public static Tag create(String prefix, Group groupToUse, boolean exclusive) {
 		return new TagWrapper(prefix, groupToUse, exclusive);
 	}
 
-	public static TagWrapper create(String tagName, String prefix, Group groupToUse, boolean exclusive) {
+	public static Tag create(String tagName, String prefix, Group groupToUse, boolean exclusive) {
 		return new TagWrapper(tagName, prefix, groupToUse, exclusive);
 	}
 
-	public static TagWrapper create(String tagName, String prefix, Group groupToUse, int ordinal) {
+	public static Tag create(String tagName, String prefix, Group groupToUse, int ordinal) {
 		return new TagWrapper(tagName, prefix, groupToUse, false, ordinal);
 	}
 
@@ -99,5 +99,5 @@ public class TagWrapper extends Tag {
 	public static Tag create(String tagName, String prefix, List<Group> groupList, boolean exclusive) {
 		return new TagWrapper(tagName, prefix, groupList, exclusive);
 	}
-
+	
 }

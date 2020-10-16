@@ -121,6 +121,7 @@ public class ActionItemListener implements Listener {
 
 			Player player = (Player) event.getWhoClicked();
 
+			player.closeInventory();
 			event.setCancelled(handler.onInteract(player, null, null, item, ActionType.LEFT));
 		} catch (Exception e) {
 			e.printStackTrace();

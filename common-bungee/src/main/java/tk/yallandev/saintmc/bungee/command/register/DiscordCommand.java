@@ -62,7 +62,7 @@ public class DiscordCommand implements CommandClass {
 					handleUsage(sender, member);
 					return;
 				}
-				
+
 				if (member.isOnCooldown("discord-sync-delay")) {
 					member.sendMessage(" §c* §fVocê precisa esperar §e"
 							+ DateUtils.getTime(member.getCooldown("discord-sync-delay"))
@@ -96,7 +96,7 @@ public class DiscordCommand implements CommandClass {
 					member.sendMessage(" §c* §fO servidor não possui chat!");
 					return;
 				}
-				
+
 				net.dv8tion.jda.api.entities.Member dMember = null;
 
 				if (dMember == null) {
@@ -112,7 +112,7 @@ public class DiscordCommand implements CommandClass {
 						return;
 					}
 				}
-				
+
 				member.sendMessage("§aFoi enviada uma mensagem no discord para você!");
 
 				net.dv8tion.jda.api.entities.Member discordMember = dMember;
@@ -149,7 +149,8 @@ public class DiscordCommand implements CommandClass {
 				messageReaction.addReaction(ReactionEnum.COOKIE.getEmote(), new ReactionHandler() {
 
 					@Override
-					public void onClick(User user, Guild guild, TextChannel textChannel, ReactionEmote reaction, ReactionAction action) {
+					public void onClick(User user, Guild guild, TextChannel textChannel, ReactionEmote reaction,
+							ReactionAction action) {
 						if (user.getIdLong() == discordMember.getIdLong()) {
 
 							member.setDiscordId(user.getIdLong(), user.getName() + "#" + user.getDiscriminator());
@@ -204,11 +205,11 @@ public class DiscordCommand implements CommandClass {
 
 			if (args.length < 2) {
 				sender.sendMessage(
-						" §e* §fUse §a/discord update <server/discord/booster>§f para sincronizar o discord com o servidor!");
+						" §e* §fUse §a/discord update <server/booster>§f para sincronizar o discord com o servidor!");
 				return;
 			}
 
-			if (args[1].equalsIgnoreCase("servidor")) {
+			if (args[1].equalsIgnoreCase("booster")) {
 				net.dv8tion.jda.api.entities.Member discordMember = DiscordMain.getInstance().getJda()
 						.getGuildById(694671881961209857l).getMemberById(member.getDiscordId());
 
@@ -238,7 +239,7 @@ public class DiscordCommand implements CommandClass {
 
 				return;
 			}
-			
+
 			if (args.length == 1) {
 				handleUsage(sender, member);
 				return;
@@ -265,13 +266,19 @@ public class DiscordCommand implements CommandClass {
 						member.sendMessage(" §a* §fVocê sincronizou o discord com o servidor!");
 
 						if (invite.isBooster()) {
-							member.sendMessage("§a§l> §fObrigado por ajudar o discord doando §d§lBOOST§f!");
-							member.sendMessage("§a§l> §fVocê recebeu a tag " + Tag.DONATOR.getPrefix() + "§f!");
+							if (!member.getRanks().containsKey(RankType.DONATOR)) {
+								member.addMedal(Medal.BOOSTER);
+								member.sendMessage("§aObrigado por ajudar o discord doando §d§lBOOST§a!");
+								member.sendMessage("§aVocê recebeu a tag " + Tag.DONATOR.getPrefix() + "§a!");
+								member.sendMessage("§aVocê recebeu a medalha " + Medal.BOOSTER.getChatColor()
+										+ Medal.BOOSTER.getMedalName() + "§a!");
 
-							member.getRanks().put(RankType.DONATOR,
-									System.currentTimeMillis() + (1000 * 60 * 60 * 24 * 14));
-							member.setTag(Tag.valueOf(RankType.DONATOR.name()));
-							member.saveRanks();
+								member.getRanks().put(RankType.DONATOR,
+										System.currentTimeMillis() + (1000 * 60 * 60 * 24 * 14));
+								member.setTag(Tag.valueOf(RankType.DONATOR.name()));
+								member.addMedal(Medal.BOOSTER);
+								member.saveRanks();
+							}
 						}
 
 						MessageUtils.sendMessage(
@@ -289,7 +296,7 @@ public class DiscordCommand implements CommandClass {
 					} else {
 						member.sendMessage(" §c* §fO pedido de sincronização expirou!");
 					}
-					
+
 					tk.yallandev.saintmc.discord.command.register.DiscordCommand.MAP.remove(member.getUniqueId());
 				} else {
 					member.sendMessage(" §c* §fVocê não recebeu pedidos de sincronização desse discord!");
@@ -305,8 +312,7 @@ public class DiscordCommand implements CommandClass {
 
 	private void handleUsage(CommandSender sender, Member member) {
 		sender.sendMessage(" §e* §fUse §a/discord sync <discordId>§f para sincronizar o discord com o servidor!");
-		sender.sendMessage(
-				" §e* §fUse §a/discord accept <discordId>§f para aceitar a sincronização com o discord!");
+		sender.sendMessage(" §e* §fUse §a/discord accept <discordId>§f para aceitar a sincronização com o discord!");
 		sender.sendMessage(" §e* §fUse §a/discord desync <discordId>§f para sincronizar o discord com o servidor!");
 		sender.sendMessage(
 				" §e* §fUse §a/discord update <server/discord/booster>§f para sincronizar o discord com o servidor!");

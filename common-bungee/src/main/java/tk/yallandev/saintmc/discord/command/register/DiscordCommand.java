@@ -24,15 +24,18 @@ import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import tk.yallandev.saintmc.CommonConst;
 import tk.yallandev.saintmc.CommonGeneral;
+import tk.yallandev.saintmc.bungee.BungeeMain;
 import tk.yallandev.saintmc.bungee.listener.AccountListener;
 import tk.yallandev.saintmc.common.account.Member;
 import tk.yallandev.saintmc.common.account.MemberModel;
 import tk.yallandev.saintmc.common.account.MemberVoid;
 import tk.yallandev.saintmc.common.account.TournamentGroup;
+import tk.yallandev.saintmc.common.account.medal.Medal;
 import tk.yallandev.saintmc.common.command.CommandClass;
 import tk.yallandev.saintmc.common.command.CommandFramework.Command;
 import tk.yallandev.saintmc.common.permission.Group;
 import tk.yallandev.saintmc.common.permission.RankType;
+import tk.yallandev.saintmc.common.tag.Tag;
 import tk.yallandev.saintmc.discord.DiscordMain;
 import tk.yallandev.saintmc.discord.command.DiscordCommandArgs;
 import tk.yallandev.saintmc.discord.command.DiscordCommandSender;
@@ -70,6 +73,20 @@ public class DiscordCommand implements CommandClass {
 
 		AccountListener.PLAYER_LIST.add(playerName);
 		sender.sendMessage("O nick " + playerName + " foi adicionado ao servidor!");
+	}
+
+	@Command(name = "woo", groupToUse = Group.ADMIN, runAsync = true)
+	public void wooCommand(DiscordCommandArgs cmdArgs) {
+		if (!cmdArgs.getSender().getAsMember().hasPermission(Permission.ADMINISTRATOR))
+			return;
+		try {
+			cmdArgs.getSender().sendMessage("Estou verificando os pedidos...");
+
+			BungeeMain.getInstance().getStoreController().check(cmdArgs.getSender());
+		} catch (Exception ex) {
+			cmdArgs.getSender().sendMessage("Ocorreu um erro durante verificavamos!");
+			ex.printStackTrace();
+		}
 	}
 
 	@Command(name = "torneio", runAsync = false)
@@ -126,8 +143,10 @@ public class DiscordCommand implements CommandClass {
 		Role role = sender.getGuild().getRoleById(roleId);
 
 		if (sender.getMember().getRoles().contains(role)) {
-			MessageUtils.sendMessage(sender.getMessageChannel(), "Você está no "
-					+ (member.getTournamentGroup().name().replace("GROUP", "Grupo").replace("_", " ")) + "!", 5);
+			MessageUtils.sendMessage(
+					sender.getMessageChannel(), "Você está no "
+							+ (member.getTournamentGroup().name().replace("GROUP", "Grupo").replace("_", " ")) + "!",
+					5);
 			return;
 		}
 
@@ -135,8 +154,10 @@ public class DiscordCommand implements CommandClass {
 			MessageUtils.sendMessage(sender.getMessageChannel(), "Não foi possível encontrar o role do seu grupo!", 5);
 		else {
 			sender.getGuild().addRoleToMember(sender.getMember(), role).complete();
-			MessageUtils.sendMessage(sender.getMessageChannel(), "Você recebeu o cargo do "
-					+ (member.getTournamentGroup().name().replace("GROUP", "Grupo").replace("_", " ")) + "!", 5);
+			MessageUtils.sendMessage(sender.getMessageChannel(),
+					"Você recebeu o cargo do "
+							+ (member.getTournamentGroup().name().replace("GROUP", "Grupo").replace("_", " ")) + "!",
+					5);
 		}
 	}
 
@@ -147,7 +168,9 @@ public class DiscordCommand implements CommandClass {
 
 		if (args.length == 0) {
 			sender.sendMessage("Use /discord sync <playerName> para sincronizar o discord com o servidor!"
-					+ "\nUse /discord group para sincronizar o discord com o servidor!\nUse /discord update <server/discord/booster> para atualizar os grupos do server/discord!");
+					+ "\nUse /discord group para sincronizar o discord com o servidor!"
+					+ "\nUse /discord desync para desincronizar o seu discord!"
+					+ "\nUse /discord update <server/discord/booster> para atualizar os grupos do server/discord!");
 			return;
 		}
 
@@ -175,7 +198,6 @@ public class DiscordCommand implements CommandClass {
 			}
 
 			if (args[1].equalsIgnoreCase("discord")) {
-//				if (member.getDiscordType() == DiscordType.ROLE_SYNCRONIZED) {
 				if (DiscordMain.getInstance().getGuildManager().getGuild(sender.getGuild().getIdLong()).isStaffChat()) {
 					sender.sendMessage("Esse comando não é permitido no staffchat!");
 				} else {
@@ -224,10 +246,24 @@ public class DiscordCommand implements CommandClass {
 
 					sender.sendMessage("Sua conta foi sincronizada!");
 				}
-//				} else {
-//					sender.sendMessage(
-//							"A sua conta não pode ser sincronizada com o discord, peça para um administrador setar seu cargo manualmente!");
-//				}
+			} else if (args[1].equalsIgnoreCase("discord")) {
+				if (cmdArgs.getSender().getAsMember().getTimeBoosted() != null) {
+					if (member.getRanks().containsKey(RankType.DONATOR)) {
+						sender.sendMessage("Você já tem os benefícios no servidor!");
+					} else {
+						if (member.isOnline()) {
+							member.sendMessage("§a§l> §fObrigado por ajudar o discord doando §d§lBOOST§f!");
+							member.sendMessage("§a§l> §fVocê recebeu a tag " + Tag.DONATOR.getPrefix() + "§f!");
+						} else
+							sender.sendMessage("Você recebeu os benefícios no servidor!");
+
+						member.getRanks().put(RankType.DONATOR,
+								System.currentTimeMillis() + (1000 * 60 * 60 * 24 * 14));
+						member.setTag(Tag.valueOf(RankType.DONATOR.name()));
+						member.saveRanks();
+						member.addMedal(Medal.BOOSTER);
+					}
+				}
 			} else {
 				sender.sendMessage("A sincronização do discord com o servidor está desativada!");
 			}
@@ -261,7 +297,8 @@ public class DiscordCommand implements CommandClass {
 
 					if (memberModel != null) {
 						sender.sendMessage("Sua conta já está sincronizada no discord!"
-								+ "\nUse /discord sync <playerName> para sincronizar o discord com o servidor!");
+								+ "\nUse /discord sync <playerName> para sincronizar o discord com o servidor!"
+								+ "\nUse /discord desync para dessincronizar o discord com o servidor!");
 						return;
 					}
 				}
@@ -308,6 +345,34 @@ public class DiscordCommand implements CommandClass {
 							sender.getUser().getIdLong(), cmdArgs.getTextChannel().getIdLong()));
 			break;
 		}
+		case "desync": {
+			Member member = CommonGeneral.getInstance().getMemberManager().getMember(sender.getUser().getIdLong());
+
+			if (member == null) {
+				MemberModel memberModel = CommonGeneral.getInstance().getPlayerData()
+						.loadMember(sender.getUser().getIdLong());
+
+				if (memberModel == null) {
+					sender.sendMessage("Sua conta não está sincronizada com o discord!");
+					return;
+				}
+
+				member = new MemberVoid(memberModel);
+			}
+
+			if (member.hasDiscord())
+				if (member.isOnCooldown("discord-desync")) {
+					sender.sendMessage("Sua conta foi desvinculada com o discord!");
+					member.removeCooldown("discord-desync");
+					member.setDiscordId(0l, "");
+				} else {
+					sender.sendMessage("Para desvincular o discord digite /discord desync novamente!");
+					member.setCooldown("discord-desync", System.currentTimeMillis() + 10000l);
+				}
+			else
+				sender.sendMessage("Sua conta ainda não é sincronizada com o discord!");
+			break;
+		}
 		}
 	}
 
@@ -351,17 +416,36 @@ public class DiscordCommand implements CommandClass {
 
 	@Command(name = "stafflist", runAsync = true)
 	public void stafflistCommand(DiscordCommandArgs cmdArgs) {
-		if (!cmdArgs.getSender().getAsMember().hasPermission(Permission.ADMINISTRATOR))
+		DiscordCommandSender sender = cmdArgs.getSender();
+		Member member = CommonGeneral.getInstance().getMemberManager().getMember(sender.getUser().getIdLong());
+
+		if (member == null) {
+			MemberModel memberModel = CommonGeneral.getInstance().getPlayerData()
+					.loadMember(sender.getUser().getIdLong());
+
+			if (memberModel != null) {
+				member = new MemberVoid(memberModel);
+			}
+
+			if (member == null) {
+				sender.sendMessage("Você precisa ter a sua conta vinculada com o discord para executar esse comando!");
+				return;
+			}
+		}
+
+		if (!member.hasGroupPermission(Group.MODPLUS)) {
+			sender.sendMessage("Você não tem permissão para executar esse comando!");
 			return;
+		}
 
 		EmbedBuilder builder = new EmbedBuilder();
 
 		builder.setTitle("Jogadores da equipe onlines:");
 		builder.setColor(Color.YELLOW);
 
-		for (Member member : CommonGeneral.getInstance().getMemberManager().getMembers().stream()
-				.filter(member -> member.hasGroupPermission(Group.BUILDER)).collect(Collectors.toList())) {
-			builder.addField(member.getPlayerName(), member.getServerGroup().name(), false);
+		for (Member m : CommonGeneral.getInstance().getMemberManager().getMembers().stream()
+				.filter(m -> m.hasGroupPermission(Group.BUILDER)).collect(Collectors.toList())) {
+			builder.addField(m.getPlayerName(), m.getServerGroup().name(), false);
 		}
 
 		cmdArgs.getTextChannel().sendMessage(builder.build()).complete();

@@ -31,6 +31,8 @@ import tk.yallandev.saintmc.bukkit.event.vanish.PlayerHideToPlayerEvent;
 import tk.yallandev.saintmc.bukkit.event.vanish.PlayerShowToPlayerEvent;
 import tk.yallandev.saintmc.common.utils.DateUtils;
 import tk.yallandev.saintmc.kitpvp.GameMain;
+import tk.yallandev.saintmc.kitpvp.event.challenge.shadow.ShadowFightFinishEvent;
+import tk.yallandev.saintmc.kitpvp.event.challenge.shadow.ShadowFightStartEvent;
 import tk.yallandev.saintmc.kitpvp.event.challenge.shadow.ShadowSearchingStartEvent;
 import tk.yallandev.saintmc.kitpvp.event.challenge.shadow.ShadowSearchingStopEvent;
 import tk.yallandev.saintmc.kitpvp.event.warp.PlayerWarpDeathEvent;
@@ -267,6 +269,16 @@ public class ShadowWarp extends Warp implements DuelWarp {
 		secondLocation = BukkitMain.getInstance().getLocationFromConfig("shadow.pos2");
 		getScoreboard().setWarp(this);
 		getWarpSettings().setSpawnEnabled(false);
+	}
+
+	@EventHandler
+	public void onShadowFightStart(ShadowFightStartEvent event) {
+		GameMain.getInstance().getGamerManager().getGamer(event.getPlayer().getUniqueId()).setBlockCommand(true);
+	}
+
+	@EventHandler
+	public void onShadowFightStart(ShadowFightFinishEvent event) {
+		GameMain.getInstance().getGamerManager().getGamer(event.getPlayer().getUniqueId()).setBlockCommand(false);
 	}
 
 	@EventHandler

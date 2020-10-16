@@ -28,7 +28,7 @@ public class BungeePacketHandler implements tk.yallandev.saintmc.common.networki
 			AnticheatBanPacket anticheatPacket = (AnticheatBanPacket) packet;
 
 			BungeeMain.getInstance().getPunishManager().ban(member,
-					new Ban(player.getUniqueId(), "Spectrum AC", UUID.randomUUID(),
+					new Ban(player.getUniqueId(), member.getPlayerName(), "Spectrum AC", UUID.randomUUID(),
 							"Autoban - " + anticheatPacket.getHackType(), anticheatPacket.getBanTime() == -1 ? -1
 									: anticheatPacket.getBanTime() - System.currentTimeMillis()));
 		} else if (packet instanceof AnticheatAlertPacket) {

@@ -58,11 +58,14 @@ public class QueueListener implements Listener {
 				event.getPlayer().sendMessage("§aVocê será movido diretamente ao lobby!");
 				handleQueue(event.getPlayer(), true);
 			}
-			
-			return;
+		} else {
+			if (member.getLoginConfiguration().hasSession(event.getPlayer().getAddress().getHostString())) {
+				event.getPlayer().sendMessage("§aVocê foi autenticado automaticamente!");
+				handleQueue(event.getPlayer(), true);
+			}
 		}
 	}
-	
+
 	@EventHandler
 	public void onPlayerChangeLoginStatus(PlayerChangeLoginStatusEvent event) {
 		/**
@@ -115,7 +118,7 @@ public class QueueListener implements Listener {
 	public void handleQueue(Player player, boolean priority) {
 		if (queueList.containsKey(player))
 			return;
-		
+
 		if (player == null)
 			queueList.remove(player);
 

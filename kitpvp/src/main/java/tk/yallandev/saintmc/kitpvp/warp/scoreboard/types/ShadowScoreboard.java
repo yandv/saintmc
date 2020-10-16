@@ -28,6 +28,7 @@ import tk.yallandev.saintmc.kitpvp.event.challenge.shadow.ShadowSearchingStartEv
 import tk.yallandev.saintmc.kitpvp.event.challenge.shadow.ShadowSearchingStopEvent;
 import tk.yallandev.saintmc.kitpvp.event.warp.PlayerWarpDeathEvent;
 import tk.yallandev.saintmc.kitpvp.warp.scoreboard.WarpScoreboard;
+import tk.yallandev.saintmc.kitpvp.warp.types.ShadowWarp;
 
 public class ShadowScoreboard extends WarpScoreboard {
 
@@ -147,14 +148,29 @@ public class ShadowScoreboard extends WarpScoreboard {
 				.getMember(event.getPlayer().getUniqueId()));
 		fightScoreboard.removeViewer((BukkitMember) CommonGeneral.getInstance().getMemberManager()
 				.getMember(event.getTarget().getUniqueId()));
+
+		if (event.getWarp() instanceof ShadowWarp) {
+			loadScoreboard(event.getPlayer());
+			updateScore(event.getPlayer(), UpdateType.STATUS);
+
+			if (event.getTarget() instanceof Player) {
+				loadScoreboard(event.getTarget());
+				updateScore(event.getTarget(), UpdateType.STATUS);
+			}
+		}
 	}
 
 	@EventHandler
 	public void onPlayerWarpDeath(PlayerWarpDeathEvent event) {
-		loadScoreboard(event.getPlayer());
+		if (event.getWarp() instanceof ShadowWarp) {
+			loadScoreboard(event.getPlayer());
+			updateScore(event.getPlayer(), UpdateType.STATUS);
 
-		if (event.getKiller() instanceof Player)
-			loadScoreboard(event.getKiller());
+			if (event.getKiller() instanceof Player) {
+				loadScoreboard(event.getKiller());
+				updateScore(event.getKiller(), UpdateType.STATUS);
+			}
+		}
 	}
 
 	@Override
@@ -197,9 +213,9 @@ public class ShadowScoreboard extends WarpScoreboard {
 			NormalStatus normalStatus = CommonGeneral.getInstance().getStatusManager().loadStatus(player.getUniqueId(),
 					StatusType.SHADOW, NormalStatus.class);
 
-			scoreboard.updateScore(player, new Score("Vitórias: §e" + normalStatus.getKills(), "kills"));
-			scoreboard.updateScore(player, new Score("Derrotas: §e" + normalStatus.getDeaths(), "deaths"));
-			scoreboard.updateScore(player, new Score("Winstreak: §e" + normalStatus.getKillstreak(), "killstreak"));
+			scoreboard.updateScore(player, new Score("Vitórias: §e" + normalStatus.getKills(), "wins"));
+			scoreboard.updateScore(player, new Score("Derrotas: §e" + normalStatus.getDeaths(), "loses"));
+			scoreboard.updateScore(player, new Score("Winstreak: §e" + normalStatus.getKillstreak(), "winstreak"));
 
 			scoreboard.updateScore(player, new Score("Xp: §a" + member.getXp(), "xp"));
 			scoreboard.updateScore(player, new Score("Coins: §6" + member.getMoney(), "coins"));

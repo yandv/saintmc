@@ -39,7 +39,7 @@ public class GameMain extends JavaPlugin {
 
 	static {
 		KITROTATE = new HashMap<>();
-		KITROTATE.put(Group.MEMBRO, Arrays.asList("pvp", "monk", "viper", "snail", "ninja"));
+		KITROTATE.put(Group.MEMBRO, Arrays.asList("pvp", "monk", "viper", "snail", "ninja", "antitower"));
 		KITROTATE.put(Group.DONATOR, Arrays.asList("hulk", "anchor", "thor", "gladiator", "timelord"));
 		KITROTATE.put(Group.LIGHT, Arrays.asList("switcher", "boxer", "stomper", "endermage", "ultimato"));
 		KITROTATE.put(Group.BLIZZARD,

@@ -25,7 +25,7 @@ public class KangarooKit extends Kit {
 	private List<UUID> jumpList = new ArrayList<>();
 
 	public KangarooKit() {
-		super("Kangaroo", "Use o seu foguete para movimentar-se mais rapidamente pelo mapa", Material.FIREWORK,
+		super("Kangaroo", "Use o seu foguete para movimentar-se mais rapidamente pelo mapa", Material.FIREWORK, 18000,
 				Arrays.asList(new ItemBuilder().name("§aKangaroo").type(Material.FIREWORK).build()));
 	}
 

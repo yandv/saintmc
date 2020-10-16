@@ -57,11 +57,8 @@ public class ServerInventory {
 							new KitpvpInventory(p);
 							return;
 						}
-
-						ByteArrayDataOutput out = ByteStreams.newDataOutput();
-						out.writeUTF("PVP");
-						player.sendPluginMessage(LobbyMain.getInstance(), "BungeeCord", out.toByteArray());
-						player.closeInventory();
+						
+						findServer(player, "PVP");
 					}
 				});
 
@@ -104,28 +101,22 @@ public class ServerInventory {
 							return;
 						}
 
-						ByteArrayDataOutput out = ByteStreams.newDataOutput();
-						out.writeUTF("Gladiator");
-						player.sendPluginMessage(LobbyMain.getInstance(), "BungeeCord", out.toByteArray());
-						player.closeInventory();
+						findServer(player, "Gladiator");
 					}
 				});
 
-		if (BukkitMain.getInstance().getServerManager().getBalancer(ServerType.EVENTO).getList().stream()
-				.filter(server -> !server.isJoinEnabled()).count() > 0)
+		if (Member.hasGroupPermission(player.getUniqueId(), Group.TRIAL) || BukkitMain.getInstance().getServerManager()
+				.getBalancer(ServerType.EVENTO).getList().stream().filter(server -> server.isJoinEnabled()).count() > 0)
 			menuInventory.setItem(13,
-					new ItemBuilder().name("§3§lEvento").type(Material.EMERALD).lore(StringLoreUtils.getLore(30,
-							"\n§7Salas destinadas a vento!\n§f\n§a" + (BukkitMain.getInstance().getServerManager()
+					new ItemBuilder().name("§3§lEvento").glow().type(Material.EMERALD).lore(StringLoreUtils.getLore(30,
+							"\n§7Salas destinadas a eventos!\n§f\n§a" + (BukkitMain.getInstance().getServerManager()
 									.getBalancer(ServerType.EVENTO).getTotalNumber()) + " jogadores online!"))
 							.build(),
 					new MenuClickHandler() {
 
 						@Override
 						public void onClick(Player p, Inventory inv, ClickType type, ItemStack stack, int slot) {
-							ByteArrayDataOutput out = ByteStreams.newDataOutput();
-							out.writeUTF("Event");
-							player.sendPluginMessage(LobbyMain.getInstance(), "BungeeCord", out.toByteArray());
-							player.closeInventory();
+							findServer(player, "Event");
 						}
 					});
 
@@ -147,12 +138,16 @@ public class ServerInventory {
 							return;
 						}
 
-						ByteArrayDataOutput out = ByteStreams.newDataOutput();
-						out.writeUTF("SWSolo");
-						player.sendPluginMessage(LobbyMain.getInstance(), "BungeeCord", out.toByteArray());
-						player.closeInventory();
+						findServer(player, "SWSolo");
 					}
 				});
+	}
+
+	public void findServer(Player player, String serverType) {
+		ByteArrayDataOutput out = ByteStreams.newDataOutput();
+		out.writeUTF(serverType);
+		player.sendPluginMessage(LobbyMain.getInstance(), "BungeeCord", out.toByteArray());
+		player.closeInventory();
 	}
 
 	@RequiredArgsConstructor

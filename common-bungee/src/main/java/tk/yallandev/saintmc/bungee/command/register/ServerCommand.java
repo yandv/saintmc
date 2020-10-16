@@ -6,14 +6,14 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import net.md_5.bungee.api.ProxyServer;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import tk.yallandev.saintmc.CommonConst;
 import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.bungee.BungeeMain;
 import tk.yallandev.saintmc.bungee.command.BungeeCommandArgs;
-import tk.yallandev.saintmc.bungee.event.BlockAddressEvent;
-import tk.yallandev.saintmc.bungee.event.ClearVerifyingEvent;
-import tk.yallandev.saintmc.bungee.event.UnblockAddressEvent;
+import tk.yallandev.saintmc.bungee.event.IpRemoveEvent;
 import tk.yallandev.saintmc.common.account.Member;
 import tk.yallandev.saintmc.common.command.CommandArgs;
 import tk.yallandev.saintmc.common.command.CommandClass;
@@ -23,11 +23,81 @@ import tk.yallandev.saintmc.common.command.CommandSender;
 import tk.yallandev.saintmc.common.permission.Group;
 import tk.yallandev.saintmc.common.server.ServerType;
 import tk.yallandev.saintmc.common.server.loadbalancer.server.ProxiedServer;
+import tk.yallandev.saintmc.common.tag.Tag;
 import tk.yallandev.saintmc.common.utils.DateUtils;
+import tk.yallandev.saintmc.common.utils.string.MessageBuilder;
 
 public class ServerCommand implements CommandClass {
 
 	private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.#");
+
+	@Command(name = "rec", aliases = { "gravar" }, groupToUse = Group.YOUTUBER)
+	public void gravarCommand(BungeeCommandArgs cmdArgs) {
+		Member sender = (Member) cmdArgs.getSender();
+
+		if (sender.isOnCooldown("rec-command")) {
+			sender.sendMessage(
+					"§cEspere mais " + DateUtils.formatTime(sender.getCooldown("rec-command"), DECIMAL_FORMAT)
+							+ "s para se conectar novamente!");
+			sender.sendMessage("§cNão abuse desse comando, caso contrário, poderá perder sua tag!");
+			return;
+		}
+
+		ServerType serverType = sender.getServerType();
+		String[] split = sender.getServerId().split("\\.");
+		String serverId = split.length > 0 ? split[0] : sender.getServerId();
+
+		switch (serverType) {
+		case EVENTO:
+		case HUNGERGAMES: {
+			ProxyServer.getInstance().broadcast(new MessageBuilder(" ")
+					.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/connect " + sender.getServerId()))
+					.setHoverEvent(HoverEvent.Action.SHOW_TEXT, "§aClique aqui para se conectar!").create());
+
+			ProxyServer.getInstance()
+					.broadcast(new MessageBuilder("§c§lAVISO §fO "
+							+ (sender.hasGroupPermission(Group.YOUTUBERPLUS) ? Tag.YOUTUBERPLUS : Tag.YOUTUBER)
+									.getPrefix()
+							+ " " + sender.getPlayerName() + " §7vai §4§lGRAVAR§7 um §6§lHUNGERGAMES§7 no §6§l"
+							+ serverId.toUpperCase() + "§7! §e/play hg").setClickEvent(
+									new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/connect " + sender.getServerId()))
+									.setHoverEvent(HoverEvent.Action.SHOW_TEXT, "§aClique aqui para se conectar!")
+									.create());
+			ProxyServer.getInstance().broadcast(new MessageBuilder(" ")
+					.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/connect " + sender.getServerId()))
+					.setHoverEvent(HoverEvent.Action.SHOW_TEXT, "§aClique aqui para se conectar!").create());
+
+			sender.setCooldown("rec-command", 45);
+			break;
+		}
+		case SIMULATOR:
+		case FULLIRON: {
+			ProxyServer.getInstance().broadcast(new MessageBuilder(" ")
+					.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/connect " + sender.getServerId()))
+					.setHoverEvent(HoverEvent.Action.SHOW_TEXT, "§aClique aqui para se conectar!").create());
+			ProxyServer.getInstance()
+					.broadcast(new MessageBuilder("§c§lAVISO §fO "
+							+ (sender.hasGroupPermission(Group.YOUTUBERPLUS) ? Tag.YOUTUBERPLUS : Tag.YOUTUBER)
+									.getPrefix()
+							+ " " + sender.getPlayerName() + " §7vai §4§lGRAVAR§7 um §6§l"
+							+ serverType.toString().toUpperCase() + "§7 no §6§l" + serverId.toUpperCase()
+							+ "§7! §e/play hg").setClickEvent(
+									new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/connect " + sender.getServerId()))
+									.setHoverEvent(HoverEvent.Action.SHOW_TEXT, "§aClique aqui para se conectar!")
+									.create());
+			ProxyServer.getInstance().broadcast(new MessageBuilder(" ")
+					.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/connect " + sender.getServerId()))
+					.setHoverEvent(HoverEvent.Action.SHOW_TEXT, "§aClique aqui para se conectar!").create());
+
+			sender.setCooldown("rec-command", 30);
+			break;
+		}
+		default: {
+			sender.sendMessage("§cVocê não pode mandar um aviso de gravação no servidor atual!");
+			break;
+		}
+		}
+	}
 
 	@Command(name = "ping")
 	public void pingCommand(BungeeCommandArgs cmdArgs) {
@@ -65,13 +135,15 @@ public class ServerCommand implements CommandClass {
 			}
 
 			if (args[0].equalsIgnoreCase("add")) {
-				ProxyServer.getInstance().getPluginManager().callEvent(new BlockAddressEvent(args[1]));
+				BungeeMain.getInstance().getBotController().blockIp(args[1]);
 				sender.sendMessage("§aO ip " + args[1] + " foi bloqueado!");
 			} else if (args[0].equalsIgnoreCase("remove")) {
-				ProxyServer.getInstance().getPluginManager().callEvent(new UnblockAddressEvent(args[1]));
+				BungeeMain.getInstance().getBotController().removeIp(args[1]);
 				sender.sendMessage("§aO ip " + args[1] + " foi desbloqueado!");
+				BungeeMain.getInstance().getProxy().getPluginManager().callEvent(new IpRemoveEvent(args[1]));
+				BungeeMain.getInstance().getBotController().removeBot(args[1]);
 			} else if (args[0].equalsIgnoreCase("clear")) {
-				ProxyServer.getInstance().getPluginManager().callEvent(new ClearVerifyingEvent());
+				BungeeMain.getInstance().getBotController().getBlockedAddress().clear();
 				sender.sendMessage("§aOs ips foram limpos!");
 			}
 		}

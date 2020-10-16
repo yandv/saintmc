@@ -201,6 +201,7 @@ public class StaffCommand implements CommandClass {
 
 		p.sendMessage(" §a* §fVocê abriu o inventário de §a" + t.getName() + "§f.");
 		p.openInventory(t.getInventory());
+		staffLog("O §a" + p.getName() + " §fabriu o inventário de §e" + t.getName() + "§f!", Group.MODPLUS);
 	}
 
 	@Command(name = "chat", groupToUse = Group.MOD)
@@ -271,7 +272,7 @@ public class StaffCommand implements CommandClass {
 
 		sender.getPlayer().getInventory().addItem(new ItemBuilder().type(Material.SKULL_ITEM).durability(3)
 				.name("§a" + cmdArgs.getArgs()[0]).skin(cmdArgs.getArgs()[0]).build());
-		sender.sendMessage("§aCabeça!");
+		sender.sendMessage("§aHead of " + sender.getName());
 	}
 
 	@Command(name = "clearchat", aliases = { "limparchat", "cc" }, groupToUse = Group.TRIAL)
@@ -282,6 +283,8 @@ public class StaffCommand implements CommandClass {
 
 			p.sendMessage(" §8* §fO chat foi limpo!\n§f");
 		}
+
+		staffLog("O §a" + args.getSender().getName() + " §flimpou o chat§f!", Group.MODPLUS);
 	}
 
 }

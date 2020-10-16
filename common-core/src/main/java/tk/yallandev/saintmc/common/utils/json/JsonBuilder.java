@@ -3,6 +3,16 @@ package tk.yallandev.saintmc.common.utils.json;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
+
+/**
+ * 
+ * Helps to create a simple gson with a simple constructor
+ * Writted by yandv
+ * 
+ * @author yandv
+ *
+ */
+
 public class JsonBuilder {
 	
 	private JsonObject jsonObject;

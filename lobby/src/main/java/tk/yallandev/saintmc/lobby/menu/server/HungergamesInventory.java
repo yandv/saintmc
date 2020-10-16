@@ -30,7 +30,7 @@ public class HungergamesInventory {
 
 		MenuInventory menu = new MenuInventory("§8Servidores de HungerGames",
 				2 + (serverList.size() == 0 ? 1 : (serverList.size() / 7) + 1));
-		
+
 		serverList.sort(new Comparator<ProxiedServer>() {
 
 			@Override
@@ -86,7 +86,7 @@ public class HungergamesInventory {
 
 			ItemBuilder builder = new ItemBuilder();
 			builder.type(Material.INK_SACK);
-			
+
 			String name = proxiedServer.getServerId().substring(0, 2).toUpperCase();
 			String nameId = "§a§l" + name;
 			String loreId = null;
@@ -106,7 +106,7 @@ public class HungergamesInventory {
 			}
 			case INVINCIBILITY: {
 				nameId = "§e§l" + name;
-				loreId = "\n§7A partida está na §e§linvencibilidade§7!\n§7O tempo de partida é §e§l%time%\n\n§3§l%online% §7jogadores conectados";
+				loreId = "\n§7A partida está na §e§linvencibilidade§7!\n§7O tempo de invicibilidade restante é §e§l%time%\n\n§3§l%online% §7jogadores conectados";
 				builder.durability(14);
 				break;
 			}

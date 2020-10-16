@@ -1,13 +1,6 @@
 package tk.yallandev.saintmc.bukkit.listener.register;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
-
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
-import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
@@ -15,7 +8,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.MetadataValue;
 
 import tk.yallandev.saintmc.bukkit.event.player.PlayerDamagePlayerEvent;
@@ -23,7 +15,76 @@ import tk.yallandev.saintmc.bukkit.listener.Listener;
 
 public class CombatListener extends Listener {
 
-	private Map<UUID, Long> lastTime = new HashMap<>();
+//	private Queue<EntityDamageByEntityEvent> hitQueue = new ConcurrentLinkedQueue<>();
+//
+//	public CombatListener() {
+//
+//		new BukkitRunnable() {
+//			public void run() {
+//				while (hitQueue.size() > 0) {
+//					EntityDamageByEntityEvent event = hitQueue.remove();
+//					Bukkit.getPluginManager().callEvent(event);
+//
+//					if (!event.isCancelled())
+//						((Damageable) event.getEntity()).damage(event.getFinalDamage(), event.getDamager());
+//				}
+//			}
+//		}.runTaskTimer(BukkitMain.getInstance(), 1L, 1L);
+//
+//		ProtocolLibrary.getProtocolManager().getAsynchronousManager()
+//				.registerAsyncHandler(new PacketAdapter(BukkitMain.getInstance(), ListenerPriority.LOWEST,
+//						PacketType.Play.Client.USE_ENTITY) {
+//					
+//					@SuppressWarnings("deprecation")
+//					public void onPacketReceiving(PacketEvent event) {
+//						PacketContainer packet = event.getPacket();
+//						Player attacker = event.getPlayer();
+//						Entity entity = (Entity) packet.getEntityModifier(event).read(0);
+//						Damageable target = (entity instanceof Damageable) ? (Damageable) entity : null;
+//						World world = attacker.getWorld();
+//						if (packet.getEntityUseActions().read(0) == EnumWrappers.EntityUseAction.ATTACK
+//								&& target != null && !target.isDead() && world == target.getWorld() && world.getPVP()
+//								&& attacker.getLocation().distanceSquared(target.getLocation()) < 4.5
+//								&& (!(target instanceof Player)
+//										|| ((Player) target).getGameMode() != GameMode.CREATIVE)) {
+//
+//							double damage = 1.0D;
+//							ItemStack itemStack = attacker.getItemInHand();
+//
+//							if (itemStack != null) {
+//								damage = getDamage(itemStack.getType());
+//
+//								if (!itemStack.getEnchantments().isEmpty()) {
+//									if (itemStack.containsEnchantment(Enchantment.DAMAGE_ARTHROPODS)
+//											&& isArthropod(entity.getType()))
+//										damage += 1 * itemStack.getEnchantmentLevel(Enchantment.DAMAGE_ARTHROPODS);
+//
+//									if (itemStack.containsEnchantment(Enchantment.DAMAGE_UNDEAD)
+//											&& isUndead(entity.getType()))
+//										damage += 1 * itemStack.getEnchantmentLevel(Enchantment.DAMAGE_UNDEAD);
+//
+//									if (itemStack.containsEnchantment(Enchantment.DAMAGE_ALL))
+//										damage += 0.5 * itemStack.getEnchantmentLevel(Enchantment.DAMAGE_ALL);
+//								}
+//							}
+//
+//							Bukkit.broadcastMessage("Dano: " + damage);
+//
+//							event.setCancelled(true);
+//							PacketContainer damageAnimation = new PacketContainer(PacketType.Play.Server.ENTITY_STATUS);
+//							damageAnimation.getIntegers().write(0, Integer.valueOf(target.getEntityId()));
+//							damageAnimation.getBytes().write(0, Byte.valueOf((byte) 2));
+//
+//							hitQueue.add(new EntityDamageByEntityEvent((Entity) attacker, (Entity) target,
+//									EntityDamageEvent.DamageCause.ENTITY_ATTACK, damage));
+//						}
+//					}
+//
+//					public void onPacketSending(PacketEvent event) {
+//					}
+//
+//				}).start();
+//	}
 
 	@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
 	public void onEntityDamage(EntityDamageEvent event) {
@@ -74,94 +135,4 @@ public class CombatListener extends Listener {
 		event.setDamage(playerDamagePlayerEvent.getDamage());
 	}
 
-	@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
-	public void onEntityDamageEvent(EntityDamageByEntityEvent event) {
-		if (!(event.getDamager() instanceof Player)) {
-			return;
-		}
-
-		Player player = (Player) event.getDamager();
-
-		double damage = 1.0D;
-		ItemStack itemStack = player.getItemInHand();
-
-		if (System.currentTimeMillis()
-				- lastTime.computeIfAbsent(player.getUniqueId(), v -> System.currentTimeMillis()) < 50) {
-			Bukkit.broadcastMessage(
-					"Dano duplicado : " + (System.currentTimeMillis() - lastTime.get(player.getUniqueId())) + " " + player.getName());
-			lastTime.put(player.getUniqueId(), System.currentTimeMillis());
-		}
-
-		if (itemStack != null) {
-			damage = getDamage(itemStack.getType());
-
-			if (!itemStack.getEnchantments().isEmpty()) {
-				if (itemStack.containsEnchantment(Enchantment.DAMAGE_ARTHROPODS) && isArthropod(event.getEntityType()))
-					damage += 1 * itemStack.getEnchantmentLevel(Enchantment.DAMAGE_ARTHROPODS);
-
-				if (itemStack.containsEnchantment(Enchantment.DAMAGE_UNDEAD) && isUndead(event.getEntityType()))
-					damage += 1 * itemStack.getEnchantmentLevel(Enchantment.DAMAGE_UNDEAD);
-
-				if (itemStack.containsEnchantment(Enchantment.DAMAGE_ALL))
-					damage += 0.5 * itemStack.getEnchantmentLevel(Enchantment.DAMAGE_ALL);
-			}
-		}
-
-		event.setDamage(damage);
-	}
-
-	private boolean isArthropod(EntityType type) {
-		switch (type) {
-		case CAVE_SPIDER:
-			return true;
-		case SPIDER:
-			return true;
-		case SILVERFISH:
-			return true;
-		default:
-			return false;
-		}
-	}
-
-	private boolean isUndead(EntityType type) {
-		switch (type) {
-		case SKELETON:
-			return true;
-		case ZOMBIE:
-			return true;
-		case WITHER_SKULL:
-			return true;
-		case PIG_ZOMBIE:
-			return true;
-		default:
-			return false;
-		}
-	}
-
-	private double getDamage(Material type) {
-		double damage = 1.0D;
-
-		if (type.toString().contains("DIAMOND_")) {
-			damage = 6.0D;
-		} else if (type.toString().contains("IRON_")) {
-			damage = 5.0D;
-		} else if (type.toString().contains("STONE_") || type.toString().contains("GOLD_")) {
-			damage = 4.0D;
-		} else if (type.toString().contains("WOOD_")) {
-			damage = 3.0D;
-		}
-
-		if (!type.toString().contains("_SWORD")) {
-			damage--;
-			if (!type.toString().contains("_AXE")) {
-				damage--;
-				if (!type.toString().contains("_PICKAXE")) {
-					damage--;
-					if (!type.toString().contains("_SPADE"))
-						damage = 1.0D;
-				}
-			}
-		}
-		return damage;
-	}
 }

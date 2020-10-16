@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.function.Predicate;
 
 import net.md_5.bungee.api.chat.TextComponent;
 import tk.yallandev.saintmc.common.account.Member;
@@ -50,6 +51,12 @@ public class MemberManager extends StoreController<UUID, Member> {
 		System.out.println(message);
 	}
 
+	public void broadcast(String message, Predicate<Member> predicate) {
+		getMembers().stream().filter(predicate).forEach(member -> member.sendMessage(message));
+
+		System.out.println(message);
+	}
+
 	public void broadcast(String message, Group group) {
 		getMembers().stream().filter(member -> member.hasGroupPermission(group))
 				.forEach(member -> member.sendMessage(message));
@@ -60,6 +67,12 @@ public class MemberManager extends StoreController<UUID, Member> {
 	public void broadcast(TextComponent message, Group group) {
 		getMembers().stream().filter(member -> member.hasGroupPermission(group))
 				.forEach(member -> member.sendMessage(message));
+
+		System.out.println(message);
+	}
+
+	public void broadcast(TextComponent message, Predicate<Member> predicate) {
+		getMembers().stream().filter(predicate).forEach(member -> member.sendMessage(message));
 
 		System.out.println(message);
 	}

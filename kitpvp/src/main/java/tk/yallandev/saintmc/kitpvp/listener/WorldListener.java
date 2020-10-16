@@ -22,6 +22,7 @@ import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
+import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
@@ -65,7 +66,7 @@ public class WorldListener implements Listener {
 
 		Player player = event.getPlayer();
 		Gamer gamer = GameMain.getInstance().getGamerManager().getGamer(player.getUniqueId());
-		
+
 		if (gamer == null)
 			return;
 
@@ -165,6 +166,20 @@ public class WorldListener implements Listener {
 
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onBlockPlace(BlockPlaceEvent e) {
+		BukkitMember player = (BukkitMember) CommonGeneral.getInstance().getMemberManager()
+				.getMember(e.getPlayer().getUniqueId());
+
+		if (player.isBuildEnabled())
+			if (player.hasGroupPermission(Group.DEVELOPER)) {
+				e.setCancelled(false);
+				return;
+			}
+
+		e.setCancelled(true);
+	}
+
+	@EventHandler(priority = EventPriority.LOWEST)
+	public void onBlockPlace(PlayerBucketEmptyEvent e) {
 		BukkitMember player = (BukkitMember) CommonGeneral.getInstance().getMemberManager()
 				.getMember(e.getPlayer().getUniqueId());
 

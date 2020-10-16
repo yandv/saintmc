@@ -8,25 +8,16 @@ import tk.yallandev.saintmc.common.permission.Group;
 
 public class WooCommand implements CommandClass {
 
-    @Command(name = "woo", groupToUse = Group.ADMIN, runAsync = true)
-    public void wooCommand(CommandArgs cmdArgs) {
-    	String[] args = cmdArgs.getArgs();
-    	
-    	if (args.length == 0) {
-    		cmdArgs.getSender().sendMessage(" §a* §fUse §a/woo check§f para verificar!");
-    		return;
-    	}
-    	
-    	if (args[0].equalsIgnoreCase("check")) {
-    		try {
-    			cmdArgs.getSender().sendMessage(" §a* §fEstamos verificando...");
-    			
-    			BungeeMain.getInstance().getStoreController().check(cmdArgs.getSender());
-    		} catch (Exception ex) {
-    			cmdArgs.getSender().sendMessage(" §c* §fOcorreu um erro durante verificavamos!");
-    			ex.printStackTrace();
-    		}
-    	}
-    }
+	@Command(name = "woo", groupToUse = Group.ADMIN, runAsync = true)
+	public void wooCommand(CommandArgs cmdArgs) {
+		try {
+			cmdArgs.getSender().sendMessage("§aEstou verificando os pedidos...");
+
+			BungeeMain.getInstance().getStoreController().check(cmdArgs.getSender());
+		} catch (Exception ex) {
+			cmdArgs.getSender().sendMessage("§cOcorreu um erro durante verificavamos!");
+			ex.printStackTrace();
+		}
+	}
 
 }

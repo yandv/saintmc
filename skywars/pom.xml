@@ -10,16 +10,69 @@
 	<artifactId>skywars</artifactId>
 
 	<build>
+		<sourceDirectory>src</sourceDirectory>
+		<defaultGoal>clean install</defaultGoal>
 		<plugins>
 			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-jar-plugin</artifactId>
-				<version>2.3.2</version>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.5.1</version>
 				<configuration>
-					<finalName>Skywars</finalName>
+					<source>1.8</source>
+					<target>1.8</target>
 				</configuration>
 			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-shade-plugin</artifactId>
+				<version>3.2.1</version>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>shade</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<finalName>Skywars</finalName>
+					<encoding>UTF-8</encoding>
+					<filters>
+						<filter>
+							<artifact>bungeecord-api</artifact>
+							<excludes>
+								<exclude>**</exclude>
+							</excludes>
+						</filter>
+					</filters>
+					<artifactSet>
+						<excludes>
+							<exclude>net.md-5:bungeecord-api</exclude>
+						</excludes>
+					</artifactSet>
+					<transformers>
+						<transformer
+							implementation="com.github.edwgiz.mavenShadePlugin.log4j2CacheTransformer.PluginsCacheFileTransformer" />
+					</transformers>
+				</configuration>
+				<dependencies>
+					<dependency>
+						<groupId>com.github.edwgiz</groupId>
+						<artifactId>maven-shade-plugin.log4j2-cachefile-transformer</artifactId>
+						<version>2.8.1</version>
+					</dependency>
+				</dependencies>
+			</plugin>
 		</plugins>
+
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<excludes>
+					<exclude>dependencies/**</exclude>
+				</excludes>
+			</resource>
+		</resources>
 	</build>
 
 	<dependencies>
@@ -32,10 +85,10 @@
 		</dependency>
 
 		<dependency>
-			<groupId>tk.yallandev</groupId>
-			<artifactId>common-bukkit</artifactId>
-			<version>${project.version}</version>
-			<scope>provided</scope>
+			<groupId>com.google.code.gson</groupId>
+			<artifactId>gson</artifactId>
+			<version>2.8.6</version>
+			<scope>compile</scope>
 		</dependency>
 
 	</dependencies>

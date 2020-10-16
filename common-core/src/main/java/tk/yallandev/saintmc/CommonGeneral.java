@@ -9,6 +9,7 @@ import com.google.common.base.Charsets;
 import lombok.Getter;
 import lombok.Setter;
 import tk.yallandev.saintmc.common.backend.data.ClanData;
+import tk.yallandev.saintmc.common.backend.data.IpData;
 import tk.yallandev.saintmc.common.backend.data.PlayerData;
 import tk.yallandev.saintmc.common.backend.data.PunishData;
 import tk.yallandev.saintmc.common.backend.data.ReportData;
@@ -42,6 +43,10 @@ public class CommonGeneral {
 
 	@Getter
 	@Setter
+	private IpData ipData;
+
+	@Getter
+	@Setter
 	private StatusData statusData;
 
 	@Getter
@@ -68,7 +73,7 @@ public class CommonGeneral {
 
 	@Getter
 	private MemberManager memberManager = new MemberManager();
-	
+
 	@Getter
 	private ClanManager clanManager = new ClanManager();
 

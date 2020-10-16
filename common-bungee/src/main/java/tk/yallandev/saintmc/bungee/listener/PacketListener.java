@@ -29,19 +29,20 @@ public class PacketListener implements Listener {
 		}
 		if (!(event.getReceiver() instanceof ProxiedPlayer))
 			return;
-		
+
 		ProxiedPlayer proxiedPlayer = (ProxiedPlayer) event.getReceiver();
 		Server server = (Server) event.getSender();
-		
+
 		ProxiedServer proxiedServer = BungeeMain.getInstance().getServerManager().getServer(server.getInfo().getName());
 
 		ByteArrayDataInput in = ByteStreams.newDataInput(event.getData());
 		JsonObject jsonObject = (JsonObject) JsonParser.parseString(in.readUTF());
-		
+
 		Packet packet = null;
-		
+
 		try {
-			packet = PacketType.valueOf(jsonObject.get("packetType").getAsString().toUpperCase()).getPacketClass().getConstructor(JsonObject.class).newInstance(jsonObject);
+			packet = PacketType.valueOf(jsonObject.get("packetType").getAsString().toUpperCase()).getPacketClass()
+					.getConstructor(JsonObject.class).newInstance(jsonObject);
 		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
 				| NoSuchMethodException | SecurityException e) {
 			e.printStackTrace();

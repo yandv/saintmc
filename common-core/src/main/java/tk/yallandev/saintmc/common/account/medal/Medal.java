@@ -19,7 +19,7 @@ public enum Medal {
 			MedalRarity.COMMON, ChatColor.GOLD, '⌚', new String[] { "early", "access", "antecipado" }),
 	BUG("Bug", "Medalha para jogadores que reportaram bugs no servidor", MedalRarity.RARE, ChatColor.YELLOW, '☭'),
 	BETA("Beta", "Medalha para jogadores que compraram BETA na fase inicial", MedalRarity.EPIC, ChatColor.BLUE, 'Ⓑ'),
-	BOOSTER("Booster", "Medalha para jogadores que compraram BETA na fase inicial", MedalRarity.VERY_RARE,
+	BOOSTER("Booster", "Medalha para jogadores que ajudaram o discord doando BOOST", MedalRarity.VERY_RARE,
 			ChatColor.LIGHT_PURPLE, 'β'),
 	SUGGESTION("Sugestão", "Medalha para jogadores que deram uma sugestão para o servidor", MedalRarity.RARE,
 			ChatColor.DARK_BLUE, 'ⓢ'),

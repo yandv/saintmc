@@ -61,7 +61,7 @@ public class MenuListener implements Listener {
 	public void onMenuOpen(MenuOpenEvent event) {
 		if (event.getInventory() == null)
 			return;
-
+		
 		Inventory inventory = event.getInventory();
 
 		if (inventory.getHolder() instanceof MenuHolder) {

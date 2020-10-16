@@ -21,8 +21,9 @@ import tk.yallandev.saintmc.kitpvp.event.warp.PlayerWarpJoinEvent;
 import tk.yallandev.saintmc.kitpvp.event.warp.PlayerWarpRespawnEvent;
 import tk.yallandev.saintmc.kitpvp.gamer.Gamer;
 import tk.yallandev.saintmc.kitpvp.kit.Kit;
-import tk.yallandev.saintmc.kitpvp.menu.KitInventory;
-import tk.yallandev.saintmc.kitpvp.menu.KitInventory.InventoryType;
+import tk.yallandev.saintmc.kitpvp.menu.SelectorInventory;
+import tk.yallandev.saintmc.kitpvp.menu.SelectorInventory.OrderType;
+import tk.yallandev.saintmc.kitpvp.menu.ShopInventory;
 import tk.yallandev.saintmc.kitpvp.menu.WarpInventory;
 import tk.yallandev.saintmc.kitpvp.warp.Warp;
 import tk.yallandev.saintmc.kitpvp.warp.scoreboard.types.SpawnScoreboard;
@@ -35,7 +36,7 @@ public class SpawnWarp extends Warp {
 				@Override
 				public boolean onInteract(Player player, Entity entity, Block block, ItemStack item,
 						ActionType action) {
-					new KitInventory(player, InventoryType.OWN);
+					new SelectorInventory(player, 1, OrderType.MINE);
 					return false;
 				}
 			}.setInventoryClick(true));
@@ -47,6 +48,17 @@ public class SpawnWarp extends Warp {
 				public boolean onInteract(Player player, Entity entity, Block block, ItemStack item,
 						ActionType action) {
 					new WarpInventory(player);
+					return false;
+				}
+			}.setInventoryClick(true));
+
+	private ActionItemStack shopSelector = new ActionItemStack(
+			new ItemBuilder().type(Material.EMERALD).name("§aShop Inventory").build(), new ActionItemStack.Interact() {
+
+				@Override
+				public boolean onInteract(Player player, Entity entity, Block block, ItemStack item,
+						ActionType action) {
+					new ShopInventory(player, 1);
 					return false;
 				}
 			}.setInventoryClick(true));
@@ -98,7 +110,8 @@ public class SpawnWarp extends Warp {
 		if (inWarp(event.getPlayer()))
 			if (GameMain.getInstance().getGamerManager().getGamer(event.getPlayer().getUniqueId()).isSpawnProtection())
 				if (event.getItemDrop().getItemStack().getType() == Material.CHEST
-						|| event.getItemDrop().getItemStack().getType() == Material.COMPASS) {
+						|| event.getItemDrop().getItemStack().getType() == Material.COMPASS
+						|| event.getItemDrop().getItemStack().getType() == Material.EMERALD) {
 					event.setCancelled(true);
 				}
 	}
@@ -130,6 +143,7 @@ public class SpawnWarp extends Warp {
 
 		player.getInventory().setItem(3, warpSelector.getItemStack());
 		player.getInventory().setItem(4, kitSelector.getItemStack());
+		player.getInventory().setItem(5, shopSelector.getItemStack());
 		player.updateInventory();
 	}
 

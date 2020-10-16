@@ -6,10 +6,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 
-import tk.yallandev.saintmc.CommonGeneral;
-import tk.yallandev.saintmc.common.account.status.types.game.GameStatus;
 import tk.yallandev.saintmc.skwyars.GameGeneral;
-import tk.yallandev.saintmc.skwyars.GameMain;
 import tk.yallandev.saintmc.skwyars.gamer.Gamer;
 
 public class StatusListener implements Listener {
@@ -20,26 +17,26 @@ public class StatusListener implements Listener {
 		Gamer gamer = GameGeneral.getInstance().getGamerController().getGamer(player);
 
 		if (gamer.isPlaying()) {
-			GameStatus status = CommonGeneral.getInstance().getStatusManager().loadStatus(player.getUniqueId(),
-					GameMain.getInstance().getSkywarsType().getStatusType(), GameStatus.class);
+//			GameStatus status = CommonGeneral.getInstance().getStatusManager().loadStatus(player.getUniqueId(),
+//					GameMain.getInstance().getSkywarsType().getStatusType(), GameStatus.class);
 
 			if (player.getKiller() instanceof Player) {
 				Player killer = (Player) player.getKiller();
 				Gamer gamerKiller = GameGeneral.getInstance().getGamerController().getGamer(killer);
 
 				if (gamerKiller.isPlaying()) {
-					GameStatus killerStatus = CommonGeneral.getInstance().getStatusManager().loadStatus(
-							killer.getUniqueId(), GameMain.getInstance().getSkywarsType().getStatusType(),
-							GameStatus.class);
+//					GameStatus killerStatus = CommonGeneral.getInstance().getStatusManager().loadStatus(
+//							killer.getUniqueId(), GameMain.getInstance().getSkywarsType().getStatusType(),
+//							GameStatus.class);
 
-					killerStatus.addKill();
-					killerStatus.addKillstreak();
+//					killerStatus.addKill();
+//					killerStatus.addKillstreak();
 					gamerKiller.addMatchKill();
 				}
 			}
 
-			status.addDeath();
-			status.resetKillstreak();
+//			status.addDeath();
+//			status.resetKillstreak();
 		}
 	}
 

@@ -129,6 +129,8 @@ public class TournamentInventory {
 										default:
 											break;
 										}
+
+										player.closeInventory();
 									}
 								}
 							}, inventory);
@@ -272,15 +274,17 @@ public class TournamentInventory {
 		boolean a = true;
 
 		if (tournamentGroup == TournamentGroup.GROUP_C) {
-			a = GROUP_A > 90 && GROUP_B > 90;
+//			a = GROUP_A > 90 && GROUP_B > 90;
 			builder.lore("\n" + (!a ? "§cOs ingressos para esse grupo ainda não estão disponíveis!"
 					: ((MAX_TICKET - remaining) > 0 ? "§7Ingressos restantes: §f" + (MAX_TICKET - remaining)
-							: "§cIngressos esgotados!")));
+							: "§cIngressos esgotados\n\n§fAdquiria " + Tag.TORNEIOPLUS.getPrefix()
+									+ "§f para entrar nesse grupo!")));
 		} else if (tournamentGroup == TournamentGroup.GROUP_D) {
-			a = GROUP_A > 90 && GROUP_B > 90 && GROUP_C > 90;
+//			a = GROUP_A > 90 && GROUP_B > 90 && GROUP_C > 90;
 			builder.lore("\n" + (!a ? "§cOs ingressos para esse grupo ainda não estão disponíveis!"
 					: ((MAX_TICKET - remaining) > 0 ? "§7Ingressos restantes: §f" + (MAX_TICKET - remaining)
-							: "§cIngressos esgotados!")));
+							: "§cIngressos esgotados\n\n§fAdquiria " + Tag.TORNEIOPLUS.getPrefix()
+									+ "§f para entrar nesse grupo!")));
 		} else
 			builder.lore("\n" + ((MAX_TICKET - remaining) > 0 ? "§7Ingressos restantes: §f" + (MAX_TICKET - remaining)
 					: "§cIngressos esgotados!\n\n§fAdquiria " + Tag.TORNEIOPLUS.getPrefix()
@@ -297,10 +301,10 @@ public class TournamentInventory {
 			@Override
 			public void onClick(Player p, Inventory inv, ClickType type, ItemStack stack, int slot) {
 				if (available) {
-					if (MAX_TICKET - remaining > 0 || member.hasPermission("tag.torneioplus")) {
+					if (MAX_TICKET - remaining > 0 || member.hasPermission("tag.torneioplus"))
 						new TournamentInventory(player, tournamentGroup, false,
 								type == ClickType.LEFT ? true : premium);
-					} else {
+					else {
 						player.sendMessage(
 								"§cOs ingressos desse grupo esgotaram, para entrar nesse grupo adquira a tag "
 										+ Tag.TORNEIOPLUS.getPrefix() + "§c em https://" + CommonConst.STORE

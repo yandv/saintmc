@@ -7,10 +7,10 @@ import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
 
 import lombok.Getter;
-import tk.yallandev.saintmc.common.server.loadbalancer.server.MinigameState;
 import tk.yallandev.saintmc.skwyars.GameGeneral;
 import tk.yallandev.saintmc.skwyars.event.game.GameStartEvent;
 import tk.yallandev.saintmc.skwyars.listener.WaitingListener;
+import tk.yallandev.saintmc.skwyars.scheduler.MinigameState;
 
 public class WaitingScheduler implements GameSchedule {
 

@@ -46,15 +46,15 @@ public class YoutubeCommand implements CommandClass {
 			return;
 		}
 
-		String fakeName = args.getArgs()[0].equals("#") ? member.getPlayerName()
+		String f = args.getArgs()[0].equals("#") ? member.getPlayerName()
 				: args.getArgs()[0].equalsIgnoreCase("random")
 						? FAKERANDOM[CommonConst.RANDOM.nextInt(FAKERANDOM.length)]
 						: args.getArgs()[0];
 
-		if (Bukkit.getPlayer(fakeName) != null) {
+		if (Bukkit.getPlayer(f) != null) {
 			if (args.getArgs()[0].equalsIgnoreCase("random"))
-				while (Bukkit.getPlayer(fakeName) != null)
-					fakeName = args.getArgs()[0].equals("#") ? member.getPlayerName()
+				while (Bukkit.getPlayer(f) != null)
+					f = args.getArgs()[0].equals("#") ? member.getPlayerName()
 							: args.getArgs()[0].equalsIgnoreCase("random")
 									? FAKERANDOM[CommonConst.RANDOM.nextInt(FAKERANDOM.length)]
 									: args.getArgs()[0];
@@ -64,35 +64,37 @@ public class YoutubeCommand implements CommandClass {
 			return;
 		}
 
-		if (!PlayerAPI.validateName(fakeName)) {
+		if (!PlayerAPI.validateName(f)) {
 			player.sendMessage(" §c* §fO nickname que você colocou está inválido!");
 			return;
 		}
 
 		if (!member.hasGroupPermission(Group.YOUTUBER))
-			if (member.isOnCooldown("fakeCommand") && !fakeName.equals("#")
-					&& !fakeName.equals(member.getPlayerName())) {
+			if (member.isOnCooldown("fakeCommand") && !f.equals("#") && !f.equals(member.getPlayerName())) {
 				member.sendMessage(" §c* §fVocê precisa esperar §e"
 						+ DateUtils.getTime(member.getCooldown("fakeCommand")) + "§f para trocar de fake novamente!");
 				return;
 			}
 
-		UUID uuid = CommonGeneral.getInstance().getMojangFetcher().requestUuid(fakeName);
-
-		if (!fakeName.equals(member.getPlayerName()) && !member.hasGroupPermission(Group.DIRETOR)) {
-			if (uuid != null) {
-				player.sendMessage(" §c* §fO jogador existe na mojang!");
-				return;
-			}
-		}
-
-		String playerName = fakeName;
-		WrappedSignedProperty property = BukkitMain.getInstance().getSkinManager().getSkin(playerName);
+		String fakeName = f;
 
 		new BukkitRunnable() {
 
 			@Override
 			public void run() {
+				player.sendMessage("§eSeu pedido está sendo carregado, aguarde!");
+				UUID uuid = CommonGeneral.getInstance().getMojangFetcher().requestUuid(fakeName);
+
+				if (!fakeName.equals(member.getPlayerName()) && !member.hasGroupPermission(Group.DIRETOR)) {
+					if (uuid != null) {
+						player.sendMessage(" §c* §fO jogador existe na mojang!");
+						return;
+					}
+				}
+
+				String playerName = fakeName;
+				WrappedSignedProperty property = BukkitMain.getInstance().getSkinManager().getSkin(playerName);
+
 				if (member.getPlayerName().equals(playerName)) {
 					ScoreboardAPI.leaveCurrentTeamForOnlinePlayers(player);
 
@@ -140,36 +142,42 @@ public class YoutubeCommand implements CommandClass {
 			return;
 		}
 
-		if (!member.hasGroupPermission(Group.MODPLUS))
-			if (member.isOnCooldown("changeskinCommand")) {
-				member.sendMessage(
-						" §c* §fVocê precisa esperar §e" + DateUtils.getTime(member.getCooldown("changeskinCommand"))
-								+ "§f para trocar de skin novamente!");
-				return;
-			}
-
 		String playerName = args.getArgs()[0];
+
+		if (!playerName.equals("#"))
+			if (!member.hasGroupPermission(Group.MODPLUS))
+				if (member.isOnCooldown("changeskinCommand")) {
+					member.sendMessage(" §c* §fVocê precisa esperar §e"
+							+ DateUtils.getTime(member.getCooldown("changeskinCommand"))
+							+ "§f para trocar de skin novamente!");
+					return;
+				}
 
 		if (!PlayerAPI.validateName(playerName) && !playerName.equals("#")) {
 			player.sendMessage(" §c* §fO nickname que você colocou está inválido!");
 			return;
 		}
 
-		UUID uuid = CommonGeneral.getInstance().getMojangFetcher().requestUuid(playerName);
-
-		if (uuid == null) {
-			player.sendMessage(" §c* §fO jogador não existe!");
-			return;
-		}
-
-		WrappedSignedProperty property = TextureFetcher.loadTexture(new WrappedGameProfile(uuid, playerName));
+		player.sendMessage("§eSeu pedido está sendo carregado, aguarde!");
 
 		new BukkitRunnable() {
 
 			@Override
 			public void run() {
+				UUID uuid = CommonGeneral.getInstance().getMojangFetcher().requestUuid(playerName);
+
+				if (uuid == null) {
+					player.sendMessage(" §c* §fO jogador não existe!");
+					return;
+				}
+
+				WrappedSignedProperty property = TextureFetcher.loadTexture(
+						new WrappedGameProfile(uuid, playerName.equals("#") ? member.getPlayerName() : playerName));
+
 				PlayerAPI.changePlayerSkin(player, property, true);
-				player.sendMessage(" §a* §fSua skin foi alterada para a do §a" + playerName + "§f!");
+				player.sendMessage(" §a* §fSua skin foi alterada "
+						+ (playerName.equals("#") ? "para a §asua skin original" : "para a do §a" + playerName)
+						+ "§f!");
 
 				if (playerName.equals("#") || member.getPlayerName().equals(playerName))
 					BukkitMain.getInstance().getSkinManager().deleteSkin(member);
@@ -179,9 +187,9 @@ public class YoutubeCommand implements CommandClass {
 				member.setCooldown("changeskinCommand",
 						member.hasGroupPermission(Group.TRIAL) ? System.currentTimeMillis() + (1000 * 30)
 								: member.hasGroupPermission(Group.SAINT) ? System.currentTimeMillis() + (1000 * 60 * 1)
-										: member.hasGroupPermission(Group.BLIZZARD)
-												? System.currentTimeMillis() + (1000 * 60 * 3)
-												: System.currentTimeMillis() + (1000 * 60 * 7));
+										: member.hasGroupPermission(Group.DONATOR)
+												? System.currentTimeMillis() + (1000 * 60 * 2)
+												: System.currentTimeMillis() + (1000 * 60 * 3));
 			}
 
 		}.runTask(BukkitMain.getInstance());

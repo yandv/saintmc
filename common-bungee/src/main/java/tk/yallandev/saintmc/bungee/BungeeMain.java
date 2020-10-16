@@ -7,7 +7,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -17,7 +16,6 @@ import com.google.common.io.ByteStreams;
 import lombok.Getter;
 import lombok.Setter;
 import net.md_5.bungee.api.ProxyServer;
-import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.config.ListenerInfo;
 import net.md_5.bungee.api.plugin.Plugin;
@@ -36,14 +34,16 @@ import tk.yallandev.saintmc.bungee.controller.GiftcodeController;
 import tk.yallandev.saintmc.bungee.controller.StoreController;
 import tk.yallandev.saintmc.bungee.listener.AccountListener;
 import tk.yallandev.saintmc.bungee.listener.ChatListener;
-import tk.yallandev.saintmc.bungee.listener.ClientListener;
 import tk.yallandev.saintmc.bungee.listener.ConnectionListener;
 import tk.yallandev.saintmc.bungee.listener.LoginListener;
 import tk.yallandev.saintmc.bungee.listener.MessageListener;
 import tk.yallandev.saintmc.bungee.listener.PacketListener;
+import tk.yallandev.saintmc.bungee.listener.ServerListener;
 import tk.yallandev.saintmc.bungee.networking.packet.BungeePacketHandler;
 import tk.yallandev.saintmc.bungee.networking.redis.BungeePubSubHandler;
+import tk.yallandev.saintmc.common.backend.Credentials;
 import tk.yallandev.saintmc.common.backend.data.ClanData;
+import tk.yallandev.saintmc.common.backend.data.IpData;
 import tk.yallandev.saintmc.common.backend.data.PlayerData;
 import tk.yallandev.saintmc.common.backend.data.PunishData;
 import tk.yallandev.saintmc.common.backend.data.ReportData;
@@ -51,10 +51,10 @@ import tk.yallandev.saintmc.common.backend.data.ServerData;
 import tk.yallandev.saintmc.common.backend.database.mongodb.MongoConnection;
 import tk.yallandev.saintmc.common.backend.database.redis.RedisDatabase;
 import tk.yallandev.saintmc.common.backend.database.redis.RedisDatabase.PubSubListener;
-import tk.yallandev.saintmc.common.command.CommandSender;
 import tk.yallandev.saintmc.common.controller.PacketController;
 import tk.yallandev.saintmc.common.controller.PunishManager;
 import tk.yallandev.saintmc.common.data.impl.ClanDataImpl;
+import tk.yallandev.saintmc.common.data.impl.IpDataImpl;
 import tk.yallandev.saintmc.common.data.impl.PlayerDataImpl;
 import tk.yallandev.saintmc.common.data.impl.PunishDataImpl;
 import tk.yallandev.saintmc.common.data.impl.ReportDataImpl;
@@ -87,41 +87,7 @@ public class BungeeMain extends Plugin {
 
 	private DiscordMain discord;
 
-	private RedisDatabase redis;
-
 	private PubSubListener pubSubListener;
-	private CommandSender consoleSender = new CommandSender() {
-
-		@Override
-		public void sendMessage(BaseComponent[] fromLegacyText) {
-			ProxyServer.getInstance().getConsole().sendMessage(fromLegacyText);
-		}
-
-		@Override
-		public void sendMessage(BaseComponent str) {
-			ProxyServer.getInstance().getConsole().sendMessage(str);
-		}
-
-		@Override
-		public void sendMessage(String str) {
-			ProxyServer.getInstance().getConsole().sendMessage(str);
-		}
-
-		@Override
-		public boolean isPlayer() {
-			return false;
-		}
-
-		@Override
-		public UUID getUniqueId() {
-			return UUID.randomUUID();
-		}
-
-		@Override
-		public String getName() {
-			return "CONSOLE";
-		}
-	};
 
 	private Configuration config;
 
@@ -170,25 +136,31 @@ public class BungeeMain extends Plugin {
 			 * Backend Initialize
 			 */
 
-			MongoConnection mongo = new MongoConnection(
-					BungeeConst.MONGO_URL.replace("127.0.0.1", getConfig().getString("mongodb-address", "127.0.0.1")));
-			redis = new RedisDatabase(BungeeConst.REDIS_HOSTNAME.replace("127.0.0.1",
-					getConfig().getString("mongodb-address", "127.0.0.1")), BungeeConst.REDIS_PASSWORD, 6379);
+			MongoConnection mongoConnection = new MongoConnection(new Credentials(
+					getConfig().getString("mongodb.hostname", "127.0.0.1"),
+					getConfig().getString("mongodb.username", "root"), getConfig().getString("mongodb.password", ""),
+					getConfig().getString("mongodb.database", "admin"), 27017));
+			RedisDatabase redisDatabase = new RedisDatabase(getConfig().getString("redis.hostname", "127.0.0.1"),
+					getConfig().getString("redis.password", ""), 6379);
 
-			mongo.connect();
-			redis.connect();
+			mongoConnection.connect();
+			redisDatabase.connect();
 
-			PlayerData playerData = new PlayerDataImpl(mongo, redis);
-			ServerData serverData = new ServerDataImpl(mongo, redis);
-			ReportData reportData = new ReportDataImpl(mongo, redis);
-			ClanData clanData = new ClanDataImpl(mongo, redis);
-			PunishData punishData = new PunishDataImpl(mongo);
+			PlayerData playerData = new PlayerDataImpl(mongoConnection, redisDatabase);
+			ServerData serverData = new ServerDataImpl(mongoConnection, redisDatabase);
+			ReportData reportData = new ReportDataImpl(mongoConnection, redisDatabase);
+			ClanData clanData = new ClanDataImpl(mongoConnection, redisDatabase);
+			PunishData punishData = new PunishDataImpl(mongoConnection);
+			IpData ipData = new IpDataImpl(mongoConnection);
 
 			general.setPlayerData(playerData);
 			general.setServerData(serverData);
 			general.setReportData(reportData);
-			general.setPunishData(punishData);
 			general.setClanData(clanData);
+			general.setPunishData(punishData);
+			general.setIpData(ipData);
+
+			loadRedis(redisDatabase);
 
 		} catch (Exception ex) {
 			ex.printStackTrace();
@@ -211,7 +183,6 @@ public class BungeeMain extends Plugin {
 		 */
 
 		general.setCommonPlatform(new BungeePlatform());
-
 		new BungeeCommandFramework(this).loadCommands("tk.yallandev.saintmc.bungee.command.register");
 
 		botController = new BotController();
@@ -301,14 +272,13 @@ public class BungeeMain extends Plugin {
 						if (ProxyServer.getInstance().getPlayers().size() > 0) {
 							CommonGeneral.getInstance().debug("Estamos verificando os pedidos!");
 
-							getStoreController().check(consoleSender);
+							getStoreController().check(BungeeConst.CONSOLE_SENDER);
 						}
 
-						String message = BungeeConst.BROADCAST_MESSAGES[CommonConst.RANDOM
+						TextComponent message = BungeeConst.BROADCAST_MESSAGES[CommonConst.RANDOM
 								.nextInt(BungeeConst.BROADCAST_MESSAGES.length)];
 
-						ProxyServer.getInstance().getPlayers().forEach(proxied -> proxied
-								.sendMessage(TextComponent.fromLegacyText(message.replace("&", "§"))));
+						ProxyServer.getInstance().getPlayers().forEach(proxied -> proxied.sendMessage(message));
 					}
 				});
 			}
@@ -326,21 +296,15 @@ public class BungeeMain extends Plugin {
 		System.setProperty("DB.TRACE", "false");
 
 		registerListener();
-
-		/*
-		 * Server Network Info
-		 */
-
-		loadRedis();
 	}
 
-	public void loadRedis() {
+	public void loadRedis(RedisDatabase redisDatabase) {
 		if (redisTask != null)
 			redisTask.cancel();
 
 		redisTask = getProxy().getScheduler().runAsync(this,
-				pubSubListener = new PubSubListener(redis, new BungeePubSubHandler(), "server-info", "account-field",
-						"clan-field", "report-field", "report-action"));
+				pubSubListener = new PubSubListener(redisDatabase, new BungeePubSubHandler(), "server-info",
+						"account-field", "clan-field", "report-field", "report-action"));
 	}
 
 	@Override
@@ -352,15 +316,13 @@ public class BungeeMain extends Plugin {
 	}
 
 	private void registerListener() {
-		ProxyServer.getInstance().getPluginManager().registerListener(getInstance(), new AccountListener());
-		ProxyServer.getInstance().getPluginManager().registerListener(getInstance(), new ChatListener());
-		ProxyServer.getInstance().getPluginManager().registerListener(getInstance(), new LoginListener());
-		ProxyServer.getInstance().getPluginManager().registerListener(getInstance(), new PacketListener());
-		ProxyServer.getInstance().getPluginManager().registerListener(getInstance(), new ClientListener());
-		ProxyServer.getInstance().getPluginManager().registerListener(getInstance(),
-				new ConnectionListener(serverManager));
-		ProxyServer.getInstance().getPluginManager().registerListener(getInstance(),
-				new MessageListener(serverManager));
+		getProxy().getPluginManager().registerListener(this, new AccountListener());
+		getProxy().getPluginManager().registerListener(this, new ChatListener());
+		getProxy().getPluginManager().registerListener(this, new LoginListener());
+		getProxy().getPluginManager().registerListener(this, new PacketListener());
+		getProxy().getPluginManager().registerListener(this, new ConnectionListener(serverManager));
+		getProxy().getPluginManager().registerListener(this, new MessageListener(serverManager));
+		getProxy().getPluginManager().registerListener(this, new ServerListener());
 	}
 
 	private void loadConfiguration() {

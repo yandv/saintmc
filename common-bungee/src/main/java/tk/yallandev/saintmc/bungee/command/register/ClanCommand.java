@@ -9,7 +9,6 @@ import java.util.Map.Entry;
 import java.util.UUID;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import com.google.common.base.Joiner;
 
@@ -112,7 +111,8 @@ public class ClanCommand implements CommandClass {
 					player.setClanUniqueId(uuid);
 					player.sendMessage("§aO clan " + clanName + " (" + abbreviation + ") foi criado!");
 				} else {
-					handleUsage(player, cmdArgs.getLabel());
+					player.sendMessage(" §4* §fUse §a/" + cmdArgs.getLabel()
+							+ " <create:criar> <nome> <sigla>§f para criar um clan!");
 				}
 			}
 			break;
@@ -187,7 +187,11 @@ public class ClanCommand implements CommandClass {
 					}
 
 				} else
-					handleUsage(player, cmdArgs.getLabel());
+					player.sendMessage(" §e* §fUse §a/" + cmdArgs.getLabel() + " setgroup <player> <"
+							+ (Joiner.on(':')
+									.join(Arrays.asList(ClanHierarchy.values()).stream()
+											.map(ch -> ch.name().toLowerCase()).collect(Collectors.toList())))
+							+ ">§f para mudar o grupo do player no clan!");
 			}
 
 			break;
@@ -449,18 +453,29 @@ public class ClanCommand implements CommandClass {
 							clanModel = CommonGeneral.getInstance().getClanData().loadClanByAbbreviation(args[1]);
 
 							if (clanModel == null) {
-								player.sendMessage("§cO clan " + args[1] + " não existe!");
-								return;
-							}
+								Member target = CommonGeneral.getInstance().getMemberManager().getMember(args[1]);
 
-							clan = new ClanVoid(clanModel);
+								if (target == null) {
+									player.sendMessage("§cO clan " + args[1] + " não existe!");
+									return;
+								}
+
+								if (target.getClan() == null) {
+									player.sendMessage("§cO clan " + args[1] + " não existe!");
+									return;
+								}
+
+								clan = target.getClan();
+							} else
+								clan = new ClanVoid(clanModel);
 						}
 					}
 				}
 			}
 
 			if (clan == null) {
-				handleUsage(player, cmdArgs.getLabel());
+				player.sendMessage(
+						" §e* §fUse §a/" + cmdArgs.getLabel() + " info <nome:sigla:playerName>§f para ver as informações de um clan!");
 				return;
 			}
 
@@ -478,11 +493,14 @@ public class ClanCommand implements CommandClass {
 
 				for (ClanHierarchy clanHierarchy : Arrays.asList(ClanHierarchy.ADMIN, ClanHierarchy.RECRUTER,
 						ClanHierarchy.MEMBER)) {
-					Stream<ClanInfo> stream = clan.getMemberMap().values().stream()
-							.filter(clanInfo -> clanInfo.getClanHierarchy() == clanHierarchy);
-
-					if (stream.findFirst().isPresent())
-						player.sendMessage("§a§l> " + clanHierarchy.getTag() + (stream.count() > 1 ? "" : "S") + "§f: "
+					if (clan.getMemberMap().values().stream()
+							.filter(clanInfo -> clanInfo.getClanHierarchy() == clanHierarchy).findFirst().isPresent())
+						player.sendMessage("§a§l> " + clanHierarchy.getTag()
+								+ (clan.getMemberMap().values().stream()
+										.filter(clanInfo -> clanInfo.getClanHierarchy() == clanHierarchy).count() > 1
+												? ""
+												: "S")
+								+ "§f: "
 								+ Joiner.on(", ")
 										.join(clan.getMemberMap().values().stream()
 												.filter(clanInfo -> clanInfo.getClanHierarchy() == clanHierarchy)
@@ -630,17 +648,11 @@ public class ClanCommand implements CommandClass {
 		sender.sendMessage(" §e* §fUse §a/" + label + " cancel <player>§f para cancelar o invite de um jogador!");
 		sender.sendMessage(" §e* §fUse §a/" + label + " join <nome>§f para entrar em um clan!");
 		sender.sendMessage(" §e* §fUse §a/" + label + " chat <mensagem>§f para falar no chat do clan!");
-		sender.sendMessage(" §e* §fUse §a/" + label + " info <nome:sigla>§f para ver as informações de um clan!");
+		sender.sendMessage(
+				" §e* §fUse §a/" + label + " info <nome:sigla:playerName>§f para ver as informações de um clan!");
 		sender.sendMessage(" §e* §fUse §a/" + label + " leave§f para sair do clan!");
 		sender.sendMessage(" §6* §fUse §a/" + label + " top§f para ver o top clans!");
 		sender.sendMessage(" §6* §fUse §a/" + label + " members§f para ver os membros do clan!");
 	}
-
-	/**
-	 * /clan setgroup <nick> <cargo> /clan sigla <sigla> /clan apagar /clan invite
-	 * <nick> /clan cancel <nick> /clan kick (nick) /clan blacklist (nick) /clan
-	 * create (nome) (sigla) /clan join (nome da clan) /clan chat /clan info /clan
-	 * quit/leave /clan top /clan members /clan groups
-	 */
 
 }

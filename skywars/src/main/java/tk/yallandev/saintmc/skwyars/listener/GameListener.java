@@ -25,25 +25,12 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
-import org.bukkit.event.player.PlayerLoginEvent.Result;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.scheduler.BukkitRunnable;
 
-import tk.yallandev.saintmc.CommonGeneral;
-import tk.yallandev.saintmc.bukkit.BukkitMain;
-import tk.yallandev.saintmc.bukkit.api.scoreboard.ScoreboardAPI;
-import tk.yallandev.saintmc.bukkit.api.title.Title;
-import tk.yallandev.saintmc.bukkit.api.title.types.SimpleTitle;
-import tk.yallandev.saintmc.bukkit.api.vanish.AdminMode;
-import tk.yallandev.saintmc.bukkit.event.PlayerMoveUpdateEvent;
-import tk.yallandev.saintmc.bukkit.utils.item.ItemUtils;
-import tk.yallandev.saintmc.common.account.Member;
-import tk.yallandev.saintmc.common.account.status.types.game.GameStatus;
-import tk.yallandev.saintmc.common.permission.Group;
-import tk.yallandev.saintmc.common.server.loadbalancer.server.MinigameState;
 import tk.yallandev.saintmc.skwyars.GameGeneral;
 import tk.yallandev.saintmc.skwyars.GameMain;
 import tk.yallandev.saintmc.skwyars.event.game.GameStateChangeEvent;
@@ -53,6 +40,8 @@ import tk.yallandev.saintmc.skwyars.game.cage.types.DefaultCage;
 import tk.yallandev.saintmc.skwyars.game.chest.Chest;
 import tk.yallandev.saintmc.skwyars.game.team.Team;
 import tk.yallandev.saintmc.skwyars.gamer.Gamer;
+import tk.yallandev.saintmc.skwyars.scheduler.MinigameState;
+import tk.yallandev.saintmc.skwyars.utils.ItemUtils;
 
 public class GameListener implements Listener {
 
@@ -66,7 +55,7 @@ public class GameListener implements Listener {
 
 		for (Gamer gamer : GameGeneral.getInstance().getGamerController().getStoreMap().values()) {
 			if (gamer.isPlaying()) {
-				Location location = BukkitMain.getInstance().getLocationFromConfig("cage-" + cageIndex);
+				Location location = GameMain.getInstance().getLocationFromConfig("cage-" + cageIndex);
 
 				Location realLocation = new Location(location.getWorld(), (int) location.getX(),
 						GameMain.getInstance().getY(), (int) location.getZ(), location.getYaw(), location.getPitch());
@@ -79,18 +68,18 @@ public class GameListener implements Listener {
 				cageBlockList.addAll(cage.generateCage(realLocation));
 				world = realLocation.getWorld();
 
-				new BukkitRunnable() {
-
-					@Override
-					public void run() {
-						CommonGeneral.getInstance().getStatusManager().loadStatus(gamer.getUniqueId(),
-								GameMain.getInstance().getSkywarsType().getStatusType(), GameStatus.class).addMatch();
-					}
-				}.runTaskAsynchronously(GameMain.getInstance());
+//				new BukkitRunnable() {
+//
+//					@Override
+//					public void run() {
+//						CommonGeneral.getInstance().getStatusManager().loadStatus(gamer.getUniqueId(),
+//								GameMain.getInstance().getSkywarsType().getStatusType(), GameStatus.class).addMatch();
+//					}
+//				}.runTaskAsynchronously(GameMain.getInstance());
 
 			} else {
 				gamer.setSpectator(true);
-				gamer.getPlayer().teleport(BukkitMain.getInstance().getLocationFromConfig("spectator"));
+				gamer.getPlayer().teleport(GameMain.getInstance().getLocationFromConfig("spectator"));
 			}
 
 			cageIndex++;
@@ -101,15 +90,15 @@ public class GameListener implements Listener {
 			chest.fill(world);
 		}
 
-		BukkitMain.getInstance().setTagControl(false);
+//		CommonGeneral.getInstance().getServerConfiguration().setTagControl(false);
 	}
 
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onPlayerLogin(PlayerLoginEvent event) {
-		Member member = CommonGeneral.getInstance().getMemberManager().getMember(event.getPlayer().getUniqueId());
-
-		if (!member.hasGroupPermission(Group.TRIAL))
-			event.disallow(Result.KICK_OTHER, "§cServidor disponível somente para staff!");
+//		Member member = CommonGeneral.getInstance().getMemberManager().getMember(event.getPlayer().getUniqueId());
+//
+//		if (!member.hasGroupPermission(Group.TRIAL))
+//			event.disallow(Result.KICK_OTHER, "§cServidor disponível somente para staff!");
 	}
 
 	@EventHandler(priority = EventPriority.LOWEST)
@@ -178,7 +167,7 @@ public class GameListener implements Listener {
 			Gamer gamer = GameGeneral.getInstance().getGamerController().getGamer(player.getUniqueId());
 
 			if (gamer.isSpectator()) {
-				player.teleport(BukkitMain.getInstance().getLocationFromConfig("spectator"));
+				player.teleport(GameMain.getInstance().getLocationFromConfig("spectator"));
 			} else
 				player.damage(Integer.MAX_VALUE);
 		}
@@ -197,7 +186,7 @@ public class GameListener implements Listener {
 		player.setHealth(20);
 		player.setFoodLevel(20);
 
-		Title.send(player, "§c§lMORREU", "§fVocê morreu!", SimpleTitle.class);
+//		Title.send(player, "§c§lMORREU", "§fVocê morreu!", SimpleTitle.class);
 
 		if (gamer.isPlaying()) {
 			gamer.setSpectator(true);
@@ -227,15 +216,15 @@ public class GameListener implements Listener {
 
 		for (Player o : Bukkit.getOnlinePlayers()) {
 			if (gamer.getTeam().equals(GameGeneral.getInstance().getGamerController().getGamer(o).getTeam())) {
-				ScoreboardAPI.joinTeam(ScoreboardAPI.createTeamIfNotExistsToPlayer(player, "a", "§a", ""), o);
+//				ScoreboardController.joinTeam(ScoreboardController.createTeam(player, "a", "§a", ""), o);
 			} else {
-				ScoreboardAPI.joinTeam(ScoreboardAPI.createTeamIfNotExistsToPlayer(player, "b", "§c", ""), o);
+//				ScoreboardController.joinTeam(ScoreboardController.createTeam(player, "b", "§c", ""), o);
 			}
 		}
 		
-		if (Member.hasGroupPermission(player.getUniqueId(), Group.TRIAL))
-			AdminMode.getInstance().setAdmin(player, Member.getMember(player.getUniqueId()));
-		else
+//		if (Member.hasGroupPermission(player.getUniqueId(), Group.TRIAL))
+//			BukkitMain.getInstance().getAdminController().changeMode(player, AdminMode.ADMIN);
+//		else
 			if (gamer.isPlaying()) {
 				gamer.setSpectator(true);
 			}
@@ -264,7 +253,7 @@ public class GameListener implements Listener {
 	}
 
 	@EventHandler
-	public void onPlayerMoveUpdate(PlayerMoveUpdateEvent event) {
+	public void onPlayerMove(PlayerMoveEvent event) {
 		if (Math.abs(event.getTo().getX()) >= GameMain.getInstance().getMaxDistance()
 				|| Math.abs(event.getTo().getZ()) >= GameMain.getInstance().getMaxDistance())
 			event.setCancelled(true);
@@ -289,8 +278,8 @@ public class GameListener implements Listener {
 				player.setExp(realPercentage);
 
 				if (event.getTime() <= 5) {
-					Title.send(player, "§6§lJOGO", "§7O jogo iniciará em §e" + event.getTime() + "§7!",
-							SimpleTitle.class);
+//					Title.send(player, "§6§lJOGO", "§7O jogo iniciará em §e" + event.getTime() + "§7!",
+//							SimpleTitle.class);
 					player.playSound(player.getLocation(), Sound.NOTE_BASS, 1f, 1f);
 				}
 			}
@@ -324,7 +313,7 @@ public class GameListener implements Listener {
 					if (gamer.hasKit())
 						gamer.getKit().apply(player);
 
-					new SimpleTitle("", "").reset(player);
+//					new SimpleTitle("", "").reset(player);
 				}
 			}
 	}

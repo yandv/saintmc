@@ -55,10 +55,10 @@ public class CompleterCommand implements CommandClass {
 
 	}
 
-	@Command(name = "ban", aliases = { "mute", "banir", "unban", "desbanir", "tempban", "tempmute", "send", "staffchat",
+	@Command(name = "ban", aliases = { "mute", "warn", "banir", "unban", "desbanir", "tempban", "tempmute", "send", "staffchat",
 			"sc" }, groupToUse = Group.TRIAL)
 	public void trialCommand(CommandArgs cmdArgs) {
-
+		
 	}
 
 	@Command(name = "lobby", aliases = { "server", "connect", "ir", "go", "discord", "hub", "ping", "play", "clan" })

@@ -11,7 +11,7 @@ public class PvpKit extends Kit {
 
 	public PvpKit() {
 		super("PvP", "Kit padrão sem nenhuma habilidade!",
-				GameMain.isFulliron() ? Material.DIAMOND_SWORD : Material.STONE_SWORD, new ArrayList<>());
+				GameMain.isFulliron() ? Material.DIAMOND_SWORD : Material.STONE_SWORD, 0, new ArrayList<>());
 	}
 
 }

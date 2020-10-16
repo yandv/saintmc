@@ -154,14 +154,20 @@ public class DateUtils {
     }
     
     public static void main(String[] args) {
-		long time = System.currentTimeMillis() + (1000l * 60l * 60l * 24l * 350l);
+    	long expireTime = (1598029488346l - System.currentTimeMillis()) / 1000;
+    	
+    	long days = TimeUnit.SECONDS.toDays(expireTime);
+		long hours = TimeUnit.SECONDS.toHours(expireTime) - days * 24L;
+		long minutes = TimeUnit.SECONDS.toMinutes(expireTime) - TimeUnit.SECONDS.toHours(expireTime) * 60L;
+		long seconds = TimeUnit.SECONDS.toSeconds(expireTime) - TimeUnit.SECONDS.toMinutes(expireTime) * 60L;
+    	
 		
-		System.out.println(time);
-		System.out.println(getTime(time));
+		System.out.println(TimeUnit.SECONDS.toMinutes(expireTime) - TimeUnit.SECONDS.toHours(expireTime) * 60L);
 		
-		System.out.println(time - System.currentTimeMillis());
-		System.out.println(1000 * 60 * 60 * 24 * 300);
-		System.out.println(isForever(time));
+    	System.out.println(days);
+    	System.out.println(hours);
+    	System.out.println(minutes);
+    	System.out.println(seconds);
 	}
     
 }

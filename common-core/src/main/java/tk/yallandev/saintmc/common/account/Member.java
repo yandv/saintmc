@@ -33,7 +33,7 @@ public abstract class Member implements CommandSender {
 	 */
 
 	private String playerName;
-	private final UUID uniqueId;
+	private UUID uniqueId;
 
 	private String fakeName;
 	private Map<String, Long> cooldown;
@@ -218,6 +218,11 @@ public abstract class Member implements CommandSender {
 		this.lastServerType = ServerType.NONE;
 	}
 
+	public void setUniqueId(UUID uniqueId) {
+		this.uniqueId = uniqueId;
+		save("uniqueId");
+	}
+
 	public boolean hasParty() {
 		return this.partyId != null;
 	}
@@ -349,13 +354,20 @@ public abstract class Member implements CommandSender {
 
 	public boolean setTag(Tag tag) {
 		this.tag = tag;
-		save("tag");
+
+		if (!tag.isCustom())
+			save("tag");
 		return true;
 	}
 
 	public void setChroma(boolean chroma) {
 		this.chroma = chroma;
 		save("chroma");
+	}
+
+	public void setPlayerName(String playerName) {
+		this.playerName = playerName;
+		save("playerName");
 	}
 
 	public boolean isLastServer(ServerType serverType) {
@@ -489,12 +501,12 @@ public abstract class Member implements CommandSender {
 		setMoney(getMoney() + money);
 		return money;
 	}
-	
+
 	public void setPosition(int position) {
 		this.position = position;
 		save("position");
 	}
-	
+
 	public String getRanking() {
 		return this.position < 0 ? ">15000" : "" + position;
 	}

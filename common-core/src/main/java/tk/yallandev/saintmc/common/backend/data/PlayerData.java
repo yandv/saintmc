@@ -18,9 +18,15 @@ public interface PlayerData {
 
 	MemberModel loadMember(String playerName);
 
+	<T extends Member> T loadMember(UUID uniqueId, Class<T> clazz);
+
+	<T extends Member> T loadMember(String playerName, Class<T> clazz);
+
 	void createMember(MemberModel memberModel);
 
 	void createMember(Member member);
+
+	void deleteMember(UUID uniqueId);
 
 	void updateMember(Member member, String fieldName);
 

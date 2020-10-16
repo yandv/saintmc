@@ -151,7 +151,7 @@ public class BukkitMember extends Member {
 	public void loadTags() {
 		tags = new ArrayList<>();
 		for (Tag tag : Tag.values()) {
-			if (hasPermission("tag." + tag.getName().toLowerCase())) {
+			if (super.hasPermission("tag." + tag.getName().toLowerCase())) {
 				tags.add(tag);
 				continue;
 			}

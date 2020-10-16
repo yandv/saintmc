@@ -28,9 +28,9 @@ public class MessageListener implements Listener {
 	public void onPluginMessageEvent(PluginMessageEvent event) {
 		if (!(event.getSender() instanceof ProxiedPlayer))
 			return;
-		
+
 		ProxiedPlayer proxiedPlayer = (ProxiedPlayer) event.getSender();
-		
+
 		if (event.getTag().equalsIgnoreCase("WDL|INIT") || (event.getTag().equalsIgnoreCase("PERMISSIONSREPL")
 				&& (new String(event.getData())).contains("mod.worlddownloader"))) {
 			proxiedPlayer.disconnect(TextComponent.fromLegacyText("§cConexão cancelada!"));

@@ -4,10 +4,10 @@ import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
-import tk.yallandev.saintmc.bukkit.event.update.UpdateEvent;
-import tk.yallandev.saintmc.bukkit.event.update.UpdateEvent.UpdateType;
 import tk.yallandev.saintmc.skwyars.GameGeneral;
 import tk.yallandev.saintmc.skwyars.GameMain;
+import tk.yallandev.saintmc.skwyars.event.UpdateEvent;
+import tk.yallandev.saintmc.skwyars.event.UpdateEvent.UpdateType;
 import tk.yallandev.saintmc.skwyars.event.game.GameStartEvent;
 import tk.yallandev.saintmc.skwyars.listener.SpectatorListener;
 import tk.yallandev.saintmc.skwyars.listener.WinnerListener;

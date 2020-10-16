@@ -7,23 +7,31 @@ import java.util.UUID;
 
 import org.bson.Document;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.model.Filters;
 
 import tk.yallandev.saintmc.CommonConst;
 import tk.yallandev.saintmc.CommonGeneral;
+import tk.yallandev.saintmc.common.backend.Query;
 import tk.yallandev.saintmc.common.backend.data.PunishData;
 import tk.yallandev.saintmc.common.backend.database.mongodb.MongoConnection;
+import tk.yallandev.saintmc.common.backend.database.mongodb.MongoQuery;
 import tk.yallandev.saintmc.common.ban.constructor.Ban;
 import tk.yallandev.saintmc.common.ban.constructor.Mute;
 import tk.yallandev.saintmc.common.ban.constructor.Warn;
+import tk.yallandev.saintmc.common.utils.json.JsonBuilder;
+import tk.yallandev.saintmc.common.utils.json.JsonUtils;
 
 public class PunishDataImpl implements PunishData {
 
 	private com.mongodb.client.MongoDatabase database;
+	private Query<JsonElement> query;
 
 	public PunishDataImpl(MongoConnection mongoDatabase) {
-		database = mongoDatabase.getDb();
+		database = mongoDatabase.getDatabase("saintmc-punish");
+		this.query = createDefault(mongoDatabase);
 	}
 
 	@Override
@@ -46,8 +54,15 @@ public class PunishDataImpl implements PunishData {
 
 	@Override
 	public void addBan(Ban ban) {
-		CommonGeneral.getInstance().getCommonPlatform().runAsync(
-				() -> database.getCollection("banList").insertOne(Document.parse(CommonConst.GSON.toJson(ban))));
+		database.getCollection("banList").insertOne(Document.parse(CommonConst.GSON.toJson(ban)));
+	}
+
+	@Override
+	public void updateBan(Ban ban, String fieldName) {
+		JsonObject tree = JsonUtils.jsonTree(ban);
+
+		query.updateOne("id", ban.getId(),
+				new JsonBuilder().addProperty("fieldName", fieldName).add("value", tree.get(fieldName)).build());
 	}
 
 	@Override
@@ -75,8 +90,7 @@ public class PunishDataImpl implements PunishData {
 
 	@Override
 	public void addMute(Mute mute) {
-		CommonGeneral.getInstance().getCommonPlatform().runAsync(
-				() -> database.getCollection("muteList").insertOne(Document.parse(CommonConst.GSON.toJson(mute))));
+		database.getCollection("muteList").insertOne(Document.parse(CommonConst.GSON.toJson(mute)));
 	}
 
 	@Override
@@ -104,6 +118,10 @@ public class PunishDataImpl implements PunishData {
 	@Override
 	public int getTotalWarn() {
 		return (int) database.getCollection("warnList").countDocuments();
+	}
+
+	public static Query<JsonElement> createDefault(MongoConnection mongoConnection) {
+		return new MongoQuery(mongoConnection, "saintmc-punish", "banList");
 	}
 
 }

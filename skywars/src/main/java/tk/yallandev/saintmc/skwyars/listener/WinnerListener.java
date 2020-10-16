@@ -4,8 +4,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Color;
-import org.bukkit.FireworkEffect.Type;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.event.EventHandler;
@@ -19,17 +17,13 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import com.google.common.base.Joiner;
 
-import tk.yallandev.saintmc.CommonGeneral;
-import tk.yallandev.saintmc.bukkit.BukkitMain;
-import tk.yallandev.saintmc.bukkit.api.firework.FireworkAPI;
-import tk.yallandev.saintmc.common.account.status.types.game.GameStatus;
-import tk.yallandev.saintmc.common.server.loadbalancer.server.MinigameState;
 import tk.yallandev.saintmc.skwyars.GameGeneral;
 import tk.yallandev.saintmc.skwyars.GameMain;
 import tk.yallandev.saintmc.skwyars.event.game.GameStateChangeEvent;
 import tk.yallandev.saintmc.skwyars.event.game.GameTimeEvent;
 import tk.yallandev.saintmc.skwyars.game.team.Team;
 import tk.yallandev.saintmc.skwyars.gamer.Gamer;
+import tk.yallandev.saintmc.skwyars.scheduler.MinigameState;
 
 public class WinnerListener implements Listener {
 
@@ -77,7 +71,7 @@ public class WinnerListener implements Listener {
 
 				@Override
 				public void run() {
-					Bukkit.getOnlinePlayers().forEach(player -> BukkitMain.getInstance().sendPlayerToLobby(player));
+					Bukkit.getOnlinePlayers().forEach(player -> GameMain.getInstance().sendPlayAgain(player));
 
 					if (Bukkit.getOnlinePlayers().size() == 0)
 						Bukkit.shutdown();
@@ -99,8 +93,8 @@ public class WinnerListener implements Listener {
 				gamer.getPlayer().sendMessage("§a+15 moedas§f pela vitória!");
 				gamer.getPlayer().sendMessage("§a+20 moedas§f pela participação!");
 				gamer.getPlayer().sendMessage("§a+30 moedas§f por 1 eleminações!");
-				CommonGeneral.getInstance().getStatusManager().loadStatus(gamer.getUniqueId(),
-						GameMain.getInstance().getSkywarsType().getStatusType(), GameStatus.class).addWin();
+//				CommonGeneral.getInstance().getStatusManager().loadStatus(gamer.getUniqueId(),
+//						GameMain.getInstance().getSkywarsType().getStatusType(), GameStatus.class).addWin();
 			}
 
 			Bukkit.broadcastMessage("§e"
@@ -114,17 +108,17 @@ public class WinnerListener implements Listener {
 	@EventHandler
 	public void onGameTime(GameTimeEvent event) {
 		if (GameGeneral.getInstance().getMinigameState() == MinigameState.WINNING) {
-			Location location = BukkitMain.getInstance().getLocationFromConfig("firework");
+			Location location = GameMain.getInstance().getLocationFromConfig("firework");
 
-			FireworkAPI.spawn(location.add(4, 0, 0), Color.GREEN, Color.GRAY, Type.BURST, true);
-			FireworkAPI.spawn(location.add(-4, 0, 0), Color.GREEN, Color.GRAY, Type.BURST, true);
-			FireworkAPI.spawn(location.add(0, 0, 4), Color.GREEN, Color.GRAY, Type.BURST, true);
-			FireworkAPI.spawn(location.add(0, 0, -4), Color.GREEN, Color.GRAY, Type.BURST, true);
-
-			FireworkAPI.spawn(location.add(6, 0, 0), Color.RED, Color.GRAY, Type.BURST, true);
-			FireworkAPI.spawn(location.add(-6, 0, 0), Color.RED, Color.GRAY, Type.BURST, true);
-			FireworkAPI.spawn(location.add(0, 0, 6), Color.RED, Color.GRAY, Type.BURST, true);
-			FireworkAPI.spawn(location.add(0, 0, -6), Color.RED, Color.GRAY, Type.BURST, true);
+//			FireworkAPI.spawn(location.add(4, 0, 0), Color.GREEN, Color.GRAY, Type.BURST, true);
+//			FireworkAPI.spawn(location.add(-4, 0, 0), Color.GREEN, Color.GRAY, Type.BURST, true);
+//			FireworkAPI.spawn(location.add(0, 0, 4), Color.GREEN, Color.GRAY, Type.BURST, true);
+//			FireworkAPI.spawn(location.add(0, 0, -4), Color.GREEN, Color.GRAY, Type.BURST, true);
+//
+//			FireworkAPI.spawn(location.add(6, 0, 0), Color.RED, Color.GRAY, Type.BURST, true);
+//			FireworkAPI.spawn(location.add(-6, 0, 0), Color.RED, Color.GRAY, Type.BURST, true);
+//			FireworkAPI.spawn(location.add(0, 0, 6), Color.RED, Color.GRAY, Type.BURST, true);
+//			FireworkAPI.spawn(location.add(0, 0, -6), Color.RED, Color.GRAY, Type.BURST, true);
 
 			if (event.getTime() >= 20) {
 				Bukkit.shutdown();
@@ -140,7 +134,7 @@ public class WinnerListener implements Listener {
 			}
 
 			if (event.getTime() >= 13) {
-				Bukkit.getOnlinePlayers().forEach(player -> BukkitMain.getInstance().sendPlayerToLobby(player));
+				Bukkit.getOnlinePlayers().forEach(player -> GameMain.getInstance().sendPlayAgain(player));
 
 				if (Bukkit.getOnlinePlayers().size() == 0)
 					Bukkit.shutdown();

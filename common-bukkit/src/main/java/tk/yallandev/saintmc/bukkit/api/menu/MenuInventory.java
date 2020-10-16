@@ -74,7 +74,7 @@ public class MenuInventory {
 
 	public void setItem(int slot, MenuItem item) {
 		this.slotItem.put(slot, item);
-		
+
 		if (!onePerPlayer) {
 			inv.setItem(slot, item.getStack());
 		}
@@ -131,7 +131,7 @@ public class MenuInventory {
 				}
 				p.updateInventory();
 			}
-			
+
 			Bukkit.getPluginManager().callEvent(new MenuOpenEvent(p, p.getOpenInventory().getTopInventory()));
 			((MenuHolder) p.getOpenInventory().getTopInventory().getHolder()).setMenu(this);
 		}
@@ -156,7 +156,7 @@ public class MenuInventory {
 			packet.getStrings().write(0, "minecraft:chest");
 			packet.getIntegers().write(0, id);
 			packet.getIntegers().write(1, rows * 9);
-			
+
 			BukkitMain.getInstance().getProcotolManager().sendServerPacket(p, packet);
 			int i = 0;
 			for (ItemStack item : p.getInventory().getContents()) {
@@ -175,7 +175,6 @@ public class MenuInventory {
 			playerInventory.setItem(entry.getKey(), entry.getValue().getStack());
 		}
 		p.openInventory(playerInventory);
-		p = null;
 	}
 
 	public void close(Player p) {

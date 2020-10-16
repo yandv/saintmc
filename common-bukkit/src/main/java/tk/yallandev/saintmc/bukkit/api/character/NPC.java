@@ -38,6 +38,14 @@ import tk.yallandev.saintmc.CommonConst;
 import tk.yallandev.saintmc.bukkit.BukkitMain;
 import tk.yallandev.saintmc.common.utils.web.WebHelper.Method;
 
+/**
+ * 
+ * Stenox is the author of the code
+ * 
+ * @author Stenox
+ *
+ */
+
 @Getter
 public class NPC {
 
@@ -87,6 +95,11 @@ public class NPC {
 				85L);
 
 		try {
+			/* mudei o entityCount do proprio bukkit para public 
+			 * não necessitando mais usar reflection
+			 * 
+			 * by stenox
+			 */
 			int batEntityId = Entity.entityCount++;
 
 			try {

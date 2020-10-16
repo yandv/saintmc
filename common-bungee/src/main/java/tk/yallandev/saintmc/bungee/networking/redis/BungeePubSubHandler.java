@@ -15,6 +15,7 @@ import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.bungee.BungeeMain;
 import tk.yallandev.saintmc.bungee.bungee.BungeeMember;
 import tk.yallandev.saintmc.bungee.event.player.PlayerUpdateFieldEvent;
+import tk.yallandev.saintmc.bungee.event.server.ServerUpdateEvent;
 import tk.yallandev.saintmc.common.account.Member;
 import tk.yallandev.saintmc.common.clan.Clan;
 import tk.yallandev.saintmc.common.data.payload.DataServerMessage;
@@ -30,6 +31,7 @@ import tk.yallandev.saintmc.common.data.payload.DataServerMessage.WhitelistRemov
 import tk.yallandev.saintmc.common.report.Report;
 import tk.yallandev.saintmc.common.server.ServerType;
 import tk.yallandev.saintmc.common.server.loadbalancer.server.MinigameServer;
+import tk.yallandev.saintmc.common.server.loadbalancer.server.MinigameState;
 import tk.yallandev.saintmc.common.server.loadbalancer.server.ProxiedServer;
 import tk.yallandev.saintmc.common.utils.reflection.Reflection;
 
@@ -117,7 +119,6 @@ public class BungeePubSubHandler extends JedisPubSub {
 
 				ProxyServer.getInstance().getPluginManager()
 						.callEvent(new PlayerUpdateFieldEvent((BungeeMember) player, f.getName(), oldObject, object));
-				System.out.println(object);
 			} catch (SecurityException | IllegalArgumentException | IllegalAccessException e) {
 				e.printStackTrace();
 			}
@@ -200,8 +201,17 @@ public class BungeePubSubHandler extends JedisPubSub {
 					return;
 
 				if (server instanceof MinigameServer) {
-					((MinigameServer) server).setState(payload.getPayload().getState());
-					((MinigameServer) server).setTime(payload.getPayload().getTime());
+					MinigameServer minigame = ((MinigameServer) server);
+					
+					MinigameState lastState = minigame.getState();
+					
+					minigame.setState(payload.getPayload().getState());
+					minigame.setTime(payload.getPayload().getTime());
+					minigame.setMap(payload.getPayload().getMap());
+
+					ProxyServer.getInstance().getPluginManager()
+							.callEvent(new ServerUpdateEvent(minigame, payload.getPayload().getMap(),
+									payload.getPayload().getTime(), lastState, payload.getPayload().getState()));
 				}
 				break;
 			}

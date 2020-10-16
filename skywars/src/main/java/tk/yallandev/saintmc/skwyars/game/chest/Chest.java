@@ -4,30 +4,30 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Random;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import tk.yallandev.saintmc.CommonConst;
-import tk.yallandev.saintmc.bukkit.api.item.ItemBuilder;
 
 @AllArgsConstructor
 @Getter
 public class Chest {
+
+	private static final Random RANDOM = new Random();
 
 	private int x;
 	private int y;
 	private int z;
 
 	private ChestType chestType;
-	
+
 	/**
 	 * Clear chest
 	 * 
@@ -43,7 +43,7 @@ public class Chest {
 	 * 
 	 * @param world
 	 */
-	
+
 	public void fill(World world) {
 		org.bukkit.block.Chest chest = getChest(world);
 
@@ -59,11 +59,11 @@ public class Chest {
 
 			if (item.getAmount() >= 0) {
 
-				int slot = CommonConst.RANDOM.nextInt(inv.getSize());
+				int slot = RANDOM.nextInt(inv.getSize());
 
 				while (!(chest.getBlockInventory().getItem(slot) == null
 						|| chest.getBlockInventory().getItem(slot).getType() == Material.AIR)) {
-					slot = CommonConst.RANDOM.nextInt(inv.getSize());
+					slot = RANDOM.nextInt(inv.getSize());
 				}
 
 				chest.getBlockInventory().setItem(slot, item);
@@ -118,37 +118,37 @@ public class Chest {
 			addItem(new ItemStack(Material.IRON_AXE), 90, feastItems);
 			addItem(new ItemStack(Material.IRON_PICKAXE), 90, feastItems);
 
-			addItem(new ItemStack(Material.COOKED_BEEF, CommonConst.RANDOM.nextBoolean() ? 8 : 16), 80, feastItems);
-			addItem(new ItemStack(Material.COOKED_BEEF, CommonConst.RANDOM.nextBoolean() ? 8 : 16), 80, feastItems);
+			addItem(new ItemStack(Material.COOKED_BEEF, RANDOM.nextBoolean() ? 8 : 16), 80, feastItems);
+			addItem(new ItemStack(Material.COOKED_BEEF, RANDOM.nextBoolean() ? 8 : 16), 80, feastItems);
 
-			addItem(new ItemStack(Material.WOOD, CommonConst.RANDOM.nextBoolean() ? 16 : 32), 100, feastItems);
+			addItem(new ItemStack(Material.WOOD, RANDOM.nextBoolean() ? 16 : 32), 100, feastItems);
 			break;
 		}
 		case DEFAULT_3: {
-			if (!addItem(new ItemBuilder().type(Material.DIAMOND_SWORD).enchantment(Enchantment.DAMAGE_ALL, 1)
-					.name("§cEspada de Diamante").build(), 30, feastItems))
-				if (!addItem(new ItemBuilder().type(Material.DIAMOND_SWORD).name("§aEspada de Diamante").build(), 70,
-						feastItems))
-					addItem(new ItemBuilder().type(Material.IRON_SWORD).enchantment(Enchantment.DAMAGE_ALL, 1)
-							.name("§aEspada de Ferro").build(), 100, feastItems);
+//			if (!addItem(new ItemBuilder().type(Material.DIAMOND_SWORD).enchantment(Enchantment.DAMAGE_ALL, 1)
+//					.name("§cEspada de Diamante").build(), 30, feastItems))
+//				if (!addItem(new ItemBuilder().type(Material.DIAMOND_SWORD).name("§aEspada de Diamante").build(), 70,
+//						feastItems))
+//					addItem(new ItemBuilder().type(Material.IRON_SWORD).enchantment(Enchantment.DAMAGE_ALL, 1)
+//							.name("§aEspada de Ferro").build(), 100, feastItems);
 
 			addItem(new ItemStack(Material.EGG, 8), 80, feastItems);
 			addItem(new ItemStack(Material.FISHING_ROD), 55, feastItems);
 
-			addItem(new ItemStack(Material.STONE, CommonConst.RANDOM.nextBoolean() ? 16 : 32), 80, feastItems);
+			addItem(new ItemStack(Material.STONE, RANDOM.nextBoolean() ? 16 : 32), 80, feastItems);
 			break;
 		}
 		case MINIFEAST: {
 
 			int times = 0;
 
-			if (addItem(new ItemBuilder().type(Material.DIAMOND_CHESTPLATE)
-					.enchantment(Enchantment.PROTECTION_ENVIRONMENTAL).build(), 49, feastItems))
-				times++;
+//			if (addItem(new ItemBuilder().type(Material.DIAMOND_CHESTPLATE)
+//					.enchantment(Enchantment.PROTECTION_ENVIRONMENTAL).build(), 49, feastItems))
+//				times++;
 
-			if (addItem(new ItemBuilder().type(Material.DIAMOND_BOOTS).enchantment(Enchantment.PROTECTION_ENVIRONMENTAL)
-					.build(), 32, feastItems))
-				times++;
+//			if (addItem(new ItemBuilder().type(Material.DIAMOND_BOOTS).enchantment(Enchantment.PROTECTION_ENVIRONMENTAL)
+//					.build(), 32, feastItems))
+//				times++;
 
 			if (addItem(new ItemStack(Material.DIAMOND_LEGGINGS), 30, feastItems))
 				times++;
@@ -156,22 +156,22 @@ public class Chest {
 			if (addItem(new ItemStack(Material.DIAMOND_HELMET), 51, feastItems))
 				times++;
 
-			if (addItem(new ItemBuilder().type(Material.BOW).enchantment(Enchantment.ARROW_DAMAGE, 1)
-					.name("§cArco Superior").build(), 68, feastItems))
-				times++;
+//			if (addItem(new ItemBuilder().type(Material.BOW).enchantment(Enchantment.ARROW_DAMAGE, 1)
+//					.name("§cArco Superior").build(), 68, feastItems))
+//				times++;
 
 			if (times >= 4)
 				break;
 
-			if (addItem(new ItemStack(Material.GOLDEN_APPLE, CommonConst.RANDOM.nextBoolean() ? 3 : 6), 64, feastItems))
+			if (addItem(new ItemStack(Material.GOLDEN_APPLE, RANDOM.nextBoolean() ? 3 : 6), 64, feastItems))
 				times++;
 
-			if (addItem(new ItemStack(Material.ENDER_PEARL, CommonConst.RANDOM.nextBoolean() ? 1 : 2), 28, feastItems))
+			if (addItem(new ItemStack(Material.ENDER_PEARL, RANDOM.nextBoolean() ? 1 : 2), 28, feastItems))
 				times++;
-			if (addItem(new ItemStack(Material.ARROW, CommonConst.RANDOM.nextBoolean() ? 16 : 32), 100, feastItems))
+			if (addItem(new ItemStack(Material.ARROW, RANDOM.nextBoolean() ? 16 : 32), 100, feastItems))
 				times++;
 
-			if (addItem(new ItemStack(Material.EXP_BOTTLE, CommonConst.RANDOM.nextBoolean() ? 16 : 32), 82, feastItems))
+			if (addItem(new ItemStack(Material.EXP_BOTTLE, RANDOM.nextBoolean() ? 16 : 32), 82, feastItems))
 				times++;
 
 			if (times >= 4)
@@ -189,30 +189,30 @@ public class Chest {
 			if (times >= 4)
 				break;
 
-			if (addItem(new ItemBuilder().type(Material.DIAMOND_SWORD).enchantment(Enchantment.DAMAGE_ALL, 1)
-					.name("§cEspada de Diamante").build(), 23, feastItems))
-				times++;
+//			if (addItem(new ItemBuilder().type(Material.DIAMOND_SWORD).enchantment(Enchantment.DAMAGE_ALL, 1)
+//					.name("§cEspada de Diamante").build(), 23, feastItems))
+//				times++;
 			break;
 		}
 		case FEAST: {
 			addItem(new ItemStack(Material.WATER_BUCKET), 55, feastItems);
 			addItem(new ItemStack(Material.LAVA_BUCKET), 55, feastItems);
 
-			if (!addItem(new ItemBuilder().type(Material.DIAMOND_SWORD).enchantment(Enchantment.DAMAGE_ALL, 2)
-					.enchantment(Enchantment.FIRE_ASPECT).name("§4Espada de Diamante").build(), 40, feastItems))
-				addItem(new ItemBuilder().type(Material.DIAMOND_SWORD).enchantment(Enchantment.DAMAGE_ALL, 1)
-						.name("§cEspada de Diamante").build(), 80, feastItems);
+//			if (!addItem(new ItemBuilder().type(Material.DIAMOND_SWORD).enchantment(Enchantment.DAMAGE_ALL, 2)
+//					.enchantment(Enchantment.FIRE_ASPECT).name("§4Espada de Diamante").build(), 40, feastItems))
+//				addItem(new ItemBuilder().type(Material.DIAMOND_SWORD).enchantment(Enchantment.DAMAGE_ALL, 1)
+//						.name("§cEspada de Diamante").build(), 80, feastItems);
 
-			if (!addItem(new ItemBuilder().type(Material.BOW).enchantment(Enchantment.ARROW_DAMAGE, 3)
-					.name("§cArco Superior").build(), 30, feastItems))
-				addItem(new ItemBuilder().type(Material.BOW).enchantment(Enchantment.ARROW_DAMAGE, 1)
-						.name("§4Arco Superior").build(), 40, feastItems);
+//			if (!addItem(new ItemBuilder().type(Material.BOW).enchantment(Enchantment.ARROW_DAMAGE, 3)
+//					.name("§cArco Superior").build(), 30, feastItems))
+//				addItem(new ItemBuilder().type(Material.BOW).enchantment(Enchantment.ARROW_DAMAGE, 1)
+//						.name("§4Arco Superior").build(), 40, feastItems);
 			addItem(new ItemStack(Material.DIAMOND_HELMET), 42, feastItems);
 			addItem(new ItemStack(Material.DIAMOND_CHESTPLATE), 48, feastItems);
 			addItem(new ItemStack(Material.DIAMOND_LEGGINGS), 38, feastItems);
 			addItem(new ItemStack(Material.DIAMOND_BOOTS), 52, feastItems);
-			addItem(new ItemStack(Material.COBBLESTONE, CommonConst.RANDOM.nextBoolean() ? 32 : 64), 80, feastItems);
-			addItem(new ItemStack(Material.GOLDEN_APPLE, CommonConst.RANDOM.nextBoolean() ? 3 : 5), 38, feastItems);
+			addItem(new ItemStack(Material.COBBLESTONE, RANDOM.nextBoolean() ? 32 : 64), 80, feastItems);
+			addItem(new ItemStack(Material.GOLDEN_APPLE, RANDOM.nextBoolean() ? 3 : 5), 38, feastItems);
 			addItem(new ItemStack(Material.COMPASS), 35, feastItems);
 			break;
 		}
@@ -223,14 +223,14 @@ public class Chest {
 	}
 
 	private boolean addItem(ItemStack mat, int chance, List<ItemStack> items) {
-		if (CommonConst.RANDOM.nextInt(100) + 1 <= chance) {
+		if (RANDOM.nextInt(100) + 1 <= chance) {
 			items.add(mat);
 			return true;
 		}
 
 		return false;
 	}
-	
+
 	/**
 	 * Prevent duplicated chest
 	 */

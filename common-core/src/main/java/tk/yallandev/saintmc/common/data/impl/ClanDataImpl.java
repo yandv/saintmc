@@ -158,7 +158,7 @@ public class ClanDataImpl implements ClanData {
 	}
 
 	public static Query<JsonElement> createDefault(MongoConnection mongoConnection) {
-		return new MongoQuery(mongoConnection, "clan");
+		return new MongoQuery(mongoConnection, "saintmc-common", "clan");
 	}
 
 }

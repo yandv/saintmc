@@ -64,6 +64,7 @@ import tk.yallandev.saintmc.bukkit.networking.redis.BukkitPubSubHandler;
 import tk.yallandev.saintmc.bukkit.permission.PermissionManager;
 import tk.yallandev.saintmc.bukkit.scheduler.UpdateScheduler;
 import tk.yallandev.saintmc.common.account.Member;
+import tk.yallandev.saintmc.common.backend.Credentials;
 import tk.yallandev.saintmc.common.backend.data.ClanData;
 import tk.yallandev.saintmc.common.backend.data.PlayerData;
 import tk.yallandev.saintmc.common.backend.data.ReportData;
@@ -148,12 +149,12 @@ public class BukkitMain extends JavaPlugin {
 
 		try {
 
-			MongoConnection mongo = new MongoConnection(
-					CommonConst.MONGO_URL.replace("localhost", getConfig().getString("mongodb-address", "localhost")));
-			RedisDatabase redis = new RedisDatabase(
-					CommonConst.REDIS_HOSTNAME.replace("localhost", getConfig().getString("redis-address", "localhost"))
-							.replace("127.0.0.1", getConfig().getString("redis-address", "localhost")),
-					CommonConst.REDIS_PASSWORD, 6379);
+			MongoConnection mongo = new MongoConnection(new Credentials(
+					getConfig().getString("mongodb.hostname", "127.0.0.1"),
+					getConfig().getString("mongodb.username", "root"), getConfig().getString("mongodb.password", ""),
+					getConfig().getString("mongodb.database", "admin"), 27017));
+			RedisDatabase redis = new RedisDatabase(getConfig().getString("redis.hostname", "127.0.0.1"),
+					getConfig().getString("redis.password", ""), 6379);
 
 			mongo.connect();
 			redis.connect();
@@ -178,7 +179,6 @@ public class BukkitMain extends JavaPlugin {
 				getServer().getScheduler().runTaskAsynchronously(getInstance(),
 						pubSubListener = new PubSubListener(redis, new BukkitPubSubHandler(), "account-field",
 								"clan-field", "report-field", "report-action", "server-info"));
-
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			Bukkit.shutdown();
@@ -285,7 +285,7 @@ public class BukkitMain extends JavaPlugin {
 						"blockdata", "clone", "debug", "defaultgamemode", "entitydata", "execute", "fill", "gamemode",
 						"pardon", "pardon-ip", "replaceitem", "setidletimeout", "stats", "testforblock", "title",
 						"trigger", "viaver", "protocolsupport", "ps", "holograms", "hd", "holo", "hologram", "restart",
-						"stop", "filter", "packetlog", "pl", "plugins", "whitelist");
+						"filter", "packetlog", "pl", "plugins", "whitelist");
 
 				BukkitCommandFramework.INSTANCE.loadCommands("tk.yallandev.saintmc.bukkit.command.register");
 
@@ -349,7 +349,7 @@ public class BukkitMain extends JavaPlugin {
 	public void sendPlayerToLobby(Player player) {
 		ByteArrayOutputStream b = new ByteArrayOutputStream();
 		DataOutputStream out = new DataOutputStream(b);
-		
+
 		try {
 			out.writeUTF("Lobby");
 		} catch (Exception e) {

@@ -114,19 +114,19 @@ public class AdminMode {
 	public class AdminListener implements Listener {
 
 		@EventHandler
-		public void onClick(PlayerInteractEntityEvent event) {
+		public void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
 			if (event.getRightClicked() instanceof Player) {
 				if (isAdmin(event.getPlayer())) {
 					event.getPlayer().performCommand("invsee " + event.getRightClicked().getName());
 				}
 			}
 		}
-		
+
 		@EventHandler
-		public void asodkad(PlayerJoinEvent event) {
+		public void onPlayerJoin(PlayerJoinEvent event) {
 			Player player = event.getPlayer();
 			Member member = CommonGeneral.getInstance().getMemberManager().getMember(player.getUniqueId());
-			
+
 			new BukkitRunnable() {
 
 				@Override
@@ -134,7 +134,7 @@ public class AdminMode {
 					if (CommonGeneral.getInstance().getServerType() != ServerType.SCREENSHARE)
 						if (member.getAccountConfiguration().isAdminOnJoin())
 							if (member.hasGroupPermission(Group.TRIAL))
-								if (!AdminMode.getInstance().isAdmin(player)) 
+								if (!AdminMode.getInstance().isAdmin(player))
 									AdminMode.getInstance().setAdmin(player, member);
 				}
 			}.runTaskLater(BukkitMain.getInstance(), 10);

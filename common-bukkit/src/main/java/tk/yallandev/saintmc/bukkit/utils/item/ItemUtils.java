@@ -29,7 +29,7 @@ public class ItemUtils {
 				world.dropItemNaturally(l, item);
 		}
 	}
-	
+
 	public static void addItem(Player player, ItemStack item, Location location) {
 		int slot = player.getInventory().first(item.getType());
 		

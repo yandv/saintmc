@@ -1,9 +1,6 @@
 package tk.yallandev.saintmc.skwyars.listener;
 
-import java.util.stream.Collectors;
-
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -27,24 +24,11 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import tk.yallandev.saintmc.CommonGeneral;
-import tk.yallandev.saintmc.bukkit.api.item.ItemBuilder;
-import tk.yallandev.saintmc.bukkit.api.vanish.AdminMode;
-import tk.yallandev.saintmc.bukkit.api.vanish.VanishAPI;
-import tk.yallandev.saintmc.bukkit.bukkit.BukkitMember;
-import tk.yallandev.saintmc.bukkit.event.admin.PlayerAdminModeEvent;
-import tk.yallandev.saintmc.bukkit.event.teleport.PlayerTeleportCommandEvent;
-import tk.yallandev.saintmc.bukkit.event.teleport.PlayerTeleportCommandEvent.TeleportResult;
-import tk.yallandev.saintmc.bukkit.event.vanish.PlayerHideToPlayerEvent;
-import tk.yallandev.saintmc.bukkit.event.vanish.PlayerShowToPlayerEvent;
-import tk.yallandev.saintmc.common.account.Member;
-import tk.yallandev.saintmc.common.permission.Group;
-import tk.yallandev.saintmc.common.server.loadbalancer.server.MinigameState;
 import tk.yallandev.saintmc.skwyars.GameGeneral;
 import tk.yallandev.saintmc.skwyars.GameMain;
 import tk.yallandev.saintmc.skwyars.event.player.PlayerSpectateEvent;
 import tk.yallandev.saintmc.skwyars.gamer.Gamer;
-import tk.yallandev.saintmc.skwyars.menu.spectator.SpectatorInventory;
+import tk.yallandev.saintmc.skwyars.scheduler.MinigameState;
 
 public class SpectatorListener implements Listener {
 
@@ -56,13 +40,11 @@ public class SpectatorListener implements Listener {
 			return;
 
 		for (Player online : Bukkit.getOnlinePlayers())
-			if (online != null)
-				if (online.isOnline())
-					if (online.getUniqueId() != player.getUniqueId())
-						if (online.canSee(player))
-							online.hidePlayer(player);
+			if (online.isOnline())
+				if (online.getUniqueId() != player.getUniqueId())
+					if (online.canSee(player))
+						online.hidePlayer(player);
 
-		VanishAPI.getInstance().setPlayerVanishToGroup(player, Group.BUILDER);
 		player.sendMessage("§dVocê entrou no modo espectador!");
 		player.setGameMode(GameMode.ADVENTURE);
 		player.setAllowFlight(true);
@@ -75,8 +57,9 @@ public class SpectatorListener implements Listener {
 				if (!player.isOnline())
 					return;
 
-				player.getInventory().setItem(0, new ItemBuilder().name("§aPlayers").type(Material.COMPASS).build());
-				player.getInventory().setItem(8, new ItemBuilder().name("§aJogar novamente").type(Material.PAPER).build());
+//				player.getInventory().setItem(0, ItemCreator.name("§aPlayers").type(Material.COMPASS).build());
+//				player.getInventory().setItem(8,
+//						ItemCreator.name("§aJogar novamente").type(Material.PAPER).build());
 				player.updateInventory();
 			}
 		}.runTaskLater(GameMain.getPlugin(), 7l);
@@ -92,24 +75,26 @@ public class SpectatorListener implements Listener {
 
 		event.setCancelled(true);
 
-		BukkitMember player = (BukkitMember) CommonGeneral.getInstance().getMemberManager()
-				.getMember(event.getPlayer().getUniqueId());
+//		Member player = CommonGeneral.getInstance().getMemberManager()
+//				.getMember(event.getPlayer().getUniqueId());
 
-		if (player == null) {
-			event.setCancelled(true);
-			return;
-		}
+//		if (player == null) {
+//			event.setCancelled(true);
+//			return;
+//		}
 
-		String tag = player.getTag().getPrefix();
+//		String tag = player.getTag().getPrefix();
 
-		for (Player r : event.getRecipients().stream().filter(r -> isSpectator(r) || AdminMode.getInstance().isAdmin(r))
-				.collect(Collectors.toList())) {
+//		for (Player r : event.getRecipients().stream().filter(r -> isSpectator(r) 
+//				|| BukkitMain.getInstance().getAdminController().getMode(r) == AdminMode.ADMIN
+//				)
+//				.collect(Collectors.toList())) {
+//
+//			r.sendMessage("§7[SPECTATOR] " + tag + (ChatColor.stripColor(tag).trim().length() > 0 ? " " : "")
+//					+ event.getPlayer().getName() + "§7: " + event.getMessage());
+//		}
 
-			r.sendMessage("§7[SPECTATOR] " + tag + (ChatColor.stripColor(tag).trim().length() > 0 ? " " : "")
-					+ event.getPlayer().getName() + "§7: " + event.getMessage());
-		}
-
-		System.out.println("<SPECTATOR - " + player.getPlayerName() + "> " + event.getMessage());
+//		System.out.println("<SPECTATOR - " + player.getPlayerName() + "> " + event.getMessage());
 	}
 
 	@EventHandler
@@ -165,21 +150,21 @@ public class SpectatorListener implements Listener {
 
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onPlayerInteract(PlayerInteractEvent event) {
-		if (isSpectator(event.getPlayer()) || AdminMode.getInstance().isAdmin(event.getPlayer())) {
-			if (!Member.hasGroupPermission(event.getPlayer().getUniqueId(), Group.DIRETOR))
-				event.setCancelled(true);
-
-			if (event.getItem() == null)
-				return;
-
-			if (event.getItem().getType() == Material.COMPASS)
-				new SpectatorInventory(event.getPlayer(), 1);
-			else if (event.getItem().getType() == Material.DIAMOND_SWORD)
-				handleCombat(event.getPlayer());
-			else if (event.getItem().getType() == Material.PAPER) {
-				GameMain.getInstance().sendPlayAgain(event.getPlayer());
-			}
-		}
+//		if (isSpectator(event.getPlayer()) || BukkitMain.getInstance().getAdminController().getMode(event.getPlayer()) == AdminMode.ADMIN) {
+//			if (!Member.hasGroup(event.getPlayer().getUniqueId(), Group.DIRETOR))
+//				event.setCancelled(true);
+//
+//			if (event.getItem() == null)
+//				return;
+//
+//			if (event.getItem().getType() == Material.COMPASS)
+//				new SpectatorInventory(event.getPlayer(), 1);
+//			else if (event.getItem().getType() == Material.DIAMOND_SWORD)
+//				handleCombat(event.getPlayer());
+//			else if (event.getItem().getType() == Material.PAPER) {
+//				GameMain.getInstance().sendPlayAgain(event.getPlayer());
+//			}
+//		}
 	}
 
 	@EventHandler
@@ -236,71 +221,28 @@ public class SpectatorListener implements Listener {
 		}
 	}
 
-	@EventHandler
-	public void onPlayerAdminMode(PlayerAdminModeEvent event) {
-		if (GameGeneral.getInstance().getMinigameState().isPregame()) {
-			Gamer gamer = GameGeneral.getInstance().getGamerController().getGamer(event.getPlayer().getUniqueId());
-
-			if (event.getAdminMode() == PlayerAdminModeEvent.AdminMode.ADMIN) {
-				gamer.setGamemaker(true);
-			} else {
-				gamer.setGamemaker(false);
-				gamer.setSpectator(false);
-			}
-		} else {
-			Gamer gamer = GameGeneral.getInstance().getGamerController().getGamer(event.getPlayer().getUniqueId());
-
-			if (event.getAdminMode() == PlayerAdminModeEvent.AdminMode.ADMIN) {
-				gamer.setGamemaker(true);
-			} else {
-				gamer.setGamemaker(false);
-				gamer.setSpectator(false);
-			}
-		}
-	}
-
-	@EventHandler
-	public void onVisible(PlayerShowToPlayerEvent event) {
-		if (!isSpectator(event.getPlayer()))
-			return;
-
-		Gamer toGamer = GameGeneral.getInstance().getGamerController().getGamer(event.getToPlayer());
-
-		if (!toGamer.isNotPlaying()) {
-			if (!toGamer.isSpectatorsEnabled())
-				event.setCancelled(true);
-		}
-	}
-
-	@EventHandler(ignoreCancelled = true)
-	public void onPlayerShowToPlayer(PlayerShowToPlayerEvent event) {
-		Gamer toGamer = GameGeneral.getInstance().getGamerController().getGamer(event.getToPlayer());
-
-		if (isSpectator(event.getPlayer()) || AdminMode.getInstance().isAdmin(event.getPlayer())) {
-			if (!toGamer.isSpectatorsEnabled()) {
-				event.setCancelled(true);
-			}
-		}
-	}
-
-	@EventHandler(ignoreCancelled = true)
-	public void onPlayerHideToPlayer(PlayerHideToPlayerEvent event) {
-		Gamer toGamer = GameGeneral.getInstance().getGamerController().getGamer(event.getToPlayer());
-
-		if (isSpectator(event.getPlayer()) || AdminMode.getInstance().isAdmin(event.getPlayer()))
-			if (toGamer.isSpectatorsEnabled()) {
-				event.setCancelled(true);
-			}
-	}
-
-	@EventHandler
-	public void onPlayerTeleportCommand(PlayerTeleportCommandEvent event) {
-		if (event.getResult() != TeleportResult.NO_PERMISSION)
-			return;
-
-		if (GameGeneral.getInstance().getGamerController().getGamer(event.getPlayer()).isSpectator())
-			event.setResult(TeleportResult.ONLY_PLAYER_TELEPORT);
-	}
+//	@EventHandler
+//	public void onPlayerAdminMode(PlayerChangeAdminModeEvent event) {
+//		if (GameGeneral.getInstance().getMinigameState().isPregame()) {
+//			Gamer gamer = GameGeneral.getInstance().getGamerController().getGamer(event.getPlayer().getUniqueId());
+//
+//			if (event.getAdminMode() == AdminMode.ADMIN) {
+//				gamer.setGamemaker(true);
+//			} else {
+//				gamer.setGamemaker(false);
+//				gamer.setSpectator(false);
+//			}
+//		} else {
+//			Gamer gamer = GameGeneral.getInstance().getGamerController().getGamer(event.getPlayer().getUniqueId());
+//
+//			if (event.getAdminMode() == AdminMode.ADMIN) {
+//				gamer.setGamemaker(true);
+//			} else {
+//				gamer.setGamemaker(false);
+//				gamer.setSpectator(false);
+//			}
+//		}
+//	}
 
 	private void handleCombat(Player player) {
 

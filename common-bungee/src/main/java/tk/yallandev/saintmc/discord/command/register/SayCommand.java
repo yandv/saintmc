@@ -5,7 +5,10 @@ import java.time.Instant;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.requests.RestAction;
 import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.common.account.Member;
 import tk.yallandev.saintmc.common.account.MemberModel;
@@ -15,6 +18,7 @@ import tk.yallandev.saintmc.common.command.CommandFramework.Command;
 import tk.yallandev.saintmc.common.permission.Group;
 import tk.yallandev.saintmc.discord.command.DiscordCommandArgs;
 import tk.yallandev.saintmc.discord.command.DiscordCommandSender;
+import tk.yallandev.saintmc.discord.utils.MessageUtils;
 
 public class SayCommand implements CommandClass {
 
@@ -72,10 +76,14 @@ public class SayCommand implements CommandClass {
 			}
 		}
 
-		textChannel.sendMessage(new EmbedBuilder().setColor(Color.YELLOW)
-				.setThumbnail("https://cdn.discordapp.com/attachments/700661469032874014/744615850111270992/logo.png")
-				.setFooter("Enviado por " + userName, avatarUrl).setTimestamp(Instant.now())
-				.appendDescription(stringBuilder.toString().trim()).build()).complete();
+		RestAction<Message> restAction = textChannel
+				.sendMessage(new EmbedBuilder().setColor(Color.YELLOW).setFooter("Enviado por " + userName, avatarUrl)
+						.setTimestamp(Instant.now()).appendDescription(stringBuilder.toString().trim()).build());
+
+		if (textChannel.isNews())
+			restAction.flatMap(Message::crosspost).complete();
+		else
+			restAction.complete();
 	}
 
 	@Command(name = "anuncio", runAsync = true)
@@ -111,7 +119,7 @@ public class SayCommand implements CommandClass {
 		for (int i = 1; i < args.length; i++)
 			stringBuilder.append(args[i]).append(" ");
 
-		String avatarUrl = "";
+		String avatarUrl = cmdArgs.getSender().getAsMember().getUser().getAvatarUrl();
 		String userName = cmdArgs.getSender().getAsMember().getEffectiveName();
 
 		Member member = CommonGeneral.getInstance().getMemberManager().getMember(sender.getUser().getIdLong());
@@ -124,20 +132,24 @@ public class SayCommand implements CommandClass {
 				member = new MemberVoid(memberModel);
 			}
 
-			if (member == null) {
-				avatarUrl = cmdArgs.getSender().getAsMember().getUser().getAvatarUrl();
-			} else {
+			if (member != null) {
 				avatarUrl = "https://mc-heads.net/avatar/" + member.getPlayerName();
 				userName = member.getPlayerName();
 			}
 		}
 
-		textChannel.sendMessage(new EmbedBuilder().setColor(Color.YELLOW).setAuthor("Anuncio - SaintMC",
-				"https://saintmc.net/",
+		RestAction<Message> restAction = textChannel.sendMessage(new EmbedBuilder().setColor(Color.YELLOW).setAuthor(
+				"Anuncio - SaintMC", "https://saintmc.net/",
 				"https://images-ext-1.discordapp.net/external/U5hoGi1CnPwEv32Y7zs6r7xV2K0R_maVFO-J5-eTsKY/%3Fv%3D1/https/cdn.discordapp.com/emojis/506833797367595037.gif")
 				.setThumbnail("https://cdn.discordapp.com/attachments/700661469032874014/744615850111270992/logo.png")
 				.setFooter("Atenciosamente, " + userName, avatarUrl).setTimestamp(Instant.now())
-				.appendDescription(stringBuilder.toString().trim()).build()).complete();
+				.appendDescription(stringBuilder.toString().trim()).build());
+
+		if (textChannel.isNews())
+			restAction.flatMap(Message::crosspost).complete();
+		else
+			restAction.complete();
+		MessageUtils.sendMessage(textChannel, "@everyone", 3);
 	}
 
 	@Command(name = "evento", runAsync = true)
@@ -194,12 +206,22 @@ public class SayCommand implements CommandClass {
 		String avatarUrl = "https://mc-heads.net/avatar/" + member.getPlayerName();
 		String userName = member.getPlayerName();
 
-		textChannel.sendMessage(new EmbedBuilder().setColor(Color.YELLOW).setAuthor("Evento - SaintMC",
-				"https://saintmc.net/",
+		Role role = cmdArgs.getGuild().getRoleById(708384460776931329l);
+
+		RestAction<Message> restAction = textChannel.sendMessage(new EmbedBuilder().setColor(Color.YELLOW).setAuthor(
+				"Evento - SaintMC", "https://saintmc.net/",
 				"https://images-ext-1.discordapp.net/external/U5hoGi1CnPwEv32Y7zs6r7xV2K0R_maVFO-J5-eTsKY/%3Fv%3D1/https/cdn.discordapp.com/emojis/506833797367595037.gif")
 				.setThumbnail("https://cdn.discordapp.com/attachments/700661469032874014/744615850111270992/logo.png")
 				.setFooter("Atenciosamente, " + userName, avatarUrl).setTimestamp(Instant.now())
-				.appendDescription(stringBuilder.toString().trim()).build()).complete();
+				.appendDescription(stringBuilder.toString().trim()).build()).mention(role);
+
+		if (textChannel.isNews())
+			restAction.flatMap(Message::crosspost).complete();
+		else
+			restAction.complete();
+
+		if (role == null)
+			MessageUtils.sendMessage(textChannel, "<@&708384460776931329>", 3);
 	}
 
 }

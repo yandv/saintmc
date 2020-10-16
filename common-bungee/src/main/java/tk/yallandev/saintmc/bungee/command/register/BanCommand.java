@@ -75,7 +75,7 @@ public class BanCommand implements CommandClass {
 		for (int i = 1; i < args.length; i++)
 			sb.append(args[i]).append(" ");
 
-		Ban ban = new Ban(player.getUniqueId(), cmdArgs.isPlayer() ? cmdArgs.getSender().getName() : "CONSOLE",
+		Ban ban = new Ban(player.getUniqueId(), player.getPlayerName(), cmdArgs.isPlayer() ? cmdArgs.getSender().getName() : "CONSOLE",
 				sender.getUniqueId(), args.length == 1 ? "Sem motivo" : sb.toString().trim(), -1l);
 
 		if (BungeeMain.getInstance().getPunishManager().ban(player, ban)) {
@@ -149,7 +149,7 @@ public class BanCommand implements CommandClass {
 		for (int i = 2; i < args.length; i++)
 			sb.append(args[i]).append(" ");
 
-		Ban ban = new Ban(player.getUniqueId(), cmdArgs.isPlayer() ? cmdArgs.getPlayer().getName() : "CONSOLE",
+		Ban ban = new Ban(player.getUniqueId(), player.getPlayerName(), cmdArgs.isPlayer() ? cmdArgs.getPlayer().getName() : "CONSOLE",
 				sender.getUniqueId(), args.length == 1 ? "Sem motivo" : sb.toString().trim(), expiresCheck);
 
 		if (BungeeMain.getInstance().getPunishManager().ban(player, ban)) {

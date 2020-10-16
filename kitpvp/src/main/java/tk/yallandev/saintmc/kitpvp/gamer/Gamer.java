@@ -1,7 +1,5 @@
 package tk.yallandev.saintmc.kitpvp.gamer;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 
 import org.bukkit.entity.Player;
@@ -32,16 +30,40 @@ public class Gamer {
 	@Setter
 	private boolean blockCommand;
 
-	private Map<UUID, Long> freekillMap;
-	private UUID lastKill;
+	private Freekill[] freekillArray = new Freekill[6];
+	private int freekillCount;
 
 	public Gamer(Player player) {
 		this.player = player;
 
 		this.spawnProtection = true;
 		this.combatStart = -1l;
+	}
 
-		this.freekillMap = new HashMap<>();
+	public boolean isStatusable(UUID uuid) {
+		for (Freekill freekill : freekillArray) {
+			if (freekill == null)
+				continue;
+			if (freekill.getPlayerId().equals(uuid)) {
+				System.out.println(System.currentTimeMillis() - freekill.getTime() > 1000 * 60 * 180);
+				System.out.println(System.currentTimeMillis() - freekill.getTime() < 1000 * 60 * 180);
+
+				if (System.currentTimeMillis() - freekill.getTime() > 1000 * 60 * 180) {
+					return false;
+				}
+
+				return true;
+			}
+		}
+
+		return true;
+	}
+
+	public void setLastKill(Player player) {
+		Freekill freekill = new Freekill(player.getUniqueId(), System.currentTimeMillis());
+
+		freekillArray[freekillCount % freekillArray.length] = freekill;
+		freekillCount++;
 	}
 
 	public void setWarp(Warp warp) {
@@ -88,26 +110,14 @@ public class Gamer {
 		return player.getUniqueId();
 	}
 
-	public boolean isStatusable(UUID uniqueId) {
-		if (freekillMap.containsKey(uniqueId))
-			if (freekillMap.get(uniqueId) > System.currentTimeMillis())
-				return false;
-
-		return true;
-	}
-
-	public void setLastKill(UUID uniqueId) {
-		this.lastKill = uniqueId;
-		this.freekillMap.put(uniqueId, System.currentTimeMillis() + (1000 * 60 * 5));
-	}
-
 	public boolean hasKitPermission(Kit kit) {
 		Member player = CommonGeneral.getInstance().getMemberManager().getMember(getUuid());
 
 		if (player == null)
 			return false;
 
-		if (player.hasPermission("kitpvp.kit." + kit.getName().toLowerCase()))
+		if (player.hasPermission("kitpvp.kit." + kit.getName().toLowerCase())
+				|| player.hasPermission("tag.torneioplus"))
 			return true;
 
 		if (player.hasGroupPermission(Group.SAINT))
@@ -119,6 +129,10 @@ public class Gamer {
 
 		if (player.hasGroupPermission(Group.LIGHT))
 			if (GameMain.KITROTATE.get(Group.LIGHT).contains(kit.getName().toLowerCase()))
+				return true;
+
+		if (player.hasGroupPermission(Group.DONATOR))
+			if (GameMain.KITROTATE.get(Group.DONATOR).contains(kit.getName().toLowerCase()))
 				return true;
 
 		return GameMain.KITROTATE.get(Group.MEMBRO).contains(kit.getName().toLowerCase());

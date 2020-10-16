@@ -16,7 +16,7 @@ public class SnailKit extends Kit {
 
 	public SnailKit() {
 		super("Snail", "Deixe seus inimigos mais lentos ao encosta-los", Material.WEB,
-				new ArrayList<>());
+				12500, new ArrayList<>());
 	}
 	
 	@EventHandler

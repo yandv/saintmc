@@ -16,7 +16,7 @@ import tk.yallandev.saintmc.kitpvp.kit.Kit;
 public class MonkKit extends Kit {
 
 	public MonkKit() {
-		super("Monk", "Bagunce o inventário de seus inimigos", Material.BLAZE_ROD,
+		super("Monk", "Bagunce o inventário de seus inimigos", Material.BLAZE_ROD, 11500,
 				Arrays.asList(new ItemBuilder().name("§aMonk").type(Material.BLAZE_ROD).build()));
 	}
 

@@ -20,7 +20,8 @@ public class NinjaKit extends Kit {
 	private HashMap<String, NinjaHit> ninjaHits;
 
 	public NinjaKit() {
-		super("Ninja", "Como um ninja teletransporte-se para as costas de seus inimigos", Material.EMERALD, new ArrayList<>());
+		super("Ninja", "Como um ninja teletransporte-se para as costas de seus inimigos", Material.EMERALD, 17000,
+				new ArrayList<>());
 		ninjaHits = new HashMap<>();
 	}
 
@@ -82,15 +83,15 @@ public class NinjaKit extends Kit {
 
 		if (p.getKiller() != null) {
 			Iterator<Entry<String, NinjaHit>> iterator = ninjaHits.entrySet().iterator();
-			
+
 			while (iterator.hasNext()) {
 				Entry<String, NinjaHit> entry = iterator.next();
-				
+
 				if (entry.getValue().target == p.getKiller())
 					iterator.remove();
 			}
 		}
-			
+
 		if (!ninjaHits.containsKey(p.getName()))
 			return;
 

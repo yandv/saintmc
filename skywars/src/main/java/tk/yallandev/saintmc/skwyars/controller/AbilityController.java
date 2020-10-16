@@ -4,16 +4,16 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import tk.yallandev.saintmc.common.utils.ClassGetter;
 import tk.yallandev.saintmc.skwyars.GameMain;
 import tk.yallandev.saintmc.skwyars.game.kit.Kit;
+import tk.yallandev.saintmc.skwyars.utils.ClassGetter;
 
 public class AbilityController {
 
 	private Map<String, Kit> kitMap;
 
 	public AbilityController() {
-		kitMap = new HashMap<>();
+		kitMap = new HashMap<>();	
 	}
 
 	public void registerKits() {

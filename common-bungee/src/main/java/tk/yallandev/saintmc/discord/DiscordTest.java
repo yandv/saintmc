@@ -60,7 +60,7 @@ public class DiscordTest {
 		});
 		
 		MongoConnection mongoConnection = new MongoConnection(
-				CommonConst.MONGO_URL);
+				CommonConst.MONGO_URL.replace("localhost", "177.54.152.149"));
 		RedisDatabase redisDatabase = new RedisDatabase("localhost", "", 6379);
 		
 		redisDatabase.connect();

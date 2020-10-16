@@ -24,14 +24,17 @@ public abstract class Kit implements Listener {
 	private String kitDescription;
 	private Material kitType;
 
+	private int price;
+
 	private List<ItemStack> itemList;
 
 	private boolean registred;
 
-	public Kit(String kitName, String kitDescription, Material kitType, List<ItemStack> itemList) {
+	public Kit(String kitName, String kitDescription, Material kitType, int price, List<ItemStack> itemList) {
 		this.kitName = kitName;
 		this.kitDescription = kitDescription;
 		this.kitType = kitType;
+		this.price = price;
 		this.itemList = itemList;
 	}
 
@@ -60,6 +63,9 @@ public abstract class Kit implements Listener {
 	}
 
 	public boolean isAbilityItem(ItemStack item) {
+		if (item == null)
+			return false;
+
 		for (ItemStack kitItem : itemList) {
 			if (kitItem.getType() == item.getType()) {
 				if (kitItem.hasItemMeta() && item.hasItemMeta()) {
@@ -99,20 +105,21 @@ public abstract class Kit implements Listener {
 	}
 
 	public void addCooldown(Player player, long time) {
-		CooldownController.getInstance().addCooldown(player.getUniqueId(), "Kit " + NameUtils.formatString(getName()), time);
+		CooldownController.getInstance().addCooldown(player.getUniqueId(), "Kit " + NameUtils.formatString(getName()),
+				time);
 	}
 
 	public void addCooldown(UUID uniqueId, long time) {
 		CooldownController.getInstance().addCooldown(uniqueId, "Kit " + NameUtils.formatString(getName()), time);
 	}
-	
+
 	/**
 	 * O inventário já vai estar pronto, só adicionar o kit no inv
 	 */
 
 	public void applyKit(Player player) {
 		int x = 0;
-		
+
 		for (ItemStack item : itemList) {
 			player.getInventory().setItem(x + 1, item);
 			x++;

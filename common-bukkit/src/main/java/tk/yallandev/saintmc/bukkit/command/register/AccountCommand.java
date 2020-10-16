@@ -39,7 +39,7 @@ import tk.yallandev.saintmc.common.utils.string.NameUtils;
 
 public class AccountCommand implements CommandClass {
 
-	@Command(name = "account", aliases = { "acc", "info" }, runAsync = true)
+	@Command(name = "account", aliases = { "acc", "info", "perfil", "profile" }, runAsync = true)
 	public void accountCommand(BukkitCommandArgs cmdArgs) {
 		if (!cmdArgs.isPlayer())
 			return;
@@ -77,9 +77,14 @@ public class AccountCommand implements CommandClass {
 					return;
 				}
 			}
+
+			if (!Member.hasGroupPermission(sender.getUniqueId(), Group.TRIAL)) {
+				sender.sendMessage("§cVocê não pode ver o perfil de outros jogadores!");
+				return;
+			}
 		}
 
-		new AccountInventory(sender, player);
+		new AccountInventory(sender, player, args.length == 0 ? player.getName() : args[0]);
 	}
 
 	@Command(name = "medal", aliases = { "medals", "medalha", "medalhas" })

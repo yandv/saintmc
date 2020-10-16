@@ -8,16 +8,18 @@ import java.util.Map;
 import org.bukkit.Location;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonParser;
 
 import lombok.Getter;
-import tk.yallandev.saintmc.CommonConst;
 import tk.yallandev.saintmc.skwyars.GameMain;
 import tk.yallandev.saintmc.skwyars.game.chest.Chest;
 
 @Getter
 public class LocationController {
+	
+	private Gson gson = new GsonBuilder().create();
 
 	private Map<String, Location> locationMap;
 	private List<Chest> chestList;
@@ -30,7 +32,7 @@ public class LocationController {
 				.getAsJsonArray();
 
 		for (int x = 0; x < jsonArray.size(); x++) {
-			Chest chest = CommonConst.GSON.fromJson(jsonArray.get(x), Chest.class);
+			Chest chest = gson.fromJson(jsonArray.get(x), Chest.class);
 			chestList.add(chest);
 		}
 	}

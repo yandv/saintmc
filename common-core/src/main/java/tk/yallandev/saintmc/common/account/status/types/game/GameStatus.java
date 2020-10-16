@@ -44,6 +44,12 @@ public class GameStatus implements Status {
 		this.uniqueId = uniqueId;
 		this.statusType = statusType;
 	}
+	
+	@Override
+	public void setUniqueId(UUID uniqueId) {
+		this.uniqueId = uniqueId;
+		CommonGeneral.getInstance().getStatusData().updateStatus(this, "uniqueId");
+	}
 
 	public void setKills(int kills) {
 		this.kills = kills;

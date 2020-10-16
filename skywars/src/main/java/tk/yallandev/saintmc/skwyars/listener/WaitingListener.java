@@ -14,18 +14,11 @@ import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 
-import tk.yallandev.saintmc.CommonGeneral;
-import tk.yallandev.saintmc.bukkit.BukkitMain;
-import tk.yallandev.saintmc.bukkit.api.actionbar.ActionBarAPI;
-import tk.yallandev.saintmc.bukkit.api.item.ItemBuilder;
-import tk.yallandev.saintmc.bukkit.api.vanish.AdminMode;
-import tk.yallandev.saintmc.bukkit.event.PlayerMoveUpdateEvent;
-import tk.yallandev.saintmc.common.account.Member;
-import tk.yallandev.saintmc.common.permission.Group;
 import tk.yallandev.saintmc.skwyars.GameGeneral;
 import tk.yallandev.saintmc.skwyars.GameMain;
 import tk.yallandev.saintmc.skwyars.event.game.GameTimeEvent;
@@ -40,9 +33,9 @@ public class WaitingListener implements Listener {
 
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onPlayerLogin(PlayerLoginEvent event) {
-		Member member = CommonGeneral.getInstance().getMemberManager().getMember(event.getPlayer().getUniqueId());
-
-		if (!member.hasGroupPermission(Group.TRIAL))
+//		Member member = CommonGeneral.getInstance().getMemberManager().getMember(event.getPlayer().getUniqueId());
+//
+//		if (!member.hasGroup(Group.TRIAL))
 			/**
 			 * Teste
 			 */
@@ -59,11 +52,10 @@ public class WaitingListener implements Listener {
 		Team team = GameGeneral.getInstance().getTeamController().findTeam(gamer);
 
 		if (team == null) {
-			if (Member.hasGroupPermission(event.getPlayer().getUniqueId(), Group.TRIAL)) {
-				player.sendMessage("§cVocê não tem time!");
-				AdminMode.getInstance().setAdmin(player,
-						CommonGeneral.getInstance().getMemberManager().getMember(player.getUniqueId()));
-			} else
+//			if (Member.hasGroup(event.getPlayer().getUniqueId(), Group.TRIAL)) {
+//				player.sendMessage("§cVocê não tem time!");
+//				/* admin mode*/
+//			} else
 				player.kickPlayer("§cO jogo está cheio!");
 			event.setJoinMessage(null);
 		} else
@@ -71,7 +63,7 @@ public class WaitingListener implements Listener {
 					+ GameGeneral.getInstance().getGamerController().count(g -> g.isPlaying()) + "/"
 					+ GameMain.getInstance().getMaxPlayers() + ")");
 
-		player.teleport(BukkitMain.getInstance().getLocationFromConfig("spawn"));
+		player.teleport(GameMain.getInstance().getLocationFromConfig("spawn"));
 		handleInventory(player);
 
 		if (GameGeneral.getInstance().getGamerController().count(g -> g.isPlaying()) == GameMain.getInstance()
@@ -161,9 +153,9 @@ public class WaitingListener implements Listener {
 	}
 
 	@EventHandler
-	public void onPlayerMoveUpdate(PlayerMoveUpdateEvent event) {
+	public void onPlayerMoveUpdate(PlayerMoveEvent event) {
 		if (event.getTo().getY() < 0)
-			event.getPlayer().teleport(BukkitMain.getInstance().getLocationFromConfig("spawn"));
+			event.getPlayer().teleport(GameMain.getInstance().getLocationFromConfig("spawn"));
 	}
 
 	@EventHandler
@@ -174,10 +166,10 @@ public class WaitingListener implements Listener {
 
 		if (GameGeneral.getInstance().getGamerController()
 				.count(g -> g.isPlaying()) < GameMain.getInstance().getMaxPlayers() / 2)
-			ActionBarAPI.broadcast("§eEsperando mais "
-					+ (GameMain.getInstance().getMaxPlayers() / 2
-							- GameGeneral.getInstance().getGamerController().count(g -> g.isPlaying()))
-					+ " jogadores!");
+//			ActionbarAPI.sendForAll("§eEsperando mais "
+//					+ (GameMain.getInstance().getMaxPlayers() / 2
+//							- GameGeneral.getInstance().getGamerController().count(g -> g.isPlaying()))
+//					+ " jogadores!");
 
 		for (Player player : Bukkit.getOnlinePlayers()) {
 			player.setLevel(time);
@@ -191,8 +183,8 @@ public class WaitingListener implements Listener {
 		player.getInventory().clear();
 		player.getInventory().setArmorContents(new ItemStack[4]);
 
-		player.getInventory().setItem(0,
-				new ItemBuilder().type(Material.CHEST).name("§aKit Selector §7(Clique)").build());
+//		player.getInventory().setItem(0,
+//				ItemCreator.type(Material.CHEST).name("§aKit Selector §7(Clique)").build());
 	}
 
 }

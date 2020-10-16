@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import lombok.Getter;
 import net.md_5.bungee.api.ChatColor;
 import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.common.permission.Group;
@@ -25,6 +26,7 @@ public abstract class Tag {
 
 	public static final Tag DEVELOPER = TagWrapper.create("§3§lDEVELOPER§3", Group.DONO);
 	public static final Tag DONO = TagWrapper.create("§4§lDONO§4", Group.DONO);
+	public static final Tag INVESTIDORPLUS = TagWrapper.create("§6§lINVST+§6", (Group) null, true);
 	public static final Tag ESTRELA = TagWrapper.create("§1§lESTRELA§1", Group.DIRETOR);
 	public static final Tag DIRETOR = TagWrapper.create("§4§LDIRETOR§4", Group.DIRETOR);
 	public static final Tag GERENTE = TagWrapper.create("§c§lGERENTE§c", Group.GERENTE);
@@ -46,16 +48,19 @@ public abstract class Tag {
 			Arrays.asList(Group.CREATOR, Group.YOUTUBER, Group.YOUTUBERPLUS, Group.STREAMER), true);
 	public static final Tag SAINT = TagWrapper.create("§d§lSAINT§d", Group.SAINT);
 	public static final Tag BLIZZARD = TagWrapper.create("§b§lBLIZZARD§b", Group.BLIZZARD);
-	public static final Tag TORNEIOPLUS = TagWrapper.create("TORNEIOPLUS", "§1§lTORNEIO+§1", Group.TORNEIO, true);
+	public static final Tag TORNEIOPLUS = TagWrapper.create("TORNEIOPLUS", "§6§lTORNEIO+§6", Group.TORNEIO, true);
 	public static final Tag LIGHT = TagWrapper.create("§a§lLIGHT§a", Group.LIGHT);
 	public static final Tag DONATOR = TagWrapper.create("§d§lDONATOR§d", Group.DONATOR, true);
-	public static final Tag TORNEIO = TagWrapper.create("§1§lTORNEIO§1", null);
+	public static final Tag TORNEIO = TagWrapper.create("§6§lTORNEIO§6", null);
 	public static final Tag MEMBRO = TagWrapper.create("MEMBRO", "§7", Group.MEMBRO);
 	public static final Tag RDM = TagWrapper.create("§6§lRDM§6", null);
 
 	public int ordinal() {
 		return getId();
 	}
+
+	@Getter
+	private boolean custom;
 
 	public abstract String getPrefix();
 
@@ -72,6 +77,11 @@ public abstract class Tag {
 	public abstract Tag setChroma(boolean chroma);
 
 	public abstract Tag clone();
+
+	public Tag setCustom(boolean custom) {
+		this.custom = custom;
+		return this;
+	}
 
 	public Group getDefaultGroup() {
 		return getGroupToUse().stream().findFirst().orElse(null);

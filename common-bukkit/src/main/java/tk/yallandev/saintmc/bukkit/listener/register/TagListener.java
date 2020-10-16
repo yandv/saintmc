@@ -68,7 +68,7 @@ public class TagListener implements Listener {
 
 		BukkitMember player = (BukkitMember) CommonGeneral.getInstance().getMemberManager()
 				.getMember(e.getPlayer().getUniqueId());
-		
+
 		if (player == null) {
 			p.kickPlayer("§4§l" + CommonConst.KICK_PREFIX + "\n§f\n§fNão foi possível carregar sua conta!");
 			return;

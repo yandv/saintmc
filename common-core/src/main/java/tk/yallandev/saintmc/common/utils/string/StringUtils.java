@@ -57,4 +57,22 @@ public class StringUtils {
 		return (minutes > 0 ? minutes + "m " : "") + seconds + "s";
 	}
 
+	public static String formatTime(int time, TimeFormat timeFormat) {
+		int minutes = time / 60, seconds = (time % 3600) % 60;
+
+		switch (timeFormat) {
+		case SHORT:
+			return (minutes > 0 ? minutes + "m " : "") + seconds + "s";
+		default:
+			return (minutes > 0 ? minutes + (minutes == 1 ? " minuto " : " minutos ") : "") + seconds
+					+ (seconds == 1 ? " segundo" : " segundos");
+		}
+	}
+
+	public enum TimeFormat {
+
+		NORMAL, SHORT;
+
+	}
+
 }

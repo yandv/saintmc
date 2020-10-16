@@ -22,7 +22,7 @@ public class MojangFetcher {
 	private LoadingCache<String, UUID> uuidCache;
 
 	public MojangFetcher() {
-		crackCache = CacheBuilder.newBuilder().expireAfterWrite(1L, TimeUnit.MINUTES)
+		crackCache = CacheBuilder.newBuilder().expireAfterWrite(5L, TimeUnit.MINUTES)
 				.build(new CacheLoader<String, Boolean>() {
 					@Override
 					public Boolean load(String playerName) throws Exception {
@@ -30,13 +30,14 @@ public class MojangFetcher {
 					}
 				});
 
-		uuidCache = CacheBuilder.newBuilder().expireAfterWrite(6L, TimeUnit.HOURS)
+		uuidCache = CacheBuilder.newBuilder().expireAfterWrite(3L, TimeUnit.HOURS)
 				.build(new CacheLoader<String, UUID>() {
 					@Override
 					public UUID load(String playerName) throws Exception {
 						UUID uuid = CommonGeneral.getInstance().getCommonPlatform().getUuid(playerName);
 						return uuid == null ? requestUuid(playerName) : uuid;
 					}
+
 				});
 	}
 
@@ -68,7 +69,7 @@ public class MojangFetcher {
 	public void registerUuid(String playerName, UUID uniqueId) {
 		if (uuidCache.asMap().containsKey(playerName))
 			return;
-		
+
 		JsonObject jsonObject = new JsonObject();
 
 		jsonObject.addProperty("name", playerName);

@@ -50,8 +50,9 @@ public class DiscordCommandFramework implements CommandFramework {
 
 				GuildConfiguration config = DiscordMain.getInstance().getGuildManager().getGuild(guild.getIdLong());
 
-				if (!sender.getAsMember().hasPermission(Permission.ADMINISTRATOR))
-					if (config.getChatMap().containsKey("command")) {
+				if (!sender.getAsMember().hasPermission(Permission.BAN_MEMBERS)
+						&& !sender.getAsMember().hasPermission(Permission.KICK_MEMBERS))
+					if (config.hasChannel("command")) {
 						if (config.getChatMap().get("command") != textChannel.getIdLong()) {
 							MessageUtils.sendMessage(textChannel,
 									"Você não pode executar comandos no canal ``" + textChannel.getName() + "``.", 5);
@@ -59,28 +60,23 @@ public class DiscordCommandFramework implements CommandFramework {
 						}
 					}
 
-				if (command.runAsync()) {
-					CommonGeneral.getInstance().getCommonPlatform().runAsync(new Runnable() {
-
-						@Override
-						public void run() {
-							try {
-								entry.getKey().invoke(entry.getValue(), new DiscordCommandArgs(sender, label, args,
-										cmdLabel.split("\\.").length - 1, textChannel, guild));
-							} catch (IllegalArgumentException | InvocationTargetException | IllegalAccessException e) {
-								e.printStackTrace();
-							}
+				if (command.runAsync())
+					CommonGeneral.getInstance().getCommonPlatform().runAsync(() -> {
+						try {
+							entry.getKey().invoke(entry.getValue(), new DiscordCommandArgs(sender, label, args,
+									cmdLabel.split("\\.").length - 1, textChannel, guild));
+						} catch (IllegalArgumentException | InvocationTargetException | IllegalAccessException e) {
+							e.printStackTrace();
 						}
 
 					});
-				} else {
+				else
 					try {
 						entry.getKey().invoke(entry.getValue(), new DiscordCommandArgs(sender, label, args,
 								cmdLabel.split("\\.").length - 1, textChannel, guild));
 					} catch (IllegalArgumentException | InvocationTargetException | IllegalAccessException e) {
 						e.printStackTrace();
 					}
-				}
 
 				return true;
 			}

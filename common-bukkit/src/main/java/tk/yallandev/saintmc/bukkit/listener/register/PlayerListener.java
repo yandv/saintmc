@@ -81,7 +81,6 @@ public class PlayerListener extends Listener {
 		}
 
 		player.awardAchievement(Achievement.OPEN_INVENTORY);
-
 		VanishAPI.getInstance().updateHide(player);
 	}
 

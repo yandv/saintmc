@@ -10,6 +10,7 @@ import lombok.Getter;
 import tk.yallandev.saintmc.CommonConst;
 import tk.yallandev.saintmc.bukkit.command.BukkitCommandFramework;
 import tk.yallandev.saintmc.bukkit.command.manual.LoginCommand;
+import tk.yallandev.saintmc.common.permission.Group;
 import tk.yallandev.saintmc.common.tag.Tag;
 import tk.yallandev.saintmc.common.tag.TagWrapper;
 import tk.yallandev.saintmc.login.listener.CaptchaListener;
@@ -19,13 +20,15 @@ import tk.yallandev.saintmc.login.listener.QueueListener;
 import tk.yallandev.saintmc.update.UpdatePlugin;
 
 public class LoginMain extends JavaPlugin implements Listener {
-	
+
 	@Getter
 	private static LoginMain instance;
-	
-	public static final Tag ORIGINAL_TAG = TagWrapper.create("§6§lORIGINAL§6", null);
-	public static final Tag LOGGING_TAG = TagWrapper.create("§8§lLOGANDO§8", null);
-	
+
+	public static final Tag ORIGINAL_TAG = TagWrapper.create("ORIGINAL", "§6§lORIGINAL§6", Group.LIGHT, 24)
+			.setCustom(true);
+	public static final Tag LOGGING_TAG = TagWrapper.create("LOGGING", "§8§lLOGANDO§8", Group.membor, 24)
+			.setCustom(true);
+
 	@Override
 	public void onEnable() {
 		instance = this;
@@ -38,11 +41,10 @@ public class LoginMain extends JavaPlugin implements Listener {
 
 		};
 
-		if (UpdatePlugin.update(
-				new File(LoginMain.class.getProtectionDomain().getCodeSource().getLocation().getPath()),
+		if (UpdatePlugin.update(new File(LoginMain.class.getProtectionDomain().getCodeSource().getLocation().getPath()),
 				"Login", CommonConst.DOWNLOAD_KEY, shutdown))
 			return;
-		
+
 		BukkitCommandFramework.INSTANCE.registerCommands(new LoginCommand());
 		Tag.registerTag(LOGGING_TAG);
 		Tag.registerTag(ORIGINAL_TAG);
@@ -58,5 +60,5 @@ public class LoginMain extends JavaPlugin implements Listener {
 	public void onDisable() {
 		super.onDisable();
 	}
-	
+
 }

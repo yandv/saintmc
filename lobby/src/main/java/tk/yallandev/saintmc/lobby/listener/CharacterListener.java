@@ -19,6 +19,7 @@ import tk.yallandev.saintmc.bukkit.BukkitMain;
 import tk.yallandev.saintmc.bukkit.api.character.Character;
 import tk.yallandev.saintmc.bukkit.api.character.Character.Interact;
 import tk.yallandev.saintmc.bukkit.event.server.ServerPlayerJoinEvent;
+import tk.yallandev.saintmc.bukkit.event.server.ServerPlayerLeaveEvent;
 import tk.yallandev.saintmc.common.server.ServerType;
 import tk.yallandev.saintmc.lobby.LobbyMain;
 import tk.yallandev.saintmc.lobby.menu.server.GladiatorInventory;
@@ -34,7 +35,7 @@ public class CharacterListener implements Listener {
 	public CharacterListener() {
 		hologramList = new ArrayList<>();
 
-		new Character("§1§lTORNEIO", "Steve", BukkitMain.getInstance().getLocationFromConfig("npc-tournament"),
+		new Character("§1§lTORNEIO", "Tournament", BukkitMain.getInstance().getLocationFromConfig("npc-tournament"),
 				new Interact() {
 
 					@Override
@@ -43,6 +44,11 @@ public class CharacterListener implements Listener {
 						return false;
 					}
 				});
+
+		Hologram hologramLine = new SimpleHologram("§1§lTORNEIO",
+				BukkitMain.getInstance().getLocationFromConfig("npc-tournament").add(0, 0.25, 0));
+
+		hologramLine.spawn();
 
 		createCharacter("§bHungerGames", "yukiritoBDF", "npc-hg", new Interact() {
 
@@ -118,18 +124,30 @@ public class CharacterListener implements Listener {
 
 	@EventHandler
 	public void onServerPlayerJoin(ServerPlayerJoinEvent event) {
-		HologramInfo entry = hologramList.stream().filter(info -> info.typeList.contains(event.getServerType()))
-				.findFirst().orElse(null);
+		updateHologram(event.getServerType());
+	}
+
+	@EventHandler
+	public void onServerPlayerJoin(ServerPlayerLeaveEvent event) {
+		updateHologram(event.getServerType());
+	}
+
+	void updateHologram(ServerType type) {
+		HologramInfo entry = hologramList.stream().filter(info -> info.typeList.contains(type)).findFirst()
+				.orElse(null);
 
 		if (entry != null) {
-			int playerCount = 0;
+			if (BukkitMain.getInstance().getServerManager().getBalancer(type).getList().isEmpty())
+				entry.hologram.setDisplayName("§cNenhum servidor disponível!");
+			else {
+				int playerCount = 0;
 
-			for (int integer : entry.typeList.stream().map(
-					serverType -> BukkitMain.getInstance().getServerManager().getBalancer(serverType).getTotalNumber())
-					.collect(Collectors.toList()))
-				playerCount += integer;
+				for (int integer : entry.typeList.stream().map(serverType -> BukkitMain.getInstance().getServerManager()
+						.getBalancer(serverType).getTotalNumber()).collect(Collectors.toList()))
+					playerCount += integer;
 
-			entry.hologram.setDisplayName("§e" + playerCount + " jogadores!");
+				entry.hologram.setDisplayName("§e" + playerCount + " jogadores!");
+			}
 		}
 	}
 

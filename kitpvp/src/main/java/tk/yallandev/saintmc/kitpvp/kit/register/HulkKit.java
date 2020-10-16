@@ -17,7 +17,7 @@ import tk.yallandev.saintmc.kitpvp.kit.Kit;
 public class HulkKit extends Kit {
 
 	public HulkKit() {
-		super("Hulk", "Pegue seus inimigos em suas costas e lançe-os para longe", Material.SADDLE, new ArrayList<>());
+		super("Hulk", "Pegue seus inimigos em suas costas e lançe-os para longe", Material.SADDLE, 14000, new ArrayList<>());
 	}
 
 	@EventHandler

@@ -85,7 +85,7 @@ public class AlertController implements net.saintmc.anticheat.alert.AlertControl
 	public void autoban(Player player, Alert alert, long time) {
 		BukkitMain.getInstance().getPacketController()
 				.sendPacket(new AnticheatBanPacket(NameUtils.formatString(alert.getAlertType().name()),
-						time == -1 ? -1 : System.currentTimeMillis() + (time)), player);
+						time <= 1000 ? -1 : System.currentTimeMillis() + (time)), player);
 	}
 
 }

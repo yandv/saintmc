@@ -1,11 +1,16 @@
 package tk.yallandev.saintmc.bungee.listener;
 
+import java.awt.Color;
 import java.lang.reflect.Field;
 import java.net.InetSocketAddress;
+import java.net.SocketException;
+import java.net.SocketTimeoutException;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
 
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
@@ -14,6 +19,8 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.MessageBuilder;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -29,6 +36,7 @@ import net.md_5.bungee.connection.InitialHandler;
 import net.md_5.bungee.connection.LoginResult;
 import net.md_5.bungee.event.EventHandler;
 import net.md_5.bungee.event.EventPriority;
+import tk.yallandev.saintmc.BungeeConst;
 import tk.yallandev.saintmc.CommonConst;
 import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.bungee.BungeeMain;
@@ -45,9 +53,11 @@ import tk.yallandev.saintmc.common.clan.event.member.MemberOnlineEvent;
 import tk.yallandev.saintmc.common.permission.Group;
 import tk.yallandev.saintmc.common.report.Report;
 import tk.yallandev.saintmc.common.server.ServerType;
+import tk.yallandev.saintmc.common.utils.DateUtils;
 import tk.yallandev.saintmc.common.utils.string.NameUtils;
 import tk.yallandev.saintmc.common.utils.supertype.FutureCallback;
 import tk.yallandev.saintmc.common.utils.web.WebHelper.Method;
+import tk.yallandev.saintmc.discord.utils.MessageUtils;
 
 public class AccountListener implements Listener {
 
@@ -98,13 +108,14 @@ public class AccountListener implements Listener {
 				/*
 				 * Verify if the player is cracked or premium
 				 */
+
 				try {
 					CommonGeneral.getInstance().getMojangFetcher().isCracked(playerName, new FutureCallback<Boolean>() {
 
 						@Override
-						public void result(Boolean cracked, Throwable error) {
+						public void result(Boolean cracked, Throwable r) {
 
-							if (error == null) {
+							if (r == null) {
 								/*
 								 * Change the login status If the onlineMode equals false the cracked player
 								 * will able to join or if equals true the cracked player wont able to join
@@ -112,11 +123,18 @@ public class AccountListener implements Listener {
 
 								connection.setOnlineMode(!cracked);
 							} else {
-								event.setCancelled(true);
-								event.setCancelReason("§4§l" + CommonConst.KICK_PREFIX
-										+ "\n§f\n§fNão foi possível verificar seu status com a mojang!§f\n§6Mais informação em: §b"
-										+ CommonConst.DISCORD);
-								AccountListener.this.error++;
+
+								if (r instanceof SocketTimeoutException || r instanceof SocketException)
+									CommonGeneral.getInstance().getLogger().log(Level.WARNING,
+											"Couldn't verify the status with mojang of player " + connection.getName());
+								else {
+									event.setCancelled(true);
+									event.setCancelReason("§4§l" + CommonConst.KICK_PREFIX
+											+ "\n§f\n§fNão foi possível verificar seu status com a mojang!§f\n§6Mais informação em: §b"
+											+ CommonConst.DISCORD);
+								}
+
+								error++;
 								lastError = System.currentTimeMillis();
 							}
 
@@ -124,17 +142,16 @@ public class AccountListener implements Listener {
 						}
 					});
 				} catch (Exception ex) {
-					event.setCancelled(true);
-					event.setCancelReason("§4§l" + CommonConst.KICK_PREFIX
-							+ "\n§f\n§fNão foi possível verificar seu status com a mojang!§f\n§6Mais informação em: §b"
-							+ CommonConst.DISCORD);
-					event.completeIntent(BungeeMain.getPlugin());
+					connection.setOnlineMode(true);
+					CommonGeneral.getInstance()
+							.debug("Couldn't verify the status with mojang of player " + connection.getName());
 
 					error++;
 					lastError = System.currentTimeMillis();
 				}
 			}
 		});
+
 	}
 
 	/*
@@ -167,9 +184,9 @@ public class AccountListener implements Listener {
 			@Override
 			public void run() {
 
-				CommonGeneral.getInstance().debug("Loading " + uniqueId + " (" + playerName + ") account!");
-
 				try {
+
+					CommonGeneral.getInstance().debug("Loading " + playerName + " member account!");
 
 					/*
 					 * Load MemberModel from backend
@@ -210,17 +227,19 @@ public class AccountListener implements Listener {
 
 					MemberModel memberModel = CommonGeneral.getInstance().getPlayerData().loadMember(uniqueId);
 
-					if (basedName != null && !basedName.getUniqueId().equals(memberModel.getUniqueId())
-							&& basedName.getLoginConfiguration().getAccountType() != basedName.getLoginConfiguration()
-									.getAccountType()) {
-						event.setCancelled(true);
-						event.setCancelReason("§4§l" + CommonConst.KICK_PREFIX + "\n§f\n§fUma conta "
-								+ NameUtils.formatString(memberModel.getLoginConfiguration().getAccountType().name())
-								+ " com o mesmo nick que a sua já está registrada no servidor!\n§f\n§6Mais informação em: §b"
-								+ CommonConst.DISCORD);
-						event.completeIntent(BungeeMain.getPlugin());
-						return;
-					}
+					if (memberModel != null)
+						if (basedName != null && !basedName.getUniqueId().equals(memberModel.getUniqueId())
+								&& basedName.getLoginConfiguration().getAccountType() != basedName
+										.getLoginConfiguration().getAccountType()) {
+							event.setCancelled(true);
+							event.setCancelReason("§4§l" + CommonConst.KICK_PREFIX + "\n§f\n§fUma conta "
+									+ NameUtils
+											.formatString(memberModel.getLoginConfiguration().getAccountType().name())
+									+ " com o mesmo nick que a sua já está registrada no servidor!\n§f\n§6Mais informação em: §b"
+									+ CommonConst.DISCORD);
+							event.completeIntent(BungeeMain.getPlugin());
+							return;
+						}
 
 					Member member = null;
 
@@ -306,7 +325,10 @@ public class AccountListener implements Listener {
 					 * Logout the Member
 					 */
 
-					member.getLoginConfiguration().logOut();
+					if (member.getLoginConfiguration().hasSession(ipAddress.getHostString()))
+						member.getLoginConfiguration().login(ipAddress.getHostString());
+					else
+						member.getLoginConfiguration().logOut();
 
 					/*
 					 * Register the cracked uniqueId in javascript-coded backend
@@ -336,7 +358,8 @@ public class AccountListener implements Listener {
 				 */
 
 				if (BungeeMain.getInstance().getPunishManager().isIpBanned(ipAddress.getHostString())) {
-					Ban ban = new Ban(member.getUniqueId(), "CONSOLE", UUID.randomUUID(), "Conta alternativa",
+					Ban ban = new Ban(member.getUniqueId(), member.getPlayerName(), "CONSOLE", UUID.randomUUID(),
+							"Conta alternativa",
 							System.currentTimeMillis() + (1000 * 60 * 60 * 24
 									* (member.getLoginConfiguration().getAccountType() == AccountType.CRACKED ? 14
 											: 7)));
@@ -416,6 +439,8 @@ public class AccountListener implements Listener {
 									if (error == null) {
 										loadTexture(event.getConnection(), result.getAsJsonObject());
 										textureCache.put(playerName, result.getAsJsonObject());
+									} else {
+										member.sendMessage("§cNão foi possível verificar sua skin!");
 									}
 								}
 							});
@@ -428,10 +453,11 @@ public class AccountListener implements Listener {
 				event.completeIntent(BungeeMain.getPlugin());
 			}
 		});
+
 	}
 
 	@EventHandler(priority = -127)
-	public void onPostLoginCheck(PostLoginEvent event) {
+	public void onPostLogin(PostLoginEvent event) {
 		/*
 		 * Check if the account has been stored locally
 		 */
@@ -450,32 +476,14 @@ public class AccountListener implements Listener {
 				.getMember(event.getPlayer().getUniqueId());
 
 		member.setProxiedPlayer(event.getPlayer());
-		
-//		if (!member.isBdff()) {
-//			if (member.getLoginConfiguration().getAccountType() == AccountType.ORIGINAL)
-//				if (member.getPlayerName().toLowerCase().endsWith("bdf")
-//						|| member.getPlayerName().toLowerCase().endsWith("bdf_")) {
-//
-//					boolean add = false;
-//
-//					if (member.getRanks().containsKey(RankType.SAINT)) {
-//						member.getRanks().put(RankType.SAINT,
-//								member.getRanks().get(RankType.SAINT) + (1000 * 60 * 60 * 24 * 2));
-//						add = true;
-//					} else
-//						member.getRanks().put(RankType.SAINT, System.currentTimeMillis() + (1000 * 60 * 60 * 24 * 2));
-//
-//					member.saveRanks();
-//
-//					if (add)
-//						member.sendMessage(
-//								"§aVocê recebeu mais 2 dias de vip " + Tag.SAINT.getPrefix() + " por ter BDF no nick!");
-//					else
-//						member.sendMessage(
-//								"§aVocê recebeu vip " + Tag.SAINT.getPrefix() + " de 2 dias por ter BDF no nick!");
-//					member.setBdff(true);
-//				}
-//		}
+		member.setOnline(true);
+
+		if (member.hasGroupPermission(Group.HELPER))
+			MessageUtils.sendMessage(BungeeConst.DISCORD_CHANNEL_JOIN_LOG,
+					new MessageBuilder(new EmbedBuilder().setColor(Color.GREEN)
+							.setAuthor(member.getPlayerName(), CommonConst.PAINEL_PROFILE + member.getPlayerName(),
+									"https://mc-heads.net/avatar/" + member.getPlayerName())
+							.setFooter("Registro de entrada do servidor").setTimestamp(Instant.now()).build()).build());
 	}
 
 	@EventHandler
@@ -487,7 +495,7 @@ public class AccountListener implements Listener {
 
 			Member member = CommonGeneral.getInstance().getMemberManager().getMember(proxiedPlayer.getUniqueId());
 
-			if (member.hasGroupPermission(Group.DIRETOR))
+			if (member.hasGroupPermission(Group.DONO))
 				event.setHasPermission(true);
 		}
 	}
@@ -515,8 +523,6 @@ public class AccountListener implements Listener {
 				Member member = CommonGeneral.getInstance().getMemberManager().getMember(proxied.getUniqueId());
 
 				if (member != null) {
-					member.setLeaveData();
-
 					CommonGeneral.getInstance().getPlayerData().cacheMember(member.getUniqueId());
 					CommonGeneral.getInstance().getMemberManager().unloadMember(member.getUniqueId());
 
@@ -530,6 +536,21 @@ public class AccountListener implements Listener {
 							CommonGeneral.getInstance().getClanManager().unload(clan.getUniqueId());
 						}
 					}
+
+					if (member.hasGroupPermission(Group.HELPER))
+						MessageUtils.sendMessage(BungeeConst.DISCORD_CHANNEL_JOIN_LOG,
+								new MessageBuilder(new EmbedBuilder()
+										.setColor(Color.RED)
+										.setAuthor(member.getPlayerName(),
+												CommonConst.PAINEL_PROFILE + member.getPlayerName(),
+												"https://mc-heads.net/avatar/" + member.getPlayerName())
+										.appendDescription(
+												"Ficou " + DateUtils.formatDifference(member.getSessionTime() / 1000)
+														+ " online!")
+										.setFooter("Registro de saida do servidor").setTimestamp(Instant.now()).build())
+												.build());
+
+					member.setLeaveData();
 				}
 			}
 		});
