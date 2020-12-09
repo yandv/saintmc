@@ -16,6 +16,7 @@ public class LoginConfiguration {
 
 	private AccountType accountType;
 
+	private boolean passCaptcha;
 	private boolean logged;
 	private String password;
 
@@ -26,10 +27,10 @@ public class LoginConfiguration {
 
 	private long lastVerify = System.currentTimeMillis();
 
-	public LoginConfiguration(Member player) {
+	public LoginConfiguration(Member player, AccountType accountType) {
 		this.player = player;
 
-		this.accountType = AccountType.NONE;
+		this.accountType = accountType;
 
 		this.sessionMap = new HashMap<>();
 
@@ -98,27 +99,13 @@ public class LoginConfiguration {
 		save();
 	}
 
-	public void setAccountType(AccountType accountType) {
-		if (this.accountType != AccountType.NONE) {
-			throw new IllegalStateException(player.getPlayerName() + " accountType already set!");
-		}
-
-		this.accountType = accountType;
-		save();
-	}
-
 	public void save() {
 		this.player.save("loginConfiguration");
 	}
 
-	public AccountType verify() {
-		if (lastVerify + (1000 * 60 * 60 * 24) > System.currentTimeMillis()) {
-			return this.accountType;
-		}
-
-		AccountType accountType = AccountType.NONE;
-
-		return accountType;
+	public void setCaptcha(boolean passCaptcha) {
+		this.passCaptcha = passCaptcha;
+		this.player.save("loginConfiguration");
 	}
 
 	public boolean isRegistred() {
@@ -126,9 +113,6 @@ public class LoginConfiguration {
 	}
 
 	public AccountType getAccountType() {
-		if (accountType == null)
-			accountType = AccountType.NONE;
-
 		return accountType;
 	}
 
@@ -141,7 +125,7 @@ public class LoginConfiguration {
 
 	public enum AccountType {
 
-		CRACKED, ORIGINAL, NONE;
+		CRACKED, ORIGINAL;
 
 	}
 }

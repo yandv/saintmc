@@ -27,7 +27,7 @@ public class ProtectionListener implements Listener {
 		gamer.setSpawnProtection(true);
 
 		if (event.getWarp().getWarpSettings().isSpawnProtection())
-			player.sendMessage("§a§l> §fVocê §arecebeu§f a proteção do spawn!");
+			player.sendMessage("§aVocê recebeu a proteção do spawn!");
 	}
 
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
@@ -43,8 +43,9 @@ public class ProtectionListener implements Listener {
 			return;
 		}
 
-		if (gamer.getWarp().getWarpSettings().isSpawnProtection() && gamer.isSpawnProtection())
+		if (gamer.getWarp().getWarpSettings().isSpawnProtection() && gamer.isSpawnProtection()) {
 			event.setCancelled(true);
+		}
 	}
 
 	@EventHandler(priority = EventPriority.HIGHEST)
@@ -55,14 +56,15 @@ public class ProtectionListener implements Listener {
 			event.setCancelled(true);
 			return;
 		}
-		
+
 		if (gamer.getWarp().getWarpSettings().isSpawnProtection() && (gamer.isSpawnProtection() || GameMain
-				.getInstance().getGamerManager().getGamer(event.getDamager().getUniqueId()).isSpawnProtection()))
+				.getInstance().getGamerManager().getGamer(event.getDamager().getUniqueId()).isSpawnProtection())) {
 			event.setCancelled(true);
+		}
 	}
 
 	@EventHandler
-	public void onRealMove(PlayerMoveUpdateEvent event) {
+	public void onPlayerMoveUpdate(PlayerMoveUpdateEvent event) {
 		Player player = event.getPlayer();
 
 		if (AdminMode.getInstance().isAdmin(player))
@@ -87,7 +89,7 @@ public class ProtectionListener implements Listener {
 
 		if (distance > spawnRadius) {
 			gamer.setSpawnProtection(false);
-			player.sendMessage("§a§l> §fVocê §8perdeu§f a proteção do spawn!");
+			player.sendMessage("§cVocê perdeu a proteção do spawn!");
 			Bukkit.getPluginManager().callEvent(new PlayerLostProtectionEvent(player, warp));
 		}
 	}

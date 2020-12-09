@@ -52,13 +52,13 @@ public enum ArenaType implements ArenaCreator {
 					}
 				}
 
-				for (double t = 0; t < 50; t += 0.5) {
+				for (double t = 0; t < 365; t += 1) {
 					double x = (radius * Math.sin(t));
 					double z = (radius * Math.cos(t));
 
 					for (int y = 0; y <= height; y++) {
 						Location actualLocation = location.clone().add(x, y, z);
-						
+
 						response.addMap(actualLocation, actualLocation.getBlock().getState());
 						actualLocation.getBlock().setType(material);
 						actualLocation.getBlock().setData((byte) id);

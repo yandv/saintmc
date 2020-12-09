@@ -61,13 +61,13 @@ public class ClanCommand implements CommandClass {
 
 		switch (args[0].toLowerCase()) {
 		case "criar": {
-			if (dontHaveClan(player)) {
+			if (player.getClanUniqueId() == null) {
 				if (args.length >= 3) {
 
-					if (!player.hasGroupPermission(Group.LIGHT) && player.getMoney() < CLAN_MONEY) {
+					if (!player.hasGroupPermission(Group.PRO) && player.getMoney() < CLAN_MONEY) {
 						player.sendMessage("§cVocê não tem money o suficiente para criar um clan, você precisa de mais "
 								+ (CLAN_MONEY - player.getMoney()) + " coins!");
-						player.sendMessage("§cOu seja " + Tag.LIGHT.getPrefix()
+						player.sendMessage("§cOu seja " + Tag.PRO.getPrefix()
 								+ "§c ou superior para criar um clan a qualquer momento.");
 						return;
 					}
@@ -114,7 +114,8 @@ public class ClanCommand implements CommandClass {
 					player.sendMessage(" §4* §fUse §a/" + cmdArgs.getLabel()
 							+ " <create:criar> <nome> <sigla>§f para criar um clan!");
 				}
-			}
+			} else
+				player.sendMessage("§cVocê já tem um clan!");
 			break;
 		}
 		case "setgroup": {
@@ -474,8 +475,8 @@ public class ClanCommand implements CommandClass {
 			}
 
 			if (clan == null) {
-				player.sendMessage(
-						" §e* §fUse §a/" + cmdArgs.getLabel() + " info <nome:sigla:playerName>§f para ver as informações de um clan!");
+				player.sendMessage(" §e* §fUse §a/" + cmdArgs.getLabel()
+						+ " info <nome:sigla:playerName>§f para ver as informações de um clan!");
 				return;
 			}
 
@@ -568,6 +569,7 @@ public class ClanCommand implements CommandClass {
 				player.sendMessage(
 						player.getAccountConfiguration().isClanChatEnabled() ? "§aO chat do clan foi ativado!"
 								: "§cO chat do clan foi desativado!");
+				player.sendMessage("§eUse /clanchat <mensagem> para enviar uma mensagem para o clan!");
 			}
 
 			break;
@@ -647,7 +649,9 @@ public class ClanCommand implements CommandClass {
 		sender.sendMessage(" §e* §fUse §a/" + label + " invite <player>§f para convidar um jogador!");
 		sender.sendMessage(" §e* §fUse §a/" + label + " cancel <player>§f para cancelar o invite de um jogador!");
 		sender.sendMessage(" §e* §fUse §a/" + label + " join <nome>§f para entrar em um clan!");
-		sender.sendMessage(" §e* §fUse §a/" + label + " chat <mensagem>§f para falar no chat do clan!");
+		sender.sendMessage(
+				" §e* §fUse §a/" + label + " chat <mensagem>§f para desativar ou ativar as mensagems do chat do clan!");
+		sender.sendMessage(" §e* §fUse §a/clanchat <mensagem>§f para enviar uma mensagem no chat do clan!");
 		sender.sendMessage(
 				" §e* §fUse §a/" + label + " info <nome:sigla:playerName>§f para ver as informações de um clan!");
 		sender.sendMessage(" §e* §fUse §a/" + label + " leave§f para sair do clan!");

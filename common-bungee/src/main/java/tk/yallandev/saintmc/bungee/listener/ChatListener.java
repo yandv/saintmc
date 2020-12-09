@@ -116,19 +116,19 @@ public class ChatListener implements Listener {
 
 		if (!event.isCommand())
 			if (player.getAccountConfiguration().isStaffChatEnabled()) {
-				if (player.hasGroupPermission(Group.HELPER)) {
+				if (player.hasGroupPermission(Group.TRIAL)) {
 
 					if (!player.getAccountConfiguration().isSeeingStaffchat()) {
-						player.sendMessage("§aVocê estava falando no staffchat sem pode ver ele!");
+						player.sendMessage("§cVocê estava falando no staffchat sem pode ver ele!");
 						player.sendMessage(
-								"§aVocê foi retirado do staffchat, use /staffchat on para pode ver o staffchat");
+								"§cVocê foi retirado do staffchat, use /staffchat on para pode ver o staffchat");
 						player.getAccountConfiguration().setStaffChatEnabled(false);
 						event.setCancelled(true);
 						return;
 					}
 
 					CommonGeneral.getInstance().getMemberManager().getMembers().stream().filter(
-							m -> m.hasGroupPermission(Group.HELPER) && m.getAccountConfiguration().isSeeingStaffchat())
+							m -> m.hasGroupPermission(Group.TRIAL) && m.getAccountConfiguration().isSeeingStaffchat())
 							.forEach(m -> m.sendMessage(
 									"§e§l[STAFF] " + Tag.getByName(player.getGroup().toString()).getPrefix() + " "
 											+ player.getPlayerName() + "§f: " + event.getMessage()));

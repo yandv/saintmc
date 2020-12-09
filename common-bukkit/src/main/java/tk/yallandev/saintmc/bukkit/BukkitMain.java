@@ -38,14 +38,9 @@ import com.google.common.io.ByteStreams;
 import lombok.Getter;
 import lombok.Setter;
 import net.saintmc.anticheat.AnticheatController;
-import net.saintmc.anticheat.check.CheckController;
-import net.saintmc.anticheat.check.register.CombatCheck;
-import net.saintmc.anticheat.check.register.MovementCheck;
-import net.saintmc.anticheat.listener.StorageListener;
 import tk.yallandev.hologramapi.controller.HologramController;
 import tk.yallandev.saintmc.CommonConst;
 import tk.yallandev.saintmc.CommonGeneral;
-import tk.yallandev.saintmc.bukkit.anticheat.alert.AlertController;
 import tk.yallandev.saintmc.bukkit.api.character.CharacterListener;
 import tk.yallandev.saintmc.bukkit.api.cooldown.CooldownController;
 import tk.yallandev.saintmc.bukkit.api.item.ActionItemListener;
@@ -178,7 +173,7 @@ public class BukkitMain extends JavaPlugin {
 			if (general.getServerType().canSendData())
 				getServer().getScheduler().runTaskAsynchronously(getInstance(),
 						pubSubListener = new PubSubListener(redis, new BukkitPubSubHandler(), "account-field",
-								"clan-field", "report-field", "report-action", "server-info"));
+								"clan-field", "report-field", "report-action", "server-info", "server-members"));
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			Bukkit.shutdown();
@@ -188,6 +183,8 @@ public class BukkitMain extends JavaPlugin {
 		/*
 		 * Server Info
 		 */
+
+		Bukkit.getWorlds().forEach(world -> world.getEntities().forEach(entity -> entity.remove()));
 
 		saveDefaultConfig();
 
@@ -216,11 +213,12 @@ public class BukkitMain extends JavaPlugin {
 		skinManager = new SkinController();
 		worldeditController = new WorldeditController();
 
-		CheckController checkController = new CheckController();
-		anticheatController = new AnticheatController(checkController, new AlertController());
-
-		checkController.registerCheck(new MovementCheck());
-		checkController.registerCheck(new CombatCheck(this));
+//		CheckController checkController = new CheckController();
+//		anticheatController = new AnticheatController(checkController, new AlertController());
+//
+//		checkController.registerCheck(new MovementCheck());
+//		checkController.registerCheck(new CombatCheck(this));
+//		pm.registerEvents(new StorageListener(), getInstance());
 
 		hologramController = new HologramController(getInstance());
 		packetController = new BukkitPacketController();
@@ -285,7 +283,8 @@ public class BukkitMain extends JavaPlugin {
 						"blockdata", "clone", "debug", "defaultgamemode", "entitydata", "execute", "fill", "gamemode",
 						"pardon", "pardon-ip", "replaceitem", "setidletimeout", "stats", "testforblock", "title",
 						"trigger", "viaver", "protocolsupport", "ps", "holograms", "hd", "holo", "hologram", "restart",
-						"filter", "packetlog", "pl", "plugins", "whitelist");
+						"filter", "packetlog", "pl", "plugins", "whitelist", "tps", "pl", "plugins", "ver", "version",
+						"?");
 
 				BukkitCommandFramework.INSTANCE.loadCommands("tk.yallandev.saintmc.bukkit.command.register");
 
@@ -342,8 +341,6 @@ public class BukkitMain extends JavaPlugin {
 		pm.registerEvents(new CharacterListener(), getInstance());
 		pm.registerEvents(new MenuListener(), getInstance());
 		pm.registerEvents(new CooldownController(), getInstance());
-
-		pm.registerEvents(new StorageListener(), getInstance());
 	}
 
 	public void sendPlayerToLobby(Player player) {
@@ -396,6 +393,35 @@ public class BukkitMain extends JavaPlugin {
 
 		if (!file.contains(config + ".x")) {
 			return Bukkit.getWorlds().get(0).getSpawnLocation();
+		}
+
+		World world = Bukkit.getWorld(file.getString(config + ".world"));
+
+		if (world == null) {
+			world = getServer().createWorld(new WorldCreator(file.getString(config + ".world")));
+			CommonGeneral.getInstance().getLogger().info("The world " + world.getName() + " has loaded successfully.");
+		}
+
+		Location location = new Location(world, file.getDouble(config + ".x"), file.getDouble(config + ".y"),
+				file.getDouble(config + ".z"));
+
+		location.setPitch(file.getLong(config + ".pitch"));
+		location.setYaw(file.getLong(config + ".yaw"));
+		this.location.put(config, location);
+
+		return location;
+	}
+
+	public Location getLocationFromConfig(String config, Location defaultLocation) {
+		config = config.toLowerCase();
+
+		if (location.containsKey(config))
+			return location.get(config);
+
+		FileConfiguration file = getConfig();
+
+		if (!file.contains(config + ".x")) {
+			return defaultLocation;
 		}
 
 		World world = Bukkit.getWorld(file.getString(config + ".world"));
@@ -492,7 +518,7 @@ public class BukkitMain extends JavaPlugin {
 			while (iterator.hasNext()) {
 				Entry<String, Command> entry = iterator.next();
 
-				if (entry.getKey().contains(":") || entry.getValue().getLabel().contains(":")) {
+				if (entry.getKey().contains(":")) {
 					entry.getValue().unregister(commandMap);
 					iterator.remove();
 				}

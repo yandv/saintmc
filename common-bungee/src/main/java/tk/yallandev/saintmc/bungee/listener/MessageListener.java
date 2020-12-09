@@ -1,5 +1,7 @@
 package tk.yallandev.saintmc.bungee.listener;
 
+import java.util.UUID;
+
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteStreams;
 
@@ -10,7 +12,9 @@ import net.md_5.bungee.api.event.PluginMessageEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 import tk.yallandev.saintmc.CommonGeneral;
+import tk.yallandev.saintmc.bungee.BungeeMain;
 import tk.yallandev.saintmc.common.account.Member;
+import tk.yallandev.saintmc.common.ban.constructor.Ban;
 import tk.yallandev.saintmc.common.permission.Group;
 import tk.yallandev.saintmc.common.server.ServerManager;
 import tk.yallandev.saintmc.common.server.ServerType;
@@ -55,6 +59,11 @@ public class MessageListener implements Listener {
 		String subChannel = in.readUTF();
 
 		switch (subChannel) {
+		case "HandleBan": {
+			BungeeMain.getInstance().getPunishManager().ban(player, new Ban(player.getUniqueId(),
+					player.getPlayerName(), "CONSOLE", UUID.randomUUID(), "Autoban - Cheating", -1));
+			break;
+		}
 		case "Hungergames":
 			event.setCancelled(true);
 
@@ -137,12 +146,12 @@ public class MessageListener implements Listener {
 		if (server == null || server.getServerInfo() == null)
 			return false;
 
-		if (server.isFull() && !player.hasGroupPermission(Group.SAINT)) {
+		if (server.isFull() && !player.hasGroupPermission(Group.ULTIMATE)) {
 			proxiedPlayer.sendMessage("§cO servidor está cheio!");
 			return true;
 		}
 
-		if (!server.canBeSelected() && !player.hasGroupPermission(Group.BUILDER)) {
+		if (!server.canBeSelected() && !player.hasGroupPermission(Group.TRIAL)) {
 			proxiedPlayer.sendMessage("§cO servidor não está disponível para membros!");
 			return true;
 		}

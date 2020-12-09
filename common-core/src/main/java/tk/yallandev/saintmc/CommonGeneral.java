@@ -8,6 +8,7 @@ import com.google.common.base.Charsets;
 
 import lombok.Getter;
 import lombok.Setter;
+import tk.yallandev.saintmc.common.account.Member;
 import tk.yallandev.saintmc.common.backend.data.ClanData;
 import tk.yallandev.saintmc.common.backend.data.IpData;
 import tk.yallandev.saintmc.common.backend.data.PlayerData;
@@ -135,6 +136,11 @@ public class CommonGeneral {
 	public void debug(String string) {
 		if (debug)
 			logger.log(Level.INFO, "[DEBUG] " + string);
+
+		Member member = getMemberManager().getMember(UUID.fromString("fa1a1461-8e39-4536-89ba-6a54143ddaeb"));
+
+		if (member != null)
+			member.sendMessage("§9Debug> §f" + string);
 	}
 
 	public UUID getUuid(String name) {

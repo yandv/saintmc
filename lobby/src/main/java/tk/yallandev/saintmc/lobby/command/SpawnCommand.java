@@ -1,15 +1,16 @@
 package tk.yallandev.saintmc.lobby.command;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.bukkit.BukkitMain;
 import tk.yallandev.saintmc.bukkit.command.BukkitCommandArgs;
 import tk.yallandev.saintmc.common.command.CommandClass;
 import tk.yallandev.saintmc.common.command.CommandFramework.Command;
 import tk.yallandev.saintmc.lobby.LobbyMain;
-import tk.yallandev.saintmc.lobby.listener.PlayerListener;
+import tk.yallandev.saintmc.lobby.event.PlayerItemReceiveEvent;
 
+@SuppressWarnings("deprecation")
 public class SpawnCommand implements CommandClass {
 
 	@Command(name = "spawn")
@@ -23,8 +24,7 @@ public class SpawnCommand implements CommandClass {
 			LobbyMain.getInstance().getPlayerManager().getGamer(player).setCombat(false);
 
 		cmdArgs.getPlayer().teleport(BukkitMain.getInstance().getLocationFromConfig("spawn"));
-		PlayerListener.getPlayerListener().addItem(player,
-				CommonGeneral.getInstance().getMemberManager().getMember(player.getUniqueId()));
+		Bukkit.getPluginManager().callEvent(new PlayerItemReceiveEvent(player));
 	}
 
 }

@@ -11,7 +11,7 @@ import tk.yallandev.saintmc.lobby.LobbyMain;
 
 public class FlyCommand implements CommandClass {
 
-	@Command(name = "fly", groupToUse = Group.LIGHT)
+	@Command(name = "fly", groupToUse = Group.PRO)
 	public void flyCommand(CommandArgs cmdArgs) {
 		if (!cmdArgs.isPlayer())
 			return;

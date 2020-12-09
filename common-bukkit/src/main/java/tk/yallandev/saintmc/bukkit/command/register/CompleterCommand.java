@@ -34,7 +34,7 @@ public class CompleterCommand implements CommandClass {
 	 * @since 1.2
 	 */
 
-	@Command(name = "giftcode", aliases = { "resgatar", "codigo" }, groupToUse = Group.DIRETOR)
+	@Command(name = "giftcode", aliases = { "resgatar", "codigo" }, groupToUse = Group.ADMIN)
 	public void principalCommand(CommandArgs cmdArgs) {
 
 	}
@@ -45,23 +45,23 @@ public class CompleterCommand implements CommandClass {
 	}
 
 	@Command(name = "groupset", aliases = { "removevip", "tempgroup", "givevip", "removervip", "unban", "unmute",
-			"glist", "broadcast", "setargroup" }, groupToUse = Group.GERENTE)
+			"glist", "broadcast", "setargroup" }, groupToUse = Group.ADMIN)
 	public void managerCommand(CommandArgs cmdArgs) {
 
 	}
 
-	@Command(name = "screenshare", aliases = { "ss", "fakelist", "find" }, groupToUse = Group.MODGC)
+	@Command(name = "screenshare", aliases = { "ss", "fakelist", "find" }, groupToUse = Group.MODPLUS)
 	public void modgcCommand(CommandArgs cmdArgs) {
 
 	}
 
-	@Command(name = "ban", aliases = { "mute", "warn", "banir", "unban", "desbanir", "tempban", "tempmute", "send", "staffchat",
-			"sc" }, groupToUse = Group.TRIAL)
+	@Command(name = "ban", aliases = { "mute", "warn", "banir", "unban", "desbanir", "tempban", "tempmute", "send",
+			"staffchat", "sc" }, groupToUse = Group.TRIAL)
 	public void trialCommand(CommandArgs cmdArgs) {
-		
+
 	}
 
-	@Command(name = "lobby", aliases = { "server", "connect", "ir", "go", "discord", "hub", "ping", "play", "clan" })
+	@Command(name = "lobby", aliases = { "server", "connect", "ir", "go", "hub", "ping", "play", "clan" })
 	public void memberCommand(CommandArgs cmdArgs) {
 
 	}
@@ -221,8 +221,8 @@ public class CompleterCommand implements CommandClass {
 			List<String> argList = new ArrayList<>();
 			List<String> avaiableArg = Arrays.asList("current", "all");
 
-			avaiableArg.addAll(
-					Arrays.asList(Bukkit.getOnlinePlayers().stream().map(Player::getName).toArray(String[]::new)));
+			for (Player player : Bukkit.getOnlinePlayers())
+				avaiableArg.add(player.getName());
 
 			if (cmdArgs.getArgs()[0].isEmpty())
 				for (String arg : avaiableArg)

@@ -28,6 +28,7 @@ import tk.yallandev.saintmc.bukkit.api.vanish.AdminMode;
 import tk.yallandev.saintmc.bukkit.event.player.PlayerDamagePlayerEvent;
 import tk.yallandev.saintmc.kitpvp.GameMain;
 import tk.yallandev.saintmc.kitpvp.event.warp.PlayerWarpDeathEvent;
+import tk.yallandev.saintmc.kitpvp.event.warp.PlayerWarpJoinEvent;
 import tk.yallandev.saintmc.kitpvp.event.warp.PlayerWarpRespawnEvent;
 import tk.yallandev.saintmc.kitpvp.gamer.Gamer;
 import tk.yallandev.saintmc.kitpvp.warp.Warp;
@@ -97,6 +98,13 @@ public class WarpListener implements Listener {
 				item.setDurability((short) 0);
 			}
 		}
+
+		CooldownController.getInstance().clearCooldown(event.getPlayer());
+	}
+
+	@EventHandler
+	public void onPlayerWarpJoin(PlayerWarpJoinEvent event) {
+		CooldownController.getInstance().clearCooldown(event.getPlayer());
 	}
 
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -116,10 +124,10 @@ public class WarpListener implements Listener {
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onPlayerWarpRespawn(PlayerWarpRespawnEvent event) {
 		Gamer gamer = GameMain.getInstance().getGamerManager().getGamer(event.getPlayer().getUniqueId());
-		
+
 		if (gamer == null)
 			return;
-		
+
 		gamer.setKit(null);
 	}
 
@@ -162,8 +170,10 @@ public class WarpListener implements Listener {
 			double distance = 10000;
 
 			for (Player game : Bukkit.getOnlinePlayers().stream()
-					.filter(game -> !AdminMode.getInstance().isAdmin(game) && GameMain.getInstance().getGamerManager()
-							.getGamer(game.getUniqueId()).getWarp().equals(gamer.getWarp()))
+					.filter(game -> !AdminMode.getInstance().isAdmin(game)
+							&& GameMain.getInstance().getGamerManager().getGamer(game.getUniqueId()).getWarp()
+									.equals(gamer.getWarp())
+							&& GameMain.getInstance().getGamerManager().getGamer(game.getUniqueId()).hasKit())
 					.collect(Collectors.toList())) {
 
 				double distOfPlayerToVictim = player.getLocation().distance(game.getPlayer().getLocation());
@@ -184,7 +194,7 @@ public class WarpListener implements Listener {
 			CooldownController.getInstance().addCooldown(player, new ItemCooldown(item, "Bussola", 2l));
 		}
 	}
-	
+
 	public void respawn(Player player, Warp warp) {
 		player.setHealth(player.getMaxHealth());
 		player.setFoodLevel(20);

@@ -10,6 +10,7 @@ import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import tk.yallandev.saintmc.common.account.Member;
 import tk.yallandev.saintmc.common.account.MemberModel;
+import tk.yallandev.saintmc.common.account.configuration.LoginConfiguration.AccountType;
 
 @Getter
 @Setter
@@ -24,8 +25,8 @@ public class BungeeMember extends Member {
 		super(memberModel);
 	}
 
-	public BungeeMember(String playerName, UUID uniqueId) {
-		super(playerName, uniqueId);
+	public BungeeMember(String playerName, UUID uniqueId, AccountType accountType) {
+		super(playerName, uniqueId, accountType);
 	}
 
 	@Override

@@ -43,7 +43,7 @@ public class AlertController implements net.saintmc.anticheat.alert.AlertControl
 								CommonGeneral.getInstance().getMemberManager().getMemberMap().values().stream()
 										.filter(m -> m.hasGroupPermission(Group.MOD)
 												&& m.getAccountConfiguration().isAnticheatEnabled())
-										.forEach(m -> m.sendMessage("§9Spectrum> §fO jogador §c"
+										.forEach(m -> m.sendMessage("§9Anticheat> §fO jogador §c"
 												+ member.getPlayerName() + "§f será auto banido em §4"
 												+ (StringUtils.formatTime(
 														(int) ((member.getBanTime() - System.currentTimeMillis())
@@ -59,7 +59,7 @@ public class AlertController implements net.saintmc.anticheat.alert.AlertControl
 
 	@Override
 	public void alert(Player player, Alert alert, int alertIndex) {
-		MessageBuilder messageBuilder = new MessageBuilder("§9Spectrum> §fO jogador §d" + alert.getPlayerName()
+		MessageBuilder messageBuilder = new MessageBuilder("§9Anticheat> §fO jogador §d" + alert.getPlayerName()
 				+ "§f está usando §c" + NameUtils.formatString(alert.getAlertType().name()) + " §e(" + alertIndex + "/"
 				+ alert.getAlertType().getMaxAlerts() + ")§f!");
 

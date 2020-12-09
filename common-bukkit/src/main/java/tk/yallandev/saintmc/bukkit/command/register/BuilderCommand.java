@@ -53,7 +53,7 @@ public class BuilderCommand implements CommandClass {
 				+ "§f o modo de construção!");
 	}
 
-	@Command(name = "wand", groupToUse = Group.BUILDER)
+	@Command(name = "wand", groupToUse = Group.TRIAL)
 	public void wandCommand(CommandArgs cmdArgs) {
 		if (!cmdArgs.isPlayer())
 			return;
@@ -68,7 +68,7 @@ public class BuilderCommand implements CommandClass {
 		player.sendMessage(" §a* §fVocê recebeu a varinha do §aWorldedit§f!");
 	}
 
-	@Command(name = "createarena", groupToUse = Group.BUILDER)
+	@Command(name = "createarena", groupToUse = Group.TRIAL)
 	public void createarenaCommand(CommandArgs cmdArgs) {
 		if (!cmdArgs.isPlayer())
 			return;
@@ -154,7 +154,7 @@ public class BuilderCommand implements CommandClass {
 				+ arenaResponse.getBlocks() + " blocos!");
 	}
 
-	@Command(name = "set", groupToUse = Group.BUILDER)
+	@Command(name = "set", groupToUse = Group.TRIAL)
 	public void setCommand(CommandArgs cmdArgs) {
 		if (!cmdArgs.isPlayer())
 			return;
@@ -252,7 +252,7 @@ public class BuilderCommand implements CommandClass {
 		player.sendMessage("§dVocê colocou " + amount + " blocos!");
 	}
 
-	@Command(name = "undo", groupToUse = Group.BUILDER)
+	@Command(name = "undo", groupToUse = Group.TRIAL)
 	public void undoCommand(CommandArgs cmdArgs) {
 		if (!cmdArgs.isPlayer())
 			return;
@@ -284,7 +284,7 @@ public class BuilderCommand implements CommandClass {
 
 	public boolean checkPermission(Member member) {
 
-		if (member.isGroup(Group.BUILDER) || member.hasGroupPermission(Group.ADMIN)
+		if (member.isGroup(Group.TRIAL) || member.hasGroupPermission(Group.ADMIN)
 				|| member.hasPermission("permission.build"))
 			return false;
 

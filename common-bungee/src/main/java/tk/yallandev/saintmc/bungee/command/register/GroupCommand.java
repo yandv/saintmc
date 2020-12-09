@@ -54,11 +54,10 @@ public class GroupCommand implements CommandClass {
 					.getMember(cmdArgs.getPlayer().getUniqueId());
 			playerGroup = battleSender.getServerGroup();
 		} else {
-			playerGroup = Group.DONO;
+			playerGroup = Group.ADMIN;
 		}
 
-		if (group != Group.TORNEIO && group.ordinal() < Group.YOUTUBER.ordinal()
-				&& group.ordinal() >= Group.LIGHT.ordinal()) {
+		if (group.ordinal() < Group.YOUTUBER.ordinal() && group.ordinal() >= Group.PRO.ordinal()) {
 			sender.sendMessage(" §e* §fO grupo §a" + group.name() + "§f pode ser setado, somente, temporariamente.");
 			return;
 		}
@@ -66,28 +65,7 @@ public class GroupCommand implements CommandClass {
 		if (cmdArgs.isPlayer()) {
 			switch (playerGroup) {
 			case ADMIN: {
-				if (group.ordinal() > Group.MOD.ordinal()) {
-					sender.sendMessage(" §c* §fVocê só pode manejar o grupo §5§lMOD§f ou inferior!");
-					return;
-				}
-				break;
-			}
-			case GERENTE: {
-				if (group.ordinal() > Group.MODPLUS.ordinal()) {
-					sender.sendMessage(" §c* §fVocê só pode manejar o grupo §5§lMOD+§f ou inferior!");
-					return;
-				}
-				break;
-			}
-			case DIRETOR: {
-				if (group.ordinal() >= Group.ADMIN.ordinal()) {
-					sender.sendMessage(" §c* §fVocê só pode manejar o grupo §c§lADMIN§f ou inferior!");
-					return;
-				}
-				break;
-			}
-			case DONO: {
-				if (group.ordinal() > Group.DONO.ordinal()) {
+				if (group.ordinal() > Group.ADMIN.ordinal()) {
 					sender.sendMessage(" §c* §fVocê só pode manejar o grupo §4§lDIRETOR§f ou inferior!");
 					sender.sendMessage(" §c* §fSó o console consegue manejar §4§lDONO§f!");
 					return;
@@ -143,8 +121,7 @@ public class GroupCommand implements CommandClass {
 				+ player.getUniqueId().toString().replace("-", "") + ")" + "§f para §a" + group.name() + "§f!");
 	}
 
-	@Command(name = "permission", usage = "/<command> <player> <group>", groupToUse = Group.ADMIN, aliases = {
-			"setargrupo" }, runAsync = true)
+	@Command(name = "permission", usage = "/<command> <player> <group>", groupToUse = Group.ADMIN, runAsync = true)
 	public void addpermissionCommand(BungeeCommandArgs cmdArgs) {
 		CommandSender sender = cmdArgs.getSender();
 		String[] args = cmdArgs.getArgs();
@@ -190,7 +167,7 @@ public class GroupCommand implements CommandClass {
 		}
 	}
 
-	@Command(name = "addmedal", groupToUse = Group.GERENTE, runAsync = true)
+	@Command(name = "addmedal", groupToUse = Group.ADMIN, runAsync = true)
 	public void addmedalCommand(CommandArgs cmdArgs) {
 		String[] args = cmdArgs.getArgs();
 		CommandSender sender = cmdArgs.getSender();
@@ -323,12 +300,14 @@ public class GroupCommand implements CommandClass {
 		player.setTag(Tag.valueOf(rank.toString()));
 		player.saveRanks();
 
-		sender.sendMessage(" §a* §fVocê deu o vip §a§l" + rank.name() + "§f para o " + player.getPlayerName() + "("
+		player.sendMessage("§aVocê recebeu o rank " + Tag.valueOf(rank.name()).getPrefix() + "§a por "
+				+ DateUtils.formatDifference(expiresCheck / 1000) + "!");
+		sender.sendMessage("§aVocê deu o vip" + rank.name() + " para o " + player.getPlayerName() + "("
 				+ player.getUniqueId().toString().replace("-", "") + ")" + " com a duração de "
 				+ DateUtils.formatDifference(expiresCheck / 1000) + "!");
 	}
 
-	@Command(name = "removevip", usage = "/<command> <player> <group>", groupToUse = Group.DIRETOR, aliases = {
+	@Command(name = "removevip", usage = "/<command> <player> <group>", groupToUse = Group.ADMIN, aliases = {
 			"removervip" })
 	public void removevip(BungeeCommandArgs cmdArgs) {
 		final CommandSender sender = cmdArgs.getSender();

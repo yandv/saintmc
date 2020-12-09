@@ -6,8 +6,6 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import tk.yallandev.saintmc.CommonConst;
-import tk.yallandev.saintmc.common.utils.DateUtils;
 
 @RequiredArgsConstructor
 public class Cooldown {
@@ -43,14 +41,5 @@ public class Cooldown {
 
 	public boolean expired() {
 		return getRemaining() < 0D;
-	}
-
-	public static void main(String[] args) {
-		Cooldown cooldown = new Cooldown("penis", 5000l);
-
-		while (true) {
-			System.out.println(
-					DateUtils.formatTime(cooldown.getStartTime() + cooldown.getDuration(), CommonConst.DECIMAL_FORMAT));
-		}
 	}
 }

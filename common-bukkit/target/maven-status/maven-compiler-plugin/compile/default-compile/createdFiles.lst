@@ -24,7 +24,6 @@ tk\yallandev\test\ChromaTest.class
 tk\yallandev\saintmc\bukkit\api\server\impl\StorableServer.class
 tk\yallandev\saintmc\bukkit\permission\injector\regexperm\PermissibleInjector$ClassPresencePermissibleInjector.class
 tk\yallandev\saintmc\bukkit\api\menu\MenuListener.class
-tk\yallandev\saintmc\bukkit\controller\SkinController$2.class
 tk\yallandev\saintmc\bukkit\api\menu\MenuInventory.class
 tk\yallandev\saintmc\bukkit\api\cooldown\types\ItemCooldown.class
 tk\yallandev\saintmc\bukkit\api\menu\click\ClickType.class
@@ -36,6 +35,7 @@ tk\yallandev\saintmc\bukkit\menu\report\ReportInventory.class
 tk\yallandev\saintmc\bukkit\event\player\PlayerCommandEvent.class
 tk\yallandev\saintmc\bukkit\command\register\ServerCommand$1.class
 tk\yallandev\saintmc\bukkit\controller\SkinController.class
+tk\yallandev\saintmc\bukkit\menu\account\SkinInventory$MenuType.class
 tk\yallandev\saintmc\bukkit\api\item\ActionItemStack$ActionType.class
 tk\yallandev\saintmc\bukkit\api\listener\ManualRegisterableListener.class
 tk\yallandev\saintmc\bukkit\listener\register\ChatListener$3.class
@@ -53,6 +53,7 @@ tk\yallandev\saintmc\bukkit\api\worldedit\block\future\FutureBlock.class
 tk\yallandev\saintmc\bukkit\command\register\ModeratorCommand$5.class
 tk\yallandev\saintmc\bukkit\permission\injector\regexperm\PermissiblePEX$1.class
 tk\yallandev\saintmc\bukkit\command\register\ServerCommand.class
+tk\yallandev\saintmc\bukkit\menu\account\SkinInventory.class
 tk\yallandev\saintmc\bukkit\command\register\BuilderCommand.class
 tk\yallandev\saintmc\bukkit\event\player\MenuOpenEvent.class
 tk\yallandev\saintmc\bukkit\event\server\ServerPlayerLeaveEvent.class
@@ -63,11 +64,11 @@ tk\yallandev\saintmc\bukkit\BukkitMain$1.class
 tk\yallandev\saintmc\bukkit\api\player\TextureFetcher$1.class
 tk\yallandev\saintmc\bukkit\api\packet\PacketBuilder.class
 net\saintmc\anticheat\check\register\VapeCheck.class
+tk\yallandev\saintmc\bukkit\event\server\PlayerChangeEvent.class
 tk\yallandev\saintmc\bukkit\permission\injector\CraftBukkitInterface.class
 tk\yallandev\saintmc\bukkit\api\worldedit\block\future\FutureListener.class
 tk\yallandev\saintmc\bukkit\api\player\PlayerAPI.class
 tk\yallandev\saintmc\bukkit\listener\register\ChatListener$2.class
-net\saintmc\anticheat\check\register\CombatCheck$1.class
 tk\yallandev\saintmc\bukkit\BukkitPlatform.class
 tk\yallandev\saintmc\bukkit\api\cooldown\CooldownController.class
 tk\yallandev\saintmc\bukkit\event\account\PlayerUpdateFieldEvent.class
@@ -84,7 +85,6 @@ tk\yallandev\saintmc\bukkit\api\scoreboard\ScoreboardAPI.class
 tk\yallandev\saintmc\bukkit\api\worldedit\arena\ArenaType$2.class
 tk\yallandev\saintmc\bukkit\menu\report\ReportInformationListInventory$1.class
 tk\yallandev\saintmc\bukkit\exploit\register\PacketLimiterExploit$2.class
-tk\yallandev\saintmc\bukkit\menu\report\ReportListInventory$1.class
 tk\yallandev\saintmc\bukkit\event\restore\RestoreInitEvent.class
 tk\yallandev\saintmc\bukkit\listener\register\AccountListener$2.class
 tk\yallandev\saintmc\bukkit\listener\register\ScoreboardListener.class
@@ -120,6 +120,7 @@ tk\yallandev\saintmc\bukkit\api\vanish\AdminMode$AdminListener$1.class
 tk\yallandev\saintmc\bukkit\api\worldedit\arena\ArenaType$1.class
 tk\yallandev\saintmc\bukkit\menu\report\ReportInformationListInventory$3.class
 tk\yallandev\saintmc\bukkit\command\register\ModeratorCommand$2.class
+tk\yallandev\saintmc\bukkit\menu\account\SkinInventory$Skin.class
 net\saintmc\anticheat\alert\AlertMetadata.class
 tk\yallandev\saintmc\bukkit\utils\string\StringLoreUtils.class
 tk\yallandev\saintmc\bukkit\api\protocol\ProtocolVersion.class
@@ -128,7 +129,6 @@ tk\yallandev\saintmc\bukkit\permission\injector\regexperm\PermissiblePEX.class
 tk\yallandev\saintmc\bukkit\api\title\types\SimpleTitle.class
 net\saintmc\anticheat\storage\MoveStorage.class
 tk\yallandev\saintmc\bukkit\menu\report\ReportInformationListInventory$2.class
-tk\yallandev\saintmc\bukkit\listener\register\ClientListener.class
 tk\yallandev\saintmc\bukkit\api\title\Title.class
 tk\yallandev\saintmc\bukkit\command\BukkitCommandFramework$1.class
 tk\yallandev\saintmc\bukkit\command\BukkitCommandFramework$BukkitCommand.class
@@ -140,7 +140,6 @@ tk\yallandev\saintmc\bukkit\api\worldedit\arena\ArenaResponse.class
 tk\yallandev\saintmc\bukkit\api\character\NPC.class
 tk\yallandev\saintmc\bukkit\api\menu\click\MenuClickHandler.class
 tk\yallandev\saintmc\bukkit\utils\item\ItemUtils.class
-tk\yallandev\saintmc\bukkit\listener\register\FakeListener$2.class
 tk\yallandev\saintmc\bukkit\listener\register\EnchantListener.class
 tk\yallandev\saintmc\bukkit\permission\injector\regexperm\PermissibleInjector$ClassNameRegexPermissibleInjector.class
 tk\yallandev\saintmc\bukkit\networking\redis\BukkitPubSubHandler$7.class
@@ -149,7 +148,6 @@ tk\yallandev\saintmc\bukkit\event\admin\PlayerAdminModeEvent$AdminMode.class
 tk\yallandev\saintmc\bukkit\listener\register\AccountListener.class
 net\saintmc\anticheat\alert\impl\AlertImpl.class
 tk\yallandev\saintmc\bukkit\event\account\PlayerChangeGroupEvent.class
-tk\yallandev\saintmc\bukkit\menu\report\ReportListInventory$2.class
 tk\yallandev\saintmc\bukkit\api\menu\types\ConfirmInventory$2.class
 tk\yallandev\saintmc\bukkit\exploit\register\PacketLimiterExploit.class
 tk\yallandev\saintmc\bukkit\listener\Listener.class
@@ -197,9 +195,9 @@ tk\yallandev\saintmc\bukkit\api\character\CharacterListener.class
 tk\yallandev\saintmc\bukkit\menu\account\AccountInventory.class
 net\saintmc\anticheat\check\register\MovementCheck.class
 tk\yallandev\saintmc\bukkit\api\cooldown\event\CooldownStartEvent.class
-tk\yallandev\saintmc\bukkit\controller\SkinController$1.class
 tk\yallandev\saintmc\bukkit\event\player\TeleportAllEvent.class
 tk\yallandev\saintmc\bukkit\event\vanish\PlayerShowToPlayerEvent.class
+tk\yallandev\saintmc\bukkit\api\menu\MenuListener$1.class
 tk\yallandev\saintmc\bukkit\listener\register\ReportListener.class
 tk\yallandev\saintmc\bukkit\api\tag\Chroma.class
 tk\yallandev\saintmc\bukkit\event\account\PlayerUpdatedFieldEvent.class
@@ -215,6 +213,7 @@ tk\yallandev\saintmc\bukkit\menu\report\ReportInventory$1.class
 tk\yallandev\saintmc\bukkit\command\BukkitCommandFramework$BukkitCompleter.class
 tk\yallandev\saintmc\bukkit\command\register\ModeratorCommand$9.class
 tk\yallandev\saintmc\bukkit\listener\register\ChatListener$1.class
+tk\yallandev\saintmc\bukkit\menu\account\SkinInventory$1.class
 tk\yallandev\saintmc\bukkit\command\register\StaffCommand$1.class
 tk\yallandev\saintmc\bukkit\api\cooldown\CooldownController$CooldownListener.class
 tk\yallandev\saintmc\bukkit\anticheat\alert\AlertController.class
@@ -226,7 +225,6 @@ tk\yallandev\saintmc\bukkit\command\register\YoutubeCommand$1.class
 tk\yallandev\saintmc\bukkit\command\BukkitCommandFramework.class
 tk\yallandev\saintmc\bukkit\permission\injector\regexperm\PermissionList$NotifyingChildrenMap.class
 tk\yallandev\saintmc\BukkitConst.class
-tk\yallandev\saintmc\bukkit\command\register\TagCommand.class
 net\saintmc\anticheat\check\CheckController$CheckType.class
 net\saintmc\anticheat\utils\Util.class
 tk\yallandev\saintmc\bukkit\listener\register\CommandListener.class

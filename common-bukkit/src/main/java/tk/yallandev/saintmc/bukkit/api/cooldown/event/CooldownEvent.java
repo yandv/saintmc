@@ -18,7 +18,7 @@ public abstract class CooldownEvent extends Event {
     @NonNull
     private Player player;
 
-    @Getter
+	@Getter
     @NonNull
     private Cooldown cooldown;
     

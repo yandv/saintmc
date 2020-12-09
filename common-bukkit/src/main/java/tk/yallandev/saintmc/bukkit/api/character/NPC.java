@@ -2,6 +2,8 @@ package tk.yallandev.saintmc.bukkit.api.character;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
@@ -55,6 +57,8 @@ public class NPC {
 	private Location location;
 	private Property property;
 
+	private Set<UUID> showingSet = new HashSet<>();
+
 	public NPC(Location location, String skin) {
 		this.location = location;
 
@@ -75,9 +79,15 @@ public class NPC {
 		this.entityPlayer.getBukkitEntity().setRemoveWhenFarAway(false);
 		this.entityPlayer.setLocation(location.getX(), location.getY(), location.getZ(), location.getYaw(),
 				location.getPitch());
+		Bukkit.getOnlinePlayers().forEach(player -> show(player));
 	}
 
 	public void show(Player player) {
+		if (showingSet.contains(player.getUniqueId()))
+			return;
+
+		showingSet.add(player.getUniqueId());
+
 		PlayerConnection playerConnection = ((CraftPlayer) player).getHandle().playerConnection;
 
 		playerConnection.sendPacket(
@@ -95,8 +105,9 @@ public class NPC {
 				85L);
 
 		try {
-			/* mudei o entityCount do proprio bukkit para public 
-			 * não necessitando mais usar reflection
+			/*
+			 * mudei o entityCount do proprio bukkit para public não necessitando mais usar
+			 * reflection
 			 * 
 			 * by stenox
 			 */
@@ -121,11 +132,19 @@ public class NPC {
 	}
 
 	public void hide(Player player) {
+		if (!showingSet.contains(player.getUniqueId()))
+			return;
+
+		showingSet.remove(player.getUniqueId());
 		PlayerConnection playerConnection = ((CraftPlayer) player).getHandle().playerConnection;
 
 		playerConnection.sendPacket(
 				new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.REMOVE_PLAYER, entityPlayer));
 		playerConnection.sendPacket(new PacketPlayOutEntityDestroy(entityPlayer.getId()));
+	}
+
+	public boolean isShowing(UUID uniqueId) {
+		return showingSet.contains(uniqueId);
 	}
 
 	private static PacketContainer buildSpawnBatPacket(int entityId, Location loc) {

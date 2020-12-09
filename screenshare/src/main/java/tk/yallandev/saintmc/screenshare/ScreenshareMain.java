@@ -28,13 +28,13 @@ public class ScreenshareMain extends JavaPlugin implements Listener {
 	private static Scoreboard scoreboard;
 
 	{
-		scoreboard = new SimpleScoreboard("§6§lSCREENSHARE");
+		scoreboard = new SimpleScoreboard("§4§lSCREENSHARE");
 
 		scoreboard.blankLine(5);
 		scoreboard.setScore(4, new Score("§fVocê está na screenshare", "2"));
 		scoreboard.setScore(3, new Score("§fObedeça o staff", "1"));
 		scoreboard.blankLine(2);
-		scoreboard.setScore(1, new Score("§6" + CommonConst.WEBSITE, "site"));
+		scoreboard.setScore(1, new Score("§c" + CommonConst.WEBSITE, "site"));
 	}
 
 	@Override

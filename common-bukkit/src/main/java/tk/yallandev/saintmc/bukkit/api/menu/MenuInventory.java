@@ -34,6 +34,10 @@ public class MenuInventory {
 	@Setter
 	private MenuUpdateHandler updateHandler;
 
+	@Setter
+	@Getter
+	private boolean reopenInventory = false;
+
 	public MenuInventory(String title, int rows) {
 		this(title, rows, false);
 	}
@@ -43,11 +47,12 @@ public class MenuInventory {
 		this.rows = rows;
 		this.title = title;
 		this.onePerPlayer = onePerPlayer;
+		
 		if (!onePerPlayer) {
 			this.inv = Bukkit.createInventory(new MenuHolder(this), rows * 9, "");
 		}
 	}
-
+	
 	public void addItem(MenuItem item) {
 		setItem(firstEmpty(), item);
 	}
@@ -198,5 +203,5 @@ public class MenuInventory {
 	public Inventory getInventory() {
 		return inv;
 	}
-
+	
 }

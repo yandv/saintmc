@@ -7,8 +7,6 @@ import java.util.Map.Entry;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import com.mongodb.client.model.Filters;
-
 import lombok.Getter;
 import tk.yallandev.saintmc.CommonConst;
 import tk.yallandev.saintmc.CommonGeneral;
@@ -28,8 +26,9 @@ import tk.yallandev.saintmc.lobby.listener.LoginListener;
 import tk.yallandev.saintmc.lobby.listener.ParticleListener;
 import tk.yallandev.saintmc.lobby.listener.PlayerListener;
 import tk.yallandev.saintmc.lobby.listener.ScoreboardListener;
+import tk.yallandev.saintmc.lobby.listener.TabListener;
+import tk.yallandev.saintmc.lobby.listener.WorldListener;
 import tk.yallandev.saintmc.lobby.manager.PlayerManager;
-import tk.yallandev.saintmc.lobby.menu.tournament.TournamentInventory;
 import tk.yallandev.saintmc.update.UpdatePlugin;
 
 @Getter
@@ -38,12 +37,12 @@ public class LobbyMain extends JavaPlugin {
 	@Getter
 	private static LobbyMain instance;
 
-	private static String lobbyAddress;
-
 	private PubSubListener pubSubListener;
 
 	private PlayerManager playerManager;
 	private Collectables collectables;
+
+	private String lobbyAddress;
 
 	@Override
 	public void onLoad() {
@@ -124,34 +123,28 @@ public class LobbyMain extends JavaPlugin {
 		if (lobbyAddress.equalsIgnoreCase("lobby") || lobbyAddress.length() >= 4)
 			lobbyAddress = "§kA?";
 
-		TournamentInventory.GROUP_A = CommonGeneral.getInstance().getPlayerData()
-				.count(Filters.eq("tournamentGroup", "GROUP_A"));
-		TournamentInventory.GROUP_B = CommonGeneral.getInstance().getPlayerData()
-				.count(Filters.eq("tournamentGroup", "GROUP_B"));
-		TournamentInventory.GROUP_C = CommonGeneral.getInstance().getPlayerData()
-				.count(Filters.eq("tournamentGroup", "GROUP_C"));
-		TournamentInventory.GROUP_D = CommonGeneral.getInstance().getPlayerData()
-				.count(Filters.eq("tournamentGroup", "GROUP_D"));
-
 		BukkitMain.getInstance().setServerLog(true);
 		BukkitMain.getInstance().setRemovePlayerDat(true);
 
-		Bukkit.getPluginManager().registerEvents(new PlayerListener(), getInstance());
-		Bukkit.getPluginManager().registerEvents(new ParticleListener(), getInstance());
-		Bukkit.getPluginManager().registerEvents(new MoveListener(), getInstance());
-		Bukkit.getPluginManager().registerEvents(new ScoreboardListener(), getInstance());
-		Bukkit.getPluginManager().registerEvents(new CombatListener(), getInstance());
-		Bukkit.getPluginManager().registerEvents(new CharacterListener(), getInstance());
-		Bukkit.getPluginManager().registerEvents(new HologramListener(), getInstance());
-		Bukkit.getPluginManager().registerEvents(new LauncherListener(), getInstance());
-		
-		if (CommonGeneral.getInstance().isLoginServer())
-			Bukkit.getPluginManager().registerEvents(new LoginListener(), getInstance());
+		Bukkit.getPluginManager().registerEvents(new PlayerListener(), this);
+		Bukkit.getPluginManager().registerEvents(new ParticleListener(), this);
+		Bukkit.getPluginManager().registerEvents(new MoveListener(), this);
+		Bukkit.getPluginManager().registerEvents(new ScoreboardListener(), this);
+		Bukkit.getPluginManager().registerEvents(new CombatListener(), this);
+		Bukkit.getPluginManager().registerEvents(new CharacterListener(), this);
+		Bukkit.getPluginManager().registerEvents(new HologramListener(), this);
+		Bukkit.getPluginManager().registerEvents(new LauncherListener(), this);
+
+		Bukkit.getPluginManager().registerEvents(new TabListener(), this);
+		Bukkit.getPluginManager().registerEvents(new WorldListener(), this);
+
+		if (!CommonGeneral.getInstance().isLoginServer())
+			Bukkit.getPluginManager().registerEvents(new LoginListener(), this);
 
 		super.onEnable();
 	}
 
-	public static String getLobbyAddress() {
+	public String getLobbyAddress() {
 		return lobbyAddress == null ? "A1" : lobbyAddress;
 	}
 

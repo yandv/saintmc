@@ -13,12 +13,12 @@ import tk.yallandev.saintmc.common.permission.Group;
 import tk.yallandev.saintmc.common.utils.DateUtils;
 import tk.yallandev.saintmc.kitpvp.GameMain;
 import tk.yallandev.saintmc.kitpvp.gamer.Gamer;
+import tk.yallandev.saintmc.kitpvp.party.PartyType;
 import tk.yallandev.saintmc.kitpvp.warp.types.PartyWarp;
-import tk.yallandev.saintmc.kitpvp.warp.types.party.PartyType;
 
 public class PartyCommand implements CommandClass {
 
-	@Command(name = "evento", aliases = { "event" })
+	@Command(name = "evento", aliases = { "event", "party" })
 	public void partyCommand(BukkitCommandArgs cmdArgs) {
 		String[] args = cmdArgs.getArgs();
 		CommandSender sender = cmdArgs.getSender();
@@ -122,6 +122,7 @@ public class PartyCommand implements CommandClass {
 			}
 
 			partyWarp.getParty().forceEnd(null);
+			partyWarp.setPartyType(null);
 			break;
 		}
 		case "settime": {

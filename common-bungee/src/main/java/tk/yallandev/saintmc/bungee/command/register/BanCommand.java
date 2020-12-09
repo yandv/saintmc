@@ -1,6 +1,10 @@
 package tk.yallandev.saintmc.bungee.command.register;
 
+import java.util.Collection;
 import java.util.UUID;
+import java.util.stream.Collectors;
+
+import com.google.common.base.Joiner;
 
 import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.bungee.BungeeMain;
@@ -34,7 +38,7 @@ public class BanCommand implements CommandClass {
 		UUID uuid = CommonGeneral.getInstance().getUuid(args[0]);
 
 		if (uuid == null) {
-			sender.sendMessage(" §c* §fO jogador §a" + args[0] + "§f não existe!");
+			sender.sendMessage("§cO jogador " + args[0] + " não existe!");
 			return;
 		}
 
@@ -45,14 +49,14 @@ public class BanCommand implements CommandClass {
 				MemberModel loaded = CommonGeneral.getInstance().getPlayerData().loadMember(uuid);
 
 				if (loaded == null) {
-					sender.sendMessage(" §c* §fO jogador §a" + args[0] + "§f nunca entrou no servidor!");
+					sender.sendMessage("§cO jogador " + args[0] + " nunca entrou no servidor!");
 					return;
 				}
 
 				player = new MemberVoid(loaded);
 			} catch (Exception e) {
 				e.printStackTrace();
-				sender.sendMessage(" §c* §fNão foi possível pegar as informações do jogador §a" + args[0] + "§f!");
+				sender.sendMessage("§cNão foi possível pegar as informações do jogador " + args[0] + "!");
 				return;
 			}
 		}
@@ -62,11 +66,11 @@ public class BanCommand implements CommandClass {
 		if (cmdArgs.isPlayer())
 			playerGroup = Member.getGroup(cmdArgs.getSender().getUniqueId());
 		else
-			playerGroup = Group.DONO;
+			playerGroup = Group.ADMIN;
 
 		if (cmdArgs.isPlayer())
 			if (playerGroup.ordinal() < player.getGroup().ordinal()) {
-				sender.sendMessage(" §c* §fVocê não pode majenar o grupo desse jogador!");
+				sender.sendMessage("§cVocê não pode banir esse jogador!");
 				return;
 			}
 
@@ -75,8 +79,9 @@ public class BanCommand implements CommandClass {
 		for (int i = 1; i < args.length; i++)
 			sb.append(args[i]).append(" ");
 
-		Ban ban = new Ban(player.getUniqueId(), player.getPlayerName(), cmdArgs.isPlayer() ? cmdArgs.getSender().getName() : "CONSOLE",
-				sender.getUniqueId(), args.length == 1 ? "Sem motivo" : sb.toString().trim(), -1l);
+		Ban ban = new Ban(player.getUniqueId(), player.getPlayerName(),
+				cmdArgs.isPlayer() ? cmdArgs.getSender().getName() : "CONSOLE", sender.getUniqueId(),
+				args.length == 1 ? "Sem motivo" : sb.toString().trim(), -1l);
 
 		if (BungeeMain.getInstance().getPunishManager().ban(player, ban)) {
 			sender.sendMessage(
@@ -86,7 +91,7 @@ public class BanCommand implements CommandClass {
 		}
 	}
 
-	@Command(name = "tempban", runAsync = true, groupToUse = Group.HELPER)
+	@Command(name = "tempban", runAsync = true, groupToUse = Group.TRIAL)
 	public void tempbanCommand(BungeeCommandArgs cmdArgs) {
 		CommandSender sender = cmdArgs.getSender();
 		String[] args = cmdArgs.getArgs();
@@ -127,11 +132,11 @@ public class BanCommand implements CommandClass {
 		if (cmdArgs.isPlayer())
 			playerGroup = Member.getGroup(cmdArgs.getPlayer().getUniqueId());
 		else
-			playerGroup = Group.DONO;
+			playerGroup = Group.ADMIN;
 
 		if (cmdArgs.isPlayer())
 			if (playerGroup.ordinal() < player.getGroup().ordinal()) {
-				sender.sendMessage(" §c* §fVocê não pode majenar o grupo desse jogador!");
+				sender.sendMessage("§cVocê não pode banir esse jogador!");
 				return;
 			}
 
@@ -149,8 +154,9 @@ public class BanCommand implements CommandClass {
 		for (int i = 2; i < args.length; i++)
 			sb.append(args[i]).append(" ");
 
-		Ban ban = new Ban(player.getUniqueId(), player.getPlayerName(), cmdArgs.isPlayer() ? cmdArgs.getPlayer().getName() : "CONSOLE",
-				sender.getUniqueId(), args.length == 1 ? "Sem motivo" : sb.toString().trim(), expiresCheck);
+		Ban ban = new Ban(player.getUniqueId(), player.getPlayerName(),
+				cmdArgs.isPlayer() ? cmdArgs.getPlayer().getName() : "CONSOLE", sender.getUniqueId(),
+				args.length == 1 ? "Sem motivo" : sb.toString().trim(), expiresCheck);
 
 		if (BungeeMain.getInstance().getPunishManager().ban(player, ban)) {
 			sender.sendMessage(
@@ -212,7 +218,7 @@ public class BanCommand implements CommandClass {
 		}
 	}
 
-	@Command(name = "mute", aliases = { "silenciar" }, runAsync = true, groupToUse = Group.HELPER)
+	@Command(name = "mute", aliases = { "silenciar" }, runAsync = true, groupToUse = Group.TRIAL)
 	public void muteCommand(BungeeCommandArgs cmdArgs) {
 		CommandSender sender = cmdArgs.getSender();
 		String[] args = cmdArgs.getArgs();
@@ -253,7 +259,7 @@ public class BanCommand implements CommandClass {
 		if (cmdArgs.isPlayer())
 			playerGroup = Member.getGroup(cmdArgs.getPlayer().getUniqueId());
 		else
-			playerGroup = Group.DONO;
+			playerGroup = Group.ADMIN;
 
 		if (cmdArgs.isPlayer())
 			if (playerGroup.ordinal() < player.getGroup().ordinal()) {
@@ -277,7 +283,7 @@ public class BanCommand implements CommandClass {
 		}
 	}
 
-	@Command(name = "tempmute", runAsync = true, groupToUse = Group.HELPER)
+	@Command(name = "tempmute", runAsync = true, groupToUse = Group.TRIAL)
 	public void tempmuteCommand(BungeeCommandArgs cmdArgs) {
 		CommandSender sender = cmdArgs.getSender();
 		String[] args = cmdArgs.getArgs();
@@ -318,7 +324,7 @@ public class BanCommand implements CommandClass {
 		if (cmdArgs.isPlayer())
 			playerGroup = Member.getGroup(cmdArgs.getPlayer().getUniqueId());
 		else
-			playerGroup = Group.DONO;
+			playerGroup = Group.ADMIN;
 
 		if (cmdArgs.isPlayer())
 			if (playerGroup.ordinal() < player.getGroup().ordinal()) {
@@ -395,7 +401,7 @@ public class BanCommand implements CommandClass {
 		}
 	}
 
-	@Command(name = "warn", aliases = { "avisar" }, runAsync = true, groupToUse = Group.HELPER)
+	@Command(name = "warn", aliases = { "avisar" }, runAsync = true, groupToUse = Group.TRIAL)
 	public void warnCommand(BungeeCommandArgs cmdArgs) {
 		CommandSender sender = cmdArgs.getSender();
 		String[] args = cmdArgs.getArgs();
@@ -436,7 +442,7 @@ public class BanCommand implements CommandClass {
 		if (cmdArgs.isPlayer())
 			playerGroup = Member.getGroup(cmdArgs.getPlayer().getUniqueId());
 		else
-			playerGroup = Group.DONO;
+			playerGroup = Group.ADMIN;
 
 		if (cmdArgs.isPlayer())
 			if (playerGroup.ordinal() < player.getGroup().ordinal()) {
@@ -460,5 +466,55 @@ public class BanCommand implements CommandClass {
 		} else {
 			sender.sendMessage(" §c* §fNão foi possível alertar o jogador!");
 		}
+	}
+
+	@Command(name = "dupeip", runAsync = true, groupToUse = Group.ADMIN)
+	public void dupeipCommand(CommandArgs cmdArgs) {
+		CommandSender sender = cmdArgs.getSender();
+		String[] args = cmdArgs.getArgs();
+
+		if (args.length == 0) {
+			sender.sendMessage(
+					" §c* §fUse §a/" + cmdArgs.getLabel() + " <player>§f para ver os jogadores com o mesmo ip!");
+			return;
+		}
+
+		UUID uuid = CommonGeneral.getInstance().getUuid(args[0]);
+
+		if (uuid == null) {
+			sender.sendMessage("§cO jogador " + args[0] + " não existe!");
+			return;
+		}
+
+		Member player = CommonGeneral.getInstance().getMemberManager().getMember(uuid);
+
+		if (player == null) {
+			try {
+				MemberModel loaded = CommonGeneral.getInstance().getPlayerData().loadMember(uuid);
+
+				if (loaded == null) {
+					sender.sendMessage("§cO jogador " + args[0] + " nunca entrou no servidor!");
+					return;
+				}
+
+				player = new MemberVoid(loaded);
+			} catch (Exception e) {
+				e.printStackTrace();
+				sender.sendMessage("§cNão foi possível pegar as informações do jogador " + args[0] + "!");
+				return;
+			}
+		}
+
+		Collection<MemberModel> memberCollection = CommonGeneral.getInstance().getPlayerData()
+				.loadMemberByIp(player.getLastIpAddress());
+
+		sender.sendMessage("   §3§lDUPEIP");
+		sender.sendMessage(" ");
+		sender.sendMessage("§7Conta pesquisada: §a" + player.getName() + "");
+		sender.sendMessage("§7Numeros de conta: §a" + memberCollection.size());
+		sender.sendMessage("§7Conta" + (memberCollection.size() > 1 ? "" : "s") + ": §a"
+				+ (memberCollection.isEmpty() ? "§cNenhuma conta encontrada"
+						: Joiner.on(", ").join(memberCollection.stream().map(memberModel -> memberModel.getPlayerName())
+								.collect(Collectors.toList()))));
 	}
 }

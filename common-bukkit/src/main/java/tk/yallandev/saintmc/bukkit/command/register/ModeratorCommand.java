@@ -38,6 +38,7 @@ import tk.yallandev.saintmc.common.account.Member;
 import tk.yallandev.saintmc.common.command.CommandArgs;
 import tk.yallandev.saintmc.common.command.CommandClass;
 import tk.yallandev.saintmc.common.command.CommandFramework.Command;
+import tk.yallandev.saintmc.common.command.CommandSender;
 import tk.yallandev.saintmc.common.permission.Group;
 import tk.yallandev.saintmc.common.profile.Profile;
 import tk.yallandev.saintmc.common.utils.DateUtils;
@@ -230,7 +231,8 @@ public class ModeratorCommand implements CommandClass {
 		String[] args = cmdArgs.getArgs();
 
 		if (args.length == 0) {
-			sender.sendMessage(" §e* §fUse §a/whitelist <on:off:list:add:remove>§f ");
+			sender.sendMessage(
+					"§cUso /whitelist <on:off:list:add:remove> para desativar, ativar, listar, adicionar na lista e remover da lista.");
 			return;
 		}
 
@@ -358,8 +360,9 @@ public class ModeratorCommand implements CommandClass {
 			break;
 		}
 		case "list": {
-			sender.sendMessage("§aJogadores na whitelist: "
-					+ (BukkitMain.getInstance().getServerConfig().getWhiteList().isEmpty() ? "§7Ninguém"
+			sender.sendMessage(
+					"§7Jogadores na whitelist: " + (BukkitMain.getInstance().getServerConfig().getWhiteList().isEmpty()
+							? "§cNinguém está na whitelist"
 							: Joiner.on("§f, §a").join(BukkitMain.getInstance().getServerConfig().getWhiteList()
 									.stream().map(Profile::getPlayerName).collect(Collectors.toList()))));
 			break;
@@ -421,7 +424,7 @@ public class ModeratorCommand implements CommandClass {
 	}
 
 	@Command(name = "effect", usage = "/<command> <effect> <duration> <amplifier>", groupToUse = Group.MOD)
-	public void effect(CommandArgs cmdArgs) {
+	public void effectCommand(CommandArgs cmdArgs) {
 		if (!cmdArgs.isPlayer()) {
 			cmdArgs.getSender().sendMessage("§4§lERRO §fComando disponivel apenas §c§lin-game");
 			return;
@@ -510,8 +513,8 @@ public class ModeratorCommand implements CommandClass {
 		}
 	}
 
-	@Command(name = "worldteleport", groupToUse = Group.DONO, aliases = { "tpworld", "tpworld" }, runAsync = false)
-	public void worldteleport(CommandArgs cmdArgs) {
+	@Command(name = "worldteleport", groupToUse = Group.ADMIN, aliases = { "tpworld", "tpworld" }, runAsync = false)
+	public void worldteleportCommand(CommandArgs cmdArgs) {
 		if (!cmdArgs.isPlayer())
 			return;
 
@@ -546,7 +549,7 @@ public class ModeratorCommand implements CommandClass {
 	}
 
 	@Command(name = "teleport", aliases = { "tp", "teleportar" }, runAsync = false)
-	public void teleport(CommandArgs cmdArgs) {
+	public void teleportCommand(CommandArgs cmdArgs) {
 		if (!cmdArgs.isPlayer()) {
 			cmdArgs.getSender().sendMessage("§4§lERRO §fComando disponivel apenas §c§lin-game");
 			return;
@@ -658,11 +661,9 @@ public class ModeratorCommand implements CommandClass {
 	}
 
 	@Command(name = "teleportall", aliases = { "tpall" }, groupToUse = Group.MOD)
-	public void tpall(CommandArgs cmdArgs) {
-		if (!cmdArgs.isPlayer()) {
-			cmdArgs.getSender().sendMessage("§4§lERRO §fComando disponivel apenas §c§lin-game");
+	public void tpallCommand(CommandArgs cmdArgs) {
+		if (!cmdArgs.isPlayer())
 			return;
-		}
 
 		Player player = ((BukkitMember) cmdArgs.getSender()).getPlayer();
 		String[] args = cmdArgs.getArgs();
@@ -674,20 +675,20 @@ public class ModeratorCommand implements CommandClass {
 				if (on != null && on.isOnline() && on.getUniqueId() != player.getUniqueId()) {
 					on.teleport(player.getLocation());
 					on.setFallDistance(0.0F);
-					on.sendMessage(" §a* §fVocê foi teletransportado até o §a" + player.getName() + "§f!");
+					on.sendMessage("§aVocê foi levado até o §a" + player.getName() + "!");
 					i++;
 				}
 			}
 
 			Bukkit.getPluginManager().callEvent(new TeleportAllEvent(player));
-			player.sendMessage(" §aVocê puxou todos os " + i + " jogadores até você!");
+			player.sendMessage("§aVocê puxou todos os " + i + " jogadores até você!");
 			return;
 		}
 
 		Player target = Bukkit.getPlayer(args[0]);
 
 		if (target == null) {
-			player.sendMessage(" §c* §fO jogador §a\"" + args[0] + "\"§f não existe!");
+			player.sendMessage("§cO jogador \"" + args[0] + "\" não existe!");
 			return;
 		}
 
@@ -711,7 +712,7 @@ public class ModeratorCommand implements CommandClass {
 		}.runTaskTimer(BukkitMain.getInstance(), 0, 10);
 
 		Bukkit.getPluginManager().callEvent(new TeleportAllEvent(target));
-		player.sendMessage(" §aVocê levou todos os " + Bukkit.getOnlinePlayers().size() + " jogadores até "
+		player.sendMessage("§aVocê levou todos os " + Bukkit.getOnlinePlayers().size() + " jogadores até "
 				+ target.getName() + "!");
 		staffLog("O §a" + player.getName() + " §ateletransportou todos até ", Group.TRIAL);
 		return;
@@ -719,10 +720,8 @@ public class ModeratorCommand implements CommandClass {
 
 	@Command(name = "teleportallasync", aliases = { "tpallasync", "tpalla" }, groupToUse = Group.MOD)
 	public void tpallsyncCommand(CommandArgs cmdArgs) {
-		if (!cmdArgs.isPlayer()) {
-			cmdArgs.getSender().sendMessage("§4§lERRO §fComando disponivel apenas §c§lin-game");
+		if (!cmdArgs.isPlayer())
 			return;
-		}
 
 		Player player = ((BukkitMember) cmdArgs.getSender()).getPlayer();
 		String[] args = cmdArgs.getArgs();
@@ -742,7 +741,7 @@ public class ModeratorCommand implements CommandClass {
 
 							on.teleport(location);
 							on.setFallDistance(0.0F);
-							on.sendMessage(" §a* §fVocê foi teletransportado até o §a" + player.getName() + "§f!");
+							on.sendMessage("§aVocê foi levado até o §a" + player.getName() + "§f!");
 						}
 					} else
 						cancel();
@@ -752,7 +751,7 @@ public class ModeratorCommand implements CommandClass {
 
 			Bukkit.getPluginManager().callEvent(new TeleportAllEvent(player));
 
-			player.sendMessage(" §aVocê levou todos os " + Bukkit.getOnlinePlayers().size() + " jogadores até você!");
+			player.sendMessage("§aVocê levou todos os " + Bukkit.getOnlinePlayers().size() + " jogadores até você!");
 
 			staffLog("O §a" + player.getName() + " §fteletransportou todos até §aele mesmo§f!", Group.TRIAL);
 			return;
@@ -761,7 +760,7 @@ public class ModeratorCommand implements CommandClass {
 		Player target = Bukkit.getPlayer(args[0]);
 
 		if (target == null) {
-			player.sendMessage(" §c* §fO jogador §a\"" + args[0] + "\"§f não existe!");
+			player.sendMessage("§cO jogador \"" + args[0] + "\" não existe!");
 			return;
 		}
 
@@ -778,7 +777,7 @@ public class ModeratorCommand implements CommandClass {
 					if (on.isOnline()) {
 						on.teleport(location);
 						on.setFallDistance(0.0F);
-						on.sendMessage(" §a* §fVocê foi teletransportado até o §a" + target.getName() + "§f!");
+						on.sendMessage("§aVocê foi levado até o " + target.getName() + "!");
 					}
 				} else
 					cancel();
@@ -787,27 +786,27 @@ public class ModeratorCommand implements CommandClass {
 		}.runTaskTimer(BukkitMain.getInstance(), 0, 3);
 
 		Bukkit.getPluginManager().callEvent(new TeleportAllEvent(target));
-		player.sendMessage(" §aVocê levou todos os " + Bukkit.getOnlinePlayers().size() + " jogadores até "
+		player.sendMessage("§aVocê levou todos os " + Bukkit.getOnlinePlayers().size() + " jogadores até "
 				+ target.getName() + "!");
 
 		staffLog("O §a" + player.getName() + " §fteletransportou todos até §a" + target.getName() + "§f!", Group.TRIAL);
 		return;
 	}
 
-	@Command(name = "kick", aliases = { "kickar" }, groupToUse = Group.HELPER)
+	@Command(name = "kick", aliases = { "kickar" }, groupToUse = Group.TRIAL)
 	public void kick(CommandArgs cmdArgs) {
-		tk.yallandev.saintmc.common.command.CommandSender sender = cmdArgs.getSender();
+		CommandSender sender = cmdArgs.getSender();
 		String[] args = cmdArgs.getArgs();
 
 		if (args.length < 1) {
-			sender.sendMessage(" §e* §fUtilize §a/" + cmdArgs.getLabel() + " <player> <motivo>§f para kickar alguém!");
+			sender.sendMessage("§cUso /" + cmdArgs.getLabel() + " <player> <motivo> para kickar alguém!");
 			return;
 		}
 
 		Player target = BukkitMain.getInstance().getServer().getPlayer(args[0]);
 
 		if (target == null) {
-			sender.sendMessage(" §c* §fO jogador §a\"" + args[0] + "\"§f não existe!");
+			sender.sendMessage("§cO jogador \"" + args[0] + "\" não está online!");
 			return;
 		}
 
@@ -832,7 +831,7 @@ public class ModeratorCommand implements CommandClass {
 			if (!member.hasGroupPermission(Group.YOUTUBERPLUS))
 				continue;
 
-			player.sendMessage("\n§c* O jogador " + target.getName() + " foi kickado pelo " + sender.getName() + " por "
+			player.sendMessage("§c\n§cO jogador " + target.getName() + " foi kickado pelo " + sender.getName() + " por "
 					+ builder.toString() + "\n§c ");
 		}
 

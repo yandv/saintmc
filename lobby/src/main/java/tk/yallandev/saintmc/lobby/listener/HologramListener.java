@@ -14,7 +14,9 @@ import tk.yallandev.saintmc.common.account.Member;
 import tk.yallandev.saintmc.common.account.MemberModel;
 import tk.yallandev.saintmc.common.account.MemberVoid;
 import tk.yallandev.saintmc.common.account.status.StatusType;
+import tk.yallandev.saintmc.common.account.status.types.game.GameStatus;
 import tk.yallandev.saintmc.common.account.status.types.normal.NormalStatus;
+import tk.yallandev.saintmc.common.clan.ClanModel;
 import tk.yallandev.saintmc.common.tag.Tag;
 import tk.yallandev.saintmc.lobby.LobbyMain;
 
@@ -22,6 +24,8 @@ public class HologramListener implements Listener {
 
 	private Hologram pvpHologram;
 	private Hologram killsHologram;
+	private Hologram clanHologram;
+	private Hologram winsHologram;
 
 	public HologramListener() {
 		new BukkitRunnable() {
@@ -29,6 +33,8 @@ public class HologramListener implements Listener {
 			@Override
 			public void run() {
 				createKills();
+				createClan();
+				createWins();
 			}
 		}.runTaskTimer(LobbyMain.getInstance(), 80, 20 * 60 * 10);
 		createPvP();
@@ -40,6 +46,10 @@ public class HologramListener implements Listener {
 			createKills();
 		else if (event.getConfigName().equals("hologram-pvp"))
 			createPvP();
+		else if (event.getConfigName().equals("hologram-clan"))
+			createClan();
+		else if (event.getConfigName().equals("hologram-hg-wins"))
+			createWins();
 	}
 
 	public void createPvP() {
@@ -61,6 +71,81 @@ public class HologramListener implements Listener {
 		pvpHologram.addLine("§eO drop de §bxp§e está desativado!");
 	}
 
+	public void createClan() {
+		if (clanHologram != null) {
+			clanHologram.remove();
+			clanHologram = null;
+		}
+
+		if (clanHologram == null) {
+			clanHologram = BukkitMain.getInstance().getHologramController().createHologram("§c§lRANKING - CLAN",
+					BukkitMain.getInstance().getLocationFromConfig("hologram-clan"), SimpleHologram.class);
+		}
+
+		clanHologram.addLine("§eClan com as maiores");
+		clanHologram.addLine("§equantidade de xp do servidor!");
+		clanHologram.addLine("");
+
+		int index = 1;
+
+		for (ClanModel clanModel : CommonGeneral.getInstance().getClanData().ranking("xp")) {
+			clanHologram.addLine("§a" + index + "° §7- " + clanModel.getClanName() + "("
+					+ clanModel.getClanAbbreviation() + ") §7- §3" + clanModel.getXp() + " xp");
+			index++;
+		}
+	}
+
+	public void createWins() {
+		if (winsHologram != null) {
+			winsHologram.remove();
+			winsHologram = null;
+		}
+
+		if (winsHologram == null) {
+			winsHologram = BukkitMain.getInstance().getHologramController().createHologram("§c§lRANKING - WINS HG",
+					BukkitMain.getInstance().getLocationFromConfig("hologram-hg-wins"), SimpleHologram.class);
+		}
+
+		winsHologram.addLine("§eJogadores com as maiores");
+		winsHologram.addLine("§equantidade de wins do servidor!");
+		winsHologram.addLine("");
+
+		int index = 1;
+
+		for (Object model : CommonGeneral.getInstance().getStatusData().ranking(StatusType.HG, "wins")) {
+			if (model instanceof GameStatus) {
+				GameStatus gameStatus = (GameStatus) model;
+
+				Member member = CommonGeneral.getInstance().getMemberManager().getMember(gameStatus.getUniqueId());
+
+				if (member == null) {
+					try {
+						MemberModel loaded = CommonGeneral.getInstance().getPlayerData()
+								.loadMember(gameStatus.getUniqueId());
+
+						if (loaded == null) {
+							CommonGeneral.getInstance().debug("Não foi possível pegar as informações do jogador "
+									+ gameStatus.getUniqueId() + "!");
+						} else {
+							member = new MemberVoid(loaded);
+						}
+
+					} catch (Exception e) {
+						CommonGeneral.getInstance().debug(
+								"Não foi possível pegar as informações do jogador " + gameStatus.getUniqueId() + "!");
+					}
+				}
+
+				if (member != null) {
+					winsHologram.addLine("§a" + index + "° §7- "
+							+ ChatColor.getLastColors(Tag.valueOf(member.getGroup().name()).getPrefix())
+							+ member.getPlayerName() + " §7- §3" + gameStatus.getWins() + " wins");
+				}
+				index++;
+			}
+		}
+	}
+
 	public void createKills() {
 		if (killsHologram != null) {
 			killsHologram.remove();
@@ -68,7 +153,7 @@ public class HologramListener implements Listener {
 		}
 
 		if (killsHologram == null) {
-			killsHologram = BukkitMain.getInstance().getHologramController().createHologram("§6§lRANKING - KILLS",
+			killsHologram = BukkitMain.getInstance().getHologramController().createHologram("§c§lRANKING - KILLS",
 					BukkitMain.getInstance().getLocationFromConfig("hologram-lobby-kills"), SimpleHologram.class);
 		}
 

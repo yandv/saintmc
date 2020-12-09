@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+import lombok.Getter;
 import tk.yallandev.saintmc.common.server.loadbalancer.BaseBalancer;
 import tk.yallandev.saintmc.common.server.loadbalancer.server.HungerGamesServer;
 import tk.yallandev.saintmc.common.server.loadbalancer.server.MinigameServer;
@@ -25,10 +26,12 @@ import tk.yallandev.saintmc.common.server.loadbalancer.type.MostConnection;
  *
  */
 
+@Getter
 public class ServerManager {
 
 	private Map<String, ProxiedServer> activeServers;
 	private Map<ServerType, BaseBalancer<ProxiedServer>> balancers;
+	private int totalMembers;
 
 	public ServerManager() {
 		balancers = new HashMap<>();
@@ -43,7 +46,6 @@ public class ServerManager {
 		balancers.put(ServerType.GLADIATOR, new MostConnection<>());
 
 		balancers.put(ServerType.HUNGERGAMES, new MostConnection<>());
-		balancers.put(ServerType.PRIVATE_SERVER, new MostConnection<>());
 		balancers.put(ServerType.CLANXCLAN, new MostConnection<>());
 		balancers.put(ServerType.EVENTO, new MostConnection<>());
 
@@ -136,16 +138,12 @@ public class ServerManager {
 			balancer.remove(serverId.getServerId().toLowerCase());
 	}
 
+	public void setTotalMembers(int totalMembers) {
+		this.totalMembers = totalMembers;
+	}
+
 	public int getTotalNumber() {
-		int totalNumber = 0;
-
-		for (ServerType serverType : ServerType.values()) {
-			if (getBalancer(serverType) != null) {
-				totalNumber += getBalancer(serverType).getTotalNumber();
-			}
-		}
-
-		return totalNumber;
+		return totalMembers;
 	}
 
 }

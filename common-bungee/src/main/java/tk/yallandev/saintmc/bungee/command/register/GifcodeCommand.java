@@ -31,7 +31,7 @@ public class GifcodeCommand implements CommandClass {
 		if (args.length == 0) {
 			sender.sendMessage(" §e* §fUse §a/" + cmdArgs.getLabel() + " <código>§f para resgatar um código!");
 
-			if (Member.hasGroupPermission(sender.getUniqueId(), Group.DIRETOR)) {
+			if (Member.hasGroupPermission(sender.getUniqueId(), Group.ADMIN)) {
 				sender.sendMessage(" §e* §fUse §a/" + cmdArgs.getLabel()
 						+ " criar rank <rank> <tempo>§f para criar um código de rank!");
 				sender.sendMessage(" §e* §fUse §a/" + cmdArgs.getLabel()
@@ -42,7 +42,7 @@ public class GifcodeCommand implements CommandClass {
 		}
 
 		if (args[0].equalsIgnoreCase("criar")) {
-			if (!cmdArgs.isPlayer() || Member.hasGroupPermission(sender.getUniqueId(), Group.GERENTE)) {
+			if (!cmdArgs.isPlayer() || Member.hasGroupPermission(sender.getUniqueId(), Group.ADMIN)) {
 				String code = "";
 
 				do {
@@ -116,7 +116,7 @@ public class GifcodeCommand implements CommandClass {
 
 		if (args.length >= 2) {
 			if (args[1].equalsIgnoreCase("deletar")) {
-				if (!cmdArgs.isPlayer() || Member.hasGroupPermission(sender.getUniqueId(), Group.GERENTE)) {
+				if (!cmdArgs.isPlayer() || Member.hasGroupPermission(sender.getUniqueId(), Group.ADMIN)) {
 					if (BungeeMain.getInstance().getGiftcodeController().deleteGiftcode(code)) {
 						sender.sendMessage("§aO código " + code + " foi deletado com sucesso!");
 						CommonGeneral.getInstance().getMemberManager().broadcast(

@@ -12,15 +12,16 @@ import lombok.Getter;
 import net.md_5.bungee.api.chat.BaseComponent;
 import tk.yallandev.saintmc.CommonConst;
 import tk.yallandev.saintmc.CommonGeneral;
-import tk.yallandev.saintmc.common.account.client.ClientType;
 import tk.yallandev.saintmc.common.account.configuration.AccountConfiguration;
 import tk.yallandev.saintmc.common.account.configuration.LoginConfiguration;
+import tk.yallandev.saintmc.common.account.configuration.LoginConfiguration.AccountType;
 import tk.yallandev.saintmc.common.account.medal.Medal;
 import tk.yallandev.saintmc.common.ban.PunishmentHistory;
 import tk.yallandev.saintmc.common.clan.Clan;
 import tk.yallandev.saintmc.common.command.CommandSender;
 import tk.yallandev.saintmc.common.permission.Group;
 import tk.yallandev.saintmc.common.permission.RankType;
+import tk.yallandev.saintmc.common.profile.Profile;
 import tk.yallandev.saintmc.common.server.ServerType;
 import tk.yallandev.saintmc.common.tag.Tag;
 
@@ -34,6 +35,13 @@ public abstract class Member implements CommandSender {
 
 	private String playerName;
 	private UUID uniqueId;
+
+	/*
+	 * Skin Information
+	 * 
+	 */
+
+	private Profile skinProfile;
 
 	private String fakeName;
 	private Map<String, Long> cooldown;
@@ -122,12 +130,13 @@ public abstract class Member implements CommandSender {
 	private String lastServerId;
 	private ServerType lastServerType;
 
-	private ClientType clientType;
 	private boolean online;
 
 	public Member(MemberModel memberModel) {
 		playerName = memberModel.getPlayerName();
 		uniqueId = memberModel.getUniqueId();
+
+		skinProfile = memberModel.getSkinProfile();
 
 		fakeName = memberModel.getFakeName();
 		cooldown = memberModel.getCooldown();
@@ -175,19 +184,20 @@ public abstract class Member implements CommandSender {
 		lastServerId = memberModel.getLastServerId();
 		lastServerType = memberModel.getLastServerType();
 
-		clientType = memberModel.getClientType();
 		online = memberModel.isOnline();
 	}
 
-	public Member(String playerName, UUID uniqueId) {
+	public Member(String playerName, UUID uniqueId, AccountType accountType) {
 		this.playerName = playerName;
 		this.uniqueId = uniqueId;
+
+		this.skinProfile = new Profile(playerName, uniqueId);
 
 		this.fakeName = "";
 		this.cooldown = new HashMap<>();
 
 		this.accountConfiguration = new AccountConfiguration(this);
-		this.loginConfiguration = new LoginConfiguration(this);
+		this.loginConfiguration = new LoginConfiguration(this, accountType);
 
 		this.punishmentHistory = new PunishmentHistory();
 
@@ -203,7 +213,7 @@ public abstract class Member implements CommandSender {
 
 		this.medalList = new ArrayList<>();
 
-		this.league = League.UNRANKED;
+		this.league = League.INICIANTE;
 		this.reputation = 5;
 
 		this.firstLogin = System.currentTimeMillis();
@@ -313,6 +323,11 @@ public abstract class Member implements CommandSender {
 	public void setCooldown(String cooldownKey, int cooldownTime) {
 		cooldown.put(cooldownKey.toLowerCase(), System.currentTimeMillis() + (1000 * cooldownTime));
 		save("cooldown");
+	}
+
+	public void setSkinProfile(Profile skinProfile) {
+		this.skinProfile = skinProfile;
+		save("skinProfile");
 	}
 
 	/*
@@ -441,6 +456,11 @@ public abstract class Member implements CommandSender {
 		return getServerGroup().ordinal() == groupToUse.ordinal();
 	}
 
+	public boolean hasSkin() {
+		return this.skinProfile != null && (!this.skinProfile.getPlayerName().equals(this.playerName)
+				&& !this.skinProfile.getUniqueId().equals(this.uniqueId));
+	}
+
 	public void saveRanks() {
 		save("ranks");
 	}
@@ -479,6 +499,11 @@ public abstract class Member implements CommandSender {
 		if (xp < 0)
 			xp = 0;
 
+		Clan clan = getClan();
+
+		if (clan != null)
+			clan.addXp(xp);
+
 		setXp(getXp() + xp);
 		return xp;
 	}
@@ -486,6 +511,11 @@ public abstract class Member implements CommandSender {
 	public int removeXp(int xp) {
 		if (xp < 0)
 			xp = 0;
+
+		Clan clan = getClan();
+
+		if (clan != null)
+			clan.removeXp(xp);
 
 		if (getXp() - xp < 0)
 			setXp(0);
@@ -658,11 +688,6 @@ public abstract class Member implements CommandSender {
 			if (save)
 				saveRanks();
 		}
-	}
-
-	public void setClientType(ClientType clientType) {
-		this.clientType = clientType;
-		save("clientType");
 	}
 
 	public void save(String... fieldName) {

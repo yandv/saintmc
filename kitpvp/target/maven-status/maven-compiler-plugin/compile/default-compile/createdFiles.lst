@@ -17,6 +17,8 @@ tk\yallandev\saintmc\kitpvp\kit\register\PvpKit.class
 tk\yallandev\saintmc\kitpvp\event\lava\PlayerFinishChallengeEvent.class
 tk\yallandev\saintmc\kitpvp\listener\ScoreboardListener.class
 tk\yallandev\saintmc\kitpvp\kit\register\NinjaKit.class
+tk\yallandev\saintmc\kitpvp\command\FeastCommand.class
+tk\yallandev\saintmc\kitpvp\party\Party.class
 tk\yallandev\saintmc\kitpvp\gamer\Freekill.class
 tk\yallandev\saintmc\kitpvp\menu\WarpInventory.class
 tk\yallandev\saintmc\kitpvp\warp\WarpSetting.class
@@ -40,6 +42,7 @@ tk\yallandev\saintmc\kitpvp\event\warp\PlayerWarpQuitEvent.class
 tk\yallandev\saintmc\kitpvp\kit\Kit.class
 tk\yallandev\saintmc\kitpvp\kit\register\AnchorKit$1.class
 tk\yallandev\saintmc\kitpvp\warp\DuelWarp.class
+tk\yallandev\saintmc\kitpvp\listener\FeastListener.class
 tk\yallandev\saintmc\kitpvp\listener\ProtectionListener.class
 tk\yallandev\saintmc\kitpvp\event\challenge\FightStartEvent.class
 tk\yallandev\saintmc\kitpvp\kit\register\SwitcherKit.class
@@ -64,6 +67,7 @@ tk\yallandev\saintmc\kitpvp\kit\register\GladiatorKit$GladiatorController$Gladia
 tk\yallandev\saintmc\kitpvp\warp\types\ShadowWarp$2$1.class
 tk\yallandev\saintmc\kitpvp\warp\scoreboard\types\ShadowScoreboard$FightPingUpdate.class
 tk\yallandev\saintmc\kitpvp\hologram\RankingHologram$1.class
+tk\yallandev\saintmc\kitpvp\listener\FeastListener$Item.class
 tk\yallandev\saintmc\kitpvp\kit\register\HulkKit$1.class
 tk\yallandev\saintmc\kitpvp\warp\types\SumoWarp$2.class
 tk\yallandev\saintmc\kitpvp\warp\types\ShadowWarp.class
@@ -71,7 +75,9 @@ tk\yallandev\saintmc\kitpvp\event\hologram\HologramUpdateEvent.class
 tk\yallandev\saintmc\kitpvp\listener\PlayerListener.class
 tk\yallandev\saintmc\kitpvp\kit\register\BoxerKit.class
 tk\yallandev\saintmc\kitpvp\kit\register\GladiatorKit$GladiatorController.class
+tk\yallandev\saintmc\kitpvp\GameConst.class
 tk\yallandev\saintmc\kitpvp\kit\register\MonkKit.class
+tk\yallandev\saintmc\kitpvp\party\types\RdmParty.class
 tk\yallandev\saintmc\kitpvp\GameMain.class
 tk\yallandev\saintmc\kitpvp\listener\ShadowListener$1.class
 tk\yallandev\saintmc\kitpvp\warp\types\FpsWarp.class
@@ -91,6 +97,7 @@ tk\yallandev\saintmc\kitpvp\warp\challenge\shadow\ShadowChallenge.class
 tk\yallandev\saintmc\kitpvp\event\party\PartyEvent.class
 tk\yallandev\saintmc\kitpvp\command\WarpCommand.class
 tk\yallandev\saintmc\kitpvp\kit\register\ThorKit.class
+tk\yallandev\saintmc\kitpvp\party\PartyType.class
 tk\yallandev\saintmc\kitpvp\warp\scoreboard\types\LavaScoreboard$1.class
 tk\yallandev\saintmc\kitpvp\warp\scoreboard\types\LavaScoreboard.class
 tk\yallandev\saintmc\kitpvp\warp\Warp.class
@@ -113,13 +120,10 @@ tk\yallandev\saintmc\kitpvp\warp\lava\ChallengeInfo.class
 tk\yallandev\saintmc\kitpvp\warp\challenge\ChallengeType.class
 tk\yallandev\saintmc\kitpvp\warp\types\LavaWarp.class
 tk\yallandev\saintmc\kitpvp\event\kit\gladiator\GladiatorFinishEvent.class
-tk\yallandev\saintmc\kitpvp\warp\types\party\Party.class
 tk\yallandev\saintmc\kitpvp\kit\register\NinjaKit$NinjaHit.class
 tk\yallandev\saintmc\kitpvp\menu\SelectorInventory.class
-tk\yallandev\saintmc\kitpvp\warp\types\party\PartyType.class
 tk\yallandev\saintmc\kitpvp\menu\SelectorInventory$3.class
 tk\yallandev\saintmc\kitpvp\manager\WarpManager.class
-tk\yallandev\saintmc\kitpvp\warp\types\party\register\RdmParty.class
 tk\yallandev\saintmc\kitpvp\GameMain$1.class
 tk\yallandev\saintmc\kitpvp\listener\WorldListener.class
 tk\yallandev\saintmc\kitpvp\warp\types\ShadowWarp$3.class

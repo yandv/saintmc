@@ -16,7 +16,7 @@ public class RewardCalculator {
 		int killerKd = killerStatus.getKills() / (killerStatus.getDeaths() == 0 ? 1 : killerStatus.getDeaths());
 		int killerXp = CommonGeneral.getInstance().getMemberManager().getMember(player.getUniqueId()).getXp();
 
-		int xp = CommonConst.RANDOM.nextInt(8) + 1;
+		int xp = CommonConst.RANDOM.nextInt(18) + 1;
 
 		int kdDifference = killerKd - playerKd;
 

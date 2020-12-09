@@ -16,8 +16,9 @@ public class BungeeConst {
 	 * DISCORD CHANNEL
 	 */
 
-	public static final long DISCORD_CHANNEL_JOIN_LOG = 749809551334703134l;
-	public static final long DISCORD_CHANNEL_LOG = 750768130300706826l;
+	public static final long DISCORD_CHANNEL_PLAYER_LOG = 777987122615025675l;
+	public static final long DISCORD_CHANNEL_LOG = 777987165052207105l;
+	public static final long DISCORD_CHANNEL_REPORT_LOG = 777987403670880317l;
 
 	public static final CommandSender CONSOLE_SENDER = new CommandSender() {
 

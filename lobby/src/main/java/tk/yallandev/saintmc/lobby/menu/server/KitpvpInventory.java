@@ -66,7 +66,7 @@ public class KitpvpInventory {
 		int w = 10;
 
 		for (ProxiedServer server : serverList) {
-			if (!server.isJoinEnabled() && !member.hasGroupPermission(Group.BUILDER)
+			if (!server.isJoinEnabled() && !member.hasGroupPermission(Group.TRIAL)
 					&& !server.isInWhitelist(member.getPlayerName()))
 				continue;
 

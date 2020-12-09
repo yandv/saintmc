@@ -13,7 +13,7 @@ public class ModeratorGroup extends GroupInterface {
 			permissions.add("bukkit.command." + str);
 		}
 		
-		permissions.add("AntiCheat.vlSee");
+		permissions.add("verus.staff.alerts");
 		return permissions;
 	}
 }

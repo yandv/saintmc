@@ -13,13 +13,13 @@ import tk.yallandev.saintmc.kitpvp.warp.scoreboard.WarpScoreboard;
 public class VoidScoreboard extends WarpScoreboard {
 
 	public VoidScoreboard() {
-		super(new SimpleScoreboard("§6§lVOID CHALLENGE"));
+		super(new SimpleScoreboard("§4§lVOID CHALLENGE"));
 
 		scoreboard.blankLine(5);
 		scoreboard.setScore(4, new Score("Tempo atual: §a0s", "time"));
 		scoreboard.setScore(3, new Score("Tempo record: §c-/-", "record"));
 		scoreboard.blankLine(2);
-		scoreboard.setScore(1, new Score("§6" + CommonConst.SITE, "site"));
+		scoreboard.setScore(1, new Score("§c" + CommonConst.SITE, "site"));
 	}
 
 	@Override

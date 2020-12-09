@@ -6,13 +6,13 @@ import java.util.Map;
 import java.util.UUID;
 
 import lombok.Getter;
-import tk.yallandev.saintmc.common.account.client.ClientType;
 import tk.yallandev.saintmc.common.account.configuration.AccountConfiguration;
 import tk.yallandev.saintmc.common.account.configuration.LoginConfiguration;
 import tk.yallandev.saintmc.common.account.medal.Medal;
 import tk.yallandev.saintmc.common.ban.PunishmentHistory;
 import tk.yallandev.saintmc.common.permission.Group;
 import tk.yallandev.saintmc.common.permission.RankType;
+import tk.yallandev.saintmc.common.profile.Profile;
 import tk.yallandev.saintmc.common.server.ServerType;
 //import tk.yallandev.saintmc.discord.account.DiscordType;
 import tk.yallandev.saintmc.common.tag.Tag;
@@ -27,6 +27,13 @@ public class MemberModel {
 
 	private String playerName;
 	private final UUID uniqueId;
+
+	/*
+	 * Skin Information
+	 * 
+	 */
+
+	private Profile skinProfile;
 
 	private String fakeName;
 	private Map<String, Long> cooldown;
@@ -114,12 +121,13 @@ public class MemberModel {
 	private String lastServerId;
 	private ServerType lastServerType;
 
-	private ClientType clientType;
 	private boolean online;
 
 	public MemberModel(Member member) {
 		playerName = member.getPlayerName();
 		uniqueId = member.getUniqueId();
+
+		skinProfile = member.getSkinProfile();
 
 		fakeName = member.getFakeName();
 		cooldown = member.getCooldown();
@@ -166,7 +174,6 @@ public class MemberModel {
 		lastServerId = member.getServerId();
 		lastServerType = member.getServerType();
 
-		clientType = member.getClientType();
 		online = member.isOnline();
 	}
 

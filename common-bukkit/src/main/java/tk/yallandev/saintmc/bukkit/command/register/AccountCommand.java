@@ -15,9 +15,11 @@ import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.HoverEvent.Action;
 import net.md_5.bungee.api.chat.TextComponent;
 import tk.yallandev.saintmc.CommonConst;
 import tk.yallandev.saintmc.CommonGeneral;
+import tk.yallandev.saintmc.bukkit.BukkitMain;
 import tk.yallandev.saintmc.bukkit.bukkit.BukkitMember;
 import tk.yallandev.saintmc.bukkit.command.BukkitCommandArgs;
 import tk.yallandev.saintmc.bukkit.menu.account.AccountInventory;
@@ -31,8 +33,10 @@ import tk.yallandev.saintmc.common.clan.enums.ClanDisplayType;
 import tk.yallandev.saintmc.common.command.CommandArgs;
 import tk.yallandev.saintmc.common.command.CommandClass;
 import tk.yallandev.saintmc.common.command.CommandFramework.Command;
+import tk.yallandev.saintmc.common.command.CommandSender;
 import tk.yallandev.saintmc.common.permission.Group;
 import tk.yallandev.saintmc.common.profile.Profile;
+import tk.yallandev.saintmc.common.tag.Tag;
 import tk.yallandev.saintmc.common.utils.DateUtils;
 import tk.yallandev.saintmc.common.utils.string.MessageBuilder;
 import tk.yallandev.saintmc.common.utils.string.NameUtils;
@@ -52,6 +56,16 @@ public class AccountCommand implements CommandClass {
 		if (args.length == 0) {
 			player = CommonGeneral.getInstance().getMemberManager().getMember(sender.getUniqueId());
 		} else {
+
+			if (sender instanceof Member) {
+				Member member = (Member) sender;
+
+				if (!member.hasGroupPermission(Group.TRIAL)) {
+					sender.sendMessage("§cVocê não pode ver o perfil desse jogador!");
+					return;
+				}
+			}
+
 			UUID uuid = CommonGeneral.getInstance().getUuid(args[0]);
 
 			if (uuid == null) {
@@ -85,6 +99,82 @@ public class AccountCommand implements CommandClass {
 		}
 
 		new AccountInventory(sender, player, args.length == 0 ? player.getName() : args[0]);
+	}
+
+	@Command(name = "tag", runAsync = true)
+	public void tagCommand(CommandArgs cmdArgs) {
+		if (!cmdArgs.isPlayer())
+			return;
+
+		if (!BukkitMain.getInstance().isTagControl()) {
+			cmdArgs.getSender().sendMessage("§cO comando não está ativado nesse servidor!");
+			return;
+		}
+
+		BukkitMember player = (BukkitMember) cmdArgs.getSender();
+		String[] args = cmdArgs.getArgs();
+
+		if (args.length == 0) {
+			TextComponent message = new TextComponent("§aSuas tags: ");
+
+			int max = player.getTags().size() * 2;
+			int i = max - 1;
+
+			for (Tag t : player.getTags()) {
+				if (i < max - 1) {
+					message.addExtra(new TextComponent("§f, "));
+					i -= 1;
+				}
+
+				message.addExtra(new MessageBuilder(t == Tag.MEMBRO ? "§7§lMEMBRO" : t.getPrefix())
+						.setHoverEvent(new HoverEvent(Action.SHOW_TEXT,
+								new TextComponent[] { new TextComponent("§fExemplo: " + t.getPrefix()
+										+ player.getPlayerName() + "\n\n§aClique para selecionar!") }))
+						.setClickEvent(new ClickEvent(net.md_5.bungee.api.chat.ClickEvent.Action.RUN_COMMAND,
+								"/tag " + t.getName()))
+						.create());
+				i -= 1;
+			}
+
+			player.sendMessage(message);
+			return;
+		}
+
+		if (args[0].equalsIgnoreCase("chroma")) {
+			if (player.hasGroupPermission(Group.ADMIN) || player.hasPermission("tag.chroma")) {
+				player.setChroma(!player.isChroma());
+				player.setTag(player.getTag());
+				player.sendMessage(
+						player.isChroma() ? "§aO modo chroma foi ativado!" : "§cO modo chroma foi desativado!");
+				return;
+			}
+		}
+
+		if (args[0].equalsIgnoreCase("default") || args[0].equalsIgnoreCase("normal")) {
+			if (player.setTag(player.getDefaultTag()))
+				player.sendMessage("§aVocê voltou para sua tag padrão!");
+			return;
+		}
+
+		Tag tag = Tag.getByName(args[0]);
+
+		if (tag == null) {
+			player.sendMessage("§cA tag " + args[0] + " não existe!");
+			return;
+		}
+
+		if (player.hasTag(tag)) {
+			if (!player.getTag().equals(tag)) {
+				if (player.setTag(tag)) {
+					player.sendMessage("§aVocê alterou sua tag para "
+							+ (tag == Tag.MEMBRO ? "§7§lMEMBRO" : tag.getPrefix()) + "§f!");
+				}
+			} else {
+				player.sendMessage("§cVocê já está usando essa tag!");
+			}
+		} else {
+			player.sendMessage("§cVocê não tem permissão para usar essa tag!");
+		}
 	}
 
 	@Command(name = "medal", aliases = { "medals", "medalha", "medalhas" })
@@ -191,34 +281,31 @@ public class AccountCommand implements CommandClass {
 		Collections.reverse(leagues);
 
 		for (League league : leagues) {
-			if (player.getLeague() == league) {
-				TextComponent text = new TextComponent(league.getColor() + league.getSymbol() + " " + league.name());
+			MessageBuilder messageBuilder = new MessageBuilder(
+					league.getColor() + league.getSymbol() + " " + league.getName());
 
-				text.setHoverEvent(
-						new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText("§aSeu rank!")));
+			if (player.getLeague() == league)
+				messageBuilder.setHoverEvent(HoverEvent.Action.SHOW_TEXT, "§aO seu rank é esse!");
 
-				player.sendMessage(text);
-			} else {
-				player.sendMessage(league.getColor() + league.getSymbol() + " " + league.name());
-			}
+			player.sendMessage(messageBuilder.create());
 		}
 
 		player.sendMessage("");
-		player.sendMessage("§a§l> §fSeu rank atual é " + player.getLeague().getColor() + player.getLeague().getSymbol()
-				+ " " + player.getLeague().getName());
-		player.sendMessage("§a§l> §fSeu xp §e" + player.getXp());
+		player.sendMessage("§eSeu rank atual é " + player.getLeague().getColor() + player.getLeague().getSymbol() + " "
+				+ player.getLeague().getName());
+		player.sendMessage("§eSeu xp §e" + player.getXp());
 
-		if (player.getLeague() == League.CHALLENGER) {
+		if (player.getLeague() == League.CLOUTH) {
 			player.sendMessage("");
-			player.sendMessage("§a§l> §fVocê está no maior rank do servidor");
-			player.sendMessage("§a§l> §fContinue ganhando XP para ficar no topo do ranking");
+			player.sendMessage("§aVocê está no maior rank do servidor");
+			player.sendMessage("aContinue ganhando XP para ficar no topo do ranking");
 		} else {
 			player.sendMessage("");
-			player.sendMessage("§a§l> §fPróximo rank §e" + player.getLeague().getNextLeague().getColor()
+			player.sendMessage("§aPróximo rank §e" + player.getLeague().getNextLeague().getColor()
 					+ player.getLeague().getNextLeague().getSymbol() + " "
 					+ player.getLeague().getNextLeague().getName());
 			player.sendMessage(
-					"§a§l> §fXP necessário para o próximo rank §e" + (player.getLeague().getMaxXp() - player.getXp()));
+					"§aXP necessário para o próximo rank §e" + (player.getLeague().getMaxXp() - player.getXp()));
 		}
 	}
 
@@ -240,13 +327,13 @@ public class AccountCommand implements CommandClass {
 		case "give":
 
 			if (args.length <= 2) {
-				member.sendMessage(" §e* §fUse §a/" + cmdArgs.getLabel()
-						+ " give <player> <money>§f para enviar money para algum jogador!");
+				member.sendMessage("§eUse §a/" + cmdArgs.getLabel()
+						+ " give <player> <money> para enviar money para algum jogador!");
 			} else {
 				UUID uuid = CommonGeneral.getInstance().getUuid(args[1]);
 
 				if (uuid == null) {
-					member.sendMessage(" §c* §fO jogador §a" + args[1] + "§f não existe!");
+					member.sendMessage("§cO jogador " + args[1] + " não existe!");
 					return;
 				}
 
@@ -257,15 +344,14 @@ public class AccountCommand implements CommandClass {
 						MemberModel loaded = CommonGeneral.getInstance().getPlayerData().loadMember(uuid);
 
 						if (loaded == null) {
-							member.sendMessage(" §c* §fO jogador §a" + args[1] + "§f nunca entrou no servidor!");
+							member.sendMessage("§cO jogador " + args[1] + " nunca entrou no servidor!");
 							return;
 						}
 
 						player = new MemberVoid(loaded);
 					} catch (Exception e) {
 						e.printStackTrace();
-						member.sendMessage(
-								" §c* §fNão foi possível pegar as informações do jogador §a" + args[1] + "§f!");
+						member.sendMessage("§cNão foi possível pegar as informações do jogador " + args[1] + "!");
 						return;
 					}
 				}
@@ -329,7 +415,7 @@ public class AccountCommand implements CommandClass {
 						.create() });
 	}
 
-	@Command(name = "site", aliases = { "website", "discord" })
+	@Command(name = "site", aliases = { "website", "discord", "loja" })
 	public void siteCommand(CommandArgs cmdArgs) {
 		cmdArgs.getSender()
 				.sendMessage(
@@ -401,6 +487,58 @@ public class AccountCommand implements CommandClass {
 				+ (member.isUsingFake() ? member.getFakeName() : member.getPlayerName()) + "§7] §f" + message);
 		member.sendMessage("§7[§e" + cmdArgs.getPlayer().getName() + " §7» §e"
 				+ (member.isUsingFake() ? member.getFakeName() : member.getPlayerName()) + "§7] §f" + message);
+	}
+
+	@Command(name = "givexp", usage = "/<command> <message>", groupToUse = Group.ADMIN)
+	public void givexpCommand(BukkitCommandArgs cmdArgs) {
+		CommandSender sender = cmdArgs.getSender();
+		String[] args = cmdArgs.getArgs();
+
+		if (args.length <= 1) {
+			sender.sendMessage("§ebobo");
+			return;
+		}
+
+		Member member = CommonGeneral.getInstance().getMemberManager().getMember(args[0]);
+
+		if (member == null) {
+			sender.sendMessage("§cO jogador não está online!");
+			return;
+		}
+
+		try {
+			member.addXp(Integer.valueOf(args[1]));
+			sender.sendMessage(
+					"§aO jogador " + member.getPlayerName() + " recebeu " + Integer.valueOf(args[1]) + "xp!");
+		} catch (Exception ex) {
+			sender.sendMessage("§cFormato de xp inválido!");
+		}
+	}
+
+	@Command(name = "removexp", usage = "/<command> <message>", groupToUse = Group.ADMIN)
+	public void removexpCommand(BukkitCommandArgs cmdArgs) {
+		CommandSender sender = cmdArgs.getSender();
+		String[] args = cmdArgs.getArgs();
+
+		if (args.length <= 1) {
+			sender.sendMessage("§ebobo");
+			return;
+		}
+
+		Member member = CommonGeneral.getInstance().getMemberManager().getMember(args[0]);
+
+		if (member == null) {
+			sender.sendMessage("§cO jogador não está online!");
+			return;
+		}
+
+		try {
+			member.removeXp(Integer.valueOf(args[1]));
+			sender.sendMessage(
+					"§cO jogador " + member.getPlayerName() + " recebeu -" + Integer.valueOf(args[1]) + "xp!");
+		} catch (Exception ex) {
+			sender.sendMessage("§cFormato de xp inválido!");
+		}
 	}
 
 	@Command(name = "tell", usage = "/<command> <message>", aliases = { "msg" })

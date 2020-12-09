@@ -79,7 +79,7 @@ public class StaffCommand implements CommandClass {
 		}
 	}
 
-	@Command(name = "staffchat", groupToUse = Group.HELPER, usage = "/<command>", aliases = { "sc" })
+	@Command(name = "staffchat", groupToUse = Group.TRIAL, usage = "/<command>", aliases = { "sc" })
 	public void staffchatCommand(CommandArgs cmdArgs) {
 		if (!cmdArgs.isPlayer())
 			return;
@@ -119,7 +119,7 @@ public class StaffCommand implements CommandClass {
 				member.getAccountConfiguration().setSeeingStaffchat(true);
 	}
 
-	@Command(name = "stafflog", groupToUse = Group.HELPER, usage = "/<command>", aliases = { "sl" })
+	@Command(name = "stafflog", groupToUse = Group.TRIAL, usage = "/<command>", aliases = { "sl" })
 	public void stafflogCommand(CommandArgs cmdArgs) {
 		if (!cmdArgs.isPlayer())
 			return;
@@ -135,7 +135,7 @@ public class StaffCommand implements CommandClass {
 		}
 	}
 
-	@Command(name = "fakelist", runAsync = true, groupToUse = Group.HELPER, usage = "/<command> <player> <server>")
+	@Command(name = "fakelist", runAsync = true, groupToUse = Group.TRIAL, usage = "/<command> <player> <server>")
 	public void fakelistCommand(CommandArgs cmdArgs) {
 		CommandSender sender = cmdArgs.getSender();
 
@@ -155,7 +155,7 @@ public class StaffCommand implements CommandClass {
 		sender.sendMessage(" ");
 
 		CommonGeneral.getInstance().getMemberManager().getMembers().stream()
-				.filter(member -> member.hasGroupPermission(Group.HELPER))
+				.filter(member -> member.hasGroupPermission(Group.TRIAL))
 				.sorted((o1, o2) -> o1.getServerGroup().compareTo(o2.getServerGroup()))
 				.forEach(member -> sender.sendMessage("§7" + member.getPlayerName() + " §8- §f"
 						+ Tag.valueOf(member.getServerGroup().name()).getPrefix()));
@@ -188,7 +188,8 @@ public class StaffCommand implements CommandClass {
 		sender.sendMessage(new BaseComponent[] { txt, text });
 	}
 
-	@Command(name = "screenshare", aliases = { "ss" }, groupToUse = Group.MODGC, usage = "/<command> <player> <server>")
+	@Command(name = "screenshare", aliases = {
+			"ss" }, groupToUse = Group.MODPLUS, usage = "/<command> <player> <server>")
 	public void screenshareCommand(BungeeCommandArgs cmdArgs) {
 		if (!cmdArgs.isPlayer())
 			return;

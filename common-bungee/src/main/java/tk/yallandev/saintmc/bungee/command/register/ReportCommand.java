@@ -11,6 +11,7 @@ import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
+import tk.yallandev.saintmc.BungeeConst;
 import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.bungee.command.BungeeCommandArgs;
 import tk.yallandev.saintmc.common.account.Member;
@@ -92,19 +93,23 @@ public class ReportCommand implements CommandClass {
 		Member m = CommonGeneral.getInstance().getMemberManager().getMember(uuid);
 
 		if (m == null) {
-			try {
-				MemberModel loaded = CommonGeneral.getInstance().getPlayerData().loadMember(uuid);
+			m = CommonGeneral.getInstance().getMemberManager().getMemberByFake(args[0]);
 
-				if (loaded == null) {
-					sender.sendMessage(" §c* §fO jogador §a" + args[0] + "§f nunca entrou no servidor!");
+			if (m == null) {
+				try {
+					MemberModel loaded = CommonGeneral.getInstance().getPlayerData().loadMember(uuid);
+
+					if (loaded == null) {
+						sender.sendMessage(" §c* §fO jogador §a" + args[0] + "§f nunca entrou no servidor!");
+						return;
+					}
+
+					m = new MemberVoid(loaded);
+				} catch (Exception e) {
+					e.printStackTrace();
+					sender.sendMessage(" §c* §fNão foi possível pegar as informações do jogador §a" + args[0] + "§f!");
 					return;
 				}
-
-				m = new MemberVoid(loaded);
-			} catch (Exception e) {
-				e.printStackTrace();
-				sender.sendMessage(" §c* §fNão foi possível pegar as informações do jogador §a" + args[0] + "§f!");
-				return;
 			}
 		}
 
@@ -154,7 +159,7 @@ public class ReportCommand implements CommandClass {
 					new ComponentBuilder("§aClique para se teletransportar!").create()));
 
 			CommonGeneral.getInstance().getMemberManager().getMembers().stream()
-					.filter(member -> member.hasGroupPermission(Group.HELPER)
+					.filter(member -> member.hasGroupPermission(Group.TRIAL)
 							&& member.getAccountConfiguration().isReportEnabled())
 					.forEach(member -> {
 						member.sendMessage("§c§lREPORT");
@@ -168,7 +173,7 @@ public class ReportCommand implements CommandClass {
 						member.sendMessage(text);
 					});
 
-			MessageUtils.sendMessage(702705594997407787l,
+			MessageUtils.sendMessage(BungeeConst.DISCORD_CHANNEL_REPORT_LOG,
 					new MessageBuilder().setEmbed(new EmbedBuilder().setColor(Color.RED).setAuthor("Report")
 							.addField("Suspeito: ", report.getPlayerName(), true)
 							.addField("Reportado por: ", cmdArgs.getPlayer().getName(), true)

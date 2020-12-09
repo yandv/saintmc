@@ -31,9 +31,9 @@ import tk.yallandev.saintmc.login.LoginMain;
 
 public class PlayerListener implements Listener {
 
-	private static final Scoreboard SCOREBOARD = new SimpleScoreboard("§6§lLOGIN");
+	private static final Scoreboard SCOREBOARD = new SimpleScoreboard("§4§lLOGIN");
 	private static final Tablist TABLIST = new Tablist(
-			"\n§6§lSAINT§f§lMC\n§f\n§7Nome: §f%name% §9- §7Grupo: %group%\n§f                                                 §f",
+			"\n§c§lCLOUTH§f§lNETWORK\n§f\n§7Nome: §f%name% §9- §7Grupo: %group%\n§f                                                 §f",
 			"\n§a" + CommonConst.SITE + "\n§b" + CommonConst.DISCORD.replace("http://", "") + "\n§f ") {
 
 		@Override
@@ -60,7 +60,7 @@ public class PlayerListener implements Listener {
 		SCOREBOARD.setScore(4, new Score("§fRegistre-se usando", "3"));
 		SCOREBOARD.setScore(3, new Score("§f/register <senha>", "4"));
 		SCOREBOARD.blankLine(2);
-		SCOREBOARD.setScore(1, new Score("§6" + CommonConst.SITE, "site"));
+		SCOREBOARD.setScore(1, new Score("§c" + CommonConst.SITE, "site"));
 	}
 
 	@EventHandler(priority = EventPriority.LOWEST)
@@ -119,14 +119,14 @@ public class PlayerListener implements Listener {
 		event.setCancelled(true);
 	}
 
-	@EventHandler
-	public void onBlockBreak(BlockBreakEvent event) {
-		event.setCancelled(true);
-	}
-
-	@EventHandler
-	public void onBlockPlace(BlockPlaceEvent event) {
-		event.setCancelled(true);
-	}
+//	@EventHandler
+//	public void onBlockBreak(BlockBreakEvent event) {
+//		event.setCancelled(true);
+//	}
+//
+//	@EventHandler
+//	public void onBlockPlace(BlockPlaceEvent event) {
+//		event.setCancelled(true);
+//	}
 
 }

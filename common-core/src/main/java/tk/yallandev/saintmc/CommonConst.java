@@ -27,62 +27,52 @@ public class CommonConst {
 
 	public static final Pattern NICKNAME_PATTERN = Pattern.compile("[a-zA-Z0-9_]{1,16}");
 
-	public static final String SERVER_NAME = "SaintMC";
-	public static final String KICK_PREFIX = "SaintMC";
+	public static final String SERVER_NAME = "ClouthNetwork";
+	public static final String KICK_PREFIX = "ClouthNetwork";
 
-	public static final String IP_END = "saintmc.net";
+	public static final String IP_END = "clouth-network.com.br";
 
 	/*
 	 * HOWEVER
 	 */
 
-	public static final String WEBSITE = "https://saintmc.net/";
-	public static final String SITE = "www.saintmc.net";
-	public static final String STORE = "loja.saintmc.net";
-	public static final String TWITTER = "twitter.saintmc.net";
-	public static final String DISCORD = "https://discord.saintmc.net";
-	public static final String TORNEIO_DISCORD = "https://torneio.saintmc.net/";
+	public static final String WEBSITE = "clouth-network.com.br/";
+	public static final String SITE = "clouth-network.com.br";
+	public static final String STORE = "loja.clouth-network.com.br";
+	public static final String TWITTER = "twitter.clouth-network.com.br";
+	public static final String DISCORD = "discord.clouth-network.com.br";
+	public static final String TORNEIO_DISCORD = "torneio.clouth-network.com.br/";
 
 	/*
 	 * FORM
 	 */
 
-	public static final String TRIAL_FORM = "https://trial.saintmc.net/";
-	public static final String HELPER_FORM = "https://helper.saintmc.net/";
-	public static final String YOUTUBER_FORM = "https://youtuber.saintmc.net/";
-	public static final String APPEAL_FORM = "https://appeal.saintmc.net/";
+	public static final String TRIAL_FORM = "https://trial.clouth-network.com.br/";
+	public static final String HELPER_FORM = "https://helper.clouth-network.com.br/";
+	public static final String YOUTUBER_FORM = "https://youtuber.clouth-network.com.br/";
+	public static final String APPEAL_FORM = "https://appeal.clouth-network.com.br/";
 
 	/*
 	 * PAINEL
 	 */
 
-	public static final String PAINEL = "https://painel.saintmc.net/";
-	public static final String PAINEL_PROFILE = "https://painel.saintmc.net/profile/";
-	public static final String DASHBOARD = "https://painel.saintmc.net/dashboard/";
-	public static final String DASHBOARD_PROFILE = "https://painel.saintmc.net/dashboard/profile/";
+	public static final String PAINEL = "https://painel.clouth-network.com.br/";
+	public static final String PAINEL_PROFILE = "https://painel.clouth-network.com.br/profile/";
+	public static final String DASHBOARD = "https://painel.clouth-network.com.br/dashboard/";
+	public static final String DASHBOARD_PROFILE = "https://painel.clouth-network.com.br/dashboard/profile/";
 
 	/*
 	 * API
 	 */
 
-	public static final String API = "http://minhapicaaoquadrado.yandv.com.br:3333";
+	public static final String API = "http://api.clouthnetwork.spectrum-mc.net:3333";
 	public static final String DOWNLOAD_KEY = "kangaroo123";
 
-	public static final String SKIN_URL = API + "/skin/";
-	public static final String MOJANG_FETCHER = API + "/mojang/";
-	public static final String CRACKED_FETCHER = API + "/mojang/cracked/";
+	public static final String SKIN_URL = "https://sessionserver.mojang.com/session/minecraft/profile/%s?unsigned=false";
+	public static final String MOJANG_FETCHER = "https://api.mojang.com/users/profiles/minecraft/";
 	public static final String DISCORD_URL = API + "/discord/configuration/";
 
 	public static final String STORE_API = "https://" + STORE + "/wp-json/wmc/v1/server/"
 			+ "H0x062i7rnjyx6zj9qur2i4nrf0jcs";
-
-	/*
-	 * BACKEND
-	 */
-
-	public static final String MONGO_URL = "mongodb://admin:erANIaNutYpNeUBl@localhost/admin?retryWrites=true&w=majority";
-
-	public static final String REDIS_HOSTNAME = "127.0.0.1";
-	public static final String REDIS_PASSWORD = "yandv123";
 
 }

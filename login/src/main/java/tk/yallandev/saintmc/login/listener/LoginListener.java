@@ -5,22 +5,19 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.scheduler.BukkitRunnable;
 
-import tk.yallandev.saintmc.CommonConst;
 import tk.yallandev.saintmc.CommonGeneral;
-import tk.yallandev.saintmc.bukkit.api.title.Title;
+import tk.yallandev.saintmc.bukkit.api.actionbar.ActionBarAPI;
 import tk.yallandev.saintmc.bukkit.api.title.types.SimpleTitle;
 import tk.yallandev.saintmc.bukkit.bukkit.BukkitMember;
 import tk.yallandev.saintmc.bukkit.event.update.UpdateEvent;
 import tk.yallandev.saintmc.bukkit.event.update.UpdateEvent.UpdateType;
 import tk.yallandev.saintmc.common.account.configuration.LoginConfiguration.AccountType;
-import tk.yallandev.saintmc.login.LoginMain;
+import tk.yallandev.saintmc.login.event.captcha.CaptchaSuccessEvent;
 
 public class LoginListener implements Listener {
 
@@ -35,64 +32,65 @@ public class LoginListener implements Listener {
 		BukkitMember member = (BukkitMember) CommonGeneral.getInstance().getMemberManager()
 				.getMember(event.getPlayer().getUniqueId());
 
-		if (member.getLoginConfiguration().getAccountType() == AccountType.CRACKED) {
-			if (!member.getLoginConfiguration().isLogged()) {
-				member.sendMessage(
-						member.getLoginConfiguration().isRegistred() ? "§a§l> §fUse §a/login <senha>§f para se logar!"
-								: "§a§l> §fUse §a/register <senha> <senha>§f para se registrar!");
-
-				Title.send(event.getPlayer(),
-						member.getLoginConfiguration().isRegistred() ? "§a§lLOGIN" : "§a§lREGISTER",
-						member.getLoginConfiguration().isRegistred() ? "§aUse /login <senha> para se logar!"
-								: "§aUse /register <senha> para se registrar!",
-						SimpleTitle.class);
-
-				playerMap.put(member, System.currentTimeMillis() + 30000);
-			}
-		}
+		if (member.getLoginConfiguration().isPassCaptcha())
+			handleLogin(event.getPlayer());
 	}
 
-	@EventHandler(priority = EventPriority.LOWEST)
-	public void onPlayerQuit(PlayerQuitEvent event) {
-		BukkitMember member = (BukkitMember) CommonGeneral.getInstance().getMemberManager()
-				.getMember(event.getPlayer().getUniqueId());
-
-		if (playerMap.containsKey(member))
-			playerMap.remove(member);
+	@EventHandler
+	public void onPlayerJoin(CaptchaSuccessEvent event) {
+		handleLogin(event.getPlayer());
 	}
 
 	@EventHandler
 	public void onUpdate(UpdateEvent event) {
-		if (event.getType() != UpdateType.SECOND)
-			return;
+		if (event.getType() == UpdateType.SECOND) {
+			Iterator<Entry<BukkitMember, Long>> iterator = playerMap.entrySet().iterator();
 
-		Iterator<Entry<BukkitMember, Long>> iterator = playerMap.entrySet().iterator();
+			while (iterator.hasNext()) {
+				Entry<BukkitMember, Long> entry = iterator.next();
+				BukkitMember member = entry.getKey();
 
-		while (iterator.hasNext()) {
-			Entry<BukkitMember, Long> entry = iterator.next();
-			BukkitMember member = entry.getKey();
-
-			if (entry.getValue() > System.currentTimeMillis()) {
-				if (member.getLoginConfiguration().isLogged()) {
+				if (!member.getPlayer().isOnline()) {
 					iterator.remove();
 					continue;
 				}
 
-				if (((entry.getValue() - System.currentTimeMillis()) / 1000) % 10 == 0) {
-					member.sendMessage(member.getLoginConfiguration().isRegistred()
-							? "§a§l> §fUse §a/login <senha>§f para se logar!"
-							: "§a§l> §fUse §a/register <senha> <repita a senha>§f para se registrar!");
+				if (member.getLoginConfiguration().isLogged()) {
+					iterator.remove();
+					return;
 				}
-			} else {
-				iterator.remove();
-				new BukkitRunnable() {
 
-					@Override
-					public void run() {
-						member.getPlayer().kickPlayer(
-								"§4§l" + CommonConst.KICK_PREFIX + "\n§f\n§fVocê demorou muito para se §alogar§f!");
+				if (System.currentTimeMillis() > entry.getValue()) {
+					long timeRemeaning = System.currentTimeMillis() - entry.getValue();
+
+					if (timeRemeaning > 30000) {
+						iterator.remove();
+						member.getPlayer().kickPlayer("§cVocê excedeu o limite de tempo para se autenticar!");
+					} else {
+						ActionBarAPI.send(member.getPlayer(),
+								"§cVocê possui " + ((30000 - timeRemeaning) / 1000l) + " para se logar!");
 					}
-				}.runTask(LoginMain.getInstance());
+				}
+			}
+		}
+	}
+
+	void handleLogin(Player player) {
+		BukkitMember member = (BukkitMember) CommonGeneral.getInstance().getMemberManager()
+				.getMember(player.getUniqueId());
+
+		if (member.getLoginConfiguration().getAccountType() == AccountType.CRACKED) {
+			if (!member.getLoginConfiguration().isLogged()) {
+				member.sendMessage(
+						member.getLoginConfiguration().isRegistred() ? "§aUtilize o comando /login <senha> para logar."
+								: "§aUtilize o comando /register <senha> <senha> para se registrar.");
+
+				new SimpleTitle("§2§lAUTENTICAÇÃO",
+						member.getLoginConfiguration().isRegistred() ? "§fUse /login <senha> para se logar!"
+								: "§fUse /register <senha> para se registrar!",
+						10, 20 * 99, 10).send(player);
+
+				playerMap.put(member, System.currentTimeMillis() + 1500l);
 			}
 		}
 	}

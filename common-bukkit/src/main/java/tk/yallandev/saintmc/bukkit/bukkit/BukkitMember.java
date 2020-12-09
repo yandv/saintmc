@@ -19,6 +19,7 @@ import tk.yallandev.saintmc.bukkit.event.account.PlayerTryChangeTagEvent;
 import tk.yallandev.saintmc.common.account.League;
 import tk.yallandev.saintmc.common.account.Member;
 import tk.yallandev.saintmc.common.account.MemberModel;
+import tk.yallandev.saintmc.common.account.configuration.LoginConfiguration.AccountType;
 import tk.yallandev.saintmc.common.permission.Group;
 import tk.yallandev.saintmc.common.profile.Profile;
 import tk.yallandev.saintmc.common.tag.Tag;
@@ -44,8 +45,8 @@ public class BukkitMember extends Member {
 		super(memberModel);
 	}
 
-	public BukkitMember(String playerName, UUID uniqueId) {
-		super(playerName, uniqueId);
+	public BukkitMember(String playerName, UUID uniqueId, AccountType accountType) {
+		super(playerName, uniqueId, accountType);
 	}
 
 	@Override
@@ -130,7 +131,7 @@ public class BukkitMember extends Member {
 
 		if (xp >= getLeague().getMaxXp()) {
 			setLeague(getLeague().getNextLeague());
-		} else if (getLeague() != League.UNRANKED) {
+		} else if (getLeague() != League.values()[0]) {
 			if (xp < getLeague().getPreviousLeague().getMaxXp()) {
 				setLeague(getLeague().getPreviousLeague());
 			}

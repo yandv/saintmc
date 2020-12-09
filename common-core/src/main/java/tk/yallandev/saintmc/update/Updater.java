@@ -22,7 +22,7 @@ import tk.yallandev.saintmc.update.updater.UpdateType;
 @Getter
 public class Updater {
 
-	public static final String API = "http://minhapicaaoquadrado.yandv.com.br:3333";
+	public static final String API = "http://api.clouthnetwork.spectrum-mc.net";
 
 	@Getter
 	private static Updater instance;

@@ -63,23 +63,24 @@ public class PlayerAPI {
 	public void addToTab(Player player, Collection<? extends Player> players) {
 		PacketContainer packet = new PacketContainer(PacketType.Play.Server.PLAYER_INFO);
 		packet.getPlayerInfoAction().write(0, PlayerInfoAction.ADD_PLAYER);
+
 		try {
 			Object entityPlayer = MinecraftReflection.getCraftPlayerClass().getMethod("getHandle").invoke(player);
 			Object getDisplayName = MinecraftReflection.getEntityPlayerClass().getMethod("getPlayerListName")
 					.invoke(entityPlayer);
-			int ping = (int) MinecraftReflection.getEntityPlayerClass().getField("ping").get(entityPlayer);
 			packet.getPlayerInfoDataLists().write(0,
-					Arrays.asList(new PlayerInfoData(WrappedGameProfile.fromPlayer(player), ping,
+					Arrays.asList(new PlayerInfoData(WrappedGameProfile.fromPlayer(player), 0,
 							NativeGameMode.fromBukkit(player.getGameMode()),
 							getDisplayName != null ? WrappedChatComponent.fromHandle(getDisplayName) : null)));
 		} catch (FieldAccessException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
-				| NoSuchMethodException | SecurityException | NoSuchFieldException e1) {
+				| NoSuchMethodException | SecurityException e1) {
 			e1.printStackTrace();
 		}
 
 		for (Player online : players) {
 			if (!online.canSee(player))
 				continue;
+
 			try {
 				BukkitMain.getInstance().getProcotolManager().sendServerPacket(online, packet);
 			} catch (InvocationTargetException e) {
@@ -95,13 +96,12 @@ public class PlayerAPI {
 			Object entityPlayer = MinecraftReflection.getCraftPlayerClass().getMethod("getHandle").invoke(player);
 			Object getDisplayName = MinecraftReflection.getEntityPlayerClass().getMethod("getPlayerListName")
 					.invoke(entityPlayer);
-			int ping = (int) MinecraftReflection.getEntityPlayerClass().getField("ping").get(entityPlayer);
 			packet.getPlayerInfoDataLists().write(0,
-					Arrays.asList(new PlayerInfoData(WrappedGameProfile.fromPlayer(player), ping,
+					Arrays.asList(new PlayerInfoData(WrappedGameProfile.fromPlayer(player), 0,
 							NativeGameMode.fromBukkit(player.getGameMode()),
 							getDisplayName != null ? WrappedChatComponent.fromHandle(getDisplayName) : null)));
 		} catch (FieldAccessException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
-				| NoSuchMethodException | SecurityException | NoSuchFieldException e1) {
+				| NoSuchMethodException | SecurityException e1) {
 			e1.printStackTrace();
 		}
 		for (Player online : Bukkit.getOnlinePlayers()) {

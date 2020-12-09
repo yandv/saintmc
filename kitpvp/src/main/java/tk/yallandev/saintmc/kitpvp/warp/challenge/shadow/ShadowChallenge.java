@@ -53,6 +53,20 @@ public class ShadowChallenge implements Challenge {
 		this.expire = System.currentTimeMillis() + 30000l;
 	}
 
+	public ShadowChallenge(Player player, Player target, ItemStack itemStack, ArmorType armorType,
+			Map<Enchantment, Integer> armorEnchantments) {
+		this.player = player;
+		this.target = target;
+
+		this.sword = new ItemBuilder().name("§aEspada de Diamante!").type(Material.DIAMOND_SWORD)
+				.enchantment(Enchantment.DAMAGE_ALL).build();
+		this.armorType = armorType;
+		this.armorEnchantments = armorEnchantments;
+		this.challengeType = ChallengeType.SHADOW_CUSTOM;
+
+		this.expire = System.currentTimeMillis() + 30000l;
+	}
+
 	public void setRecraft(boolean recraft) {
 		this.recraft = recraft;
 		this.challengeType = ChallengeType.SHADOW_CUSTOM;

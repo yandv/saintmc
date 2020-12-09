@@ -9,9 +9,9 @@ import org.bukkit.inventory.ItemStack;
 import lombok.Getter;
 import tk.yallandev.saintmc.kitpvp.GameMain;
 import tk.yallandev.saintmc.kitpvp.event.party.PartyEndEvent;
+import tk.yallandev.saintmc.kitpvp.party.Party;
+import tk.yallandev.saintmc.kitpvp.party.PartyType;
 import tk.yallandev.saintmc.kitpvp.warp.Warp;
-import tk.yallandev.saintmc.kitpvp.warp.types.party.Party;
-import tk.yallandev.saintmc.kitpvp.warp.types.party.PartyType;
 
 @Getter
 public class PartyWarp extends Warp {
@@ -26,10 +26,10 @@ public class PartyWarp extends Warp {
 	public void setPartyType(PartyType partyType) {
 		if (this.partyType != PartyType.NONE)
 			HandlerList.unregisterAll(this.partyType.getParty());
-		
+
 		if (partyType == PartyType.RDM) {
 			Bukkit.broadcastMessage("§6§lRDM §fO evento §aRei da mesa§f foi iniciado§f!");
-			Bukkit.broadcastMessage("§6§lRDM §fEntre usando §e/party entrar§f para entrar no evento§f!");
+			Bukkit.broadcastMessage("§6§lRDM §fEntre usando §e/evento entrar§f para entrar no evento§f!");
 		}
 
 		this.partyType = partyType;

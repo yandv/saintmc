@@ -20,17 +20,19 @@ import tk.yallandev.saintmc.common.report.Report;
 public class ReportCommand implements CommandClass {
 
 	@Command(name = "report", aliases = { "reports", "reportar" })
-	public void reportComman(CommandArgs cmdArgs) {
+	public void reportCommand(CommandArgs cmdArgs) {
 		if (!cmdArgs.isPlayer())
 			return;
 
-		Player sender = ((BukkitMember)cmdArgs.getSender()).getPlayer();
+		Player sender = ((BukkitMember) cmdArgs.getSender()).getPlayer();
 		String[] args = cmdArgs.getArgs();
 
 		Member member = CommonGeneral.getInstance().getMemberManager().getMember(sender.getUniqueId());
 
-		if (!member.hasGroupPermission(Group.HELPER))
+		if (!member.hasGroupPermission(Group.TRIAL)) {
+			sender.sendMessage("§cVocê não tem permissão para executar esse comando!");
 			return;
+		}
 
 		if (args.length == 0) {
 			new ReportListInventory(sender, 1);
@@ -40,7 +42,7 @@ public class ReportCommand implements CommandClass {
 		UUID uuid = CommonGeneral.getInstance().getUuid(args[0]);
 
 		if (uuid == null) {
-			sender.sendMessage(" §c* §fO jogador §a" + args[0] + "§f não existe!");
+			sender.sendMessage("§cO jogador " + args[0] + " não existe!");
 			return;
 		}
 
@@ -51,14 +53,14 @@ public class ReportCommand implements CommandClass {
 				MemberModel loaded = CommonGeneral.getInstance().getPlayerData().loadMember(uuid);
 
 				if (loaded == null) {
-					sender.sendMessage(" §c* §fO jogador §a" + args[0] + "§f nunca entrou no servidor!");
+					sender.sendMessage("§cO jogador " + args[0] + " nunca entrou no servidor!");
 					return;
 				}
 
 				player = new MemberVoid(loaded);
 			} catch (Exception e) {
 				e.printStackTrace();
-				sender.sendMessage(" §c* §fNão foi possível pegar as informações do jogador §a" + args[0] + "§f!");
+				sender.sendMessage("§cNão foi possível pegar as informações do jogador " + args[0] + "!");
 				return;
 			}
 		}
@@ -66,7 +68,7 @@ public class ReportCommand implements CommandClass {
 		Report report = CommonGeneral.getInstance().getReportManager().getReport(player.getUniqueId());
 
 		if (report == null) {
-			sender.sendMessage(" §c* §fO jogador §a" + args[0] + "§f não foi reportado!");
+			sender.sendMessage("§cO jogador " + args[0] + " não foi reportado!");
 			return;
 		}
 

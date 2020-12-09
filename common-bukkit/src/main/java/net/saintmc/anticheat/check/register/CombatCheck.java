@@ -47,48 +47,32 @@ public class CombatCheck extends PacketAdapter implements CheckClass, Listener {
 		macroMap = new HashMap<>();
 		clickMap = new HashMap<>();
 
-		ProtocolLibrary.getProtocolManager().addPacketListener(
-				new PacketAdapter(plugin, ListenerPriority.MONITOR, PacketType.Play.Client.USE_ENTITY) {
+		ProtocolLibrary.getProtocolManager().addPacketListener(this);
+	}
 
-					@Override
-					public void onPacketReceiving(PacketEvent event) {
-						if (event.isCancelled())
-							return;
+	@Override
+	public void onPacketReceiving(PacketEvent event) {
+		if (event.isCancelled())
+			return;
 
-						Player player = event.getPlayer();
+		Player player = event.getPlayer();
 
-						if (player == null || ProtocolGetter.getPing(player) >= 150)
-							return;
+		if (player == null || ProtocolGetter.getPing(player) >= 150)
+			return;
 
-						if (player.getGameMode() == GameMode.CREATIVE || player.getGameMode() == GameMode.SPECTATOR)
-							return;
+		if (player.getGameMode() == GameMode.CREATIVE || player.getGameMode() == GameMode.SPECTATOR)
+			return;
 
-						if (event.getPacket().getEntityUseActions().read(0) == EntityUseAction.ATTACK) {
-							handle(player);
-						}
-					}
-
-				});
+		if (event.getPacketType() == PacketType.Play.Client.USE_ENTITY) {
+			if (event.getPacket().getEntityUseActions().read(0) == EntityUseAction.ATTACK)
+				checkCps(player, false);
+		}
 	}
 
 	@EventHandler
 	public void onPlayerQuit(PlayerQuitEvent event) {
 		clickMap.remove(event.getPlayer());
-	}
-
-	public void handle(Player player) {
-		Clicks click = clickMap.computeIfAbsent(player, v -> new Clicks());
-
-		if (click.getExpireTime() < System.currentTimeMillis()) {
-			if (click.getClicks() >= 23) {
-				alert(player, AlertType.AUTOCLICK, new AlertMetadata("cps", click.getClicks()));
-			}
-
-			clickMap.remove(player);
-			return;
-		}
-
-		click.addClick();
+		macroMap.remove(event.getPlayer());
 	}
 
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -102,22 +86,10 @@ public class CombatCheck extends PacketAdapter implements CheckClass, Listener {
 			if (event.getAction() == InventoryAction.MOVE_TO_OTHER_INVENTORY)
 				return;
 
-		Clicks click = macroMap.computeIfAbsent(player, v -> new Clicks());
-
-		if (click.getExpireTime() < System.currentTimeMillis()) {
-			if (click.getClicks() >= 25) {
-				alert(player, AlertType.MACRO, new AlertMetadata("cps", click.getClicks()));
-			}
-
-			macroMap.remove(player);
-			return;
-		}
-
-		click.addClick();
+		checkCps(player, true);
 	}
 
 	@EventHandler(priority = EventPriority.MONITOR)
-//	@CheckHandler(checkType = CheckType.INTERACT)
 	public boolean onPlayerEatSoup(PlayerEatSoupEvent interactStorage) {
 		Member member = MemberController.INSTANCE.load(interactStorage.getPlayer());
 
@@ -168,6 +140,21 @@ public class CombatCheck extends PacketAdapter implements CheckClass, Listener {
 				}
 			}
 		}
+	}
+
+	public void checkCps(Player player, boolean macro) {
+		Clicks click = (macro ? macroMap : clickMap).computeIfAbsent(player, v -> new Clicks());
+
+		if (click.getExpireTime() < System.currentTimeMillis()) {
+			if (click.getClicks() >= 25) {
+				alert(player, AlertType.MACRO, new AlertMetadata("cps", click.getClicks()));
+			}
+
+			(macro ? macroMap : clickMap).remove(player);
+			return;
+		}
+
+		click.addClick();
 	}
 
 	@Getter

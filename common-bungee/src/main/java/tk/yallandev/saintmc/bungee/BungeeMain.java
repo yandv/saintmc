@@ -16,14 +16,12 @@ import com.google.common.io.ByteStreams;
 import lombok.Getter;
 import lombok.Setter;
 import net.md_5.bungee.api.ProxyServer;
-import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.config.ListenerInfo;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.api.scheduler.ScheduledTask;
 import net.md_5.bungee.config.Configuration;
 import net.md_5.bungee.config.ConfigurationProvider;
 import net.md_5.bungee.config.YamlConfiguration;
-import tk.yallandev.saintmc.BungeeConst;
 import tk.yallandev.saintmc.CommonConst;
 import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.bungee.command.BungeeCommandFramework;
@@ -31,14 +29,13 @@ import tk.yallandev.saintmc.bungee.controller.BotController;
 import tk.yallandev.saintmc.bungee.controller.BungeePunishManager;
 import tk.yallandev.saintmc.bungee.controller.BungeeServerManager;
 import tk.yallandev.saintmc.bungee.controller.GiftcodeController;
-import tk.yallandev.saintmc.bungee.controller.StoreController;
-import tk.yallandev.saintmc.bungee.listener.AccountListener;
 import tk.yallandev.saintmc.bungee.listener.ChatListener;
 import tk.yallandev.saintmc.bungee.listener.ConnectionListener;
 import tk.yallandev.saintmc.bungee.listener.LoginListener;
 import tk.yallandev.saintmc.bungee.listener.MessageListener;
 import tk.yallandev.saintmc.bungee.listener.PacketListener;
 import tk.yallandev.saintmc.bungee.listener.ServerListener;
+import tk.yallandev.saintmc.bungee.listener.StoreListener;
 import tk.yallandev.saintmc.bungee.networking.packet.BungeePacketHandler;
 import tk.yallandev.saintmc.bungee.networking.redis.BungeePubSubHandler;
 import tk.yallandev.saintmc.common.backend.Credentials;
@@ -70,6 +67,12 @@ import tk.yallandev.saintmc.update.UpdatePlugin;
 @Getter
 public class BungeeMain extends Plugin {
 
+	private static final String[] BROADCAST = new String[] {
+			"§4§lANUNCIO §eDigite §b/discord§e para entrar em nosso discord!",
+			"§4§lANUNCIO §eUse §b/report <player>§e para denunciar um jogador!",
+			"§4§lANUNCIO §eCompre vips em §b" + CommonConst.STORE + "§e!",
+			"§4§lANUNCIO §eO servidor está em fase §1§lBETA§e, caso encontre algum bug reporte em nosso discord!" };
+
 	@Getter
 	private static BungeeMain instance;
 
@@ -81,7 +84,6 @@ public class BungeeMain extends Plugin {
 
 	private ServerManager serverManager;
 
-	private StoreController storeController;
 	private PacketController packetController;
 	private GiftcodeController giftcodeController;
 
@@ -188,7 +190,6 @@ public class BungeeMain extends Plugin {
 		botController = new BotController();
 		punishManager = new BungeePunishManager();
 		serverManager = new BungeeServerManager();
-		storeController = new StoreController();
 		giftcodeController = new GiftcodeController();
 
 		packetController = new PacketController();
@@ -247,7 +248,6 @@ public class BungeeMain extends Plugin {
 					minigameServer.setMap(general.getServerData().getMap(entry.getKey()));
 					minigameServer.setState(general.getServerData().getState(entry.getKey()));
 				}
-
 			} catch (Exception e) {
 			}
 		}
@@ -260,29 +260,11 @@ public class BungeeMain extends Plugin {
 
 		general.debug("The server has been loaded all the reports!");
 
-		ProxyServer.getInstance().getScheduler().schedule(this, new Runnable() {
+		ProxyServer.getInstance().getScheduler().schedule(this, () -> {
+			String message = BROADCAST[CommonConst.RANDOM.nextInt(BROADCAST.length)];
 
-			@Override
-			public void run() {
-				CommonGeneral.getInstance().getCommonPlatform().runAsync(new Runnable() {
-
-					@Override
-					public void run() {
-
-						if (ProxyServer.getInstance().getPlayers().size() > 0) {
-							CommonGeneral.getInstance().debug("Estamos verificando os pedidos!");
-
-							getStoreController().check(BungeeConst.CONSOLE_SENDER);
-						}
-
-						TextComponent message = BungeeConst.BROADCAST_MESSAGES[CommonConst.RANDOM
-								.nextInt(BungeeConst.BROADCAST_MESSAGES.length)];
-
-						ProxyServer.getInstance().getPlayers().forEach(proxied -> proxied.sendMessage(message));
-					}
-				});
-			}
-		}, 10, 10, TimeUnit.MINUTES);
+			ProxyServer.getInstance().broadcast(message);
+		}, 0, 5, TimeUnit.MINUTES);
 
 		ProxyServer.getInstance().getScheduler().runAsync(this, new Runnable() {
 
@@ -304,7 +286,7 @@ public class BungeeMain extends Plugin {
 
 		redisTask = getProxy().getScheduler().runAsync(this,
 				pubSubListener = new PubSubListener(redisDatabase, new BungeePubSubHandler(), "server-info",
-						"account-field", "clan-field", "report-field", "report-action"));
+						"account-field", "clan-field", "report-field", "report-action", "server-members"));
 	}
 
 	@Override
@@ -316,13 +298,13 @@ public class BungeeMain extends Plugin {
 	}
 
 	private void registerListener() {
-		getProxy().getPluginManager().registerListener(this, new AccountListener());
-		getProxy().getPluginManager().registerListener(this, new ChatListener());
 		getProxy().getPluginManager().registerListener(this, new LoginListener());
+		getProxy().getPluginManager().registerListener(this, new ChatListener());
 		getProxy().getPluginManager().registerListener(this, new PacketListener());
 		getProxy().getPluginManager().registerListener(this, new ConnectionListener(serverManager));
 		getProxy().getPluginManager().registerListener(this, new MessageListener(serverManager));
 		getProxy().getPluginManager().registerListener(this, new ServerListener());
+		getProxy().getPluginManager().registerListener(this, new StoreListener());
 	}
 
 	private void loadConfiguration() {

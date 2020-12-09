@@ -53,11 +53,11 @@ public class BungeePunishManager implements PunishManager {
 		CommonGeneral.getInstance().getMemberManager().getMembers().forEach(m -> {
 			if (m.hasGroupPermission(Group.TRIAL)) {
 				if (ban.isPermanent()) {
-					m.sendMessage(" §4* §cO jogador " + member.getPlayerName() + " foi banido pelo " + ban.getBannedBy()
+					m.sendMessage("§cO jogador " + member.getPlayerName() + " foi banido pelo " + ban.getBannedBy()
 							+ " por " + ban.getReason() + "!");
 				} else {
 					TextComponent textComponent = new TextComponent(
-							" §4* §cO jogador " + member.getPlayerName() + " foi banido temporariamente pelo "
+							"§cO jogador " + member.getPlayerName() + " foi banido temporariamente pelo "
 									+ ban.getBannedBy() + " por " + ban.getReason() + "!");
 
 					textComponent.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent
@@ -67,7 +67,7 @@ public class BungeePunishManager implements PunishManager {
 				}
 			} else {
 				m.sendMessage("");
-				m.sendMessage(" §4* §cO jogador " + member.getPlayerName() + " foi banido do servidor!");
+				m.sendMessage("§cO jogador " + member.getPlayerName() + " foi banido do servidor!");
 				m.sendMessage("");
 			}
 		});
@@ -109,11 +109,11 @@ public class BungeePunishManager implements PunishManager {
 			if (m.hasGroupPermission(Group.TRIAL)) {
 
 				if (mute.isPermanent()) {
-					m.sendMessage(" §4* §cO jogador " + member.getPlayerName() + " foi mutado pelo " + mute.getMutedBy()
+					m.sendMessage("§cO jogador " + member.getPlayerName() + " foi mutado pelo " + mute.getMutedBy()
 							+ " por " + mute.getReason() + "!");
 				} else {
 					TextComponent textComponent = new TextComponent(
-							" §4* §cO jogador " + member.getPlayerName() + " foi mutado temporariamente pelo "
+							"§cO jogador " + member.getPlayerName() + " foi mutado temporariamente pelo "
 									+ mute.getMutedBy() + " por " + mute.getReason() + "!");
 
 					textComponent.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent
@@ -123,7 +123,7 @@ public class BungeePunishManager implements PunishManager {
 				}
 			} else {
 				m.sendMessage("");
-				m.sendMessage(" §4* §cO jogador " + member.getPlayerName() + " foi mutado do servidor!");
+				m.sendMessage("§cO jogador " + member.getPlayerName() + " foi mutado do servidor!");
 				m.sendMessage("");
 			}
 		});
@@ -156,7 +156,7 @@ public class BungeePunishManager implements PunishManager {
 		CommonGeneral.getInstance().getMemberManager().getMembers().stream()
 				.filter(m -> m.hasGroupPermission(Group.TRIAL)).forEach(m -> {
 
-					TextComponent textComponent = new TextComponent(" §4* §cO jogador §c" + member.getPlayerName()
+					TextComponent textComponent = new TextComponent("§cO jogador §c" + member.getPlayerName()
 							+ " foi avisado pelo " + warn.getWarnedBy() + " por " + warn.getReason() + "!");
 
 					textComponent.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent
@@ -187,7 +187,7 @@ public class BungeePunishManager implements PunishManager {
 		CommonGeneral.getInstance().getMemberManager().getMembers().stream()
 				.filter(m -> m.hasGroupPermission(Group.MODPLUS)).forEach(m -> {
 					m.sendMessage("");
-					m.sendMessage(" §4* §cO jogador " + member.getPlayerName() + " foi desbanido pelo " + userName
+					m.sendMessage("§cO jogador " + member.getPlayerName() + " foi desbanido pelo " + userName
 							+ " do servidor!");
 					m.sendMessage("");
 				});
@@ -207,7 +207,7 @@ public class BungeePunishManager implements PunishManager {
 		CommonGeneral.getInstance().getMemberManager().getMembers().stream()
 				.filter(m -> m.hasGroupPermission(Group.MODPLUS)).forEach(m -> {
 					m.sendMessage("");
-					m.sendMessage(" §4* §cO jogador " + member.getPlayerName() + " foi desmutado pelo " + userName
+					m.sendMessage("§cO jogador " + member.getPlayerName() + " foi desmutado pelo " + userName
 							+ " do servidor!");
 					m.sendMessage("");
 				});

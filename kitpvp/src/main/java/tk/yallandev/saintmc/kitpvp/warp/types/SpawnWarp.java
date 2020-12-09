@@ -1,21 +1,26 @@
 package tk.yallandev.saintmc.kitpvp.warp.types;
 
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 
+import tk.yallandev.saintmc.CommonConst;
 import tk.yallandev.saintmc.bukkit.BukkitMain;
 import tk.yallandev.saintmc.bukkit.api.item.ActionItemStack;
 import tk.yallandev.saintmc.bukkit.api.item.ActionItemStack.ActionType;
 import tk.yallandev.saintmc.bukkit.api.item.ItemBuilder;
+import tk.yallandev.saintmc.kitpvp.GameConst;
 import tk.yallandev.saintmc.kitpvp.GameMain;
+import tk.yallandev.saintmc.kitpvp.event.kit.PlayerSelectKitEvent;
 import tk.yallandev.saintmc.kitpvp.event.warp.PlayerLostProtectionEvent;
 import tk.yallandev.saintmc.kitpvp.event.warp.PlayerWarpJoinEvent;
 import tk.yallandev.saintmc.kitpvp.event.warp.PlayerWarpRespawnEvent;
@@ -66,7 +71,7 @@ public class SpawnWarp extends Warp {
 	public SpawnWarp() {
 		super("Spawn", BukkitMain.getInstance().getLocationFromConfig("spawn"), new SpawnScoreboard());
 		getWarpSettings().setKitEnabled(true);
-		getWarpSettings().setSpawnProtection(true);
+		getWarpSettings().setSpawnProtection(!GameConst.SPAWN_TELEPORT);
 		getScoreboard().setWarp(this);
 	}
 
@@ -94,15 +99,52 @@ public class SpawnWarp extends Warp {
 	public void onEntityDamage(EntityDamageEvent event) {
 		if (!(event.getEntity() instanceof Player))
 			return;
+		
+		Gamer gamer = GameMain.getInstance().getGamerManager().getGamer(event.getEntity().getUniqueId());
+		
+		if (gamer.getWarp() != this)
+			return;
+		
+		if (GameConst.SPAWN_TELEPORT) {
+			if (!gamer.hasKit()) {
+				event.setCancelled(true);
+				return;
+			}
+		}
 
 		if (event.getCause() != DamageCause.VOID)
 			return;
 
-		Player player = (Player) event.getEntity();
-		Gamer gamer = GameMain.getInstance().getGamerManager().getGamer(player.getUniqueId());
-
 		if (gamer.getWarp() == this)
 			event.setDamage(Integer.MAX_VALUE);
+	}
+
+	@EventHandler
+	public void onEntityDamage(EntityDamageByEntityEvent event) {
+		if (!GameConst.SPAWN_TELEPORT)
+			return;
+
+		if (!(event.getEntity() instanceof Player))
+			return;
+
+		if (!(event.getDamager() instanceof Player))
+			return;
+		
+		Player player = (Player) event.getEntity();
+		Gamer gamer = GameMain.getInstance().getGamerManager().getGamer(player.getUniqueId());
+		
+		if (gamer.getWarp() == this) {
+			boolean cancelled = true;
+			
+			if (gamer.hasKit()) {
+				Gamer entityGamer = GameMain.getInstance().getGamerManager().getGamer(event.getEntity().getUniqueId());
+
+				if (entityGamer.hasKit())
+					cancelled = false;
+			}
+
+			event.setCancelled(cancelled);
+		}
 	}
 
 	@EventHandler
@@ -117,15 +159,37 @@ public class SpawnWarp extends Warp {
 	}
 
 	@EventHandler
-	public void onPlayerLostProtection(PlayerLostProtectionEvent event) {
-		if (event.getWarp() == this) {
+	public void onPlayerSelectKit(PlayerSelectKitEvent event) {
+		if (GameConst.SPAWN_TELEPORT) {
 			Gamer gamer = GameMain.getInstance().getGamerManager().getGamer(event.getPlayer().getUniqueId());
 
-			if (!gamer.hasKit()) {
-				Kit kit = GameMain.getInstance().getKitManager().getDefaultKit();
+			gamer.setSpawnProtection(false);
 
-				gamer.setKit(kit);
-				GameMain.getInstance().getKitManager().selectKit(event.getPlayer(), kit);
+			int spawn = CommonConst.RANDOM.nextInt(10) + 1;
+
+			Location location = BukkitMain.getInstance().getLocationFromConfig("arena-" + spawn);
+
+			if (location == null) {
+				event.getPlayer().sendMessage("§cO spawn " + spawn + " ainda não foi setado!");
+				return;
+			}
+
+			event.getPlayer().teleport(location);
+		}
+	}
+
+	@EventHandler
+	public void onPlayerLostProtection(PlayerLostProtectionEvent event) {
+		if (event.getWarp() == this) {
+			if (!GameConst.SPAWN_TELEPORT) {
+				Gamer gamer = GameMain.getInstance().getGamerManager().getGamer(event.getPlayer().getUniqueId());
+
+				if (!gamer.hasKit()) {
+					Kit kit = GameMain.getInstance().getKitManager().getDefaultKit();
+
+					gamer.setKit(kit);
+					GameMain.getInstance().getKitManager().selectKit(event.getPlayer(), kit);
+				}
 			}
 		}
 	}

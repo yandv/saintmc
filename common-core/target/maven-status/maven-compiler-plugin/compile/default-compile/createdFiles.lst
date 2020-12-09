@@ -106,7 +106,6 @@ tk\yallandev\saintmc\common\backend\database\mongodb\MongoQuery$4.class
 tk\yallandev\saintmc\common\backend\data\StatusData.class
 tk\yallandev\saintmc\common\server\loadbalancer\element\NumberConnection.class
 tk\yallandev\saintmc\common\tag\Tag.class
-tk\yallandev\saintmc\common\utils\mojang\MojangFetcher$4.class
 tk\yallandev\saintmc\common\data\impl\PlayerDataImpl$2.class
 tk\yallandev\saintmc\common\utils\reflection\Reflection.class
 tk\yallandev\saintmc\common\clan\Clan$1.class
@@ -156,7 +155,6 @@ tk\yallandev\saintmc\common\utils\BufferUtils.class
 tk\yallandev\saintmc\test\Test.class
 tk\yallandev\saintmc\common\account\MemberModel.class
 tk\yallandev\saintmc\common\clan\event\member\MemberOnlineEvent.class
-tk\yallandev\saintmc\common\account\client\ClientType.class
 tk\yallandev\saintmc\common\account\status\types\challenge\ChallengeInfo.class
 tk\yallandev\saintmc\common\data\impl\PlayerDataImpl.class
 tk\yallandev\saintmc\common\server\ServerType$1.class

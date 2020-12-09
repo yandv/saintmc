@@ -21,7 +21,7 @@ public class ProfileInventory {
 
 		ItemBuilder builder = new ItemBuilder();
 
-		MenuInventory inv = new MenuInventory("§7Seu Perfil", 5);
+		MenuInventory inv = new MenuInventory("§7Meu perfil", 5);
 
 		inv.setItem(13, builder.type(Material.SKULL_ITEM).durability(3).skin(player.getName())
 				.name((member.getGroup() == Group.MEMBRO ? "§7" + player.getName()

@@ -40,9 +40,9 @@ public class GameMain extends JavaPlugin {
 	static {
 		KITROTATE = new HashMap<>();
 		KITROTATE.put(Group.MEMBRO, Arrays.asList("pvp", "monk", "viper", "snail", "ninja", "antitower"));
-		KITROTATE.put(Group.DONATOR, Arrays.asList("hulk", "anchor", "thor", "gladiator", "timelord"));
-		KITROTATE.put(Group.LIGHT, Arrays.asList("switcher", "boxer", "stomper", "endermage", "ultimato"));
-		KITROTATE.put(Group.BLIZZARD,
+		KITROTATE.put(Group.PRO, Arrays.asList("hulk", "anchor", "thor", "gladiator", "timelord"));
+		KITROTATE.put(Group.EXTREME, Arrays.asList("switcher", "boxer", "stomper", "endermage", "ultimato"));
+		KITROTATE.put(Group.ULTIMATE,
 				Arrays.asList("viper", "grappler", "viking", "hotpotato", "timelord", "launcher"));
 	}
 
@@ -64,14 +64,14 @@ public class GameMain extends JavaPlugin {
 		};
 
 		if (UpdatePlugin.update(new File(GameMain.class.getProtectionDomain().getCodeSource().getLocation().getPath()),
-				"SaintPvP", CommonConst.DOWNLOAD_KEY, shutdown))
+				"Kitpvp", CommonConst.DOWNLOAD_KEY, shutdown))
 			return;
 
 		gamerManager = new GamerManager();
 		kitManager = new KitManager();
 		warpManager = new WarpManager();
 		warpManager.load();
-		rankingHologram = new RankingHologram();
+		Bukkit.getPluginManager().registerEvents(rankingHologram = new RankingHologram(), this);
 
 		BukkitCommandFramework.INSTANCE.loadCommands(this.getClass(), "tk.yallandev.saintmc.kitpvp.command");
 
@@ -80,7 +80,7 @@ public class GameMain extends JavaPlugin {
 
 				try {
 					Listener listener = (Listener) classes.newInstance();
-					Bukkit.getPluginManager().registerEvents(listener, getInstance());
+					Bukkit.getPluginManager().registerEvents(listener, this);
 				} catch (Exception e) {
 					e.printStackTrace();
 					CommonGeneral.getInstance().getLogger()

@@ -25,19 +25,7 @@ public class LavaScoreboard extends WarpScoreboard {
 	private Scoreboard challengeScoreboard;
 
 	public LavaScoreboard() {
-		super(new SimpleScoreboard("§6§lLAVA CHALLENGE"));
-
-//		scoreboard.blankLine(11);
-//		scoreboard.setScore(10, new Score("§4Extremo: ", "top"));
-//		scoreboard.setScore(9, new Score(" Passou: §a0", "pass"));
-//		scoreboard.setScore(8, new Score(" Morreu: §c0", "death"));
-//		scoreboard.setScore(7, new Score(" Tempo record: §70s", "record"));
-//		scoreboard.setScore(6, new Score("§cDificil: ", "top1"));
-//		scoreboard.setScore(5, new Score(" Passou: §a0", "pass1"));
-//		scoreboard.setScore(4, new Score(" Morreu: §c0", "death1"));
-//		scoreboard.setScore(3, new Score(" Tempo record: §70s", "record1"));
-//		scoreboard.blankLine(2);
-//		scoreboard.setScore(1, new Score("§6" + CommonConst.SITE, "site"));
+		super(new SimpleScoreboard("§4§lLAVA CHALLENGE"));
 
 		scoreboard.blankLine(15);
 		scoreboard.setScore(14, new Score("§4Extremo: ", "top"));
@@ -53,16 +41,16 @@ public class LavaScoreboard extends WarpScoreboard {
 		scoreboard.setScore(4, new Score(" Passou: §a0", "pass3"));
 		scoreboard.setScore(3, new Score(" Tempo record: §70s", "record3"));
 		scoreboard.blankLine(2);
-		scoreboard.setScore(1, new Score("§6" + CommonConst.SITE, "site"));
+		scoreboard.setScore(1, new Score("§c" + CommonConst.SITE, "site"));
 
-		challengeScoreboard = new SimpleScoreboard("§6§lLAVA CHALLENGE");
+		challengeScoreboard = new SimpleScoreboard("§4§lLAVA CHALLENGE");
 
 		challengeScoreboard.blankLine(6);
 		challengeScoreboard.setScore(5, new Score("§aDesafio: §7", "mode"));
 		challengeScoreboard.setScore(4, new Score(" Tempo atual: §a0", "time"));
 		challengeScoreboard.setScore(3, new Score(" Tempo record: §c0", "record"));
 		challengeScoreboard.blankLine(2);
-		challengeScoreboard.setScore(1, new Score("§6" + CommonConst.SITE, "site"));
+		challengeScoreboard.setScore(1, new Score("§c" + CommonConst.SITE, "site"));
 	}
 
 	@EventHandler
@@ -131,37 +119,18 @@ public class LavaScoreboard extends WarpScoreboard {
 					StatusType.LAVA, ChallengeStatus.class);
 
 			scoreboard.updateScore(player, new Score(" Passou: §a" + status.getWins(ChallengeType.HARDCORE), "pass"));
-			scoreboard.updateScore(player,
-					new Score(" Morreu: §c"
-							+ (status.getAttemps(ChallengeType.HARDCORE) - status.getWins(ChallengeType.HARDCORE)),
-							"death"));
 			scoreboard.updateScore(player, new Score(
 					" Tempo record: §7" + StringUtils.formatTime(status.getTime(ChallengeType.HARDCORE)), "record"));
 
 			scoreboard.updateScore(player, new Score(" Passou: §a" + status.getWins(ChallengeType.HARD), "pass1"));
-			scoreboard.updateScore(player,
-					new Score(
-							" Morreu: §c"
-									+ (status.getAttemps(ChallengeType.HARD) - status.getWins(ChallengeType.HARD)),
-							"death1"));
 			scoreboard.updateScore(player, new Score(
 					" Tempo record: §7" + StringUtils.formatTime(status.getTime(ChallengeType.HARD)), "record1"));
 
 			scoreboard.updateScore(player, new Score(" Passou: §a" + status.getWins(ChallengeType.MEDIUM), "pass2"));
-			scoreboard.updateScore(player,
-					new Score(
-							" Morreu: §c"
-									+ (status.getAttemps(ChallengeType.MEDIUM) - status.getWins(ChallengeType.MEDIUM)),
-							"death2"));
 			scoreboard.updateScore(player, new Score(
 					" Tempo record: §7" + StringUtils.formatTime(status.getTime(ChallengeType.MEDIUM)), "record2"));
 
 			scoreboard.updateScore(player, new Score(" Passou: §a" + status.getWins(ChallengeType.EASY), "pass3"));
-			scoreboard.updateScore(player,
-					new Score(
-							" Morreu: §c"
-									+ (status.getAttemps(ChallengeType.EASY) - status.getWins(ChallengeType.EASY)),
-							"death3"));
 			scoreboard.updateScore(player, new Score(
 					" Tempo record: §7" + StringUtils.formatTime(status.getTime(ChallengeType.EASY)), "record3"));
 			break;

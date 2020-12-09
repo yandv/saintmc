@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.bson.conversions.Bson;
 
@@ -177,6 +178,13 @@ public class PlayerDataImpl implements PlayerData {
 					}
 				}
 			});
+	}
+
+	@Override
+	public Collection<MemberModel> loadMemberByIp(String lastIpAddress) {
+		return query.find("lastIpAddress", lastIpAddress).stream()
+				.map(jsonElement -> CommonConst.GSON.fromJson(jsonElement.getAsJsonObject(), MemberModel.class))
+				.collect(Collectors.toList());
 	}
 
 	@Override

@@ -17,7 +17,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.bukkit.BukkitMain;
-import tk.yallandev.saintmc.bukkit.api.actionbar.ActionBarAPI;
 import tk.yallandev.saintmc.bukkit.event.admin.PlayerAdminModeEvent;
 import tk.yallandev.saintmc.common.account.Member;
 import tk.yallandev.saintmc.common.permission.Group;
@@ -38,10 +37,6 @@ public class AdminMode {
 		contentsMap = new HashMap<>();
 		armorMap = new HashMap<>();
 
-		Bukkit.getScheduler().runTaskTimerAsynchronously(BukkitMain.getInstance(),
-				() -> admin.stream().filter(uuid -> Bukkit.getPlayer(uuid) != null)
-						.forEach(uuid -> ActionBarAPI.send(Bukkit.getPlayer(uuid), "§4Você está no modo admin!")),
-				0, 20);
 		Bukkit.getPluginManager().registerEvents(new AdminListener(), BukkitMain.getInstance());
 	}
 
@@ -115,11 +110,9 @@ public class AdminMode {
 
 		@EventHandler
 		public void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
-			if (event.getRightClicked() instanceof Player) {
-				if (isAdmin(event.getPlayer())) {
+			if (event.getRightClicked() instanceof Player)
+				if (isAdmin(event.getPlayer()))
 					event.getPlayer().performCommand("invsee " + event.getRightClicked().getName());
-				}
-			}
 		}
 
 		@EventHandler
@@ -131,11 +124,12 @@ public class AdminMode {
 
 				@Override
 				public void run() {
-					if (CommonGeneral.getInstance().getServerType() != ServerType.SCREENSHARE)
-						if (member.getAccountConfiguration().isAdminOnJoin())
-							if (member.hasGroupPermission(Group.TRIAL))
-								if (!AdminMode.getInstance().isAdmin(player))
-									AdminMode.getInstance().setAdmin(player, member);
+					if (player.isOnline())
+						if (CommonGeneral.getInstance().getServerType() != ServerType.SCREENSHARE)
+							if (member.getAccountConfiguration().isAdminOnJoin())
+								if (member.hasGroupPermission(Group.TRIAL))
+									if (!AdminMode.getInstance().isAdmin(player))
+										AdminMode.getInstance().setAdmin(player, member);
 				}
 			}.runTaskLater(BukkitMain.getInstance(), 10);
 		}

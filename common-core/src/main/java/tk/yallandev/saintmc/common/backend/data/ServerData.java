@@ -45,7 +45,9 @@ public interface ServerData {
 	void setJoinEnabled(boolean bol);
 
 	void stopServer();
-
+	
+	void setTotalMembers(int totalMembers);
+	
 	/*
 	 * Player Server Manager
 	 */

@@ -3,8 +3,8 @@ package tk.yallandev.saintmc.kitpvp.event.party;
 import org.bukkit.entity.Player;
 
 import lombok.Getter;
-import tk.yallandev.saintmc.kitpvp.warp.types.party.Party;
-import tk.yallandev.saintmc.kitpvp.warp.types.party.PartyType;
+import tk.yallandev.saintmc.kitpvp.party.Party;
+import tk.yallandev.saintmc.kitpvp.party.PartyType;
 
 @Getter
 public class PartyEndEvent extends PartyEvent {

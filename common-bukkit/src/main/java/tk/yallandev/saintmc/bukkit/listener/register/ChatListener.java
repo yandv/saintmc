@@ -30,6 +30,8 @@ import tk.yallandev.saintmc.common.utils.string.StringURLUtils;
 
 public class ChatListener extends Listener {
 
+	private static final long ONLINE_TIME_TO_CHAT = 1000l * 60l * 5l;
+
 	@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
 	public void onAsyncPlayerChat(AsyncPlayerChatEvent event) {
 		Player player = event.getPlayer();
@@ -50,30 +52,24 @@ public class ChatListener extends Listener {
 		if (!member.getLoginConfiguration().isLogged()) {
 			event.setCancelled(true);
 
-			if (member.getLoginConfiguration().getAccountType() == AccountType.NONE)
-				member.getLoginConfiguration()
-						.setAccountType(CommonGeneral.getInstance().getMojangFetcher().isCracked(member.getPlayerName())
-								? AccountType.CRACKED
-								: AccountType.ORIGINAL);
-			else {
-				if (member.getLoginConfiguration().isRegistred())
-					member.sendMessage("§cLogue-se para ter o acesso ao chat liberado!");
-				else
-					member.sendMessage("§cRegistre-se para ter o acesso ao chat liberado!");
-			}
+			if (member.getLoginConfiguration().isRegistred())
+				member.sendMessage("§cLogue-se para ter o acesso ao chat liberado!");
+			else
+				member.sendMessage("§cRegistre-se para ter o acesso ao chat liberado!");
 			return;
 		}
 
-		if (member.getLoginConfiguration().getAccountType() != AccountType.ORIGINAL) {
-			if (member.getOnlineTime() + member.getSessionTime() <= 1000 * 60 * 10) {
-				member.sendMessage("§cVocê precisa ficar online por mais "
-						+ DateUtils.getTime(System.currentTimeMillis()
-								+ ((1000 * 60 * 10) - (member.getOnlineTime() + member.getSessionTime())))
-						+ " para ter o chat liberado!");
-				event.setCancelled(true);
-				return;
+		if (member.getGroup() == Group.MEMBRO)
+			if (member.getLoginConfiguration().getAccountType() != AccountType.ORIGINAL) {
+				if (member.getOnlineTime() + member.getSessionTime() <= ONLINE_TIME_TO_CHAT) {
+					member.sendMessage("§cVocê precisa ficar online por mais "
+							+ DateUtils.getTime(System.currentTimeMillis()
+									+ (ONLINE_TIME_TO_CHAT - (member.getOnlineTime() + member.getSessionTime())))
+							+ " para ter o chat liberado!");
+					event.setCancelled(true);
+					return;
+				}
 			}
-		}
 
 		String disabledFor;
 
@@ -91,7 +87,7 @@ public class ChatListener extends Listener {
 			break;
 		}
 		case PAYMENT: {
-			if (member.getServerGroup().ordinal() < Group.LIGHT.ordinal())
+			if (member.getServerGroup().ordinal() < Group.PRO.ordinal())
 				event.setCancelled(true);
 			disabledFor = "§cO chat está ativado apenas para vips!";
 			break;
@@ -158,19 +154,19 @@ public class ChatListener extends Listener {
 		BukkitMember player = (BukkitMember) CommonGeneral.getInstance().getMemberManager()
 				.getMember(event.getPlayer().getUniqueId());
 
-		if (!player.hasGroupPermission(Group.SAINT)) {
+		if (!player.hasGroupPermission(Group.ULTIMATE)) {
 			if (player.isOnCooldown("chat-delay")) {
 				event.setCancelled(true);
-				player.sendMessage("§4§l> §fAguarde §e" + DateUtils.getTime(player.getCooldown("chat-delay"))
-						+ "§f para falar no chat novamente!");
+				player.sendMessage(
+						"§cAguarde " + DateUtils.getTime(player.getCooldown("chat-delay")) + " para falar novamente!");
 				return;
 			}
 
 			player.setCooldown("chat-delay",
-					System.currentTimeMillis() + (player.hasGroupPermission(Group.BLIZZARD) ? 1000l : 3000l));
+					System.currentTimeMillis() + (player.hasGroupPermission(Group.EXTREME) ? 1000l : 3000l));
 		}
 
-		if (player.hasGroupPermission(Group.LIGHT))
+		if (player.hasGroupPermission(Group.PRO))
 			event.setMessage(event.getMessage().replace("&", "§"));
 
 		TextComponent textComponent = new TextComponent("");
@@ -185,10 +181,10 @@ public class ChatListener extends Listener {
 							.create());
 
 		textComponent.addExtra(player.isUsingFake()
-				? new MessageBuilder(ChatColor.GRAY + "(§f" + League.UNRANKED.getSymbol() + ChatColor.GRAY + ") ")
+				? new MessageBuilder(ChatColor.GRAY + "(§f" + League.values()[0].getSymbol() + ChatColor.GRAY + ") ")
 						.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
-								TextComponent.fromLegacyText(ChatColor.BOLD + League.UNRANKED.getSymbol() + " "
-										+ ChatColor.BOLD + League.UNRANKED.name())))
+								TextComponent.fromLegacyText(ChatColor.BOLD + League.values()[0].getSymbol() + " "
+										+ ChatColor.BOLD + League.values()[0].name())))
 						.create()
 				: new MessageBuilder(ChatColor.GRAY + "(" + player.getLeague().getColor()
 						+ player.getLeague().getSymbol() + ChatColor.GRAY + ") ")

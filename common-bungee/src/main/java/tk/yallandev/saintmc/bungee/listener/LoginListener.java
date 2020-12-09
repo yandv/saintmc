@@ -1,63 +1,70 @@
 package tk.yallandev.saintmc.bungee.listener;
 
+import java.awt.Color;
+import java.lang.reflect.Field;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
-import java.util.concurrent.ExecutionException;
+import java.time.Instant;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
+import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 
-import net.md_5.bungee.api.ProxyServer;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.MessageBuilder;
+import net.md_5.bungee.api.CommandSender;
+import net.md_5.bungee.api.connection.PendingConnection;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.ClientConnectEvent;
+import net.md_5.bungee.api.event.LoginEvent;
+import net.md_5.bungee.api.event.PermissionCheckEvent;
+import net.md_5.bungee.api.event.PlayerDisconnectEvent;
+import net.md_5.bungee.api.event.PostLoginEvent;
 import net.md_5.bungee.api.event.PreLoginEvent;
-import net.md_5.bungee.api.event.StrangePacketEvent;
 import net.md_5.bungee.api.plugin.Listener;
+import net.md_5.bungee.connection.InitialHandler;
+import net.md_5.bungee.connection.LoginResult;
 import net.md_5.bungee.event.EventHandler;
 import net.md_5.bungee.event.EventPriority;
+import tk.yallandev.saintmc.BungeeConst;
 import tk.yallandev.saintmc.CommonConst;
 import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.bungee.BungeeMain;
 import tk.yallandev.saintmc.bungee.bungee.BotMember;
+import tk.yallandev.saintmc.bungee.bungee.BungeeClan;
+import tk.yallandev.saintmc.bungee.bungee.BungeeMember;
 import tk.yallandev.saintmc.bungee.event.IpRemoveEvent;
+import tk.yallandev.saintmc.common.account.Member;
+import tk.yallandev.saintmc.common.account.configuration.LoginConfiguration.AccountType;
+import tk.yallandev.saintmc.common.ban.constructor.Ban;
+import tk.yallandev.saintmc.common.clan.Clan;
+import tk.yallandev.saintmc.common.clan.ClanModel;
+import tk.yallandev.saintmc.common.clan.event.member.MemberOnlineEvent;
+import tk.yallandev.saintmc.common.permission.Group;
+import tk.yallandev.saintmc.common.report.Report;
+import tk.yallandev.saintmc.common.server.ServerType;
+import tk.yallandev.saintmc.common.utils.DateUtils;
+import tk.yallandev.saintmc.common.utils.ip.FetchAddressException;
 import tk.yallandev.saintmc.common.utils.ip.IpFetcher;
 import tk.yallandev.saintmc.common.utils.ip.IpInfo;
 import tk.yallandev.saintmc.common.utils.ip.IpInfo.IpStatus;
-
-/**
- * 
- * Class created to prevent bot connection in the server The focus is block ip
- * and cancel using ClientConnectionEvent (from waterfall)
- * 
- * Check the ip using javascript-coded backend, that made the dirty work and
- * requests the ip on a lot of ip checker
- * 
- * @author yandv
- *
- */
+import tk.yallandev.saintmc.common.utils.supertype.FutureCallback;
+import tk.yallandev.saintmc.common.utils.web.WebHelper.Method;
+import tk.yallandev.saintmc.discord.utils.MessageUtils;
 
 public class LoginListener implements Listener {
 
 	public static final int MAX_VERIFY = 20;
 
-	private LoadingCache<String, IpInfo> cache;
-
-	public LoginListener() {
-		cache = CacheBuilder.newBuilder().expireAfterWrite(5L, TimeUnit.MINUTES)
-				.build(new CacheLoader<String, IpInfo>() {
-
-					@Override
-					public IpInfo load(String key) throws Exception {
-						return IpFetcher.IP_FETCHER.fetchAddress(key);
-					}
-
-				});
-	}
-
-	/*
-	 * Block all ip addresses that are bots
-	 */
+	private Map<String, IpInfo> ipMap = new HashMap<>();
+	private Cache<String, JsonObject> textureCache = CacheBuilder.newBuilder().expireAfterWrite(5L, TimeUnit.MINUTES)
+			.build();
 
 	@EventHandler
 	public void onClientConnect(ClientConnectEvent event) {
@@ -82,52 +89,150 @@ public class LoginListener implements Listener {
 		}
 	}
 
-	/*
-	 * Block the ip that call StrangePacket
-	 */
+	@EventHandler(priority = EventPriority.LOWEST)
+	public void onPreLogin(PreLoginEvent event) {
+		event.registerIntent(BungeeMain.getInstance());
+		CommonGeneral.getInstance().getCommonPlatform().runAsync(() -> {
+
+			try {
+
+				boolean passLogin = checkLogin(event);
+
+				if (!passLogin) {
+					event.completeIntent(BungeeMain.getInstance());
+					return;
+				}
+
+				if (!event.getConnection().isOnlineMode()) {
+					boolean passBot = checkBot(event);
+
+					if (!passBot) {
+						event.completeIntent(BungeeMain.getInstance());
+						return;
+					}
+
+					CommonGeneral.getInstance().debug("The player " + event.getConnection().getName() + " ("
+							+ event.getConnection().getAddress().getHostString() + ") has been verified!");
+				}
+
+				event.completeIntent(BungeeMain.getInstance());
+			} catch (Exception ex) {
+				event.setCancelled(true);
+				event.setCancelReason(
+						"§cO servidor não conseguiu fazer as verificações de ip!\n§f\n§c" + CommonConst.DISCORD);
+				event.completeIntent(BungeeMain.getInstance());
+				ex.printStackTrace();
+				return;
+			}
+		});
+
+	}
 
 	@EventHandler(priority = EventPriority.NORMAL)
-	public void onLogin(StrangePacketEvent event) {
-		SocketAddress socket = event.getSocketAddress();
+	public void onLogin(LoginEvent event) {
+		event.registerIntent(BungeeMain.getInstance());
+		CommonGeneral.getInstance().getCommonPlatform().runAsync(() -> {
 
-		if (socket instanceof InetSocketAddress) {
-			String ipAddress = ((InetSocketAddress) socket).getHostString();
+			try {
+				boolean passMember = loadMember(event);
 
-			blockIp(ipAddress, false);
-			CommonGeneral.getInstance().debug("The address " + ipAddress + " has been blocked by strange packet!");
+				if (!passMember) {
+					event.completeIntent(BungeeMain.getInstance());
+					return;
+				}
+
+				event.completeIntent(BungeeMain.getInstance());
+			} catch (Exception ex) {
+				event.setCancelled(true);
+				event.setCancelReason("§cSua conta não foi carregada!\n§f\n§c" + CommonConst.DISCORD);
+				event.completeIntent(BungeeMain.getInstance());
+				ex.printStackTrace();
+			}
+		});
+	}
+
+	@EventHandler(priority = EventPriority.NORMAL)
+	public void onPostLogin(PostLoginEvent event) {
+		((BungeeMember) CommonGeneral.getInstance().getMemberManager().getMember(event.getPlayer().getUniqueId()))
+				.setProxiedPlayer(event.getPlayer());
+	}
+
+	@EventHandler
+	public void onPermissionCheck(PermissionCheckEvent event) {
+		CommandSender sender = event.getSender();
+
+		if (sender instanceof ProxiedPlayer) {
+			Member member = CommonGeneral.getInstance().getMemberManager()
+					.getMember(((ProxiedPlayer) sender).getUniqueId());
+
+			if (member.hasGroupPermission(Group.ADMIN))
+				event.setHasPermission(true);
 		}
 	}
 
-	/*
-	 * Verify if the player is a bot
-	 */
+	@EventHandler
+	public void onPlayerDisconnect(PlayerDisconnectEvent event) {
+		ProxiedPlayer proxiedPlayer = event.getPlayer();
 
-	@EventHandler(priority = EventPriority.LOWEST)
-	public void onLogin(PreLoginEvent event) {
-		String playerName = event.getConnection().getName();
+		BungeeMain.getPlugin().getProxy().getScheduler().runAsync(BungeeMain.getPlugin(), () -> {
+			Report report = CommonGeneral.getInstance().getReportManager().getReport(proxiedPlayer.getUniqueId());
+
+			if (report != null)
+				report.setOnline(false);
+
+			Member member = CommonGeneral.getInstance().getMemberManager().getMember(proxiedPlayer.getUniqueId());
+
+			if (member != null) {
+				CommonGeneral.getInstance().getPlayerData().cacheMember(member.getUniqueId());
+				CommonGeneral.getInstance().getMemberManager().unloadMember(member.getUniqueId());
+
+				Clan clan = CommonGeneral.getInstance().getClanManager().getClan(member.getClanUniqueId());
+
+				if (clan != null) {
+					if (clan.getOnlineMembers().size() != 0) {
+						clan.callEvent(new MemberOnlineEvent(clan, member, false));
+					} else {
+						CommonGeneral.getInstance().debug("Clan " + clan.getClanName() + " has been unloaded!");
+						CommonGeneral.getInstance().getClanManager().unload(clan.getUniqueId());
+					}
+				}
+
+				if (member.hasGroupPermission(Group.TRIAL))
+					MessageUtils.sendMessage(BungeeConst.DISCORD_CHANNEL_PLAYER_LOG,
+							new MessageBuilder(new EmbedBuilder()
+									.setColor(Color.RED)
+									.setAuthor(
+											member.getPlayerName(), CommonConst.PAINEL_PROFILE + member.getPlayerName(),
+											"https://mc-heads.net/avatar/" + member.getPlayerName())
+									.appendDescription("Ficou "
+											+ DateUtils.formatDifference(member.getSessionTime() / 1000) + " online!")
+									.setFooter("Registro de saida do servidor").setTimestamp(Instant.now()).build())
+											.build());
+
+				member.setLeaveData();
+			}
+		});
+	}
+
+	public boolean checkBot(PreLoginEvent event) {
 		String ipAddress = event.getConnection().getAddress().getHostString();
-
-		/*
-		 * Check username playerName startsWith "mcdrop"
-		 */
+		String playerName = event.getConnection().getName();
 
 		if (playerName.toLowerCase().startsWith("mcdrop")) {
 			event.setCancelled(true);
-			event.setCancelReason("§4§l" + CommonConst.KICK_PREFIX
-					+ "\n§f\n§fPara evitar §cataques de bot§f, bloqueamos todos os nicks que possuam §c\"mcdrop\"§f\n§6Mais informação em: §b"
-					+ CommonConst.DISCORD);
-
-			blockIp(ipAddress, false);
-			return;
+			event.setCancelReason(
+					"§cO seu ip foi bloqueado de entrar por conter \n\"mcdrop\"!\n\n" + CommonConst.DISCORD);
+			blockIp(ipAddress);
+			return false;
 		}
 
 		BotMember botMember = BungeeMain.getInstance().getBotController().getBotMember(ipAddress);
 
 		if (botMember.isBlocked()) {
 			event.setCancelled(true);
-			event.setCancelReason(
-					"§c§lANTIBOT\n\n§cVocê foi bloqueado de entrar!\n§bMais informações em: " + CommonConst.DISCORD);
-			return;
+			event.setCancelReason("§cO seu ip está bloqueado de entrar!\n§f\n" + CommonConst.DISCORD);
+			CommonGeneral.getInstance().debug("O player " + ipAddress + " bloqueado!");
+			return false;
 		}
 
 		botMember.addName(playerName);
@@ -135,169 +240,318 @@ public class LoginListener implements Listener {
 		if (botMember.tooMany()) {
 			event.setCancelled(true);
 			event.setCancelReason(
-					"§c§lANTIBOT\n\n§cVocê foi bloqueado de entrar!\n§bMais informações em: " + CommonConst.DISCORD);
+					"§cO seu ip está bloqueado de entrar por vários nicknames diferentes!\n§f\n" + CommonConst.DISCORD);
 
 			botMember.block();
 			CommonGeneral.getInstance().debug("The address " + ipAddress + " has been blocked for too many nicknames!");
-			blockIp(ipAddress, false);
-			return;
+			blockIp(ipAddress);
+			return false;
 		}
 
-		if (cache.asMap().containsKey(ipAddress)) {
-			IpInfo ipInfo = cache.getIfPresent(ipAddress);
+		IpInfo ipInfo = loadIp(ipAddress);
 
-			switch (ipInfo.getIpStatus()) {
-			case NOT_FROM_BRAZIL: {
+		if (ipInfo == null) {
+			event.setCancelled(true);
+			event.setCancelReason("§cO servidor não conseguiu!\n§f\n" + CommonConst.DISCORD);
+			return false;
+		}
+
+		switch (ipInfo.getIpStatus()) {
+		case NOT_ALLOWED: {
+			event.setCancelled(true);
+			event.setCancelReason("§cO seu ip foi bloqueado por não ser confiável!\n\n" + CommonConst.DISCORD);
+			CommonGeneral.getInstance()
+					.debug("The address " + ipAddress + " has been blocked for isnt a allowed country address!");
+			blockIp(ipAddress);
+			return false;
+		}
+		case BLOCKED: {
+			event.setCancelled(true);
+			event.setCancelReason("§cO seu ip está bloqueado de entrar no servidor!\n\n" + CommonConst.DISCORD);
+			CommonGeneral.getInstance().debug("The address " + ipAddress + " has been blocked!");
+			blockIp(ipAddress);
+			return false;
+		}
+		default: {
+			return true;
+		}
+		}
+	}
+
+	public boolean checkLogin(PreLoginEvent event) {
+		try {
+			JsonObject jsonObject = CommonConst.DEFAULT_WEB
+					.doRequest(CommonConst.MOJANG_FETCHER + event.getConnection().getName(), Method.GET)
+					.getAsJsonObject();
+
+			if (jsonObject.has("name") && jsonObject.has("id"))
+				return true;
+
+		} catch (IllegalArgumentException e) {
+			event.getConnection().setOnlineMode(false);
+			return true;
+		} catch (Exception e) {
+		}
+
+		event.getConnection().setOnlineMode(true);
+		return true;
+	}
+
+	public boolean loadMember(LoginEvent event) {
+		String playerName = event.getConnection().getName();
+		UUID uniqueId = event.getConnection().getUniqueId();
+
+		BungeeMember member = CommonGeneral.getInstance().getPlayerData().loadMember(uniqueId, BungeeMember.class);
+
+		if (member == null) {
+			member = new BungeeMember(playerName, event.getConnection().getUniqueId(),
+					!event.getConnection().isOnlineMode() ? AccountType.CRACKED : AccountType.ORIGINAL);
+
+			CommonGeneral.getInstance().getPlayerData().createMember(member);
+			CommonGeneral.getInstance().debug("The player " + member.getPlayerName() + " has been saved as "
+					+ member.getLoginConfiguration().getAccountType().name());
+		} else {
+			if (!member.getPlayerName().equals(playerName)) {
 				event.setCancelled(true);
 				event.setCancelReason(
-						"§c§lANTIBOT\n\n§cO seu endereço de ip foi bloqueado por não ser do Brasil!\n§bMais informações em: "
+						"§cSua conta está com nickname diferente do original registrado no servidor!\n§f\n"
 								+ CommonConst.DISCORD);
-				blockIp(ipAddress, false);
-				CommonGeneral.getInstance()
-						.debug("The address " + ipAddress + " has been blocked for isnt a brazilian address!");
-				break;
-			}
-			case BLOCKED: {
-				event.setCancelled(true);
-				event.setCancelReason("§c§lANTIBOT\n\n§cO seu endereço de ip foi bloqueado!\n§bMais informações em: "
-						+ CommonConst.DISCORD);
-				blockIp(ipAddress, false);
-				CommonGeneral.getInstance().debug("The address " + ipAddress + " has been blocked!");
-				break;
-			}
-			case ACCEPT: {
-				break;
-			}
+				return false;
 			}
 
-			return;
+			if (!member.getUniqueId().equals(uniqueId)) {
+				if (member.getLoginConfiguration().getAccountType() == AccountType.CRACKED) {
+					try {
+						Field field = InitialHandler.class.getField("uniqueId");
+						field.setAccessible(true);
+						field.set("uniqueId", member.getUniqueId());
+					} catch (Exception ex) {
+
+					}
+				}
+			}
 		}
 
-//		event.registerIntent(BungeeMain.getPlugin());
-//		ProxyServer.getInstance().getScheduler().runAsync(BungeeMain.getPlugin(), new Runnable() {
-//			@Override
-//			public void run() {
-//				/*
-//				 * Verify if the player ip is valid
-//				 */
-//
-//				IpInfo ipInfo = cache.asMap().containsKey(ipAddress) ? cache.asMap().get(ipAddress)
-//						: CommonGeneral.getInstance().getIpData().loadIp(ipAddress);
-//
-//				if (ipInfo == null) {
-//					try {
-//						ipInfo = cache.getIfPresent(ipAddress);
-//						ipInfo.check();
-//
-//						CommonGeneral.getInstance().getIpData().registerIp(ipInfo);
-//					} catch (Exception ex) {
-//						event.completeIntent(BungeeMain.getInstance());
-//						CommonGeneral.getInstance().debug("The address " + ipAddress + " hasn't been loaded!");
-//						return;
-//					}
-//				} else
-//					cache.put(ipAddress, ipInfo);
-//
-//				switch (ipInfo.getIpStatus()) {
-//				case NOT_FROM_BRAZIL: {
-//					event.setCancelled(true);
-//					event.setCancelReason(
-//							"§c§lANTIBOT\n\n§cO seu endereço de ip foi bloqueado por não ser do Brasil!\n§bMais informações em: "
-//									+ CommonConst.DISCORD);
-//					blockIp(ipAddress, true);
-//					CommonGeneral.getInstance()
-//							.debug("The address " + ipAddress + " has been blocked for isnt a brazilian address!");
-//					break;
-//				}
-//				case BLOCKED: {
-//					event.setCancelled(true);
-//					event.setCancelReason(
-//							"§c§lANTIBOT\n\n§cO seu endereço de ip foi bloqueado!\n§bMais informações em: "
-//									+ CommonConst.DISCORD);
-//					blockIp(ipAddress, true);
-//					CommonGeneral.getInstance().debug("The address " + ipAddress + " has been blocked!");
-//					break;
-//				}
-//				case ACCEPT: {
-//					break;
-//				}
-//				}
-//
-//				event.completeIntent(BungeeMain.getPlugin());
-//			}
-//		});
+		CommonGeneral.getInstance().getPlayerData().checkCache(uniqueId);
+
+		member.setJoinData(playerName, event.getConnection().getAddress().getHostString());
+		member.setFakeName(member.getPlayerName());
+		member.setServerType(ServerType.NONE);
+
+		Ban activeBan = null;
+
+		if (member.getPunishmentHistory() != null)
+			activeBan = member.getPunishmentHistory().getActiveBan();
+
+		if (activeBan != null) {
+			event.setCancelled(true);
+			event.setCancelReason(BungeeMain.getInstance().getPunishManager().getBanMessage(activeBan));
+			return false;
+		}
+
+		String ipAddress = event.getConnection().getName();
+
+		if (BungeeMain.getInstance().getPunishManager().isIpBanned(ipAddress)) {
+			Ban ban = new Ban(member.getUniqueId(), member.getPlayerName(), "CONSOLE", UUID.randomUUID(),
+					"Conta alternativa", System.currentTimeMillis() + (1000 * 60 * 60 * 24
+							* (member.getLoginConfiguration().getAccountType() == AccountType.CRACKED ? 14 : 7)));
+
+			member.getPunishmentHistory().ban(ban);
+
+			CommonGeneral.getInstance().getPlayerData().updateMember(member, "punishmentHistory");
+			event.setCancelled(true);
+			event.setCancelReason(BungeeMain.getInstance().getPunishManager().getBanMessage(ban));
+			return false;
+		}
+
+		if (BungeeMain.getInstance().isMaintenceMode()) {
+			if (!member.hasGroupPermission(Group.BETA)) {
+				event.setCancelled(true);
+				event.setCancelReason("§4§l" + CommonConst.KICK_PREFIX
+						+ "\n§f\n§cO servidor está em modo manutenção\n§f\n§6Mais informação em: §b"
+						+ CommonConst.DISCORD);
+				return false;
+			}
+		}
+
+		if (member.getLoginConfiguration().getAccountType() == AccountType.CRACKED) {
+			if (member.getLoginConfiguration().hasSession(ipAddress))
+				member.getLoginConfiguration().login(ipAddress);
+			else
+				member.getLoginConfiguration().logOut();
+		}
+
+		if (member.getClanUniqueId() != null) {
+			Clan clan = CommonGeneral.getInstance().getClanManager().getClan(member.getClanUniqueId());
+
+			if (clan == null) {
+				ClanModel clanModel = CommonGeneral.getInstance().getClanData().loadClan(member.getClanUniqueId());
+
+				if (clanModel == null) {
+					member.setClanUniqueId(null);
+				} else {
+					clan = new BungeeClan(clanModel);
+					CommonGeneral.getInstance().getClanManager().load(member.getClanUniqueId(), clan);
+					CommonGeneral.getInstance().debug("Clan " + clan.getClanName() + " has been loaded!");
+				}
+			}
+
+			if (clan != null) {
+				if (clan.isMember(member.getUniqueId())) {
+					clan.updateMember(member);
+
+					clan.callEvent(new MemberOnlineEvent(clan, member, true));
+				} else
+					member.setClanUniqueId(null);
+			}
+		}
+
+		Report report = CommonGeneral.getInstance().getReportManager().getReport(uniqueId);
+
+		if (report != null) {
+			report.setOnline(true);
+			report.setPlayerName(playerName);
+		}
+
+		if (textureCache.asMap().containsKey(playerName))
+			loadTexture(event.getConnection(), textureCache.getIfPresent(playerName));
+		else {
+			BungeeMember m = member;
+
+			CommonConst.DEFAULT_WEB.doAsyncRequest(
+					String.format(CommonConst.SKIN_URL,
+							member.hasSkin() ? member.getSkinProfile().getUniqueId() : member.getUniqueId()),
+					Method.GET, new FutureCallback<JsonElement>() {
+
+						@Override
+						public void result(JsonElement result, Throwable error) {
+							if (error == null) {
+								loadTexture(event.getConnection(), result.getAsJsonObject());
+								textureCache.put(playerName, result.getAsJsonObject());
+								m.sendMessage("§aSua skin foi carregada!");
+							} else
+								m.sendMessage("§cO servidor não conseguiu carregar sua skin!");
+						}
+					});
+		}
+
+		member.setOnline(true);
+		member.updateTime();
+
+		CommonGeneral.getInstance().getMemberManager().loadMember(member);
+		return true;
 	}
+
+	/**
+	 * 
+	 * Remove ip from block
+	 * 
+	 * @param event
+	 */
 
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onIpRemove(IpRemoveEvent event) {
 		String ipAddress = event.getIpAddress();
 
-		CommonGeneral.getInstance().getCommonPlatform().runAsync(new Runnable() {
+		CommonGeneral.getInstance().getCommonPlatform().runAsync(() -> {
+			IpInfo ipInfo = loadIp(ipAddress);
 
-			@Override
-			public void run() {
-				IpInfo ipInfo = CommonGeneral.getInstance().getIpData().loadIp(ipAddress);
-
-				if (ipInfo == null) {
-					try {
-						ipInfo = cache.get(ipAddress);
-						ipInfo.check();
-
-						CommonGeneral.getInstance().getIpData().registerIp(ipInfo);
-					} catch (ExecutionException e) {
-						return;
-					}
-				} else
-					cache.put(ipAddress, ipInfo);
-
-				ipInfo.setIpStatus(IpStatus.ACCEPT);
-			}
+			ipInfo.setIpStatus(IpStatus.ACCEPT);
+			BungeeMain.getInstance().getBotController().getBlockedAddress().remove(ipAddress);
 		});
 	}
 
-	public void blockIp(String ipAddress, boolean async) {
+	/**
+	 * 
+	 * Load ip from database or from ip data fetcher
+	 * 
+	 * @param ipAddress
+	 * @return
+	 */
+
+	public IpInfo loadIp(String ipAddress) {
+		IpInfo ipInfo = ipMap.computeIfAbsent(ipAddress,
+				v -> CommonGeneral.getInstance().getIpData().loadIp(ipAddress));
+
+		if (ipInfo == null) {
+			try {
+				CommonGeneral.getInstance().debug("The ip " + ipAddress + " has been loaded from fetcher!");
+				ipInfo = IpFetcher.fetchAddress(ipAddress);
+			} catch (FetchAddressException e) {
+				e.printStackTrace();
+			}
+
+			if (ipInfo == null)
+				return null;
+
+			ipMap.put(ipAddress, ipInfo);
+			CommonGeneral.getInstance().getIpData().registerIp(ipInfo);
+		}
+
+		return ipInfo;
+	}
+
+	/**
+	 * 
+	 * Load the texture in PendingConnection
+	 * 
+	 * @param connection
+	 * @param jsonObject
+	 */
+
+	public void loadTexture(PendingConnection connection, JsonObject jsonObject) {
+		InitialHandler initialHandler = (InitialHandler) connection;
+		LoginResult loginProfile = initialHandler.getLoginProfile();
+
+		LoginResult.Property property = null;
+
+		if (jsonObject.has("properties")) {
+			JsonArray jsonArray = jsonObject.get("properties").getAsJsonArray();
+
+			for (int x = 0; x < jsonArray.size(); x++) {
+				JsonObject json = (JsonObject) jsonArray.get(x);
+
+				if (json.get("name").getAsString().equalsIgnoreCase("textures")) {
+					property = new LoginResult.Property("textures", json.get("value").getAsString(),
+							json.get("signature").getAsString());
+					break;
+				}
+			}
+		}
+
+		if (loginProfile == null || (loginProfile == null && property == null)) {
+			LoginResult loginResult = new LoginResult(connection.getUniqueId().toString().replace("-", ""),
+					connection.getName(),
+					property == null ? new LoginResult.Property[] {} : new LoginResult.Property[] { property });
+
+			try {
+				Class<?> initialHandlerClass = connection.getClass();
+				Field profileField = initialHandlerClass.getDeclaredField("loginProfile");
+				profileField.setAccessible(true);
+				profileField.set(connection, loginResult);
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+		} else {
+			if (property != null)
+				loginProfile.setProperties(new LoginResult.Property[] { property });
+		}
+	}
+
+	/**
+	 * 
+	 * Block the ip from future connections in the server
+	 * 
+	 * @param ipAddress
+	 */
+
+	public void blockIp(String ipAddress) {
+		IpInfo ipInfo = loadIp(ipAddress);
+
+		if (ipInfo.getIpStatus() == IpStatus.BLOCKED || ipInfo.getIpStatus() == IpStatus.NOT_ALLOWED)
+			ipInfo.setIpStatus(IpStatus.BLOCKED);
+
 		BungeeMain.getInstance().getBotController().blockIp(ipAddress);
-
-		if (async) {
-			IpInfo ipInfo = CommonGeneral.getInstance().getIpData().loadIp(ipAddress);
-
-			if (ipInfo == null) {
-				try {
-					ipInfo = cache.get(ipAddress);
-					ipInfo.check();
-
-					CommonGeneral.getInstance().getIpData().registerIp(ipInfo);
-				} catch (ExecutionException e) {
-					return;
-				}
-			} else
-				cache.put(ipAddress, ipInfo);
-
-			if (ipInfo.getIpStatus() == IpStatus.BLOCKED || ipInfo.getIpStatus() == IpStatus.NOT_FROM_BRAZIL)
-				ipInfo.setIpStatus(IpStatus.BLOCKED);
-		} else
-			CommonGeneral.getInstance().getCommonPlatform().runAsync(new Runnable() {
-
-				@Override
-				public void run() {
-					IpInfo ipInfo = CommonGeneral.getInstance().getIpData().loadIp(ipAddress);
-
-					if (ipInfo == null) {
-						try {
-							ipInfo = cache.get(ipAddress);
-							ipInfo.check();
-
-							CommonGeneral.getInstance().getIpData().registerIp(ipInfo);
-						} catch (ExecutionException e) {
-							return;
-						}
-					} else
-						cache.put(ipAddress, ipInfo);
-
-					if (ipInfo.getIpStatus() == IpStatus.BLOCKED || ipInfo.getIpStatus() == IpStatus.NOT_FROM_BRAZIL)
-						ipInfo.setIpStatus(IpStatus.BLOCKED);
-				}
-			});
 	}
 
 }

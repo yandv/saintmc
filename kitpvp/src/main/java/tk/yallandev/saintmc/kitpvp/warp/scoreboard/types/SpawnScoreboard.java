@@ -20,7 +20,7 @@ import tk.yallandev.saintmc.kitpvp.warp.scoreboard.WarpScoreboard;
 public class SpawnScoreboard extends WarpScoreboard {
 
 	public SpawnScoreboard() {
-		super(new SimpleScoreboard("§6§lKITPVP"));
+		super(new SimpleScoreboard("§4§lKITPVP"));
 
 		scoreboard.blankLine(12);
 		scoreboard.setScore(11, new Score("§fKills: §e0", "kills"));
@@ -33,7 +33,7 @@ public class SpawnScoreboard extends WarpScoreboard {
 		scoreboard.setScore(4, new Score("§fCoins: §60", "coins"));
 		scoreboard.setScore(3, new Score("§fJogadores: §b" + Bukkit.getOnlinePlayers().size(), "players"));
 		scoreboard.blankLine(2);
-		scoreboard.setScore(1, new Score("§6" + CommonConst.SITE, "site"));
+		scoreboard.setScore(1, new Score("§c" + CommonConst.SITE, "site"));
 
 	}
 

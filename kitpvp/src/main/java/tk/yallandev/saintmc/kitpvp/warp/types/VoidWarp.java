@@ -30,6 +30,7 @@ public class VoidWarp extends Warp {
 	public VoidWarp() {
 		super("Void", BukkitMain.getInstance().getLocationFromConfig("void"), new VoidScoreboard());
 		getScoreboard().setWarp(this);
+		getWarpSettings().setWarpEnabled(false);
 		playerMap = new HashMap<>();
 	}
 

@@ -22,7 +22,7 @@ public class MemberController {
 	public Collection<Member> getCollection() {
 		return memberMap.values();
 	}
-
+	
 	public Member load(Player player) {
 		return memberMap.computeIfAbsent(player.getUniqueId(), v -> new Member(player));
 	}

@@ -109,10 +109,10 @@ public class TagListener implements Listener {
 			return;
 
 		String id = ScoreboardAPI.getTeamName(event.getNewTag(),
-				player.isUsingFake() ? League.UNRANKED : player.getLeague(),
+				player.isUsingFake() ? League.values()[0] : player.getLeague(),
 				event.getNewTag().isChroma() || player.isChroma(), event.isClanTag(), player.getClan());
 		String oldId = ScoreboardAPI.getTeamName(event.getOldTag(),
-				player.isUsingFake() ? League.UNRANKED : player.getLeague(),
+				player.isUsingFake() ? League.values()[0] : player.getLeague(),
 				event.getNewTag().isChroma() || player.isChroma(), event.isClanTag(), player.getClan());
 
 		String tag = BukkitMain.getInstance().isOldTag() ? ChatColor.getLastColors(event.getNewTag().getPrefix())
@@ -151,11 +151,14 @@ public class TagListener implements Listener {
 			return "";
 
 		return (clanTag ? " §7[" + player.getClan().getClanAbbreviation() + "]"
-				: player.isUsingFake() ? " §7(" + League.UNRANKED.getColor() + League.UNRANKED.getSymbol() + "§7)"
+				: player.isUsingFake() ? " §7(" + League.values()[0].getColor() + League.values()[0].getSymbol() + "§7)"
 						: " §7(" + player.getLeague().getColor() + player.getLeague().getSymbol() + "§7)");
 	}
 
 	public boolean isClanTag(Member member) {
+		if (member.isUsingFake())
+			return false;
+
 		if (member.getAccountConfiguration().getClanDisplayType() == ClanDisplayType.ALL
 				|| (CommonGeneral.getInstance().getServerType() == ServerType.LOBBY
 						&& member.getAccountConfiguration().getClanDisplayType() == ClanDisplayType.LOBBY))

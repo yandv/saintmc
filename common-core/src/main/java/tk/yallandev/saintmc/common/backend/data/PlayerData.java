@@ -34,6 +34,8 @@ public interface PlayerData {
 
 	Collection<MemberModel> ranking(String fieldName);
 
+	Collection<MemberModel> loadMemberByIp(String lastIpAddress);
+
 	/*
 	 * Discord Member Info
 	 */

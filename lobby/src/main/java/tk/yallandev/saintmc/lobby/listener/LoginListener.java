@@ -31,7 +31,7 @@ import tk.yallandev.saintmc.common.tag.Tag;
 import tk.yallandev.saintmc.common.tag.TagWrapper;
 
 public class LoginListener implements Listener {
-	
+
 	public static final Tag LOGGING_TAG = TagWrapper.create("§8§lLOGANDO§8", null);
 
 	private static final int MAX_PLAYERS = 8;
@@ -52,7 +52,7 @@ public class LoginListener implements Listener {
 
 		if (member.getLoginConfiguration().isLogged())
 			if (playerList.size() >= MAX_PLAYERS)
-				if (!member.hasGroupPermission(Group.LIGHT)) {
+				if (!member.hasGroupPermission(Group.PRO)) {
 					event.disallow(Result.KICK_OTHER,
 							"§4§l" + CommonConst.KICK_PREFIX + "\n§f\n§fO servidor de §alogin§f está cheio!");
 				}

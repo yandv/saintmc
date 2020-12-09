@@ -5,7 +5,6 @@ import java.util.UUID;
 
 import org.bukkit.Achievement;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -42,12 +41,12 @@ public class PlayerListener extends Listener {
 		Member player = CommonGeneral.getInstance().getMemberManager().getMember(event.getPlayer().getUniqueId());
 
 		if (player == null) {
-			event.disallow(Result.KICK_OTHER, ChatColor.RED + "Ocorreu um erro!");
+			event.disallow(Result.KICK_OTHER, "§cSua conta não foi carregada!");
 			return;
 		}
 
 		if (getServerConfig().isWhitelist()) {
-			if (player.hasGroupPermission(Group.BUILDER)
+			if (player.hasGroupPermission(Group.STREAMER)
 					|| getServerConfig().hasWhitelist(new Profile(player.getPlayerName(), player.getUniqueId())))
 				event.allow();
 			else
@@ -88,10 +87,10 @@ public class PlayerListener extends Listener {
 	public void onPlayerChangeLeague(PlayerChangeLeagueEvent event) {
 		if (event.getPlayer() != null && event.getNewLeague().ordinal() > event.getOldLeague().ordinal()) {
 
-			if (event.getNewLeague() == League.CHALLENGER) {
+			if (event.getNewLeague() == League.CLOUTH) {
 				Bukkit.broadcastMessage(" ");
-				Bukkit.broadcastMessage(
-						"§e" + event.getBukkitMember().getPlayerName() + "§f subiu para o rank §4§lCHALLENGER§f!");
+				Bukkit.broadcastMessage("§e" + event.getBukkitMember().getPlayerName() + "§f subiu para o rank "
+						+ League.CLOUTH.getColor() + League.CLOUTH.getName() + "§f!");
 				Bukkit.broadcastMessage(" ");
 
 				Bukkit.getOnlinePlayers()
@@ -129,7 +128,7 @@ public class PlayerListener extends Listener {
 	public void onPlayerQuit(PlayerAchievementAwardedEvent event) {
 		event.setCancelled(true);
 	}
-	
+
 	@EventHandler
 	public void onEntityRegainHealth(EntityRegainHealthEvent event) {
 		event.setCancelled(true);

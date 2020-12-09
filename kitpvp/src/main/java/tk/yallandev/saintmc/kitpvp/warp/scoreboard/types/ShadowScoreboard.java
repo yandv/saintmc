@@ -38,7 +38,7 @@ public class ShadowScoreboard extends WarpScoreboard {
 	private List<FightPingUpdate> observersList;
 
 	public ShadowScoreboard() {
-		super(new SimpleScoreboard("§6§l1v1"));
+		super(new SimpleScoreboard("§4§l1v1"));
 
 		scoreboard.blankLine(11);
 		scoreboard.setScore(10, new Score("Vitórias: §e0", "wins"));
@@ -50,17 +50,17 @@ public class ShadowScoreboard extends WarpScoreboard {
 		scoreboard.blankLine(4);
 		scoreboard.setScore(3, new Score("Jogadores: §b" + Bukkit.getOnlinePlayers().size(), "players"));
 		scoreboard.blankLine(2);
-		scoreboard.setScore(1, new Score("§6" + CommonConst.SITE, "site"));
+		scoreboard.setScore(1, new Score("§c" + CommonConst.SITE, "site"));
 
-		searchingScoreboard = new SimpleScoreboard("§6§lPROCURANDO");
+		searchingScoreboard = new SimpleScoreboard("§4§lPROCURANDO");
 
 		searchingScoreboard.blankLine(5);
 		searchingScoreboard.setScore(4, new Score("Procurando: §e1v1 rápido", "searching"));
 		searchingScoreboard.setScore(3, new Score("Tempo: §e0s", "time"));
 		searchingScoreboard.blankLine(2);
-		searchingScoreboard.setScore(1, new Score("§6" + CommonConst.SITE, "site"));
+		searchingScoreboard.setScore(1, new Score("§c" + CommonConst.SITE, "site"));
 
-		fightScoreboard = new SimpleScoreboard("§6§l1v1");
+		fightScoreboard = new SimpleScoreboard("§4§l1v1");
 
 		fightScoreboard.blankLine(8);
 		fightScoreboard.setScore(7, new Score("§9Ninguém: §e0ms", "playerPing"));
@@ -69,7 +69,7 @@ public class ShadowScoreboard extends WarpScoreboard {
 		fightScoreboard.setScore(4, new Score("Warp: §a1v1", "warp"));
 		fightScoreboard.setScore(3, new Score("Winstreak: §70", "winstreak"));
 		fightScoreboard.blankLine(2);
-		fightScoreboard.setScore(1, new Score("§6" + CommonConst.SITE, "site"));
+		fightScoreboard.setScore(1, new Score("§c" + CommonConst.SITE, "site"));
 
 		observersList = new ArrayList<>();
 	}

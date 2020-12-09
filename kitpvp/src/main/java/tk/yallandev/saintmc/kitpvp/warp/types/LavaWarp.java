@@ -3,10 +3,10 @@ package tk.yallandev.saintmc.kitpvp.warp.types;
 import java.util.AbstractMap;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
@@ -89,19 +89,14 @@ public class LavaWarp extends Warp {
 										Bukkit.getPluginManager().callEvent(
 												new PlayerStopChallengeEvent(player, entry.getKey(), entry.getValue()));
 									else {
-										if (BukkitMain.getInstance()
-												.getLocationFromConfig(entry.getKey().getEndConfig())
-												.distance(player.getLocation()) < 8) {
-											Bukkit.getPluginManager().callEvent(new PlayerFinishChallengeEvent(player,
-													entry.getKey(), entry.getValue()));
-											System.out
-													.println(entry.getKey().getName() + " " + player.getName() + " 1");
-										} else {
-											Bukkit.getPluginManager().callEvent(new PlayerStopChallengeEvent(player,
-													entry.getKey(), entry.getValue()));
-											System.out
-													.println(entry.getKey().getName() + " " + player.getName() + " 2");
-										}
+										Bukkit.getPluginManager()
+												.callEvent(BukkitMain.getInstance()
+														.getLocationFromConfig(entry.getKey().getEndConfig())
+														.distance(player.getLocation()) < 8
+																? new PlayerFinishChallengeEvent(player, entry.getKey(),
+																		entry.getValue())
+																: new PlayerStopChallengeEvent(player, entry.getKey(),
+																		entry.getValue()));
 									}
 
 								}
@@ -124,6 +119,8 @@ public class LavaWarp extends Warp {
 		ChallengeType challengeType = ChallengeType.valueOf(event.getChallengeType().name());
 
 		challengeStatus.addWin(ChallengeType.valueOf(event.getChallengeType().name()));
+		CommonGeneral.getInstance().getMemberManager().getMember(event.getPlayer().getUniqueId())
+				.addXp(5 * (challengeType.ordinal() + 1));
 
 		int time = (int) ((event.getChallengeInfo().getLastDamage() - event.getChallengeInfo().getStartTime()) / 1000);
 
@@ -202,7 +199,6 @@ public class LavaWarp extends Warp {
 					Bukkit.getPluginManager()
 							.callEvent(new PlayerStopChallengeEvent(player, entry.getKey(), entry.getValue()).death());
 					entry.getValue().setFinished(true);
-					System.out.println(entry.getKey().getName() + " " + player.getName() + " 3");
 				}
 			}
 		}
@@ -255,20 +251,12 @@ public class LavaWarp extends Warp {
 	}
 
 	public ChallengeStage getNearestChallenge(Location location) {
-		List<Entry<ChallengeStage, Location>> locationList = Arrays.asList(
-				new AbstractMap.SimpleEntry<ChallengeStage, Location>(ChallengeStage.EASY,
-						BukkitMain.getInstance().getLocationFromConfig(ChallengeStage.EASY.getStartConfig())),
-				new AbstractMap.SimpleEntry<ChallengeStage, Location>(ChallengeStage.MEDIUM,
-						BukkitMain.getInstance().getLocationFromConfig(ChallengeStage.MEDIUM.getStartConfig())),
-				new AbstractMap.SimpleEntry<ChallengeStage, Location>(ChallengeStage.HARD,
-						BukkitMain.getInstance().getLocationFromConfig(ChallengeStage.HARD.getStartConfig())),
-				new AbstractMap.SimpleEntry<ChallengeStage, Location>(ChallengeStage.HARDCORE,
-						BukkitMain.getInstance().getLocationFromConfig(ChallengeStage.HARDCORE.getStartConfig())),
-				new AbstractMap.SimpleEntry<ChallengeStage, Location>(ChallengeStage.TRAINAING,
-						BukkitMain.getInstance().getLocationFromConfig(ChallengeStage.TRAINAING.getStartConfig())));
-
-		return locationList.stream().sorted((o1, o2) -> Double.compare(o1.getValue().distanceSquared(location),
-				o2.getValue().distanceSquared(location))).findFirst().orElse(null).getKey();
+		return Arrays.asList(ChallengeStage.values()).stream()
+				.map(stage -> new AbstractMap.SimpleEntry<ChallengeStage, Location>(stage,
+						BukkitMain.getInstance().getLocationFromConfig(stage.getStartConfig())))
+				.collect(Collectors.toList()).stream().sorted((o1, o2) -> Double
+						.compare(o1.getValue().distanceSquared(location), o2.getValue().distanceSquared(location)))
+				.findFirst().orElse(null).getKey();
 	}
 
 }

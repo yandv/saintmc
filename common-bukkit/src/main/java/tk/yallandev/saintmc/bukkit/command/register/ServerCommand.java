@@ -2,17 +2,13 @@ package tk.yallandev.saintmc.bukkit.command.register;
 
 import java.lang.management.ManagementFactory;
 import java.text.DecimalFormat;
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
-
-import com.google.common.base.Joiner;
 
 import net.md_5.bungee.api.ChatColor;
 import net.minecraft.server.v1_8_R3.MinecraftServer;
@@ -32,9 +28,7 @@ import tk.yallandev.saintmc.common.utils.string.StringUtils;
 
 public class ServerCommand implements CommandClass {
 
-	public static long timingStart = 0L;
-
-	@Command(name = "evento", aliases = { "event" })
+	@Command(name = "torneio")
 	public void eventoCommand(CommandArgs cmdArgs) {
 		if (!cmdArgs.isPlayer())
 			return;
@@ -155,9 +149,6 @@ public class ServerCommand implements CommandClass {
 		} else {
 			sender.sendMessage("Unknown method. Usage: ");
 		}
-
-		sender = null;
-		args = null;
 	}
 
 	@Command(name = "tps", aliases = { "ticks" }, groupToUse = Group.MODPLUS)
@@ -204,7 +195,7 @@ public class ServerCommand implements CommandClass {
 		}
 	}
 
-	@Command(name = "memoryinfo", groupToUse = Group.DONO)
+	@Command(name = "memoryinfo", groupToUse = Group.ADMIN)
 	public void memoryinfoCommand(CommandArgs cmdArgs) {
 		double total = Runtime.getRuntime().maxMemory();
 		double free = Runtime.getRuntime().freeMemory();
@@ -220,15 +211,6 @@ public class ServerCommand implements CommandClass {
 		cmdArgs.getSender().sendMessage("§a" + format.format(used / divisor) + "GB de memoria RAM Usada");
 		cmdArgs.getSender().sendMessage("§a" + format.format(free / divisor) + "GB de memoria RAM Livre");
 		cmdArgs.getSender().sendMessage("§a" + format.format(usedPercentage) + "% da memoria RAM");
-	}
-
-	@Command(name = "plugins", aliases = { "pl", "plugin" }, groupToUse = Group.LIGHT)
-	public void pluginCommand(CommandArgs cmdArgs) {
-		cmdArgs.getSender()
-				.sendMessage("Plugins (" + Bukkit.getPluginManager().getPlugins().length + "): "
-						+ Joiner.on("§f, ").join(Arrays.asList(Bukkit.getPluginManager().getPlugins()).stream().map(
-								plugin -> (plugin.isEnabled() ? ChatColor.GREEN : ChatColor.RED) + plugin.getName())
-								.collect(Collectors.toList())));
 	}
 
 	private String format(double tps) {

@@ -11,6 +11,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.inventory.ItemStack;
@@ -24,7 +25,6 @@ import tk.yallandev.saintmc.bukkit.api.item.ActionItemStack.ActionType;
 import tk.yallandev.saintmc.bukkit.api.item.ActionItemStack.Interact;
 import tk.yallandev.saintmc.bukkit.api.item.ActionItemStack.InteractType;
 import tk.yallandev.saintmc.bukkit.api.item.ItemBuilder;
-import tk.yallandev.saintmc.bukkit.event.player.PlayerDamagePlayerEvent;
 import tk.yallandev.saintmc.bukkit.event.update.UpdateEvent;
 import tk.yallandev.saintmc.bukkit.event.update.UpdateEvent.UpdateType;
 import tk.yallandev.saintmc.bukkit.event.vanish.PlayerHideToPlayerEvent;
@@ -217,6 +217,9 @@ public class ShadowWarp extends Warp implements DuelWarp {
 						if (searchingStartEvent.isCancelled())
 							return false;
 
+						if (fastQueue.containsKey(player))
+							fastQueue.remove(player);
+
 						if (fastQueue.isEmpty()) {
 							fastQueue.put(player, System.currentTimeMillis());
 							player.setItemInHand(itemStack.getItemStack());
@@ -302,10 +305,16 @@ public class ShadowWarp extends Warp implements DuelWarp {
 				event.setCancelled(true);
 	}
 
-	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-	public void onPlayerDamagePlayer(PlayerDamagePlayerEvent event) {
-		Player player = event.getPlayer();
-		Player damager = event.getDamager();
+	@EventHandler(priority = EventPriority.MONITOR)
+	public void onPlayerDamagePlayer(EntityDamageByEntityEvent event) {
+		if (!(event.getEntity() instanceof Player))
+			return;
+
+		if (!(event.getDamager() instanceof Player))
+			return;
+
+		Player player = (Player) event.getEntity();
+		Player damager = (Player) event.getDamager();
 
 		if (inWarp(player)) {
 			if (inWarp(damager)) {
@@ -365,8 +374,12 @@ public class ShadowWarp extends Warp implements DuelWarp {
 	public void onPlayerWarpJoin(PlayerWarpQuitEvent event) {
 		Player player = event.getPlayer();
 
-		if (event.getWarp() == this)
+		if (event.getWarp() == this) {
 			handleQuit(player);
+
+			if (fastQueue.containsKey(player))
+				fastQueue.remove(player);
+		}
 	}
 
 	@EventHandler

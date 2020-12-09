@@ -40,7 +40,7 @@ public abstract class Clan {
 	private int xp;
 
 	private long disbanTime;
-	private int maxMembers = 16;
+	private int maxMembers = 15;
 
 	public Clan(UUID uniqueId, String clanName, String clanAbbreviation, Member owner) {
 		this.uniqueId = uniqueId;
@@ -61,6 +61,30 @@ public abstract class Clan {
 
 		this.clanRank = clanModel.getClanRank();
 		this.xp = clanModel.getXp();
+	}
+	
+	public int addXp(int xp) {
+		if (xp < 0)
+			xp = 0;
+		
+		setXp(getXp() + xp);
+		return xp;
+	}
+
+	public int removeXp(int xp) {
+		if (xp < 0)
+			xp = 0;
+		
+		if (getXp() - xp < 0)
+			setXp(0);
+		else
+			setXp(getXp() - xp);
+		return xp;
+	}
+	
+	public void setXp(int xp) {
+		this.xp = xp;
+		save("xp");
 	}
 
 	public boolean addMember(Member member) {
@@ -143,7 +167,7 @@ public abstract class Clan {
 			maxMembers = this.memberMap.size();
 		else {
 			long paymentMembers = this.memberMap.values().stream()
-					.filter(member -> member.getGroup().ordinal() >= Group.DONATOR.ordinal()).count();
+					.filter(member -> member.getGroup().ordinal() >= Group.PRO.ordinal()).count();
 
 			maxMembers = 16 + (int) paymentMembers;
 		}
@@ -186,9 +210,16 @@ public abstract class Clan {
 	}
 
 	public void chat(Member member, String message) {
+
+		if (!member.getAccountConfiguration().isClanChatEnabled()) {
+			member.sendMessage("§aO chat do clan foi ativado!");
+			member.sendMessage("§eUse /clan chat para desativar ou ativar o chat do clan!");
+			member.getAccountConfiguration().setClanChatEnabled(true);
+		}
+
 		MemberChatEvent event = callEvent(new MemberChatEvent(this, member, getOnlineMembers(), message));
 
-		event.getRecipients()
+		event.getRecipients().stream().filter(m -> m.getAccountConfiguration().isClanChatEnabled())
 				.forEach(m -> m.sendMessage(
 						CLANCHAT_PREFIX + " " + memberMap.get(member.getUniqueId()).getClanHierarchy().getTag() + " "
 								+ member.getPlayerName() + "§7: §f" + message));

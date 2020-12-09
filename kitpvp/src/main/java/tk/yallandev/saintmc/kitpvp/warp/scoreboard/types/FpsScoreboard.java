@@ -15,7 +15,7 @@ import tk.yallandev.saintmc.kitpvp.warp.scoreboard.WarpScoreboard;
 public class FpsScoreboard extends WarpScoreboard {
 
 	public FpsScoreboard() {
-		super(new SimpleScoreboard("§6§lFPS"));
+		super(new SimpleScoreboard("§4§lFPS"));
 
 		scoreboard.blankLine(8);
 		scoreboard.setScore(7, new Score("§fKills: §e0", "kills"));
@@ -24,7 +24,7 @@ public class FpsScoreboard extends WarpScoreboard {
 		scoreboard.blankLine(4);
 		scoreboard.setScore(3, new Score("§fJogadores: §b" + Bukkit.getOnlinePlayers().size(), "players"));
 		scoreboard.blankLine(2);
-		scoreboard.setScore(1, new Score("§6" + CommonConst.SITE, "site"));
+		scoreboard.setScore(1, new Score("§c" + CommonConst.SITE, "site"));
 	}
 
 	@Override
@@ -78,7 +78,7 @@ public class FpsScoreboard extends WarpScoreboard {
 
 	@Override
 	public <T> void updateScore(Player player, T t) {
-		
+
 	}
 
 }

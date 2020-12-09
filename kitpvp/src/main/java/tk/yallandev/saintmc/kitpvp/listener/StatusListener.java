@@ -13,6 +13,7 @@ import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import tk.yallandev.saintmc.CommonConst;
 import tk.yallandev.saintmc.CommonGeneral;
+import tk.yallandev.saintmc.common.account.Member;
 import tk.yallandev.saintmc.common.account.status.StatusType;
 import tk.yallandev.saintmc.common.account.status.types.normal.NormalStatus;
 import tk.yallandev.saintmc.common.permission.Group;
@@ -80,17 +81,24 @@ public class StatusListener implements Listener {
 				statusType, NormalStatus.class);
 
 		int winnerXp = RewardCalculator.calculateReward(player, playerStatus, killer, killerStatus);
-		int winnerMoney = 50 * (CommonGeneral.getInstance().getMemberManager().getMember(killer.getUniqueId())
-				.hasGroupPermission(Group.BLIZZARD) ? 2 : 1);
+		int winnerMoney = 50;
 
 		if (duels) {
 			winnerXp *= 1.5;
 			winnerMoney *= 1.5;
 		}
+		
+		Member killerMember = CommonGeneral.getInstance().getMemberManager().getMember(killer.getUniqueId());
+
+		if (killerMember.hasGroupPermission(Group.ULTIMATE))
+			winnerXp *= 2;
+		
+		if (killerMember.hasGroupPermission(Group.EXTREME))
+			winnerMoney *= 2;
 
 		int lostXp = CommonConst.RANDOM.nextInt(8) + 1;
 		int lostMoney = 20 * (CommonGeneral.getInstance().getMemberManager().getMember(killer.getUniqueId())
-				.hasGroupPermission(Group.BLIZZARD) ? 2 : 1);
+				.hasGroupPermission(Group.EXTREME) ? 2 : 1);
 
 		player.spigot()
 				.sendMessage(

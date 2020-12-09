@@ -18,7 +18,7 @@ public enum ServerType {
 
 	CLANXCLAN("Clan x Clan"),
 
-	PRIVATE_SERVER("Private Server"), SCREENSHARE("Screenshare"),
+	SCREENSHARE("Screenshare"),
 
 	NETWORK(), NONE;
 

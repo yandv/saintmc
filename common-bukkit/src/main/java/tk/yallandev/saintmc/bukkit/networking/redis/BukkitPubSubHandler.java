@@ -18,6 +18,7 @@ import tk.yallandev.saintmc.bukkit.bukkit.BukkitMember;
 import tk.yallandev.saintmc.bukkit.event.account.PlayerUpdateFieldEvent;
 import tk.yallandev.saintmc.bukkit.event.account.PlayerUpdatedFieldEvent;
 import tk.yallandev.saintmc.bukkit.event.report.ReportReceiveEvent;
+import tk.yallandev.saintmc.bukkit.event.server.PlayerChangeEvent;
 import tk.yallandev.saintmc.bukkit.event.server.ServerPlayerJoinEvent;
 import tk.yallandev.saintmc.bukkit.event.server.ServerPlayerLeaveEvent;
 import tk.yallandev.saintmc.common.account.Member;
@@ -44,10 +45,15 @@ public class BukkitPubSubHandler extends JedisPubSub {
 	public void onMessage(String channel, String message) {
 		JsonObject jsonObject = (JsonObject) JsonParser.parseString(message);
 
-		if (!channel.equals("server-info"))
-			if ((!jsonObject.has("source")
-					|| jsonObject.get("source").getAsString().equals(CommonGeneral.getInstance().getServerId())))
-				return;
+		if (channel.equals("server-members")) {
+			BukkitMain.getInstance().getServerManager().setTotalMembers(jsonObject.get("totalMembers").getAsInt());
+			Bukkit.getPluginManager().callEvent(new PlayerChangeEvent(jsonObject.get("totalMembers").getAsInt()));
+			return;
+		}
+
+		if (!jsonObject.has("source")
+				|| jsonObject.get("source").getAsString().equals(CommonGeneral.getInstance().getServerId()))
+			return;
 
 		switch (channel) {
 		case "server-info": {

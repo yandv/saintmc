@@ -32,6 +32,7 @@ import tk.yallandev.saintmc.common.profile.Profile;
 import tk.yallandev.saintmc.common.server.ServerType;
 import tk.yallandev.saintmc.common.server.loadbalancer.server.MinigameState;
 import tk.yallandev.saintmc.common.server.loadbalancer.server.ProxiedServer;
+import tk.yallandev.saintmc.common.utils.json.JsonBuilder;
 
 public class ServerDataImpl implements ServerData {
 
@@ -225,6 +226,16 @@ public class ServerDataImpl implements ServerData {
 					CommonConst.GSON.toJson(new DataServerMessage<StopPayload>(
 							CommonGeneral.getInstance().getServerId(), CommonGeneral.getInstance().getServerType(),
 							Action.STOP, new StopPayload(CommonGeneral.getInstance().getServerId()))));
+			pipe.sync();
+		}
+	}
+
+	@Override
+	public void setTotalMembers(int totalMembers) {
+		try (Jedis jedis = redisDatabase.getPool().getResource()) {
+			Pipeline pipe = jedis.pipelined();
+			pipe.publish("server-members",
+					CommonConst.GSON.toJson(new JsonBuilder().addProperty("totalMembers", totalMembers).build()));
 			pipe.sync();
 		}
 	}

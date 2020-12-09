@@ -4,6 +4,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
@@ -12,8 +13,11 @@ import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.EnumWrappers.EntityUseAction;
 
 import tk.yallandev.saintmc.bukkit.BukkitMain;
+import tk.yallandev.saintmc.bukkit.event.PlayerMoveUpdateEvent;
 
 public class CharacterListener implements Listener {
+
+	private static final int MAX_DISTANCE = 128;
 
 	public CharacterListener() {
 		ProtocolLibrary.getProtocolManager()
@@ -44,7 +48,28 @@ public class CharacterListener implements Listener {
 
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent event) {
-		Character.getCharacters().forEach(character -> character.show(event.getPlayer()));
+		Character.getCharacters().forEach(character -> {
+			if (character.getNpc().getLocation().distance(event.getPlayer().getLocation()) < MAX_DISTANCE)
+				character.show(event.getPlayer());
+		});
+	}
+
+	@EventHandler
+	public void onPlayerMoveUpdate(PlayerMoveUpdateEvent event) {
+		Character.getCharacters().forEach(character -> {
+			if (character.getNpc().isShowing(event.getPlayer().getUniqueId())) {
+				if (character.getNpc().getLocation().distance(event.getPlayer().getLocation()) > MAX_DISTANCE)
+					character.hide(event.getPlayer());
+			} else {
+				if (character.getNpc().getLocation().distance(event.getPlayer().getLocation()) < MAX_DISTANCE)
+					character.show(event.getPlayer());
+			}
+		});
+	}
+
+	@EventHandler
+	public void onPlayerJoin(PlayerQuitEvent event) {
+		Character.getCharacters().forEach(character -> character.hide(event.getPlayer()));
 	}
 
 }

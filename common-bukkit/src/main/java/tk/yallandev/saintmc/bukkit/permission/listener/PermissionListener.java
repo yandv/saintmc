@@ -69,6 +69,9 @@ public class PermissionListener implements Listener {
 			attach = player.addAttachment(manager.getPlugin());
 			attachments.put(player.getUniqueId(), attach);
 			attach.setPermission(playerPerm, true);
+		} else {
+			attach.getPermissions().clear();
+			attach.setPermission(playerPerm, true);
 		}
 		
 		playerPerm.getChildren().clear();
@@ -84,8 +87,6 @@ public class PermissionListener implements Listener {
 				playerPerm.getChildren().put(permission, true);
 			}
 
-		player.recalculatePermissions();
-		
 		player.recalculatePermissions();
 	}
 

@@ -3,6 +3,7 @@ package tk.yallandev.saintmc.common.account;
 import java.util.UUID;
 
 import net.md_5.bungee.api.chat.BaseComponent;
+import tk.yallandev.saintmc.common.account.configuration.LoginConfiguration.AccountType;
 
 public class MemberVoid extends Member {
 
@@ -10,8 +11,8 @@ public class MemberVoid extends Member {
 		super(memberModel);
 	}
 	
-	public MemberVoid(String playerName, UUID uniqueId) {
-		super(playerName, uniqueId);
+	public MemberVoid(String playerName, UUID uniqueId, AccountType accountType) {
+		super(playerName, uniqueId, accountType);
 	}
 
 	@Override

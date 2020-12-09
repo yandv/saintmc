@@ -50,7 +50,7 @@ public class PreferencesInventory {
 							VanishAPI.getInstance().updateVanishToPlayer(player);
 						} else {
 							for (Player players : Bukkit.getOnlinePlayers()) {
-								if (Member.hasGroupPermission(players.getUniqueId(), Group.LIGHT))
+								if (Member.hasGroupPermission(players.getUniqueId(), Group.PRO))
 									continue;
 
 								player.hidePlayer(players);
@@ -82,20 +82,20 @@ public class PreferencesInventory {
 		inv.setItem(32,
 				(player.getAllowFlight()
 						? builder.type(Material.INK_SACK).durability(10).name("§eFly")
-								.lore("\n§7Clique para §cdesativar§7 o fly\n\n§7Você precisa ser "
-										+ Tag.LIGHT.getPrefix() + "§7 ou superior para usar o fly!")
+								.lore("\n§7Clique para §cdesativar§7 o fly\n\n§7Você precisa ser " + Tag.PRO.getPrefix()
+										+ "§7 ou superior para usar o fly!")
 								.build()
 						: builder.type(Material.INK_SACK).durability(8).name("§eFly")
-								.lore("\n§7Clique para §aativar§7 o fly\n\n§7Você precisa ser " + Tag.LIGHT.getPrefix()
+								.lore("\n§7Clique para §aativar§7 o fly\n\n§7Você precisa ser " + Tag.PRO.getPrefix()
 										+ "§7 ou superior para usar o fly!")
 								.build()),
 				new MenuClickHandler() {
 
 					@Override
 					public void onClick(Player player, Inventory inv, ClickType type, ItemStack stack, int slot) {
-						if (!member.hasGroupPermission(Group.DONATOR)) {
-							player.sendMessage(" §c* §fVocê precisa ser " + Tag.DONATOR.getPrefix() + "§f, "
-									+ Tag.LIGHT.getPrefix() + "§f ou superior para usar o fly!");
+						if (!member.hasGroupPermission(Group.PRO)) {
+							player.sendMessage(" §c* §fVocê precisa ser " + Tag.PRO.getPrefix()
+									+ "§f ou superior para usar o fly!");
 							return;
 						}
 

@@ -26,6 +26,7 @@ import tk.yallandev.saintmc.common.server.loadbalancer.server.ProxiedServer;
 import tk.yallandev.saintmc.common.tag.Tag;
 import tk.yallandev.saintmc.common.utils.DateUtils;
 import tk.yallandev.saintmc.common.utils.string.MessageBuilder;
+import tk.yallandev.saintmc.common.utils.string.NameUtils;
 
 public class ServerCommand implements CommandClass {
 
@@ -33,12 +34,14 @@ public class ServerCommand implements CommandClass {
 
 	@Command(name = "rec", aliases = { "gravar" }, groupToUse = Group.YOUTUBER)
 	public void gravarCommand(BungeeCommandArgs cmdArgs) {
+		if (!cmdArgs.isPlayer())
+			return;
+
 		Member sender = (Member) cmdArgs.getSender();
 
 		if (sender.isOnCooldown("rec-command")) {
-			sender.sendMessage(
-					"§cEspere mais " + DateUtils.formatTime(sender.getCooldown("rec-command"), DECIMAL_FORMAT)
-							+ "s para se conectar novamente!");
+			sender.sendMessage("§cAguarde " + DateUtils.formatTime(sender.getCooldown("rec-command"), DECIMAL_FORMAT)
+					+ "s para enviar uma mensagem de gravação novamente!");
 			sender.sendMessage("§cNão abuse desse comando, caso contrário, poderá perder sua tag!");
 			return;
 		}
@@ -79,9 +82,9 @@ public class ServerCommand implements CommandClass {
 					.broadcast(new MessageBuilder("§c§lAVISO §fO "
 							+ (sender.hasGroupPermission(Group.YOUTUBERPLUS) ? Tag.YOUTUBERPLUS : Tag.YOUTUBER)
 									.getPrefix()
-							+ " " + sender.getPlayerName() + " §7vai §4§lGRAVAR§7 um §6§l"
-							+ serverType.toString().toUpperCase() + "§7 no §6§l" + serverId.toUpperCase()
-							+ "§7! §e/play hg").setClickEvent(
+							+ " " + sender.getPlayerName() + " §7vai §4§lGRAVAR§7 no servidor §6§lKITPVP "
+							+ serverType.toString().toUpperCase() + "§7! §e/play "
+							+ serverType.toString().toLowerCase()).setClickEvent(
 									new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/connect " + sender.getServerId()))
 									.setHoverEvent(HoverEvent.Action.SHOW_TEXT, "§aClique aqui para se conectar!")
 									.create());
@@ -160,54 +163,35 @@ public class ServerCommand implements CommandClass {
 			return;
 		}
 
-		if (args[0].equalsIgnoreCase("all")) {
-			ProxiedServer server = BungeeMain.getInstance().getServerManager().getServerByName(args[1]);
+		ProxiedServer server = BungeeMain.getInstance().getServerManager().getServerByName(args[1]);
 
-			if (server == null || server.getServerInfo() == null) {
-				sender.sendMessage(" §c* §fO servidor §a" + args[1] + "§f não existe!");
+		if (server == null || server.getServerInfo() == null) {
+			sender.sendMessage("§cO servidor " + args[1] + " não existe!");
+			return;
+		}
+
+		if (args[0].equalsIgnoreCase("all")) {
+			ProxyServer.getInstance().getPlayers().forEach(a -> a.connect(server.getServerInfo()));
+			sender.sendMessage("§aOs jogadores foram enviados para o servidor " + server.getServerId() + "!");
+		} else if (args[0].equalsIgnoreCase("current")) {
+			if (cmdArgs.isPlayer()) {
+				cmdArgs.getPlayer().getServer().getInfo().getPlayers().forEach(a -> a.connect(server.getServerInfo()));
+				sender.sendMessage("§aOs jogadores do servidor " + cmdArgs.getPlayer().getServer().getInfo().getName()
+						+ " foram enviados para o servidor " + server.getServerId() + "!");
+			} else
+				sender.sendMessage("§cSomente jogadores podem executar esse comando!!");
+		} else {
+			ProxiedPlayer target = ProxyServer.getInstance().getPlayer(args[0]);
+
+			if (target == null) {
+				sender.sendMessage("§cO jogador " + args[0] + " está offline!");
 				return;
 			}
 
-			ProxyServer.getInstance().getPlayers().forEach(a -> a.connect(server.getServerInfo()));
 			sender.sendMessage(
-					" §a* §fVocê enviou §atodos jogadores §fpara o servidor §a" + server.getServerId() + "§f!");
-			return;
-		} else if (args[0].equalsIgnoreCase("current")) {
-			if (cmdArgs.isPlayer()) {
-				ProxiedServer server = BungeeMain.getInstance().getServerManager().getServerByName(args[1]);
-
-				if (server == null || server.getServerInfo() == null) {
-					sender.sendMessage(" §c* §fO servidor §a" + args[1] + "§f não existe!");
-					return;
-				}
-
-				cmdArgs.getPlayer().getServer().getInfo().getPlayers().forEach(a -> a.connect(server.getServerInfo()));
-				sender.sendMessage(
-						" §a* §fVocê enviou §atodos jogadores §fpara o servidor §a" + server.getServerId() + "§f!");
-			} else {
-				sender.sendMessage(" §c §fVocê precisa ser um §ajogador §fpara executar este comando!");
-			}
-
-			return;
+					"§aO jogador " + target.getName() + " foi enviado para o servidor " + server.getServerId() + "!");
+			target.connect(server.getServerInfo());
 		}
-
-		ProxiedPlayer target = ProxyServer.getInstance().getPlayer(args[0]);
-
-		if (target == null) {
-			sender.sendMessage(" §c* §fO jogador §a" + args[0] + "§f está offline!");
-			return;
-		}
-
-		ProxiedServer server = BungeeMain.getInstance().getServerManager().getServer(args[1]);
-
-		if (server == null || server.getServerInfo() == null) {
-			sender.sendMessage(" §c* §fO servidor §a" + args[1] + "§f não existe!");
-			return;
-		}
-
-		sender.sendMessage(" §a* §fVocê enviou o jogador §a" + target.getName() + " §fpara o servidor §a"
-				+ server.getServerId() + "§f!");
-		target.connect(server.getServerInfo());
 	}
 
 	@Command(name = "lobby", aliases = { "hub", "l" }, usage = "/<command> <player> <server>")
@@ -218,9 +202,9 @@ public class ServerCommand implements CommandClass {
 		Member sender = CommonGeneral.getInstance().getMemberManager().getMember(cmdArgs.getSender().getUniqueId());
 
 		if (sender.isOnCooldown("connect-command")) {
-			sender.sendMessage(
-					"§cEspere mais " + DateUtils.formatTime(sender.getCooldown("connect-command"), DECIMAL_FORMAT)
-							+ "s para se conectar novamente!");
+			sender.sendMessage("§cVocê precisa esperar mais "
+					+ DateUtils.formatTime(sender.getCooldown("connect-command"), DECIMAL_FORMAT)
+					+ "s para se conectar novamente!");
 			return;
 		}
 
@@ -243,9 +227,9 @@ public class ServerCommand implements CommandClass {
 		Member sender = CommonGeneral.getInstance().getMemberManager().getMember(cmdArgs.getSender().getUniqueId());
 
 		if (sender.isOnCooldown("connect-command")) {
-			sender.sendMessage(
-					"§cEspere mais " + DateUtils.formatTime(sender.getCooldown("connect-command"), DECIMAL_FORMAT)
-							+ "s para se conectar novamente!");
+			sender.sendMessage("§cVocê precisa esperar mais "
+					+ DateUtils.formatTime(sender.getCooldown("connect-command"), DECIMAL_FORMAT)
+					+ "s para se conectar novamente!");
 			return;
 		}
 
@@ -262,25 +246,24 @@ public class ServerCommand implements CommandClass {
 
 	@Command(name = "server", usage = "/<command> <player> <server>", aliases = { "go", "connect", "ir" })
 	public void serverCommand(BungeeCommandArgs cmdArgs) {
-		Member sender = CommonGeneral.getInstance().getMemberManager().getMember(cmdArgs.getSender().getUniqueId());
-
 		if (!cmdArgs.isPlayer()) {
-			sender.sendMessage(" §c §fVocê precisa ser um §ajogador §fpara executar este comando!");
+			cmdArgs.getSender().sendMessage(" §c §fVocê precisa ser um §ajogador §fpara executar este comando!");
 			return;
 		}
 
+		Member sender = CommonGeneral.getInstance().getMemberManager().getMember(cmdArgs.getSender().getUniqueId());
+
 		if (sender.isOnCooldown("connect-command")) {
-			sender.sendMessage(
-					"§cEspere mais " + DateUtils.formatTime(sender.getCooldown("connect-command"), DECIMAL_FORMAT)
-							+ "s para se conectar novamente!");
+			sender.sendMessage("§cVocê precisa esperar mais "
+					+ DateUtils.formatTime(sender.getCooldown("connect-command"), DECIMAL_FORMAT)
+					+ "s para se conectar novamente!");
 			return;
 		}
 
 		String[] args = cmdArgs.getArgs();
 
 		if (args.length == 0) {
-			sender.sendMessage(
-					" §e* §fUse §a/" + cmdArgs.getLabel() + " <server>§f para conectar-se a algum servidor.");
+			sender.sendMessage("§cUso /" + cmdArgs.getLabel() + " <server> para conectar-se a algum servidor.");
 			return;
 		}
 
@@ -289,7 +272,7 @@ public class ServerCommand implements CommandClass {
 		ProxiedServer server = BungeeMain.getInstance().getServerManager().getServerByName(serverId);
 
 		if (server == null || server.getServerInfo() == null) {
-			sender.sendMessage(" §c* §fO servidor §a" + serverId + "§f não existe!");
+			sender.sendMessage("§cO servidor " + serverId + " não existe!");
 			return;
 		}
 
@@ -299,12 +282,15 @@ public class ServerCommand implements CommandClass {
 
 	@Command(name = "play", usage = "/<command> <player> <server>", aliases = { "jogar" })
 	public void playCommand(BungeeCommandArgs cmdArgs) {
+		if (!cmdArgs.isPlayer())
+			return;
+
 		Member sender = CommonGeneral.getInstance().getMemberManager().getMember(cmdArgs.getSender().getUniqueId());
 
 		if (sender.isOnCooldown("connect-command")) {
-			sender.sendMessage(
-					"§cEspere mais " + DateUtils.formatTime(sender.getCooldown("connect-command"), DECIMAL_FORMAT)
-							+ "s para se conectar novamente!");
+			sender.sendMessage("§cVocê precisa esperar mais "
+					+ DateUtils.formatTime(sender.getCooldown("connect-command"), DECIMAL_FORMAT)
+					+ "s para se conectar novamente!");
 			return;
 		}
 
@@ -446,7 +432,24 @@ public class ServerCommand implements CommandClass {
 			break;
 		}
 		default: {
-			cmdArgs.getPlayer().sendMessage("§cO servidor " + args[0] + " não existe!");
+			ServerType serverType = null;
+
+			try {
+				serverType = ServerType.valueOf(args[0]);
+			} catch (Exception ex) {
+				cmdArgs.getPlayer().sendMessage("§cO servidor " + args[0] + " não existe!");
+				return;
+			}
+
+			ProxiedServer server = BungeeMain.getInstance().getServerManager().getBalancer(ServerType.SIMULATOR).next();
+
+			if (server == null || server.getServerInfo() == null) {
+				sender.sendMessage("§cNenhum servidor de " + NameUtils.formatString(serverType.name().replace("_", " "))
+						+ " disponivel!");
+				return;
+			}
+
+			cmdArgs.getPlayer().connect(server.getServerInfo());
 			break;
 		}
 		}
@@ -454,25 +457,19 @@ public class ServerCommand implements CommandClass {
 
 	@Completer(name = "server", aliases = { "go", "connect", "ir" })
 	public List<String> serverCompleter(CommandArgs cmdArgs) {
+		List<String> serverList = new ArrayList<>();
+
 		if (cmdArgs.getArgs().length == 1) {
-			List<String> serverList = new ArrayList<>();
-
-			if (cmdArgs.getArgs()[0].isEmpty()) {
-				for (ProxiedServer server : BungeeMain.getInstance().getServerManager().getServers().stream()
-						.sorted((o1, o2) -> o1.getServerType().compareTo(o2.getServerType()))
-						.collect(Collectors.toList()))
+			for (ProxiedServer server : BungeeMain.getInstance().getServerManager().getServers().stream()
+					.sorted((o1, o2) -> o1.getServerType().compareTo(o2.getServerType())).collect(Collectors.toList()))
+				if (server.getServerId().toLowerCase().startsWith(cmdArgs.getArgs()[0].toLowerCase()))
 					serverList.add(server.getServerId());
-			} else {
-				for (ProxiedServer server : BungeeMain.getInstance().getServerManager().getServers().stream()
-						.sorted((o1, o2) -> o1.getServerType().compareTo(o2.getServerType()))
-						.collect(Collectors.toList()))
-					if (server.getServerId().toLowerCase().startsWith(cmdArgs.getArgs()[0].toLowerCase()))
-						serverList.add(server.getServerId());
-			}
-
-			return serverList;
+		} else {
+			for (ProxiedServer server : BungeeMain.getInstance().getServerManager().getServers().stream()
+					.sorted((o1, o2) -> o1.getServerType().compareTo(o2.getServerType())).collect(Collectors.toList()))
+				serverList.add(server.getServerId());
 		}
 
-		return new ArrayList<>();
+		return serverList;
 	}
 }

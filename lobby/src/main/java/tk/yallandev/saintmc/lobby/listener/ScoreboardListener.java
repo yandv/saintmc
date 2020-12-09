@@ -16,8 +16,7 @@ import tk.yallandev.saintmc.bukkit.api.scoreboard.impl.SimpleScoreboard;
 import tk.yallandev.saintmc.bukkit.event.account.PlayerChangeGroupEvent;
 import tk.yallandev.saintmc.bukkit.event.account.PlayerChangeLeagueEvent;
 import tk.yallandev.saintmc.bukkit.event.player.PlayerScoreboardStateEvent;
-import tk.yallandev.saintmc.bukkit.event.server.ServerPlayerJoinEvent;
-import tk.yallandev.saintmc.bukkit.event.server.ServerPlayerLeaveEvent;
+import tk.yallandev.saintmc.bukkit.event.server.PlayerChangeEvent;
 import tk.yallandev.saintmc.common.account.League;
 import tk.yallandev.saintmc.common.account.Member;
 import tk.yallandev.saintmc.common.permission.Group;
@@ -29,7 +28,7 @@ public class ScoreboardListener implements Listener {
 	public static final Scoreboard DEFAULT_SCOREBOARD;
 
 	static {
-		DEFAULT_SCOREBOARD = new SimpleScoreboard("§6§lLOBBY");
+		DEFAULT_SCOREBOARD = new SimpleScoreboard("§4§lLOBBY");
 
 		DEFAULT_SCOREBOARD.blankLine(11);
 		DEFAULT_SCOREBOARD.setScore(10, new Score("Grupo: §7§lMEMBRO", "group"));
@@ -42,7 +41,7 @@ public class ScoreboardListener implements Listener {
 		DEFAULT_SCOREBOARD.setScore(3,
 				new Score("§fJogadores: §e" + BukkitMain.getInstance().getServerManager().getTotalNumber(), "online"));
 		DEFAULT_SCOREBOARD.blankLine(2);
-		DEFAULT_SCOREBOARD.setScore(1, new Score("§6" + CommonConst.SITE, "site"));
+		DEFAULT_SCOREBOARD.setScore(1, new Score("§c" + CommonConst.SITE, "site"));
 	}
 
 	@EventHandler(priority = EventPriority.MONITOR)
@@ -51,15 +50,8 @@ public class ScoreboardListener implements Listener {
 	}
 
 	@EventHandler(priority = EventPriority.MONITOR)
-	public void onPlayerJoin(ServerPlayerJoinEvent e) {
-		DEFAULT_SCOREBOARD.updateScore(
-				new Score("Jogadores: §e" + BukkitMain.getInstance().getServerManager().getTotalNumber(), "online"));
-	}
-
-	@EventHandler(priority = EventPriority.MONITOR)
-	public void onPlayerJoin(ServerPlayerLeaveEvent e) {
-		DEFAULT_SCOREBOARD.updateScore(
-				new Score("Jogadores: §e" + BukkitMain.getInstance().getServerManager().getTotalNumber(), "online"));
+	public void onPlayerJoin(PlayerChangeEvent event) {
+		DEFAULT_SCOREBOARD.updateScore(new Score("Jogadores: §e" + event.getTotalMembers(), "online"));
 	}
 
 	@EventHandler

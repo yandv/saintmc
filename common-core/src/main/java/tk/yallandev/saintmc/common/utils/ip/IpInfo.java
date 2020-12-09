@@ -32,7 +32,7 @@ public class IpInfo {
 					|| country.equalsIgnoreCase("angola") || regionName.equalsIgnoreCase("florida"))
 				return;
 
-			ipStatus = IpStatus.NOT_FROM_BRAZIL;
+			ipStatus = IpStatus.NOT_ALLOWED;
 		}
 	}
 
@@ -46,7 +46,7 @@ public class IpInfo {
 
 	public enum IpStatus {
 
-		BLOCKED, NOT_FROM_BRAZIL, ACCEPT;
+		BLOCKED, NOT_ALLOWED, ACCEPT;
 
 	}
 

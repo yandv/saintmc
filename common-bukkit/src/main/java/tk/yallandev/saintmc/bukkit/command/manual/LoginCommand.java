@@ -34,17 +34,17 @@ public class LoginCommand implements CommandClass {
 		String[] args = cmdArgs.getArgs();
 
 		if (args.length == 0) {
-			sender.sendMessage(" §e* §fUse §a/login <senha>§f para se logar!");
+			sender.sendMessage("§eUse /login <senha> para se logar!");
 			return;
 		}
 
 		if (player.getLoginConfiguration().isLogged()) {
-			player.sendMessage(" §a* §fVocê já está logado no servidor!");
+			player.sendMessage("§cVocê já está logado no servidor!");
 			return;
 		}
 
 		if (!player.getLoginConfiguration().isRegistred()) {
-			player.sendMessage(" §a* §fSua conta não está registrada no servidor!");
+			player.sendMessage("§cSua conta não está registrada no servidor!");
 			return;
 		}
 
@@ -55,9 +55,8 @@ public class LoginCommand implements CommandClass {
 
 			if (player.getLoginConfiguration().startSession(player.getLastIpAddress()))
 				player.sendMessage("§aAgora você possui uma sessão ativa no servidor!");
-			else {
+			else
 				player.sendMessage("§cNão foi possível estabelecer uma sessão no servidor!");
-			}
 
 			Bukkit.getPluginManager().callEvent(new PlayerChangeLoginStatusEvent(cmdArgs.getPlayer(), player, true));
 		} else {
@@ -77,11 +76,16 @@ public class LoginCommand implements CommandClass {
 			return;
 		}
 
+		if (!player.getLoginConfiguration().isPassCaptcha()) {
+			player.sendMessage("");
+			return;
+		}
+
 		CommandSender sender = cmdArgs.getSender();
 		String[] args = cmdArgs.getArgs();
 
 		if (args.length <= 1) {
-			sender.sendMessage(" §a* §fUse §a/register <senha> <repita sua senha>§f para se logar!");
+			sender.sendMessage("§eUse /register <senha> <repita sua senha> para se logar!");
 			return;
 		}
 
@@ -92,8 +96,8 @@ public class LoginCommand implements CommandClass {
 
 		String password = args[0];
 
-		if (!PASSWORD_PATTERN.matcher(password).matches() || password.equals("minecraft")
-				|| password.equals("abc123")) {
+		if (!PASSWORD_PATTERN.matcher(password).matches() || password.equals("minecraft") || password.equals("abc123")
+				|| password.equals("qwerty")) {
 			player.sendMessage("§cSenha muito fraca!");
 			player.sendMessage("§cVocê precisa colocar pelo menos 8 caracteres!");
 			player.sendMessage("§cVocê pode usar letras, numeros e underline!");
@@ -101,13 +105,13 @@ public class LoginCommand implements CommandClass {
 		}
 
 		if (password.equals(args[1])) {
-			player.sendMessage(" §a* §fSua conta foi registrada no servidor!");
+			player.sendMessage("§aSua conta foi registrada no servidor!");
 			player.getLoginConfiguration().register(args[0], player.getLastIpAddress());
 
 			Bukkit.getPluginManager().callEvent(new PlayerChangeLoginStatusEvent(cmdArgs.getPlayer(), player, true));
 			Bukkit.getPluginManager().callEvent(new PlayerRegisterEvent(cmdArgs.getPlayer(), player));
 		} else {
-			sender.sendMessage(" §a* §fUse §a/register <senha> <repita sua senha>§f para se logar!");
+			sender.sendMessage("§eUse /register <senha> <repita sua senha> para se logar!");
 		}
 	}
 

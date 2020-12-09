@@ -10,7 +10,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -221,6 +220,11 @@ public class CooldownController implements Listener {
 		return null;
 	}
 
+	public void clearCooldown(Player player) {
+		if (map.containsKey(player.getUniqueId()))
+			map.remove(player.getUniqueId());
+	}
+
 	public class CooldownListener extends ManualRegisterableListener {
 
 		@EventHandler
@@ -262,9 +266,6 @@ public class CooldownController implements Listener {
 						}
 
 						it.remove();
-
-						if (!(cooldown instanceof ItemCooldown))
-							player.playSound(player.getLocation(), Sound.LEVEL_UP, 1F, 1F);
 
 						CooldownFinishEvent e = new CooldownFinishEvent(player, cooldown);
 						Bukkit.getServer().getPluginManager().callEvent(e);

@@ -8,7 +8,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
-import org.bukkit.event.player.AsyncPlayerPreLoginEvent.Result;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -38,32 +37,27 @@ public class AccountListener extends Listener {
 
 	private List<Profile> restoreProfile = new ArrayList<>();
 
-	/**
-	 * modo restauração somente qem ja estava no servidor pode entrar
-	 * 
-	 * @param event
-	 */
-
 	@EventHandler(priority = EventPriority.LOW)
-	public void onAsyncPlayerPreLogin(AsyncPlayerPreLoginEvent event) {
+	public synchronized void onAsyncPlayerPreLogin(AsyncPlayerPreLoginEvent event) {
 		if (event.getLoginResult() != AsyncPlayerPreLoginEvent.Result.ALLOWED)
 			return;
 
 		if (BukkitMain.getInstance().getServerConfig().isRestoreMode()
 				&& !restoreProfile.contains(new Profile(event.getName(), event.getUniqueId()))) {
-			event.disallow(Result.KICK_OTHER,
+			event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER,
 					"§cO servidor está em modo restauração, somente jogadores que já estavam no servidor podem entrar!");
 			return;
 		}
 		if (event.getAddress().getAddress().toString().startsWith("0.0")) {
-			event.disallow(Result.KICK_OTHER, "§4§l" + CommonConst.KICK_PREFIX + "\n\n§fEndereço de host inválido!");
+			event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER,
+					"§4§l" + CommonConst.KICK_PREFIX + "\n\n§fEndereço de host inválido!");
 			return;
 		}
 
 		UUID uniqueId = event.getUniqueId();
 
 		if (Bukkit.getPlayer(uniqueId) != null) {
-			event.setLoginResult(Result.KICK_OTHER);
+			event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
 			event.setKickMessage("§4§l" + CommonConst.KICK_PREFIX + "\n§f\n§fO jogador " + event.getName()
 					+ " já está online no servidor!");
 			return;
@@ -72,39 +66,17 @@ public class AccountListener extends Listener {
 		String playerName = event.getName();
 
 		try {
-
 			MemberModel memberModel = CommonGeneral.getInstance().getPlayerData().loadMember(uniqueId);
-			boolean create = true;
-
-			{
-				MemberModel member = CommonGeneral.getInstance().getPlayerData().loadMember(playerName);
-
-				if (memberModel != null && member != null) {
-					if (!memberModel.getPlayerName().equals(member.getPlayerName())) {
-						event.setKickMessage("§4§l" + CommonConst.KICK_PREFIX
-								+ "\n§f\n§fNão foi possível carregar sua conta!\n§fNome diferente!");
-						return;
-					}
-
-					if (!memberModel.getUniqueId().equals(member.getUniqueId())) {
-						event.setKickMessage("§4§l" + CommonConst.KICK_PREFIX
-								+ "\n§f\n§fNão foi possível carregar sua conta!\n§fID diferentes!");
-						return;
-					}
-				}
-			}
-
-			BukkitMember member = null;
 
 			if (memberModel == null) {
-				member = new BukkitMember(playerName, uniqueId);
+				event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, "§cSua conta não foi carregada!");
+				return;
+			}
 
-				if (create)
-					CommonGeneral.getInstance().getPlayerData().createMember(member);
-			} else
-				member = new BukkitMember(memberModel);
+			BukkitMember member = new BukkitMember(memberModel);
 
-			member.setCacheOnQuit(true);
+			if (CommonGeneral.getInstance().getPlayerData().checkCache(uniqueId))
+				member.setCacheOnQuit(true);
 
 			member.setJoinData(playerName, event.getAddress().getHostAddress());
 			CommonGeneral.getInstance().getMemberManager().loadMember(member);
@@ -125,7 +97,6 @@ public class AccountListener extends Listener {
 					}
 				}
 			}
-
 		} catch (Exception ex) {
 			event.setKickMessage("§4§l" + CommonConst.KICK_PREFIX + "\n§f\n§fNão foi possível carregar sua conta!");
 			ex.printStackTrace();
@@ -157,7 +128,7 @@ public class AccountListener extends Listener {
 		member.setPlayer(event.getPlayer());
 
 		if (event.getResult() == PlayerLoginEvent.Result.KICK_FULL) {
-			if (member.hasGroupPermission(Group.LIGHT))
+			if (member.hasGroupPermission(Group.PRO))
 				event.setResult(PlayerLoginEvent.Result.ALLOWED);
 			else {
 				event.disallow(PlayerLoginEvent.Result.KICK_OTHER, "§cO servidor está cheio!");
@@ -185,7 +156,8 @@ public class AccountListener extends Listener {
 
 		if (event.getResult() == PlayerLoginEvent.Result.ALLOWED) {
 			member.connect(CommonGeneral.getInstance().getServerId(), CommonGeneral.getInstance().getServerType());
-		}
+		} else
+			CommonGeneral.getInstance().getMemberManager().unloadMember(event.getPlayer().getUniqueId());
 	}
 
 	@EventHandler
@@ -198,7 +170,6 @@ public class AccountListener extends Listener {
 			}
 
 		}.runTaskAsynchronously(BukkitMain.getInstance());
-
 		CommonGeneral.getInstance().getMemberManager().getMember(event.getPlayer().getUniqueId()).checkRanks();
 	}
 

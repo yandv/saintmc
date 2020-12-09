@@ -13,18 +13,20 @@ import net.md_5.bungee.api.ServerPing.Protocol;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.PendingConnection;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
+import net.md_5.bungee.api.event.PlayerDisconnectEvent;
+import net.md_5.bungee.api.event.PostLoginEvent;
 import net.md_5.bungee.api.event.ProxyPingEvent;
 import net.md_5.bungee.api.event.SearchServerEvent;
 import net.md_5.bungee.api.event.ServerConnectEvent;
 import net.md_5.bungee.api.event.ServerKickEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
+import net.md_5.bungee.event.EventPriority;
 import tk.yallandev.saintmc.CommonConst;
 import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.bungee.BungeeMain;
 import tk.yallandev.saintmc.bungee.bungee.BungeeMember;
 import tk.yallandev.saintmc.common.permission.Group;
-import tk.yallandev.saintmc.common.profile.Profile;
 import tk.yallandev.saintmc.common.server.ServerManager;
 import tk.yallandev.saintmc.common.server.ServerType;
 import tk.yallandev.saintmc.common.server.loadbalancer.server.ProxiedServer;
@@ -32,15 +34,33 @@ import tk.yallandev.saintmc.common.utils.string.StringCenter;
 
 public class ConnectionListener implements Listener {
 
-	private String[] motdList = new String[] { "§b" + CommonConst.DISCORD, "§b" + CommonConst.WEBSITE,
-			"§6Bem vindo ao novo!" };
+	private static final String MOTD_HEADER = StringCenter.centered("§4§lClouth§f§lNetwork §f- §7[§a§lSEASON1§7]", 127);
+	private static final String SERVER_NOT_FOUND = StringCenter.centered("§4§nServidor não encontrado!", 127);
+
+	private static final String[] MOTD_LIST = new String[] { StringCenter.centered("§b" + CommonConst.DISCORD, 127),
+			StringCenter.centered("§b" + CommonConst.WEBSITE, 127),
+			StringCenter.centered("§f§lVENHA JOGAR CONOSCO! §7[§e1.7 e 1.8x§7]", 127),
+			StringCenter.centered("§f§lHG, KITPVP e GLADIATOR! §7[§e1.7 e 1.8xx§7]", 127),
+			StringCenter.centered("§1§lSERVIDOR EM FASE BETA! §7[§e1.7 e 1.8xx§7]", 127) };
+
 	private ServerManager manager;
 
 	public ConnectionListener(ServerManager manager) {
 		this.manager = manager;
 	}
 
-	@SuppressWarnings("deprecation")
+	@EventHandler(priority = EventPriority.HIGHEST)
+	public void onPostLogin(PostLoginEvent event) {
+		BungeeMain.getInstance().getServerManager().setTotalMembers(ProxyServer.getInstance().getOnlineCount());
+		CommonGeneral.getInstance().getServerData().setTotalMembers(ProxyServer.getInstance().getOnlineCount());
+	}
+
+	@EventHandler(priority = EventPriority.HIGHEST)
+	public void onPlayerDisconnect(PlayerDisconnectEvent event) {
+		BungeeMain.getInstance().getServerManager().setTotalMembers(ProxyServer.getInstance().getOnlineCount() - 1);
+		CommonGeneral.getInstance().getServerData().setTotalMembers(ProxyServer.getInstance().getOnlineCount() - 1);
+	}
+
 	@EventHandler
 	public void onServerKick(ServerKickEvent event) {
 		ProxiedPlayer player = event.getPlayer();
@@ -99,20 +119,6 @@ public class ConnectionListener implements Listener {
 			return;
 		}
 
-//		if (server.getServerType() == ServerType.LOGIN) {
-//			Member member = CommonGeneral.getInstance().getMemberManager().getMember(event.getPlayer().getUniqueId());
-//
-//			if (member.getLoginConfiguration().hasSession(member.getLastIpAddress())) {
-//				member.getLoginConfiguration().login(member.getLastIpAddress());
-//
-//				ProxiedServer lobbyServer = BungeeMain.getInstance().getServerManager().getBalancer(ServerType.LOBBY)
-//						.next();
-//
-//				if (lobbyServer != null)
-//					server = lobbyServer;
-//			}
-//		}
-
 		if (server.isFull()) {
 			event.setCancelled(true);
 			event.setCancelMessage("§4§l" + CommonConst.KICK_PREFIX
@@ -139,8 +145,8 @@ public class ConnectionListener implements Listener {
 		ProxiedServer server = manager.getServer(event.getTarget().getName());
 
 		if (server.getServerType() == ServerType.SCREENSHARE) {
-			if (player.isScreensharing() || player.hasGroupPermission(Group.MODGC))
-				player.sendMessage("§aVocê foi enviado para Screenshare!");
+			if (player.isScreensharing() || player.hasGroupPermission(Group.MODPLUS))
+				player.sendMessage("§aBem vindo a Screenshare!");
 			else
 				event.setCancelled(true);
 
@@ -148,8 +154,17 @@ public class ConnectionListener implements Listener {
 		} else if (server.getServerType() == ServerType.LOGIN) {
 			if (player.getLoginConfiguration()
 					.getAccountType() == tk.yallandev.saintmc.common.account.configuration.LoginConfiguration.AccountType.ORIGINAL
-					&& !player.hasGroupPermission(Group.MODGC))
-				event.setCancelled(true);
+					&& !player.hasGroupPermission(Group.MODPLUS)) {
+
+				ProxiedServer proxiedServer = manager.getBalancer(ServerType.LOBBY).next();
+
+				if (proxiedServer == null || proxiedServer.getServerInfo() == null) {
+					event.getPlayer().disconnect("§cNenhum servidor disponível!");
+					event.setCancelled(true);
+				} else {
+					event.getPlayer().connect(proxiedServer.getServerInfo());
+				}
+			}
 
 			return;
 		}
@@ -160,13 +175,20 @@ public class ConnectionListener implements Listener {
 				return;
 			}
 
-			event.setCancelled(true);
+			ProxiedServer proxiedServer = manager.getBalancer(ServerType.LOGIN).next();
+
+			if (proxiedServer == null || proxiedServer.getServerInfo() == null) {
+				event.getPlayer().disconnect("§cNenhum servidor disponível!");
+				event.setCancelled(true);
+			} else {
+				event.getPlayer().connect(proxiedServer.getServerInfo());
+			}
 			return;
 		}
 
 		String message = "§aSucesso!";
 
-		if (server.isFull() && !player.hasGroupPermission(Group.LIGHT)) {
+		if (server.isFull() && !player.hasGroupPermission(Group.PRO)) {
 			event.setCancelled(true);
 			message = "§cO servidor está cheio!";
 		}
@@ -188,7 +210,7 @@ public class ConnectionListener implements Listener {
 			serverPing.setVersion(new Protocol("§cMantencao!", -1));
 			serverPing.getPlayers()
 					.setSample(new PlayerInfo[] { new PlayerInfo("§e" + CommonConst.WEBSITE, UUID.randomUUID()) });
-			serverPing.setDescription("      §f﹄ §6§lSaint§f§lMC §f| §eMinecraft Network §7(1.7-1.15) §f﹃\n"
+			serverPing.setDescription(StringCenter.centered(MOTD_HEADER) + "\n"
 					+ StringCenter.centered("§cO servidor está em manutenção!", 127));
 			return;
 		}
@@ -202,8 +224,7 @@ public class ConnectionListener implements Listener {
 		if (server == null) {
 			serverPing.getPlayers()
 					.setSample(new PlayerInfo[] { new PlayerInfo("§e" + CommonConst.WEBSITE, UUID.randomUUID()) });
-			serverPing.setDescription("      §f﹄ §6§lSaint§f§lMC §f| §eMinecraft Network §7(1.7-1.15) §f﹃\n"
-					+ StringCenter.centered(motdList[CommonConst.RANDOM.nextInt(motdList.length)], 127));
+			serverPing.setDescription(MOTD_HEADER + "\n" + MOTD_LIST[CommonConst.RANDOM.nextInt(MOTD_LIST.length)]);
 			return;
 		}
 
@@ -219,8 +240,7 @@ public class ConnectionListener implements Listener {
 				} else {
 					serverPing.getPlayers().setSample(
 							new PlayerInfo[] { new PlayerInfo("§e" + CommonConst.WEBSITE, UUID.randomUUID()) });
-					serverPing.setDescription("    §f﹄ §6§lSaint§f§lMC §f| §eMinecraft Network §7(1.7-1.15) §f﹃\n"
-							+ StringCenter.centered("§4§nServidor não encontrado!", 127));
+					serverPing.setDescription(MOTD_HEADER + "\n" + SERVER_NOT_FOUND);
 				}
 
 				event.completeIntent(BungeeMain.getPlugin());

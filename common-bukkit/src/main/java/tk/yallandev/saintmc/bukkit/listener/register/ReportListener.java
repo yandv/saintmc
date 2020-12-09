@@ -16,7 +16,7 @@ public class ReportListener implements Listener {
 	@EventHandler
 	public void onReportReceive(ReportReceiveEvent event) {
 		CommonGeneral.getInstance().getMemberManager().getMembers().stream().filter(
-				player -> player.getAccountConfiguration().isReportEnabled() && player.hasGroupPermission(Group.HELPER))
+				player -> player.getAccountConfiguration().isReportEnabled() && player.hasGroupPermission(Group.TRIAL))
 				.collect(Collectors.toList()).forEach(member -> ((BukkitMember) member).getPlayer()
 						.playSound(((BukkitMember) member).getPlayer().getLocation(), Sound.LEVEL_UP, 0.1f, 0.1f));
 	}

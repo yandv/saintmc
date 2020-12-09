@@ -2,10 +2,10 @@ serverAddress: '0.0.0.0'
 
 mongodb:
   hostname: '127.0.0.1'
-  username: 'admin'
-  database: 'admin'
-  password: 'erANIaNutYpNeUBl'
+  username: ''
+  database: 'saintmc-common'
+  password: ''
   
 redis:
   hostname: '127.0.0.1'
-  username: 'yandv123'
+  username: ''

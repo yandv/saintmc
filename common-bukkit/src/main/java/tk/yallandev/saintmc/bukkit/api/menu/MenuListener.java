@@ -15,7 +15,9 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
+import org.bukkit.scheduler.BukkitRunnable;
 
+import tk.yallandev.saintmc.bukkit.BukkitMain;
 import tk.yallandev.saintmc.bukkit.api.menu.click.ClickType;
 import tk.yallandev.saintmc.bukkit.event.player.MenuOpenEvent;
 import tk.yallandev.saintmc.bukkit.event.update.UpdateEvent;
@@ -61,7 +63,7 @@ public class MenuListener implements Listener {
 	public void onMenuOpen(MenuOpenEvent event) {
 		if (event.getInventory() == null)
 			return;
-		
+
 		Inventory inventory = event.getInventory();
 
 		if (inventory.getHolder() instanceof MenuHolder) {
@@ -79,8 +81,24 @@ public class MenuListener implements Listener {
 
 		Inventory inventory = event.getInventory();
 
-		if (inventory.getHolder() instanceof MenuHolder)
-			playerMap.remove((Player) event.getPlayer());
+		if (inventory.getHolder() instanceof MenuHolder) {
+			MenuHolder menuHolder = (MenuHolder) inventory.getHolder();
+
+			Player player = (Player) event.getPlayer();
+
+			if (playerMap.containsKey(player))
+				playerMap.remove(player);
+
+			if (menuHolder.getMenu().isReopenInventory())
+				new BukkitRunnable() {
+
+					@Override
+					public void run() {
+						if (player.isOnline())
+							menuHolder.getMenu().open((Player) event.getPlayer());
+					}
+				}.runTaskLater(BukkitMain.getInstance(), 10l);
+		}
 	}
 
 	@EventHandler

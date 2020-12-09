@@ -1,8 +1,6 @@
 package tk.yallandev.saintmc.bukkit.menu.report;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
@@ -39,43 +37,27 @@ public class ReportListInventory {
 			}
 		}
 
-		reports.sort(new Comparator<Report>() {
+		reports.sort((o1, o2) -> {
+			int integer = Boolean.valueOf(o1.isOnline()).compareTo(o2.isOnline());
 
-			@Override
-			public int compare(Report o1, Report o2) {
-				int integer = Boolean.valueOf(o1.isOnline()).compareTo(o2.isOnline());
+			if (integer != 0)
+				return integer;
 
-				if (integer != 0)
-					return integer;
+			integer = Integer.valueOf(o1.getReportLevel()).compareTo(o2.getReportLevel());
 
-				integer = Integer.valueOf(o1.getReportLevel()).compareTo(o2.getReportLevel());
+			if (integer != 0)
+				return integer;
 
-				if (integer != 0)
-					return integer;
+			integer = Integer.valueOf(o1.getPlayersReason().size()).compareTo(o2.getPlayersReason().size());
 
-				integer = Integer.valueOf(o1.getPlayersReason().size()).compareTo(o2.getPlayersReason().size());
+			if (integer != 0)
+				return integer;
 
-				if (integer != 0)
-					return integer;
-
-				if (o1.getLastReportTime() > o2.getLastReportTime())
-					return 1;
-				else if (o1.getLastReportTime() == o2.getLastReportTime())
-					return 0;
-				return -1;
-			}
-
-		});
-
-		Collections.sort(reports, new Comparator<Report>() {
-			@Override
-			public int compare(Report o1, Report o2) {
-				if (o1.getLastReportTime() > o2.getLastReportTime())
-					return 1;
-				else if (o1.getLastReportTime() == o2.getLastReportTime())
-					return 0;
-				return -1;
-			}
+			if (o1.getLastReportTime() > o2.getLastReportTime())
+				return 1;
+			else if (o1.getLastReportTime() == o2.getLastReportTime())
+				return 0;
+			return -1;
 		});
 
 		MenuInventory menu = new MenuInventory("§7Lista de reports", 6);
@@ -94,25 +76,30 @@ public class ReportListInventory {
 
 		int w = 10;
 
-		for (int i = pageStart; i < pageEnd; i++) {
-			Report report = reports.get(i);
+		if (reports.isEmpty())
+			menu.setItem(13, new ItemBuilder().name("§cNenhum report").type(Material.BARRIER)
+					.lore("§4A lista de report está vazia").build());
+		else
+			for (int i = pageStart; i < pageEnd; i++) {
+				Report report = reports.get(i);
 
-			if (report.isExpired())
-				report.expire();
-			else
-				menu.setItem(w, new ItemBuilder().type(Material.SKULL_ITEM).durability(3)
-						.name((report.isOnline() ? "§a" : "§c") + report.getPlayerName())
-						.lore("\n§7Status: " + (report.isOnline() ? "§aOnline no momento" : "§cOffline no momento")
-								+ "\n\n§aClique para teletransportar")
-						.skin(report.getPlayerName()).build(), new ReportClickHandler(report, menu));
+				if (report.isExpired())
+					report.expire();
+				else
+					menu.setItem(w, new ItemBuilder().type(Material.SKULL_ITEM).durability(3)
+							.name((report.isOnline() ? "§a" : "§c") + report.getPlayerName())
+							.lore(report.isOnline()
+									? "§aO jogador está online no momento!\n§aClique para teletransportar"
+									: "§cO jogador está offline no momento!")
+							.skin(report.getPlayerName()).build(), new ReportClickHandler(report, menu));
 
-			if (w % 9 == 7) {
-				w += 3;
-				continue;
+				if (w % 9 == 7) {
+					w += 3;
+					continue;
+				}
+
+				w += 1;
 			}
-
-			w += 1;
-		}
 
 		if (page != 1)
 			menu.setItem(new MenuItem(new ItemBuilder().type(Material.ARROW).name("§aPágina " + (page - 1)).build(),

@@ -6,7 +6,6 @@ C:\Users\Allan\git\saintmc\common-bungee\src\main\java\tk\yallandev\saintmc\bung
 C:\Users\Allan\git\saintmc\common-bungee\src\main\java\tk\yallandev\saintmc\discord\listener\ReactionListener.java
 C:\Users\Allan\git\saintmc\common-bungee\src\main\java\tk\yallandev\saintmc\bungee\command\BungeeCommandFramework.java
 C:\Users\Allan\git\saintmc\common-bungee\src\main\java\tk\yallandev\saintmc\discord\listener\MemberListener.java
-C:\Users\Allan\git\saintmc\common-bungee\src\main\java\tk\yallandev\saintmc\bungee\listener\AccountListener.java
 C:\Users\Allan\git\saintmc\common-bungee\src\main\java\tk\yallandev\saintmc\bungee\event\IpRemoveEvent.java
 C:\Users\Allan\git\saintmc\common-bungee\src\main\java\tk\yallandev\saintmc\bungee\networking\packet\BungeePacketHandler.java
 C:\Users\Allan\git\saintmc\common-bungee\src\main\java\tk\yallandev\saintmc\discord\command\register\SayCommand.java
@@ -24,11 +23,9 @@ C:\Users\Allan\git\saintmc\common-bungee\src\main\java\tk\yallandev\saintmc\disc
 C:\Users\Allan\git\saintmc\common-bungee\src\main\java\tk\yallandev\saintmc\discord\manager\GuildManager.java
 C:\Users\Allan\git\saintmc\common-bungee\src\main\java\tk\yallandev\saintmc\BungeeConst.java
 C:\Users\Allan\git\saintmc\common-bungee\src\main\java\tk\yallandev\saintmc\bungee\command\BungeeCommandArgs.java
-C:\Users\Allan\git\saintmc\common-bungee\src\main\java\tk\yallandev\saintmc\discord\listener\BoosterListener.java
 C:\Users\Allan\git\saintmc\common-bungee\src\main\java\tk\yallandev\saintmc\bungee\controller\BungeePunishManager.java
 C:\Users\Allan\git\saintmc\common-bungee\src\main\java\tk\yallandev\saintmc\bungee\command\BungeeCommandSender.java
 C:\Users\Allan\git\saintmc\common-bungee\src\main\java\tk\yallandev\saintmc\bungee\bungee\BungeeParty.java
-C:\Users\Allan\git\saintmc\common-bungee\src\main\java\tk\yallandev\saintmc\discord\DiscordTest.java
 C:\Users\Allan\git\saintmc\common-bungee\src\main\java\tk\yallandev\saintmc\bungee\BungeeMain.java
 C:\Users\Allan\git\saintmc\common-bungee\src\main\java\tk\yallandev\saintmc\bungee\networking\redis\BungeePubSubHandler.java
 C:\Users\Allan\git\saintmc\common-bungee\src\main\java\tk\yallandev\saintmc\discord\command\DiscordCommandArgs.java
@@ -39,11 +36,9 @@ C:\Users\Allan\git\saintmc\common-bungee\src\main\java\tk\yallandev\saintmc\bung
 C:\Users\Allan\git\saintmc\common-bungee\src\main\java\tk\yallandev\saintmc\bungee\command\register\StaffCommand.java
 C:\Users\Allan\git\saintmc\common-bungee\src\main\java\tk\yallandev\saintmc\discord\utils\MessageUtils.java
 C:\Users\Allan\git\saintmc\common-bungee\src\main\java\tk\yallandev\saintmc\bungee\listener\MessageListener.java
+C:\Users\Allan\git\saintmc\common-bungee\src\main\java\tk\yallandev\saintmc\bungee\listener\StoreListener.java
 C:\Users\Allan\git\saintmc\common-bungee\src\main\java\tk\yallandev\saintmc\bungee\bungee\BotMember.java
-C:\Users\Allan\git\saintmc\common-bungee\src\main\java\tk\yallandev\saintmc\discord\command\register\DiscordCommand.java
-C:\Users\Allan\git\saintmc\common-bungee\src\main\java\tk\yallandev\saintmc\bungee\command\register\WooCommand.java
 C:\Users\Allan\git\saintmc\common-bungee\src\main\java\tk\yallandev\saintmc\bungee\listener\PartyListener.java
-C:\Users\Allan\git\saintmc\common-bungee\src\main\java\tk\yallandev\saintmc\bungee\command\register\DiscordCommand.java
 C:\Users\Allan\git\saintmc\common-bungee\src\main\java\tk\yallandev\saintmc\bungee\bungee\BungeeMember.java
 C:\Users\Allan\git\saintmc\common-bungee\src\main\java\tk\yallandev\saintmc\discord\reaction\ReactionHandler.java
 C:\Users\Allan\git\saintmc\common-bungee\src\main\java\tk\yallandev\saintmc\bungee\command\register\GroupCommand.java
@@ -52,6 +47,5 @@ C:\Users\Allan\git\saintmc\common-bungee\src\main\java\tk\yallandev\saintmc\bung
 C:\Users\Allan\git\saintmc\common-bungee\src\main\java\tk\yallandev\saintmc\bungee\listener\LoginListener.java
 C:\Users\Allan\git\saintmc\common-bungee\src\main\java\tk\yallandev\saintmc\discord\guild\GuildConfiguration.java
 C:\Users\Allan\git\saintmc\common-bungee\src\main\java\tk\yallandev\saintmc\bungee\command\register\ServerCommand.java
-C:\Users\Allan\git\saintmc\common-bungee\src\main\java\tk\yallandev\saintmc\bungee\controller\StoreController.java
 C:\Users\Allan\git\saintmc\common-bungee\src\main\java\tk\yallandev\saintmc\bungee\command\register\ReportCommand.java
 C:\Users\Allan\git\saintmc\common-bungee\src\main\java\tk\yallandev\saintmc\bungee\listener\ScreenshareListener.java

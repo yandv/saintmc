@@ -48,7 +48,7 @@ public class SkywarsInventory {
 		int w = 10;
 
 		for (ProxiedServer proxiedServer : serverList) {
-			if (!proxiedServer.isJoinEnabled() && !member.hasGroupPermission(Group.BUILDER)
+			if (!proxiedServer.isJoinEnabled() && !member.hasGroupPermission(Group.TRIAL)
 					&& !proxiedServer.isInWhitelist(member.getPlayerName()))
 				continue;
 

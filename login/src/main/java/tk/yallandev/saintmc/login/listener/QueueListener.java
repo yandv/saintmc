@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -18,10 +17,9 @@ import tk.yallandev.saintmc.bukkit.bukkit.BukkitMember;
 import tk.yallandev.saintmc.bukkit.event.login.PlayerChangeLoginStatusEvent;
 import tk.yallandev.saintmc.bukkit.event.update.UpdateEvent;
 import tk.yallandev.saintmc.bukkit.event.update.UpdateEvent.UpdateType;
+import tk.yallandev.saintmc.common.account.Member;
 import tk.yallandev.saintmc.common.account.configuration.LoginConfiguration.AccountType;
 import tk.yallandev.saintmc.common.permission.Group;
-import tk.yallandev.saintmc.login.event.MemberQueueEvent;
-import tk.yallandev.saintmc.login.event.MemberQueueLeaveEvent;
 
 public class QueueListener implements Listener {
 
@@ -32,65 +30,38 @@ public class QueueListener implements Listener {
 		queueList = new HashMap<>();
 	}
 
-	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-	public void onMemberQueue(MemberQueueEvent event) {
-		handleQueue(event.getPlayer(), event.getMember().hasGroupPermission(Group.LIGHT));
+	@EventHandler
+	public void onPlayerChangeLoginStatus(PlayerChangeLoginStatusEvent event) {
+		if (event.isLogged())
+			handleQueue(event.getPlayer(), hasPriority(event.getMember()));
 	}
 
-	@EventHandler(priority = EventPriority.MONITOR)
-	public void onMemberQueueLeave(MemberQueueLeaveEvent event) {
-		if (queueList.containsKey(event.getPlayer()))
-			queueList.remove(event.getPlayer());
-	}
-
-	@EventHandler(priority = EventPriority.LOW)
+	@EventHandler(priority = EventPriority.LOWEST)
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		BukkitMember member = (BukkitMember) CommonGeneral.getInstance().getMemberManager()
 				.getMember(event.getPlayer().getUniqueId());
 
-		/**
-		 * If the player is Original and send his to lobby
-		 */
-
 		if (member.getLoginConfiguration().getAccountType() == AccountType.ORIGINAL) {
 			if (!member.hasGroupPermission(Group.MOD)) {
-				event.getPlayer().sendMessage("§aVocê foi autenticado como jogador original!");
-				event.getPlayer().sendMessage("§aVocê será movido diretamente ao lobby!");
+				event.getPlayer().sendMessage("§aAutenticado como original!");
 				handleQueue(event.getPlayer(), true);
 			}
-		} else {
+
+			return;
+		}
+
+		if (member.getLoginConfiguration().isPassCaptcha()) {
 			if (member.getLoginConfiguration().hasSession(event.getPlayer().getAddress().getHostString())) {
+				member.getLoginConfiguration().login(event.getPlayer().getAddress().getHostString());
 				event.getPlayer().sendMessage("§aVocê foi autenticado automaticamente!");
 				handleQueue(event.getPlayer(), true);
 			}
 		}
 	}
 
-	@EventHandler
-	public void onPlayerChangeLoginStatus(PlayerChangeLoginStatusEvent event) {
-		/**
-		 * If the player is the login status change
-		 */
-
-		if (event.getMember().getLoginConfiguration().getAccountType() == AccountType.ORIGINAL) {
-			if (event.getMember().getLoginConfiguration().isLogged()) {
-				if (event.getMember().hasGroupPermission(Group.MOD)) {
-					event.getPlayer().sendMessage("§aDigite /lobby para ir ao lobby!");
-					return;
-				}
-			}
-
-			handleQueue(event.getPlayer(),
-					event.getMember().getLoginConfiguration().getAccountType() == AccountType.ORIGINAL ? true
-							: event.getMember().hasGroupPermission(Group.LIGHT));
-		} else if (event.isLogged())
-			handleQueue(event.getPlayer(), event.getMember().hasGroupPermission(Group.LIGHT));
-	}
-
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onPlayerQuit(PlayerQuitEvent event) {
-		Bukkit.getPluginManager().callEvent(new MemberQueueLeaveEvent(event.getPlayer(), (BukkitMember) CommonGeneral
-				.getInstance().getMemberManager().getMember(event.getPlayer().getUniqueId())));
+		queueList.remove(event.getPlayer());
 	}
 
 	@EventHandler
@@ -104,12 +75,10 @@ public class QueueListener implements Listener {
 
 			Entry<Player, Boolean> entry = queueList.entrySet().stream().findFirst().orElse(null);
 
-			if (entry.getValue()) {
-				handleTeleport(entry.getKey(), false);
-			} else {
-				handleTeleport(entry.getKey(), true);
+			handleTeleport(entry.getKey());
+
+			if (!entry.getValue())
 				entry.setValue(true);
-			}
 
 			lastTeleport = System.currentTimeMillis() + 2000l;
 		}
@@ -119,27 +88,26 @@ public class QueueListener implements Listener {
 		if (queueList.containsKey(player))
 			return;
 
-		if (player == null)
+		if (player == null) {
 			queueList.remove(player);
+			return;
+		}
 
 		if (priority) {
 			queueList.put(player, true);
-			handleTeleport(player, false);
-			player.sendMessage("§aVocê tem prioridade na fila!");
-			System.out.println("5");
+			handleTeleport(player);
 		} else {
 			queueList.put(player, false);
-			System.out.println("6");
-			player.sendMessage("§aVocê foi colocado na fila para se conectar ao lobby! §e(" + queueList.size() + "°)");
+			player.sendMessage("§aVocê entrou na fila para entrar no lobby!");
 		}
 	}
 
-	public void handleTeleport(Player player, boolean clear) {
-		if (clear)
-			for (int x = 0; x < 25; x++)
-				player.sendMessage(" ");
-
+	public void handleTeleport(Player player) {
 		BukkitMain.getInstance().sendPlayerToLobby(player);
+	}
+
+	public boolean hasPriority(Member member) {
+		return member.hasGroupPermission(Group.PRO);
 	}
 
 }

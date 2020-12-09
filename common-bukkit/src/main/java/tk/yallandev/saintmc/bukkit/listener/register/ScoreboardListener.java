@@ -15,19 +15,18 @@ import tk.yallandev.saintmc.bukkit.bukkit.BukkitMember;
 
 public class ScoreboardListener implements Listener {
 
-	/**
-	 * @param e
-	 */
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onPlayerQuitListener(PlayerQuitEvent e) {
 		Scoreboard board = e.getPlayer().getScoreboard();
 
 		if (board != null) {
-			for (Team t : board.getTeams())
+			for (Team t : board.getTeams()) {
 				t.unregister();
+			}
 
-			for (Objective ob : board.getObjectives())
+			for (Objective ob : board.getObjectives()) {
 				ob.unregister();
+			}
 		}
 
 		e.getPlayer().setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
@@ -35,7 +34,7 @@ public class ScoreboardListener implements Listener {
 		if (CommonGeneral.getInstance().getMemberManager().containsKey(e.getPlayer().getUniqueId())) {
 			BukkitMember member = (BukkitMember) CommonGeneral.getInstance().getMemberManager()
 					.getMember(e.getPlayer().getUniqueId());
-			
+
 			tk.yallandev.saintmc.bukkit.api.scoreboard.Scoreboard scoreboard = member.getScoreboard();
 			if (scoreboard != null)
 				scoreboard.removeViewer(member);

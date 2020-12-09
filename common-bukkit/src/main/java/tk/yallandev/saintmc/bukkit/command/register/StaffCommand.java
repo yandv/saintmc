@@ -26,7 +26,7 @@ import tk.yallandev.saintmc.update.UpdatePlugin;
 
 public class StaffCommand implements CommandClass {
 
-	@Command(name = "setspawn", groupToUse = Group.BUILDER)
+	@Command(name = "setspawn", groupToUse = Group.TRIAL)
 	public void setspawnCommand(CommandArgs cmdArgs) {
 		if (!cmdArgs.isPlayer())
 			return;
@@ -35,11 +35,11 @@ public class StaffCommand implements CommandClass {
 
 		if (CommonGeneral.getInstance().getServerType() == ServerType.HUNGERGAMES)
 			if (!Member.hasGroupPermission(p.getUniqueId(), Group.MODPLUS)
-					&& !Member.isGroup(p.getUniqueId(), Group.BUILDER)) {
+					&& !Member.isGroup(p.getUniqueId(), Group.TRIAL)) {
 				p.sendMessage(" §c* §fVocê não tem §cpermissão§f para executar esse comando!");
 				return;
-			} else if (!Member.hasGroupPermission(p.getUniqueId(), Group.GERENTE)
-					&& !Member.isGroup(p.getUniqueId(), Group.BUILDER)) {
+			} else if (!Member.hasGroupPermission(p.getUniqueId(), Group.ADMIN)
+					&& !Member.isGroup(p.getUniqueId(), Group.TRIAL)) {
 				p.sendMessage(" §c* §fVocê não tem §cpermissão§f para executar esse comando!");
 				return;
 			}
@@ -62,7 +62,7 @@ public class StaffCommand implements CommandClass {
 		p.sendMessage(" §a* §fVocê setou a warp §a" + configName + "§f!");
 	}
 
-	@Command(name = "update", groupToUse = Group.MODGC, runAsync = true)
+	@Command(name = "update", groupToUse = Group.MODPLUS, runAsync = true)
 	public void updateCommand(CommandArgs cmdArgs) {
 		UpdatePlugin.Shutdown shutdown = new UpdatePlugin.Shutdown() {
 

@@ -7,7 +7,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum ChatState {
 	
-	ENABLED(true, "*"), STAFF("todos da equipe"), YOUTUBER("YOUTUBER e superiores"), PAYMENT("LIGHT e superiores"), DISABLED("ADMIN e superiores");
+	ENABLED(true, "*"), STAFF("todos da equipe"), YOUTUBER("YOUTUBER e superiores"), PAYMENT("PRO e superiores"), DISABLED("ADMIN e superiores");
 	
 	private boolean enabled;
 	private String availableTo;

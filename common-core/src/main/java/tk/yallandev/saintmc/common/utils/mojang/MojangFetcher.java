@@ -3,8 +3,6 @@ package tk.yallandev.saintmc.common.utils.mojang;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.http.conn.ConnectionPoolTimeoutException;
-
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
@@ -62,44 +60,15 @@ public class MojangFetcher {
 		}
 	}
 
-	public static void main(String[] args) {
-		new MojangFetcher().registerUuid("rektayviadosupremo1231239182391", UUID.randomUUID());
-	}
-
-	public void registerUuid(String playerName, UUID uniqueId) {
-		if (uuidCache.asMap().containsKey(playerName))
-			return;
-
-		JsonObject jsonObject = new JsonObject();
-
-		jsonObject.addProperty("name", playerName);
-		jsonObject.addProperty("uniqueId", uniqueId.toString().replace("-", ""));
-		jsonObject.addProperty("cracked", true);
-		jsonObject.addProperty("time", System.currentTimeMillis() + (1000 * 60 * 60 * 24 * 30));
-		uuidCache.put(playerName, uniqueId);
-
-		CommonConst.DEFAULT_WEB.doAsyncRequest(CommonConst.MOJANG_FETCHER, Method.POST, jsonObject.toString(),
-				new FutureCallback<JsonElement>() {
-
-					@Override
-					public void result(JsonElement result, Throwable error) {
-						System.out.println("The " + playerName + " (" + uniqueId.toString()
-								+ ") has been registred in MojangFetcher!");
-					}
-				});
-	}
-
 	public UUID requestUuid(String playerName) {
 		try {
 			JsonObject jsonObject = (JsonObject) CommonConst.DEFAULT_WEB
-					.doRequest(CommonConst.MOJANG_FETCHER + "?name=" + playerName, Method.GET);
+					.doRequest(CommonConst.MOJANG_FETCHER + playerName, Method.GET);
 
-			if (jsonObject == null)
-				return null;
-
-			if (jsonObject.has("uuid"))
-				return UUIDParser.parse(jsonObject.get("uuid").getAsString());
-		} catch (ConnectionPoolTimeoutException ex) {
+			if (jsonObject.has("id"))
+				return UUIDParser.parse(jsonObject.get("id").getAsString());
+		} catch (IllegalArgumentException ex) {
+			return null;
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
@@ -108,17 +77,7 @@ public class MojangFetcher {
 	}
 
 	public boolean requestCracked(String playerName) {
-		try {
-			JsonObject jsonObject = (JsonObject) CommonConst.DEFAULT_WEB
-					.doRequest(CommonConst.MOJANG_FETCHER + "?name=" + playerName, Method.GET);
-
-			return jsonObject.get("cracked").getAsBoolean();
-		} catch (ConnectionPoolTimeoutException ex) {
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
-
-		return true;
+		return requestUuid(playerName) != null;
 	}
 
 	public void isCracked(String playerName, FutureCallback<Boolean> futureCallback) {
