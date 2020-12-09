@@ -1,0 +1,6 @@
+name: Skywars
+author: yandv
+main: tk.yallandev.saintmc.skwyars.GameMain
+version: 1.0.43
+softdepend: [BukkitCommon]
+load: POSTWORLD
