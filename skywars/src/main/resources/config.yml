@@ -1,0 +1,5 @@
+mapName: 'Inferno'
+y: 78
+maxY: 130
+maxDistance: 200
+chest: '[]'
