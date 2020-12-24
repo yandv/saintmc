@@ -9,6 +9,7 @@ import org.bukkit.potion.PotionEffect;
 
 import tk.yallandev.saintmc.bukkit.BukkitMain;
 import tk.yallandev.saintmc.bukkit.api.item.ItemBuilder;
+import tk.yallandev.saintmc.common.account.status.StatusType;
 import tk.yallandev.saintmc.kitpvp.GameMain;
 import tk.yallandev.saintmc.kitpvp.event.warp.PlayerWarpJoinEvent;
 import tk.yallandev.saintmc.kitpvp.event.warp.PlayerWarpRespawnEvent;
@@ -21,6 +22,7 @@ public class FpsWarp extends Warp {
 		super("Fps", BukkitMain.getInstance().getLocationFromConfig("fps"), new FpsScoreboard());
 		getWarpSettings().setSpawnProtection(true);
 		getScoreboard().setWarp(this);
+		getWarpSettings().setStatusType(StatusType.FPS);
 	}
 
 	@EventHandler
@@ -77,9 +79,7 @@ public class FpsWarp extends Warp {
 	@Override
 	public ItemStack getItem() {
 		return new ItemBuilder().name("§aFps")
-				.lore("\n§7Arena leve para o seu computador\n\n§a"
-						+ GameMain.getInstance().getGamerManager().filter(gamer -> gamer.getWarp() == this).size()
-						+ " jogadores")
+				.lore("\n§7Arena leve para o seu computador\n\n§a" + getPlayers().size() + " jogadores")
 				.type(Material.GLASS).build();
 	}
 

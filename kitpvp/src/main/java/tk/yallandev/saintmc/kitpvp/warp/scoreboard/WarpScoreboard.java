@@ -97,7 +97,7 @@ public abstract class WarpScoreboard implements Listener {
 	 */
 
 	public abstract void updateScore(Player player, UpdateType updateType);
-	
+
 	/**
 	 * 
 	 * Update the score to a single player

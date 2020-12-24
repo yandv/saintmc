@@ -56,20 +56,10 @@ public class AccountCommand implements CommandClass {
 		if (args.length == 0) {
 			player = CommonGeneral.getInstance().getMemberManager().getMember(sender.getUniqueId());
 		} else {
-
-			if (sender instanceof Member) {
-				Member member = (Member) sender;
-
-				if (!member.hasGroupPermission(Group.TRIAL)) {
-					sender.sendMessage("§cVocê não pode ver o perfil desse jogador!");
-					return;
-				}
-			}
-
 			UUID uuid = CommonGeneral.getInstance().getUuid(args[0]);
 
 			if (uuid == null) {
-				sender.sendMessage(" §c* §fO jogador §a" + args[0] + "§f não existe!");
+				sender.sendMessage("§cO jogador " + args[0] + " não existe!");
 				return;
 			}
 
@@ -80,25 +70,26 @@ public class AccountCommand implements CommandClass {
 					MemberModel loaded = CommonGeneral.getInstance().getPlayerData().loadMember(uuid);
 
 					if (loaded == null) {
-						sender.sendMessage(" §c* §fO jogador §a" + args[0] + "§f nunca entrou no servidor!");
+						sender.sendMessage("§cO jogador " + args[0] + " nunca entrou no servidor!");
 						return;
 					}
 
 					player = new MemberVoid(loaded);
 				} catch (Exception e) {
 					e.printStackTrace();
-					sender.sendMessage(" §c* §fNão foi possível pegar as informações do jogador §a" + args[0] + "§f!");
+					sender.sendMessage("§cNão foi possível pegar as informações do jogador " + args[0] + "!");
 					return;
 				}
 			}
 
-			if (!Member.hasGroupPermission(sender.getUniqueId(), Group.TRIAL)) {
-				sender.sendMessage("§cVocê não pode ver o perfil de outros jogadores!");
-				return;
-			}
+			if (!player.getUniqueId().equals(sender.getUniqueId()))
+				if (!Member.hasGroupPermission(sender.getUniqueId(), Group.TRIAL)) {
+					sender.sendMessage("§cVocê não pode ver o perfil de outros jogadores!");
+					return;
+				}
 		}
 
-		new AccountInventory(sender, player, args.length == 0 ? player.getName() : args[0]);
+		new AccountInventory(sender, player);
 	}
 
 	@Command(name = "tag", runAsync = true)
@@ -167,7 +158,7 @@ public class AccountCommand implements CommandClass {
 			if (!player.getTag().equals(tag)) {
 				if (player.setTag(tag)) {
 					player.sendMessage("§aVocê alterou sua tag para "
-							+ (tag == Tag.MEMBRO ? "§7§lMEMBRO" : tag.getPrefix()) + "§f!");
+							+ (tag == Tag.MEMBRO ? "§7§lMEMBRO" : tag.getPrefix()) + "§a.");
 				}
 			} else {
 				player.sendMessage("§cVocê já está usando essa tag!");
@@ -187,30 +178,36 @@ public class AccountCommand implements CommandClass {
 				.getMember(cmdArgs.getSender().getUniqueId());
 
 		if (args.length == 0) {
-			member.sendMessage(" §e* §fUse §a/" + cmdArgs.getLabel() + " <medalha:remove>§f para mudar de medalha!");
+			member.sendMessage("§cUso /" + cmdArgs.getLabel() + " <medalha:remove> para mudar de medalha!");
 
-			TextComponent textComponent = new MessageBuilder(" §e* §fMedalhas disponíveis: ").create();
+			if (member.getMedalList().isEmpty()) {
+				member.sendMessage("§cVocê não possui nenhuma medalha!");
+			} else {
+				TextComponent textComponent = new MessageBuilder(" §e* §fMedalhas disponíveis: ").create();
 
-			for (int x = 0; x < member.getMedalList().size(); x++) {
-				Medal medal = member.getMedalList().get(x);
+				for (int x = 0; x < member.getMedalList().size(); x++) {
+					Medal medal = member.getMedalList().get(x);
 
-				if (medal == null || medal == Medal.NONE)
-					continue;
+					if (medal == null || medal == Medal.NONE)
+						continue;
 
-				textComponent
-						.addExtra(new MessageBuilder(medal.getChatColor() + medal.getMedalName())
-								.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
-										new ComponentBuilder("" + medal.getChatColor() + medal.getMedalIcon())
-												.create()))
-								.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/medal " + medal.name()))
-								.create());
+					textComponent
+							.addExtra(
+									new MessageBuilder(medal.getChatColor() + medal.getMedalName())
+											.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+													new ComponentBuilder(
+															"" + medal.getChatColor() + medal.getMedalIcon()).create()))
+											.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND,
+													"/medal " + medal.name()))
+											.create());
 
-				if (x + 1 != member.getMedalList().size()) {
-					textComponent.addExtra("§f, ");
+					if (x + 1 != member.getMedalList().size()) {
+						textComponent.addExtra("§f, ");
+					}
 				}
-			}
 
-			member.sendMessage(textComponent);
+				member.sendMessage(textComponent);
+			}
 			return;
 		}
 
@@ -413,24 +410,6 @@ public class AccountCommand implements CommandClass {
 						.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
 								new BaseComponent[] { new MessageBuilder(CommonConst.HELPER_FORM).create() }))
 						.create() });
-	}
-
-	@Command(name = "site", aliases = { "website", "discord", "loja" })
-	public void siteCommand(CommandArgs cmdArgs) {
-		cmdArgs.getSender()
-				.sendMessage(
-						new BaseComponent[] { new MessageBuilder("§aClique aqui para acessar o nosso site!")
-								.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, CommonConst.WEBSITE))
-								.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
-										new BaseComponent[] { new MessageBuilder(CommonConst.WEBSITE).create() }))
-								.create() });
-		cmdArgs.getSender()
-				.sendMessage(
-						new BaseComponent[] { new MessageBuilder("§bClique aqui para entrar em nosso discord!")
-								.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, CommonConst.DISCORD))
-								.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
-										new BaseComponent[] { new MessageBuilder(CommonConst.DISCORD).create() }))
-								.create() });
 	}
 
 	@Command(name = "reply", usage = "/<command> <message>", aliases = { "r" })

@@ -63,6 +63,7 @@ public class LoginListener implements Listener {
 	public static final int MAX_VERIFY = 20;
 
 	private Map<String, IpInfo> ipMap = new HashMap<>();
+	private Cache<String, JsonObject> ipList = CacheBuilder.newBuilder().expireAfterWrite(5L, TimeUnit.SECONDS).build();
 	private Cache<String, JsonObject> textureCache = CacheBuilder.newBuilder().expireAfterWrite(5L, TimeUnit.MINUTES)
 			.build();
 
@@ -95,7 +96,7 @@ public class LoginListener implements Listener {
 		CommonGeneral.getInstance().getCommonPlatform().runAsync(() -> {
 
 			try {
-
+				event.getConnection().setOnlineMode(true);
 				boolean passLogin = checkLogin(event);
 
 				if (!passLogin) {
@@ -104,15 +105,20 @@ public class LoginListener implements Listener {
 				}
 
 				if (!event.getConnection().isOnlineMode()) {
-					boolean passBot = checkBot(event);
+					String ipAddress = event.getConnection().getAddress().getHostString();
 
-					if (!passBot) {
-						event.completeIntent(BungeeMain.getInstance());
-						return;
+					if (ipList.asMap().containsKey(ipAddress)) {
+						event.setCancelled(true);
+						event.setCancelReason(
+								"§c§lRATE LIMIT\n\n§cMuitas tentativas de conexão ao mesmo tempo!\n§7Aguarde 3 segundos para entrar no servidor novamente!");
+					} else {
+						ipList.put(ipAddress, new JsonObject());
+						boolean passBot = checkBot(event);
+
+						if (passBot)
+							CommonGeneral.getInstance().debug("The player " + event.getConnection().getName() + " ("
+									+ event.getConnection().getAddress().getHostString() + ") has been verified!");
 					}
-
-					CommonGeneral.getInstance().debug("The player " + event.getConnection().getName() + " ("
-							+ event.getConnection().getAddress().getHostString() + ") has been verified!");
 				}
 
 				event.completeIntent(BungeeMain.getInstance());
@@ -134,13 +140,13 @@ public class LoginListener implements Listener {
 		CommonGeneral.getInstance().getCommonPlatform().runAsync(() -> {
 
 			try {
-				boolean passMember = loadMember(event);
-
-				if (!passMember) {
-					event.completeIntent(BungeeMain.getInstance());
-					return;
-				}
-
+//				boolean passMember = loadMember(event);
+//
+//				if (!passMember) {
+//					event.completeIntent(BungeeMain.getInstance());
+//					return;
+//				}
+				loadMember(event);
 				event.completeIntent(BungeeMain.getInstance());
 			} catch (Exception ex) {
 				event.setCancelled(true);
@@ -214,6 +220,14 @@ public class LoginListener implements Listener {
 		});
 	}
 
+	/**
+	 * 
+	 * Check if the player is an bot
+	 * 
+	 * @param event
+	 * @return
+	 */
+
 	public boolean checkBot(PreLoginEvent event) {
 		String ipAddress = event.getConnection().getAddress().getHostString();
 		String playerName = event.getConnection().getName();
@@ -278,6 +292,14 @@ public class LoginListener implements Listener {
 		}
 	}
 
+	/**
+	 * 
+	 * Check if the player can login
+	 * 
+	 * @param event
+	 * @return
+	 */
+
 	public boolean checkLogin(PreLoginEvent event) {
 		try {
 			JsonObject jsonObject = CommonConst.DEFAULT_WEB
@@ -286,22 +308,29 @@ public class LoginListener implements Listener {
 
 			if (jsonObject.has("name") && jsonObject.has("id"))
 				return true;
-
 		} catch (IllegalArgumentException e) {
 			event.getConnection().setOnlineMode(false);
 			return true;
 		} catch (Exception e) {
 		}
 
-		event.getConnection().setOnlineMode(true);
 		return true;
 	}
+
+	/**
+	 * 
+	 * Load the member from the database and do all needs check
+	 * 
+	 * @param event
+	 * @return
+	 */
 
 	public boolean loadMember(LoginEvent event) {
 		String playerName = event.getConnection().getName();
 		UUID uniqueId = event.getConnection().getUniqueId();
 
 		BungeeMember member = CommonGeneral.getInstance().getPlayerData().loadMember(uniqueId, BungeeMember.class);
+		boolean created = false;
 
 		if (member == null) {
 			member = new BungeeMember(playerName, event.getConnection().getUniqueId(),
@@ -310,24 +339,15 @@ public class LoginListener implements Listener {
 			CommonGeneral.getInstance().getPlayerData().createMember(member);
 			CommonGeneral.getInstance().debug("The player " + member.getPlayerName() + " has been saved as "
 					+ member.getLoginConfiguration().getAccountType().name());
+			created = true;
 		} else {
-			if (!member.getPlayerName().equals(playerName)) {
-				event.setCancelled(true);
-				event.setCancelReason(
-						"§cSua conta está com nickname diferente do original registrado no servidor!\n§f\n"
-								+ CommonConst.DISCORD);
-				return false;
-			}
-
-			if (!member.getUniqueId().equals(uniqueId)) {
-				if (member.getLoginConfiguration().getAccountType() == AccountType.CRACKED) {
-					try {
-						Field field = InitialHandler.class.getField("uniqueId");
-						field.setAccessible(true);
-						field.set("uniqueId", member.getUniqueId());
-					} catch (Exception ex) {
-
-					}
+			if (member.getLoginConfiguration().getAccountType() == AccountType.CRACKED) {
+				if (!member.getPlayerName().equals(playerName)) {
+					event.setCancelled(true);
+					event.setCancelReason("§4§l" + CommonConst.KICK_PREFIX
+							+ "Sua conta está com nickname diferente do original registrado no servidor!\n§f\n"
+							+ CommonConst.DISCORD);
+					return false;
 				}
 			}
 		}
@@ -353,8 +373,7 @@ public class LoginListener implements Listener {
 
 		if (BungeeMain.getInstance().getPunishManager().isIpBanned(ipAddress)) {
 			Ban ban = new Ban(member.getUniqueId(), member.getPlayerName(), "CONSOLE", UUID.randomUUID(),
-					"Conta alternativa", System.currentTimeMillis() + (1000 * 60 * 60 * 24
-							* (member.getLoginConfiguration().getAccountType() == AccountType.CRACKED ? 14 : 7)));
+					"Conta alternativa", created ? -1 : System.currentTimeMillis() + (1000 * 60 * 60 * 24 * 7));
 
 			member.getPunishmentHistory().ban(ban);
 
@@ -375,9 +394,9 @@ public class LoginListener implements Listener {
 		}
 
 		if (member.getLoginConfiguration().getAccountType() == AccountType.CRACKED) {
-			if (member.getLoginConfiguration().hasSession(ipAddress))
+			if (member.getLoginConfiguration().hasSession(ipAddress)) {
 				member.getLoginConfiguration().login(ipAddress);
-			else
+			} else
 				member.getLoginConfiguration().logOut();
 		}
 
@@ -413,26 +432,26 @@ public class LoginListener implements Listener {
 			report.setPlayerName(playerName);
 		}
 
-		if (textureCache.asMap().containsKey(playerName))
-			loadTexture(event.getConnection(), textureCache.getIfPresent(playerName));
-		else {
-			BungeeMember m = member;
+		if (member.hasSkin()) {
+			if (textureCache.asMap().containsKey(playerName))
+				loadTexture(event.getConnection(), textureCache.getIfPresent(playerName));
+			else {
+				BungeeMember m = member;
 
-			CommonConst.DEFAULT_WEB.doAsyncRequest(
-					String.format(CommonConst.SKIN_URL,
-							member.hasSkin() ? member.getSkinProfile().getUniqueId() : member.getUniqueId()),
-					Method.GET, new FutureCallback<JsonElement>() {
+				CommonConst.DEFAULT_WEB.doAsyncRequest(
+						String.format(CommonConst.SKIN_URL, member.getSkinProfile().getUniqueId()), Method.GET,
+						new FutureCallback<JsonElement>() {
 
-						@Override
-						public void result(JsonElement result, Throwable error) {
-							if (error == null) {
-								loadTexture(event.getConnection(), result.getAsJsonObject());
-								textureCache.put(playerName, result.getAsJsonObject());
-								m.sendMessage("§aSua skin foi carregada!");
-							} else
-								m.sendMessage("§cO servidor não conseguiu carregar sua skin!");
-						}
-					});
+							@Override
+							public void result(JsonElement result, Throwable error) {
+								if (error == null) {
+									loadTexture(event.getConnection(), result.getAsJsonObject());
+									textureCache.put(playerName, result.getAsJsonObject());
+								} else
+									m.sendMessage("§cNão foi possível carregar sua skin customizada!");
+							}
+						});
+			}
 		}
 
 		member.setOnline(true);
@@ -548,7 +567,7 @@ public class LoginListener implements Listener {
 	public void blockIp(String ipAddress) {
 		IpInfo ipInfo = loadIp(ipAddress);
 
-		if (ipInfo.getIpStatus() == IpStatus.BLOCKED || ipInfo.getIpStatus() == IpStatus.NOT_ALLOWED)
+		if (ipInfo.getIpStatus() == IpStatus.ACCEPT)
 			ipInfo.setIpStatus(IpStatus.BLOCKED);
 
 		BungeeMain.getInstance().getBotController().blockIp(ipAddress);

@@ -28,7 +28,7 @@ public class ShopInventory {
 
 	public ShopInventory(Player player, int page) {
 		Gamer gamer = GameMain.getInstance().getGamerManager().getGamer(player.getUniqueId());
-		MenuInventory menu = new MenuInventory("§7Loja de Kits", 6, true);
+		MenuInventory menu = new MenuInventory("§7§nComprar kit", 6, true);
 		List<Kit> kits = new ArrayList<>(GameMain.getInstance().getKitManager().getKitList().stream()
 				.filter(kit -> !gamer.hasKitPermission(kit)).collect(Collectors.toList()));
 		List<MenuItem> items = new ArrayList<>();

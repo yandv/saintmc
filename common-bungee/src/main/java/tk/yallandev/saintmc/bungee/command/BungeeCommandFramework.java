@@ -66,8 +66,8 @@ public class BungeeCommandFramework implements CommandFramework {
 						@Override
 						public void run() {
 							try {
-								entry.getKey().invoke(entry.getValue(),
-										new BungeeCommandArgs(sender, label.replace(".", " "), args, cmdLabel.split("\\.").length - 1));
+								entry.getKey().invoke(entry.getValue(), new BungeeCommandArgs(sender,
+										label.replace(".", " "), args, cmdLabel.split("\\.").length - 1));
 							} catch (IllegalArgumentException | InvocationTargetException | IllegalAccessException e) {
 								e.printStackTrace();
 							}
@@ -168,10 +168,10 @@ public class BungeeCommandFramework implements CommandFramework {
 
 			ProxiedPlayer player = (ProxiedPlayer) event.getSender();
 			String[] split = event.getCursor().replaceAll("\\s+", " ").split(" ");
-			
+
 			if (split.length == 0)
 				return;
-			
+
 			String[] args = new String[split.length - 1];
 
 			for (int i = 1; i < split.length; i++) {

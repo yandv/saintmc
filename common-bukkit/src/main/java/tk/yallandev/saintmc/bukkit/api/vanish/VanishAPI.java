@@ -2,6 +2,7 @@ package tk.yallandev.saintmc.bukkit.api.vanish;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 import java.util.UUID;
 
@@ -15,9 +16,9 @@ import tk.yallandev.saintmc.common.account.Member;
 import tk.yallandev.saintmc.common.permission.Group;
 
 public class VanishAPI {
-	
+
 	private HashMap<UUID, Group> vanishedToGroup;
-	
+
 	private Set<UUID> hideAllPlayers;
 
 	private final static VanishAPI instance = new VanishAPI();
@@ -32,33 +33,33 @@ public class VanishAPI {
 			vanishedToGroup.remove(player.getUniqueId());
 		else
 			vanishedToGroup.put(player.getUniqueId(), group);
-		
+
 		for (Player online : Bukkit.getOnlinePlayers()) {
 			if (online.getUniqueId().equals(player.getUniqueId()))
 				continue;
-			
+
 			Member onlineP = CommonGeneral.getInstance().getMemberManager().getMember(online.getUniqueId());
-			
+
 			if (onlineP == null)
 				continue;
-			
+
 			if (group != null && onlineP.getServerGroup().ordinal() <= group.ordinal()) {
 				PlayerHideToPlayerEvent event = new PlayerHideToPlayerEvent(player, online);
-				
+
 				Bukkit.getPluginManager().callEvent(event);
-				
+
 				if (event.isCancelled()) {
 					if (!online.canSee(player))
 						online.showPlayer(player);
 				} else if (online.canSee(player))
 					online.hidePlayer(player);
-				
+
 				continue;
 			}
-			
+
 			PlayerShowToPlayerEvent event = new PlayerShowToPlayerEvent(player, online);
 			Bukkit.getPluginManager().callEvent(event);
-			
+
 			if (event.isCancelled()) {
 				if (online.canSee(player))
 					online.hidePlayer(player);
@@ -72,28 +73,28 @@ public class VanishAPI {
 		for (Player online : Bukkit.getOnlinePlayers()) {
 			if (online.getUniqueId().equals(player.getUniqueId()))
 				continue;
-			
+
 			Group group = vanishedToGroup.get(online.getUniqueId());
-			
+
 			if (group != null) {
 				if (bP.getServerGroup().ordinal() <= group.ordinal()) {
 					PlayerHideToPlayerEvent event = new PlayerHideToPlayerEvent(online, player);
 					Bukkit.getPluginManager().callEvent(event);
-					
+
 					if (event.isCancelled()) {
 						if (!player.canSee(online))
 							player.showPlayer(online);
 					} else if (player.canSee(online))
 						player.hidePlayer(online);
-					
+
 					continue;
 				}
 			}
-			
+
 			PlayerShowToPlayerEvent event = new PlayerShowToPlayerEvent(online, player);
-			
+
 			Bukkit.getPluginManager().callEvent(event);
-			
+
 			if (event.isCancelled()) {
 				if (player.canSee(online))
 					player.hidePlayer(online);
@@ -104,31 +105,35 @@ public class VanishAPI {
 
 	public Group hidePlayer(Player player) {
 		Member bP = CommonGeneral.getInstance().getMemberManager().getMember(player.getUniqueId());
-		Group group = bP.getServerGroup().ordinal() - 1 >= 0 ? Group.values()[bP.getServerGroup().ordinal() - 1] : Group.MEMBRO;
+		Group group = bP.getServerGroup().ordinal() - 1 >= 0 ? Group.values()[bP.getServerGroup().ordinal() - 1]
+				: Group.MEMBRO;
 		setPlayerVanishToGroup(player, group);
 		return group;
 	}
-	
+
 	public void hideAllPlayers(Player p) {
 		this.hideAllPlayers.add(p.getUniqueId());
-		
+
 		for (Player hide : Bukkit.getOnlinePlayers()) {
 			if (hide.getUniqueId() != p.getUniqueId()) {
 				p.hidePlayer(hide);
 			}
 		}
 	}
-	
+
 	public void updateHide(Player p) {
-		for (UUID id : this.hideAllPlayers) {
-			Player hide = Bukkit.getPlayer(id);
-			
-			if (hide != null) {
+		Iterator<UUID> iterator = this.hideAllPlayers.iterator();
+
+		while (iterator.hasNext()) {
+			Player hide = Bukkit.getPlayer(iterator.next());
+
+			if (hide == null)
+				iterator.remove();
+			else
 				hide.hidePlayer(p);
-			}
 		}
 	}
-	
+
 	public void showPlayer(Player player) {
 		setPlayerVanishToGroup(player, null);
 	}
@@ -144,7 +149,7 @@ public class VanishAPI {
 	public void removeVanish(Player p) {
 		vanishedToGroup.remove(p.getUniqueId());
 	}
-	
+
 	public Set<UUID> getHideAllPlayers() {
 		return hideAllPlayers;
 	}

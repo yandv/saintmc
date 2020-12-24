@@ -18,7 +18,6 @@ tk\yallandev\saintmc\bukkit\exploit\Exploit.class
 tk\yallandev\saintmc\bukkit\api\scoreboard\Scoreboard.class
 tk\yallandev\saintmc\bukkit\api\worldedit\WorldeditController$Position.class
 tk\yallandev\saintmc\bukkit\event\server\ServerUpdateEvent.class
-tk\yallandev\saintmc\bukkit\exploit\register\PacketLimiterExploit$PacketInfo.class
 tk\yallandev\saintmc\bukkit\api\server\impl\ServerImpl.class
 tk\yallandev\test\ChromaTest.class
 tk\yallandev\saintmc\bukkit\api\server\impl\StorableServer.class
@@ -31,6 +30,7 @@ tk\yallandev\saintmc\bukkit\api\scoreboard\Score.class
 tk\yallandev\saintmc\bukkit\event\server\ServerEvent.class
 tk\yallandev\test\ChromaTest$Chroma.class
 tk\yallandev\saintmc\bukkit\listener\register\CombatListener.class
+tk\yallandev\saintmc\bukkit\menu\ListInventory.class
 tk\yallandev\saintmc\bukkit\menu\report\ReportInventory.class
 tk\yallandev\saintmc\bukkit\event\player\PlayerCommandEvent.class
 tk\yallandev\saintmc\bukkit\command\register\ServerCommand$1.class
@@ -74,6 +74,7 @@ tk\yallandev\saintmc\bukkit\api\cooldown\CooldownController.class
 tk\yallandev\saintmc\bukkit\event\account\PlayerUpdateFieldEvent.class
 tk\yallandev\saintmc\bukkit\exploit\register\BookflooderExploit.class
 tk\yallandev\saintmc\bukkit\command\register\ModeratorCommand$4.class
+tk\yallandev\saintmc\bukkit\menu\ListInventory$ItemHandler.class
 tk\yallandev\saintmc\bukkit\permission\PermissionManager.class
 net\saintmc\anticheat\storage\InventoryCloseStorage.class
 tk\yallandev\saintmc\bukkit\api\menu\MenuUpdateHandler.class
@@ -84,7 +85,6 @@ tk\yallandev\saintmc\bukkit\networking\packet\BukkitPacketController.class
 tk\yallandev\saintmc\bukkit\api\scoreboard\ScoreboardAPI.class
 tk\yallandev\saintmc\bukkit\api\worldedit\arena\ArenaType$2.class
 tk\yallandev\saintmc\bukkit\menu\report\ReportInformationListInventory$1.class
-tk\yallandev\saintmc\bukkit\exploit\register\PacketLimiterExploit$2.class
 tk\yallandev\saintmc\bukkit\event\restore\RestoreInitEvent.class
 tk\yallandev\saintmc\bukkit\listener\register\AccountListener$2.class
 tk\yallandev\saintmc\bukkit\listener\register\ScoreboardListener.class
@@ -127,6 +127,7 @@ tk\yallandev\saintmc\bukkit\api\protocol\ProtocolVersion.class
 tk\yallandev\saintmc\bukkit\exploit\register\PacketLimiterExploit$1.class
 tk\yallandev\saintmc\bukkit\permission\injector\regexperm\PermissiblePEX.class
 tk\yallandev\saintmc\bukkit\api\title\types\SimpleTitle.class
+tk\yallandev\saintmc\bukkit\menu\account\punish\BanListInventory$1.class
 net\saintmc\anticheat\storage\MoveStorage.class
 tk\yallandev\saintmc\bukkit\menu\report\ReportInformationListInventory$2.class
 tk\yallandev\saintmc\bukkit\api\title\Title.class
@@ -150,6 +151,7 @@ net\saintmc\anticheat\alert\impl\AlertImpl.class
 tk\yallandev\saintmc\bukkit\event\account\PlayerChangeGroupEvent.class
 tk\yallandev\saintmc\bukkit\api\menu\types\ConfirmInventory$2.class
 tk\yallandev\saintmc\bukkit\exploit\register\PacketLimiterExploit.class
+tk\yallandev\saintmc\bukkit\menu\account\punish\PunishmentInventory.class
 tk\yallandev\saintmc\bukkit\listener\Listener.class
 tk\yallandev\saintmc\bukkit\networking\redis\BukkitPubSubHandler$1.class
 tk\yallandev\saintmc\bukkit\api\server\Server.class
@@ -167,7 +169,6 @@ tk\yallandev\saintmc\bukkit\command\register\LoginCommand.class
 tk\yallandev\saintmc\bukkit\api\worldedit\WorldeditController.class
 tk\yallandev\saintmc\bukkit\event\report\ReportReceiveEvent.class
 tk\yallandev\saintmc\bukkit\api\cooldown\event\CooldownEvent.class
-tk\yallandev\saintmc\bukkit\exploit\register\JigsawExploit.class
 tk\yallandev\saintmc\bukkit\api\worldedit\arena\ArenaCreator.class
 tk\yallandev\saintmc\bukkit\permission\injector\regexperm\PermissionList.class
 tk\yallandev\saintmc\bukkit\listener\register\ChromaListener.class
@@ -191,6 +192,7 @@ tk\yallandev\saintmc\bukkit\menu\report\ReportListInventory$ReportClickHandler.c
 tk\yallandev\saintmc\bukkit\api\character\Character$1.class
 tk\yallandev\saintmc\bukkit\BukkitMain.class
 tk\yallandev\saintmc\bukkit\command\register\AnticheatCommand.class
+tk\yallandev\saintmc\bukkit\menu\account\punish\BanListInventory.class
 tk\yallandev\saintmc\bukkit\api\character\CharacterListener.class
 tk\yallandev\saintmc\bukkit\menu\account\AccountInventory.class
 net\saintmc\anticheat\check\register\MovementCheck.class
@@ -264,7 +266,6 @@ net\saintmc\anticheat\account\Member.class
 tk\yallandev\saintmc\bukkit\permission\listener\PermissionListener.class
 tk\yallandev\saintmc\bukkit\command\register\CompleterCommand.class
 tk\yallandev\saintmc\bukkit\api\item\ActionItemStack.class
-tk\yallandev\saintmc\bukkit\exploit\register\JigsawExploit$1.class
 tk\yallandev\saintmc\bukkit\api\worldedit\block\future\FutureController.class
 tk\yallandev\saintmc\bukkit\networking\redis\BukkitPubSubHandler$3.class
 tk\yallandev\saintmc\bukkit\menu\report\ReportInformationListInventory.class

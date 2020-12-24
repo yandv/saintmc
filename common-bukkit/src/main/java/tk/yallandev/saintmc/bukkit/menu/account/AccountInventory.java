@@ -16,6 +16,7 @@ import tk.yallandev.saintmc.bukkit.api.item.ItemBuilder;
 import tk.yallandev.saintmc.bukkit.api.menu.MenuInventory;
 import tk.yallandev.saintmc.bukkit.api.menu.click.ClickType;
 import tk.yallandev.saintmc.bukkit.api.menu.click.MenuClickHandler;
+import tk.yallandev.saintmc.bukkit.menu.account.punish.PunishmentInventory;
 import tk.yallandev.saintmc.common.account.Member;
 import tk.yallandev.saintmc.common.permission.Group;
 import tk.yallandev.saintmc.common.tag.Tag;
@@ -25,8 +26,8 @@ public class AccountInventory {
 
 	private static final DateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 
-	public AccountInventory(Player sender, Member player, String playerName) {
-		MenuInventory menu = new MenuInventory("§7Conta de " + player.getPlayerName(), 5);
+	public AccountInventory(Player sender, Member player) {
+		MenuInventory menu = new MenuInventory("§7§nConta de " + player.getPlayerName(), 5);
 		boolean isStaff = Member.hasGroupPermission(sender.getUniqueId(), Group.DEVELOPER);
 
 		String lore = isStaff
@@ -40,18 +41,19 @@ public class AccountInventory {
 								+ "§7[" + player.getLeague().getColor() + player.getLeague().getSymbol() + "§7]")
 				.lore(lore).skin(player.getPlayerName()).build());
 
-		create(menu, player);
+		create(menu, sender, player);
 
-		menu.setUpdateHandler((p, m) -> create(m, player));
+		menu.setUpdateHandler((p, m) -> create(m, sender, player));
 		menu.open(sender);
 	}
 
-	public void create(MenuInventory menu, Member player) {
+	public void create(MenuInventory menu, Player sender, Member player) {
 		if (player.isOnline())
 			menu.setItem(29, new ItemBuilder().type(Material.PAPER).name("§aTempo")
 					.lore("", "§7Primeiro login: §f" + DATE_FORMAT.format(new Date(player.getFirstLogin())),
 							"§7Ultimo login: §f" + DATE_FORMAT.format(new Date(player.getLastLogin())),
-							"§7Tempo online total: §f" + DateUtils.formatDifference((player.getOnlineTime() / 1000) + (player.getSessionTime() / 1000)),
+							"§7Tempo online total: §f" + DateUtils.formatDifference(
+									(player.getOnlineTime() / 1000) + (player.getSessionTime() / 1000)),
 							"§7Tempo online atual: §f" + DateUtils.formatDifference(player.getSessionTime() / 1000), "",
 							"§aO usuario está online no momento!")
 					.build());
@@ -72,7 +74,7 @@ public class AccountInventory {
 
 					@Override
 					public void onClick(Player p, Inventory inv, ClickType type, ItemStack stack, int slot) {
-//						new MenuInventory("§7Lista de punições", 4).open(p);
+						new PunishmentInventory(sender, player);
 					}
 				});
 

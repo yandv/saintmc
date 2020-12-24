@@ -16,8 +16,9 @@ public enum Group {
 
 	MEMBRO, PRO, EXTREME, ULTIMATE, NITRO, BETA, STREAMER, YOUTUBER, YOUTUBERPLUS(new StreamerGroup()), DESIGNER,
 	BUILDER, TRIAL(new ModeratorGroup()), MOD(new ModeratorGroup()), INVEST(new ModeratorGroup()),
-	MODPLUS(new ModeratorGroup()), INVESTPLUS(new ModeratorGroup()), DEVELOPER(new OwnerGroup()),
-	ADMIN(new ModeratorGroup());
+	MODPLUS(new ModeratorGroup()), INVESTPLUS(new ModeratorGroup()),
+	DEVELOPER(new OwnerGroup()),
+	ADMIN(new OwnerGroup()), DONO(new OwnerGroup());
 
 	private GroupInterface group;
 

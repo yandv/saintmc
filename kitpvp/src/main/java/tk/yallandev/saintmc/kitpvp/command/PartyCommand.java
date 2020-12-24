@@ -24,14 +24,13 @@ public class PartyCommand implements CommandClass {
 		CommandSender sender = cmdArgs.getSender();
 
 		if (args.length == 0) {
-			sender.sendMessage(" §e* §fUse §a/" + cmdArgs.getLabel() + "§f para entrar no evento.");
-			sender.sendMessage(" §e* §fUse §a/" + cmdArgs.getLabel() + " hg§f para ir ao evento do §aHungerGames§f.");
+			sender.sendMessage("§cUse /" + cmdArgs.getLabel() + " para entrar no evento.");
+			sender.sendMessage("§cUse /" + cmdArgs.getLabel() + " hg para ir ao evento do §aHungerGames§f.");
 
 			if (Member.hasGroupPermission(sender.getUniqueId(), Group.MODPLUS)) {
-				sender.sendMessage(
-						" §e* §fUse §a/" + cmdArgs.getLabel() + " iniciar/start <type>§f para iniciar um evento.");
-				sender.sendMessage(" §e* §fUse §a/" + cmdArgs.getLabel() + " settime <time>§f para iniciar um evento.");
-				sender.sendMessage(" §e* §fUse §a/" + cmdArgs.getLabel() + " stop§f para finalizar um evento.");
+				sender.sendMessage("§cUse /" + cmdArgs.getLabel() + " iniciar/start <type> para iniciar um evento.");
+				sender.sendMessage("§cUse /" + cmdArgs.getLabel() + " settime <time> para iniciar um evento.");
+				sender.sendMessage("§cUse /" + cmdArgs.getLabel() + " stop para finalizar um evento.");
 			}
 
 			return;
@@ -83,7 +82,7 @@ public class PartyCommand implements CommandClass {
 			PartyWarp partyWarp = (PartyWarp) GameMain.getInstance().getWarpManager().getWarpByName("party");
 
 			if (partyWarp.getPartyType() != PartyType.NONE) {
-				sender.sendMessage(" §c* §fJá há um evento em andamento!");
+				sender.sendMessage("§cJá há um evento em andamento!");
 				return;
 			}
 
@@ -95,7 +94,7 @@ public class PartyCommand implements CommandClass {
 			}
 
 			if (partyType == PartyType.NONE) {
-				sender.sendMessage(" §c* §fO evento " + args[1] + " não existe!");
+				sender.sendMessage("§cO evento " + args[1] + " não existe!");
 				return;
 			}
 
@@ -110,14 +109,14 @@ public class PartyCommand implements CommandClass {
 				return;
 
 			if (args.length <= 1) {
-				sender.sendMessage(" §e* §fUse §a/" + cmdArgs.getLabel() + " stop§f para iniciar um evento.");
+				sender.sendMessage("§cUse /" + cmdArgs.getLabel() + " stop para iniciar um evento.");
 				return;
 			}
 
 			PartyWarp partyWarp = (PartyWarp) GameMain.getInstance().getWarpManager().getWarpByName("party");
 
 			if (partyWarp.getPartyType() == PartyType.NONE) {
-				sender.sendMessage(" §c* §fNão há evento no momento!");
+				sender.sendMessage("§cNão há evento no momento!");
 				return;
 			}
 
@@ -130,14 +129,14 @@ public class PartyCommand implements CommandClass {
 				return;
 
 			if (args.length < 2) {
-				sender.sendMessage(" §e* §fUse §a/" + cmdArgs.getLabel() + " settime <time>§f para iniciar um evento.");
+				sender.sendMessage("§cUse /" + cmdArgs.getLabel() + " settime <time> para iniciar um evento.");
 				return;
 			}
 
 			PartyWarp partyWarp = (PartyWarp) GameMain.getInstance().getWarpManager().getWarpByName("party");
 
 			if (partyWarp.getPartyType() == PartyType.NONE) {
-				sender.sendMessage(" §c* §fNenhum evento está ocorrendo no momento!");
+				sender.sendMessage("§cNenhum evento está ocorrendo no momento!");
 				return;
 			}
 
@@ -146,12 +145,12 @@ public class PartyCommand implements CommandClass {
 			try {
 				time = Integer.valueOf(args[1]);
 			} catch (Exception ex) {
-				sender.sendMessage(" §c* §fFormato de tempo inválido!");
+				sender.sendMessage("§cFormato de tempo inválido!");
 				return;
 			}
 
 			partyWarp.getParty().setTime(time);
-			sender.sendMessage(" §c* §fVocê alterou o tempo do evento para " + time + "!");
+			sender.sendMessage("§aVocê alterou o tempo do evento para " + time + "!");
 			break;
 		}
 		}

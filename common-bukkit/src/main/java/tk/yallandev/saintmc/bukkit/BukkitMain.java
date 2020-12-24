@@ -282,13 +282,19 @@ public class BukkitMain extends JavaPlugin {
 						"testforblocks", "tp", "weather", "xp", "reload", "rl", "worldborder", "achievement",
 						"blockdata", "clone", "debug", "defaultgamemode", "entitydata", "execute", "fill", "gamemode",
 						"pardon", "pardon-ip", "replaceitem", "setidletimeout", "stats", "testforblock", "title",
-						"trigger", "viaver", "protocolsupport", "ps", "holograms", "hd", "holo", "hologram", "restart",
-						"filter", "packetlog", "pl", "plugins", "whitelist", "tps", "pl", "plugins", "ver", "version",
-						"?");
+						"trigger", "viaver", "ps", "holograms", "hd", "holo", "hologram", "restart", "filter",
+						"packetlog", "pl", "plugins", "whitelist", "tps", "pl", "plugins", "ver", "version", "?");
 
 				BukkitCommandFramework.INSTANCE.loadCommands("tk.yallandev.saintmc.bukkit.command.register");
 
 				Bukkit.setWhitelist(false);
+				Bukkit.getWorlds().forEach(world -> {
+					world.setWeatherDuration(0);
+					world.setThunderDuration(0);
+					world.setThundering(false);
+					
+					
+				});
 			}
 		}.runTaskLater(this, 3l);
 

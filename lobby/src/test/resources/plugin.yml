@@ -1,6 +1,0 @@
-name: Lobby
-author: yandv
-main: tk.yallandev.saintmc.lobby.LobbyMain
-version: 1.0.56
-softdepend: [BukkitCommon]
-load: POSTWORLD

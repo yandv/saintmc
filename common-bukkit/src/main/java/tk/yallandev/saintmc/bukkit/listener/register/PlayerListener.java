@@ -65,9 +65,9 @@ public class PlayerListener extends Listener {
 		Player player = event.getPlayer();
 		VanishAPI.getInstance().updateVanishToPlayer(player);
 
-		for (Player online : Bukkit.getOnlinePlayers()) {
+		Bukkit.getOnlinePlayers().forEach(online -> {
 			if (online.getUniqueId().equals(player.getUniqueId()))
-				continue;
+				return;
 
 			PlayerShowToPlayerEvent eventCall = new PlayerShowToPlayerEvent(player, online);
 			Bukkit.getPluginManager().callEvent(eventCall);
@@ -77,10 +77,15 @@ public class PlayerListener extends Listener {
 					online.hidePlayer(player);
 			} else if (!online.canSee(player))
 				online.showPlayer(player);
-		}
+		});
 
 		player.awardAchievement(Achievement.OPEN_INVENTORY);
-		VanishAPI.getInstance().updateHide(player);
+	}
+
+	@EventHandler
+	public void onPlayerShowToPlayer(PlayerShowToPlayerEvent event) {
+		if (VanishAPI.getInstance().getHideAllPlayers().contains(event.getToPlayer().getUniqueId()))
+			event.setCancelled(true);
 	}
 
 	@EventHandler

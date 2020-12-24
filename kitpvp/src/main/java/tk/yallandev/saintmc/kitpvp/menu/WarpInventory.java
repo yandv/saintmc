@@ -10,7 +10,7 @@ import tk.yallandev.saintmc.kitpvp.warp.Warp;
 public class WarpInventory {
 
 	public WarpInventory(Player player) {
-		MenuInventory menuInventory = new MenuInventory("§7Selecione a Warp", 3);
+		MenuInventory menuInventory = new MenuInventory("§7§nSelecionar warp", 3);
 		int i = 0;
 
 		for (Warp warp : GameMain.getInstance().getWarpManager().getWarps()) {

@@ -12,6 +12,7 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 import tk.yallandev.saintmc.CommonConst;
 import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.bungee.BungeeMain;
+import tk.yallandev.saintmc.bungee.bungee.BungeeMember;
 import tk.yallandev.saintmc.bungee.command.BungeeCommandArgs;
 import tk.yallandev.saintmc.bungee.event.IpRemoveEvent;
 import tk.yallandev.saintmc.common.account.Member;
@@ -40,8 +41,9 @@ public class ServerCommand implements CommandClass {
 		Member sender = (Member) cmdArgs.getSender();
 
 		if (sender.isOnCooldown("rec-command")) {
-			sender.sendMessage("§cAguarde " + DateUtils.formatTime(sender.getCooldown("rec-command"), DECIMAL_FORMAT)
-					+ "s para enviar uma mensagem de gravação novamente!");
+			sender.sendMessage(
+					"§cVocê precisa " + DateUtils.formatTime(sender.getCooldown("rec-command"), DECIMAL_FORMAT)
+							+ "s para enviar uma mensagem de gravação novamente!");
 			sender.sendMessage("§cNão abuse desse comando, caso contrário, poderá perder sua tag!");
 			return;
 		}
@@ -199,7 +201,8 @@ public class ServerCommand implements CommandClass {
 		if (!cmdArgs.isPlayer())
 			return;
 
-		Member sender = CommonGeneral.getInstance().getMemberManager().getMember(cmdArgs.getSender().getUniqueId());
+		BungeeMember sender = (BungeeMember) CommonGeneral.getInstance().getMemberManager()
+				.getMember(cmdArgs.getSender().getUniqueId());
 
 		if (sender.isOnCooldown("connect-command")) {
 			sender.sendMessage("§cVocê precisa esperar mais "
@@ -208,7 +211,8 @@ public class ServerCommand implements CommandClass {
 			return;
 		}
 
-		ProxiedServer server = BungeeMain.getInstance().getServerManager().getBalancer(ServerType.LOBBY).next();
+		ProxiedServer server = BungeeMain.getInstance().getServerManager()
+				.getBalancer(sender.getServerType().getServerLobby()).next();
 
 		if (server == null || server.getServerInfo() == null) {
 			sender.sendMessage("§cNenhum servidor de lobby disponivel!");

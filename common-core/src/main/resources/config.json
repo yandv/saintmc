@@ -20,7 +20,11 @@
 		},
 		{
 			"pluginName":"Lobby",
-			"path":"C:\\Users\\Allan\\git\\saintmc\\lobby\\target\\Lobby.jar"
+			"path":"C:\\Users\\Allan\\git\\saintmc\\lobby-normal\\target\\Lobby.jar"
+		},
+		{
+			"pluginName":"LobbyHG",
+			"path":"C:\\Users\\Allan\\git\\saintmc\\lobby-hg\\target\\Lobby.jar"
 		},
 		{
 			"pluginName":"Kitpvp",

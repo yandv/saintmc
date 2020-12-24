@@ -1,17 +1,15 @@
 package tk.yallandev.saintmc.bukkit.command.register;
 
 import java.lang.management.ManagementFactory;
-import java.text.DecimalFormat;
 import java.util.List;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Chunk;
 import org.bukkit.World;
-import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import net.md_5.bungee.api.ChatColor;
 import net.minecraft.server.v1_8_R3.MinecraftServer;
+import tk.yallandev.saintmc.BukkitConst;
 import tk.yallandev.saintmc.CommonConst;
 import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.bukkit.BukkitMain;
@@ -36,7 +34,7 @@ public class ServerCommand implements CommandClass {
 		Member sender = CommonGeneral.getInstance().getMemberManager().getMember(cmdArgs.getSender().getUniqueId());
 
 		if (sender.isOnCooldown("connect-command")) {
-			sender.sendMessage("§cEspere mais "
+			sender.sendMessage("§cVocê precisa esperar mais "
 					+ DateUtils.formatTime(sender.getCooldown("connect-command"), CommonConst.DECIMAL_FORMAT)
 					+ "s para se conectar novamente!");
 			return;
@@ -62,7 +60,7 @@ public class ServerCommand implements CommandClass {
 		try {
 			t = Integer.valueOf(args[0]);
 		} catch (NumberFormatException e) {
-			sender.sendMessage(" §c* §fO formato de numero é inválido!");
+			sender.sendMessage("§cO formato de numero é inválido!");
 			return;
 		}
 
@@ -151,7 +149,7 @@ public class ServerCommand implements CommandClass {
 		}
 	}
 
-	@Command(name = "tps", aliases = { "ticks" }, groupToUse = Group.MODPLUS)
+	@Command(name = "tps", aliases = { "ticks" }, groupToUse = Group.TRIAL)
 	public void tpsCommand(CommandArgs cmdArgs) {
 		CommandSender sender = cmdArgs.getSender();
 
@@ -169,23 +167,22 @@ public class ServerCommand implements CommandClass {
 
 			long totalEntities = Bukkit.getWorlds().stream().map(World::getEntities).mapToInt(List::size).count();
 
-			World world = (sender instanceof Player) ? ((Player) sender).getWorld() : Bukkit.getWorlds().get(0);
-			Chunk[] loadedChunks = world.getLoadedChunks();
-			double lag = Math.round(((tps > 20 ? 20 : -tps) / 20.0D) * 100.0D);
-
 			sender.sendMessage("         ");
-			sender.sendMessage("§7TPS from last 1m, 5m, 15m: " + ChatColor.GREEN + StringUtils.join(tpsAvg, ", "));
-			sender.sendMessage("§7Current TPS: " + format(tps) + ChatColor.GREEN + '/' + 20.0D);
-			sender.sendMessage("§7Server Lag " + ChatColor.GREEN + (Math.round(lag * 10000.0D) / 10000.0D) + '%');
-			sender.sendMessage("§7Online " + ChatColor.GREEN + Bukkit.getServer().getOnlinePlayers().size() + "/"
-					+ Bukkit.getMaxPlayers());
-			sender.sendMessage("§7Memory " + ChatColor.GREEN + usedMemory + "/" + allocatedMemory + " MB");
-			sender.sendMessage("§7Uptime " + ChatColor.GREEN + DateUtils.formatDifference(
-					(System.currentTimeMillis() - ManagementFactory.getRuntimeMXBean().getStartTime()) / 1000));
-			sender.sendMessage("         ");
-			sender.sendMessage("§7Entities " + ChatColor.GREEN + totalEntities);
+			sender.sendMessage("§7TPS (1m, 5m, 15m): " + ChatColor.GREEN + StringUtils.join(tpsAvg, ", "));
+			sender.sendMessage("§7TPS: " + format(tps) + "/" + BukkitConst.TPS);
 			sender.sendMessage(
-					"§7Chunks Loaded " + ChatColor.GREEN + loadedChunks.length + " §7(" + world.getName() + "§7)");
+					"§7Online §a" + Bukkit.getServer().getOnlinePlayers().size() + "/" + Bukkit.getMaxPlayers());
+			sender.sendMessage("§7Memória §a" + usedMemory + "/" + allocatedMemory + " MB");
+			sender.sendMessage("§7Uptime §a" + DateUtils.formatDifference(
+					(System.currentTimeMillis() - ManagementFactory.getRuntimeMXBean().getStartTime()) / 1000));
+
+			Bukkit.getWorlds().forEach(world -> {
+				sender.sendMessage("         ");
+				sender.sendMessage("§aMundo " + world.getName());
+				sender.sendMessage("  §7Entidades: §a" + totalEntities);
+				sender.sendMessage("  §7Chunks carregadas: §a" + world.getLoadedChunks().length);
+			});
+
 			return;
 		}
 
@@ -197,24 +194,17 @@ public class ServerCommand implements CommandClass {
 
 	@Command(name = "memoryinfo", groupToUse = Group.ADMIN)
 	public void memoryinfoCommand(CommandArgs cmdArgs) {
-		double total = Runtime.getRuntime().maxMemory();
-		double free = Runtime.getRuntime().freeMemory();
-		double used = total - free;
+		long usedMemory = (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 2L / 1048576L;
+		long allocatedMemory = Runtime.getRuntime().totalMemory() / 1048576L;
 
-		double divisor = 1024 * 1024 * 1024;
-		double usedPercentage = (used / total) * 100;
-
-		DecimalFormat format = new DecimalFormat("#.###");
-
-		cmdArgs.getSender().sendMessage("§a" + format.format(total / divisor) + "GB de memoria RAM Maxima");
-
-		cmdArgs.getSender().sendMessage("§a" + format.format(used / divisor) + "GB de memoria RAM Usada");
-		cmdArgs.getSender().sendMessage("§a" + format.format(free / divisor) + "GB de memoria RAM Livre");
-		cmdArgs.getSender().sendMessage("§a" + format.format(usedPercentage) + "% da memoria RAM");
+		cmdArgs.getSender().sendMessage("§a" + allocatedMemory + "MB de memoria RAM Maxima");
+		cmdArgs.getSender().sendMessage("§a" + usedMemory + "MB de memoria RAM Usada");
+		cmdArgs.getSender().sendMessage("§a" + (allocatedMemory - usedMemory) + "MB de memoria RAM Livre");
+		cmdArgs.getSender().sendMessage("§a" + ((usedMemory * 100) / allocatedMemory) + "% da memoria RAM");
 	}
 
 	private String format(double tps) {
-		return ((tps > 18.0D) ? ChatColor.GREEN : ((tps > 16.0D) ? ChatColor.YELLOW : ChatColor.RED)).toString()
-				+ ((tps > 20.0D) ? "*" : "") + Math.min(Math.round(tps * 100.0D) / 100.0D, 20.0D);
+		return (tps > BukkitConst.TPS * 0.9d ? ChatColor.GREEN : (tps > BukkitConst.TPS * 0.8d ? ChatColor.YELLOW : ChatColor.RED)).toString()
+				+ (tps > BukkitConst.TPS ? "*" : "") + Math.min(Math.round(tps * 100.0D) / 100.0D, BukkitConst.TPS);
 	}
 }

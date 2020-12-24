@@ -20,6 +20,9 @@
 		<module>login</module>
 		<module>skywars</module>
 		<module>ranking-component</module>
+		<module>lobby-general</module>
+		<module>lobby-normal</module>
+		<module>lobby-hg</module>
 	</modules>
 
 	<build>

@@ -39,7 +39,6 @@ public class WarpListener implements Listener {
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		GameMain.getInstance().getWarpManager().setWarp(event.getPlayer(), "spawn", true);
-
 		event.setJoinMessage(null);
 	}
 
@@ -145,7 +144,7 @@ public class WarpListener implements Listener {
 	public void onPlayerQuit(PlayerQuitEvent event) {
 		Player player = event.getPlayer();
 		Gamer gamer = GameMain.getInstance().getGamerManager().getGamer(player.getUniqueId());
-
+		
 		GameMain.getInstance().getWarpManager().removeWarp(gamer);
 	}
 

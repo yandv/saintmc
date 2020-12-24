@@ -66,22 +66,22 @@ public abstract class Kit implements Listener {
 		if (item == null)
 			return false;
 
-		for (ItemStack kitItem : itemList) {
-			if (kitItem.getType() == item.getType()) {
-				if (kitItem.hasItemMeta() && item.hasItemMeta()) {
-					if (kitItem.getItemMeta().hasDisplayName() && item.getItemMeta().hasDisplayName()) {
-						if (item.getItemMeta().getDisplayName().equals(kitItem.getItemMeta().getDisplayName()))
-							return true;
-					} else if (!kitItem.getItemMeta().hasDisplayName() && !item.getItemMeta().hasDisplayName())
-						return true;
-				} else if (!kitItem.hasItemMeta() && !item.hasItemMeta())
-					return true;
-			}
+//		for (ItemStack kitItem : itemList) {
+//			if (kitItem.getType() == item.getType()) {
+//				if (kitItem.hasItemMeta() && item.hasItemMeta()) {
+//					if (kitItem.getItemMeta().hasDisplayName() && item.getItemMeta().hasDisplayName()) {
+//						if (item.getItemMeta().getDisplayName().equals(kitItem.getItemMeta().getDisplayName()))
+//							return true;
+//					} else if (!kitItem.getItemMeta().hasDisplayName() && !item.getItemMeta().hasDisplayName())
+//						return true;
+//				} else if (!kitItem.hasItemMeta() && !item.hasItemMeta())
+//					return true;
+//			}
+//
+//			return false;
+//		}
 
-			return false;
-		}
-
-		return false;
+		return itemList.contains(item);
 	}
 
 	public boolean isCooldown(Player player) {

@@ -38,6 +38,7 @@ public class ServerManager {
 		activeServers = new HashMap<>();
 
 		balancers.put(ServerType.LOBBY, new LeastConnection<>());
+		balancers.put(ServerType.LOBBY_HG, new LeastConnection<>());
 		balancers.put(ServerType.LOGIN, new LeastConnection<>());
 		balancers.put(ServerType.SCREENSHARE, new LeastConnection<>());
 
@@ -144,6 +145,15 @@ public class ServerManager {
 
 	public int getTotalNumber() {
 		return totalMembers;
+	}
+
+	public int getTotalNumber(ServerType... serverTypes) {
+		int number = 0;
+
+		for (ServerType serverType : serverTypes)
+			number += getBalancer(serverType).getTotalNumber();
+
+		return number;
 	}
 
 }

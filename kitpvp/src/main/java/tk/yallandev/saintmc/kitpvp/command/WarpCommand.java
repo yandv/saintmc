@@ -31,7 +31,7 @@ public class WarpCommand implements CommandClass {
 		String[] args = cmdArgs.getArgs();
 
 		if (args.length == 0) {
-			player.sendMessage("§eUse /warp <warpName> para ir até uma warp.");
+			player.sendMessage("§cUso /warp <warpName> para ir até uma warp.");
 			return;
 		}
 
@@ -44,7 +44,7 @@ public class WarpCommand implements CommandClass {
 		Warp warp = GameMain.getInstance().getWarpManager().getWarpByName(args[0]);
 
 		if (warp == null) {
-			player.sendMessage("§aA warp " + args[0] + " não existe!");
+			player.sendMessage("§cA warp " + args[0] + " não existe!");
 			return;
 		}
 
@@ -54,7 +54,7 @@ public class WarpCommand implements CommandClass {
 		}
 
 		if (warp instanceof PartyWarp) {
-			player.sendMessage("§eUse /evento para entrar nessa warp§f!");
+			player.sendMessage("§cUse /evento para entrar nessa warp§f!");
 			return;
 		}
 
@@ -268,7 +268,7 @@ public class WarpCommand implements CommandClass {
 		player.sendMessage(" §a* §fVocê alterou a proteção da warp §a" + configName + "§f para " + protection + "!");
 	}
 
-	@Command(name = "setposition", groupToUse = Group.HELPER)
+	@Command(name = "setposition", groupToUse = Group.BUILDER)
 	public void setpositionCommand(BukkitCommandArgs cmdArgs) {
 		if (!cmdArgs.isPlayer())
 			return;

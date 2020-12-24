@@ -30,7 +30,6 @@ public class MoveListener extends Listener {
 	public void onUpdate(UpdateEvent event) {
 		if (event.getCurrentTick() % 5 == 0)
 			for (Player player : Bukkit.getOnlinePlayers()) {
-
 				if (locationMap.containsKey(player.getUniqueId())) {
 					Location location = locationMap.get(player.getUniqueId());
 

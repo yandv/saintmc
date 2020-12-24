@@ -19,14 +19,21 @@ import tk.yallandev.saintmc.common.account.status.StatusType;
 import tk.yallandev.saintmc.common.account.status.types.challenge.ChallengeStatus;
 import tk.yallandev.saintmc.common.account.status.types.challenge.ChallengeType;
 import tk.yallandev.saintmc.common.account.status.types.normal.NormalStatus;
+import tk.yallandev.saintmc.common.clan.ClanModel;
 import tk.yallandev.saintmc.common.tag.Tag;
 import tk.yallandev.saintmc.kitpvp.GameMain;
 import tk.yallandev.saintmc.kitpvp.event.hologram.HologramUpdateEvent;
 
 public class RankingHologram implements Listener {
 
+	private Hologram clanHologram;
 	private Hologram xpHologram;
+
 	private Hologram killsHologram;
+	private Hologram killStreakHologram;
+
+	private Hologram fpsKillsHologram;
+	private Hologram fpsKillstreakHologram;
 
 	private Hologram easyHologram;
 	private Hologram mediumHologram;
@@ -49,6 +56,12 @@ public class RankingHologram implements Listener {
 			createXp();
 		else if (event.getConfigName().equals("hologram-kills"))
 			createKills();
+		else if (event.getConfigName().equals("hologram-killstreak"))
+			createKillstreak();
+		else if (event.getConfigName().equals("hologram-fps-kills"))
+			createFps();
+		else if (event.getConfigName().equals("hologram-fps-killstreak"))
+			createFpsKillStreak();
 		else if (event.getConfigName().equals("hologram-easy"))
 			createEasy();
 		else if (event.getConfigName().equals("hologram-medio"))
@@ -57,16 +70,204 @@ public class RankingHologram implements Listener {
 			createHard();
 		else if (event.getConfigName().equals("hologram-hardcore"))
 			createHardcore();
+		else if (event.getConfigName().equals("hologram-clan"))
+			createClan();
+	}
+
+	public void createClan() {
+		if (clanHologram != null) {
+			clanHologram.remove();
+			clanHologram = null;
+		}
+
+		if (clanHologram == null) {
+			clanHologram = BukkitMain.getInstance().getHologramController().createHologram("§c§lRANKING - CLAN",
+					BukkitMain.getInstance().getLocationFromConfig("hologram-clan"), SimpleHologram.class);
+		}
+
+		clanHologram.addLine("§eClan com as maiores");
+		clanHologram.addLine("§equantidade de xp do servidor!");
+		clanHologram.addLine("");
+
+		int index = 1;
+
+		for (ClanModel clanModel : CommonGeneral.getInstance().getClanData().ranking("xp")) {
+			clanHologram.addLine("§a" + index + "° §7- " + clanModel.getClanName() + "("
+					+ clanModel.getClanAbbreviation() + ") §7- §3" + clanModel.getXp() + " xp");
+			index++;
+		}
+	}
+
+	private void createKillstreak() {
+		if (killStreakHologram != null) {
+			killStreakHologram.remove();
+			BukkitMain.getInstance().getHologramController().unregisterHologram(killStreakHologram);
+		}
+
+		killStreakHologram = new HologramBuilder("§c§lRANKING -  KILLSTREAK",
+				BukkitMain.getInstance().getLocationFromConfig("hologram-killstreak"))
+						.setHologramClass(SimpleHologram.class).build();
+		killStreakHologram.spawn();
+
+		killStreakHologram.addLine("§eJogadores com as maiores quantidades de");
+		killStreakHologram.addLine("§ekillstreak do servidor!");
+		killStreakHologram.addLine("");
+
+		int index = 1;
+
+		for (Object model : CommonGeneral.getInstance().getStatusData().ranking(StatusType.PVP, "killstreak")) {
+			if (model instanceof NormalStatus) {
+				NormalStatus normalStatus = (NormalStatus) model;
+
+				Member member = CommonGeneral.getInstance().getMemberManager().getMember(normalStatus.getUniqueId());
+
+				if (member == null) {
+					try {
+						MemberModel loaded = CommonGeneral.getInstance().getPlayerData()
+								.loadMember(normalStatus.getUniqueId());
+
+						if (loaded == null) {
+							CommonGeneral.getInstance().debug("Não foi possível pegar as informações do jogador "
+									+ normalStatus.getUniqueId() + "!");
+						} else {
+							member = new MemberVoid(loaded);
+						}
+
+					} catch (Exception e) {
+						CommonGeneral.getInstance().debug(
+								"Não foi possível pegar as informações do jogador " + normalStatus.getUniqueId() + "!");
+					}
+				}
+
+				if (member != null) {
+					killStreakHologram.addLine("§a" + index + "° §7- "
+							+ ChatColor.getLastColors(Tag.valueOf(member.getGroup().name()).getPrefix())
+							+ member.getPlayerName() + " §7- §3" + normalStatus.getKillstreak() + " killstreak");
+				}
+				index++;
+			}
+		}
+
+		BukkitMain.getInstance().getHologramController().registerHologram(killStreakHologram);
+	}
+
+	private void createFpsKillStreak() {
+		if (fpsKillstreakHologram != null) {
+			fpsKillstreakHologram.remove();
+			BukkitMain.getInstance().getHologramController().unregisterHologram(fpsKillstreakHologram);
+		}
+
+		fpsKillstreakHologram = new HologramBuilder("§c§lRANKING - FPS - KILLSTREAK",
+				BukkitMain.getInstance().getLocationFromConfig("hologram-fps-killstreak"))
+						.setHologramClass(SimpleHologram.class).build();
+		fpsKillstreakHologram.spawn();
+
+		fpsKillstreakHologram.addLine("§eJogadores com as maiores quantidades de");
+		fpsKillstreakHologram.addLine("§ekillstreak do servidor!");
+		fpsKillstreakHologram.addLine("");
+
+		int index = 1;
+
+		for (Object model : CommonGeneral.getInstance().getStatusData().ranking(StatusType.FPS, "killstreak")) {
+			if (model instanceof NormalStatus) {
+				NormalStatus normalStatus = (NormalStatus) model;
+
+				Member member = CommonGeneral.getInstance().getMemberManager().getMember(normalStatus.getUniqueId());
+
+				if (member == null) {
+					try {
+						MemberModel loaded = CommonGeneral.getInstance().getPlayerData()
+								.loadMember(normalStatus.getUniqueId());
+
+						if (loaded == null) {
+							CommonGeneral.getInstance().debug("Não foi possível pegar as informações do jogador "
+									+ normalStatus.getUniqueId() + "!");
+						} else {
+							member = new MemberVoid(loaded);
+						}
+
+					} catch (Exception e) {
+						CommonGeneral.getInstance().debug(
+								"Não foi possível pegar as informações do jogador " + normalStatus.getUniqueId() + "!");
+					}
+				}
+
+				if (member != null) {
+					fpsKillstreakHologram.addLine("§a" + index + "° §7- "
+							+ ChatColor.getLastColors(Tag.valueOf(member.getGroup().name()).getPrefix())
+							+ member.getPlayerName() + " §7- §3" + normalStatus.getKillstreak() + " killstreak");
+				}
+				index++;
+			}
+		}
+
+		BukkitMain.getInstance().getHologramController().registerHologram(fpsKillstreakHologram);
+	}
+
+	private void createFps() {
+		if (fpsKillsHologram != null) {
+			fpsKillsHologram.remove();
+			BukkitMain.getInstance().getHologramController().unregisterHologram(fpsKillsHologram);
+		}
+
+		fpsKillsHologram = new HologramBuilder("§c§lRANKING - FPS - KILLS",
+				BukkitMain.getInstance().getLocationFromConfig("hologram-fps-kills"))
+						.setHologramClass(SimpleHologram.class).build();
+		fpsKillsHologram.spawn();
+
+		fpsKillsHologram.addLine("§eJogadores com as maiores quantidades de");
+		fpsKillsHologram.addLine("§ekills da fps!");
+		fpsKillsHologram.addLine("");
+
+		int index = 1;
+
+		for (Object model : CommonGeneral.getInstance().getStatusData().ranking(StatusType.FPS, "kills")) {
+			if (model instanceof NormalStatus) {
+				NormalStatus normalStatus = (NormalStatus) model;
+
+				Member member = CommonGeneral.getInstance().getMemberManager().getMember(normalStatus.getUniqueId());
+
+				if (member == null) {
+					try {
+						MemberModel loaded = CommonGeneral.getInstance().getPlayerData()
+								.loadMember(normalStatus.getUniqueId());
+
+						if (loaded == null) {
+							CommonGeneral.getInstance().debug("Não foi possível pegar as informações do jogador "
+									+ normalStatus.getUniqueId() + "!");
+						} else {
+							member = new MemberVoid(loaded);
+						}
+
+					} catch (Exception e) {
+						CommonGeneral.getInstance().debug(
+								"Não foi possível pegar as informações do jogador " + normalStatus.getUniqueId() + "!");
+					}
+				}
+
+				if (member != null) {
+					fpsKillsHologram.addLine("§a" + index + "° §7- "
+							+ ChatColor.getLastColors(Tag.valueOf(member.getGroup().name()).getPrefix())
+							+ member.getPlayerName() + " §7- §3" + normalStatus.getKills() + " kills");
+				}
+				index++;
+			}
+		}
+
+		BukkitMain.getInstance().getHologramController().registerHologram(fpsKillsHologram);
 	}
 
 	@EventHandler
 	public void onLocationChange(HologramUpdateEvent event) {
+		createFps();
+		createKillstreak();
+		createFpsKillStreak();
 		createXp();
 		createKills();
-//		createEasy();
-//		createMedium();
-//		createHard();
-//		createHardcore();
+		createEasy();
+		createMedium();
+		createHard();
+		createHardcore();
 	}
 
 	private void createEasy() {
@@ -76,8 +277,8 @@ public class RankingHologram implements Listener {
 		}
 
 		easyHologram = new HologramBuilder("§a§lRANKING - LAVA - FACIL",
-				BukkitMain.getInstance().getLocationFromConfig("hologram-easy"))
-						.setHologramClass(SimpleHologram.class).build();
+				BukkitMain.getInstance().getLocationFromConfig("hologram-easy")).setHologramClass(SimpleHologram.class)
+						.build();
 		easyHologram.spawn();
 
 		easyHologram.addLine("");
@@ -129,8 +330,8 @@ public class RankingHologram implements Listener {
 		}
 
 		mediumHologram = new HologramBuilder("§e§lRANKING - LAVA - MEDIO",
-				BukkitMain.getInstance().getLocationFromConfig("hologram-medio"))
-						.setHologramClass(SimpleHologram.class).build();
+				BukkitMain.getInstance().getLocationFromConfig("hologram-medio")).setHologramClass(SimpleHologram.class)
+						.build();
 		mediumHologram.spawn();
 
 		mediumHologram.addLine("");
@@ -182,8 +383,8 @@ public class RankingHologram implements Listener {
 		}
 
 		hardHologram = new HologramBuilder("§c§lRANKING - LAVA - HARD",
-				BukkitMain.getInstance().getLocationFromConfig("hologram-hard"))
-						.setHologramClass(SimpleHologram.class).build();
+				BukkitMain.getInstance().getLocationFromConfig("hologram-hard")).setHologramClass(SimpleHologram.class)
+						.build();
 		hardHologram.spawn();
 
 		hardHologram.addLine("");

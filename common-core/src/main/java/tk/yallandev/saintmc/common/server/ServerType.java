@@ -8,7 +8,7 @@ import tk.yallandev.saintmc.common.utils.string.NameUtils;
 @AllArgsConstructor
 public enum ServerType {
 
-	LOGIN("Login"), LOBBY("Lobby"),
+	LOGIN("Login"), LOBBY("Lobby"), LOBBY_HG("Lobby HG"),
 
 	HUNGERGAMES("HG"), FULLIRON("PvP FullIron"), SIMULATOR("PvP Simulator"), GLADIATOR("Gladiator"),
 
@@ -34,6 +34,9 @@ public enum ServerType {
 
 	public ServerType getServerLobby() {
 		switch (this) {
+		case HUNGERGAMES:
+		case EVENTO:
+			return LOBBY_HG;
 		default:
 			return LOBBY;
 		}

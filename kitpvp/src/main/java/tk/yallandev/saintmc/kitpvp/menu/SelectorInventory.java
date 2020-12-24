@@ -28,7 +28,7 @@ public class SelectorInventory {
 
 	public SelectorInventory(Player player, int page, OrderType orderType) {
 		Gamer gamer = GameMain.getInstance().getGamerManager().getGamer(player.getUniqueId());
-		MenuInventory menu = new MenuInventory("§7Kit Selector", 6, true);
+		MenuInventory menu = new MenuInventory("§7§nSelecionar kit", 6, true);
 		List<Kit> kits = new ArrayList<>(GameMain.getInstance().getKitManager().getKitList());
 
 		Comparator<Kit> comparator = orderType.getComparator(gamer);

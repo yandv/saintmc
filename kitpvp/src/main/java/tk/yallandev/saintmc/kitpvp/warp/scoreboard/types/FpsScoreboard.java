@@ -64,7 +64,7 @@ public class FpsScoreboard extends WarpScoreboard {
 		}
 		case STATUS: {
 			NormalStatus killerStatus = CommonGeneral.getInstance().getStatusManager().loadStatus(player.getUniqueId(),
-					StatusType.PVP, NormalStatus.class);
+					StatusType.FPS, NormalStatus.class);
 
 			scoreboard.updateScore(player, new Score("§fKills: §e" + killerStatus.getKills(), "kills"));
 			scoreboard.updateScore(player, new Score("§fDeaths: §e" + killerStatus.getDeaths(), "deaths"));

@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import tk.yallandev.saintmc.common.account.status.StatusType;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -23,5 +24,7 @@ public class WarpSetting {
 
 	private boolean warpEnabled = true;
 	private boolean spawnEnabled = true;
+
+	private StatusType statusType = StatusType.PVP;
 
 }

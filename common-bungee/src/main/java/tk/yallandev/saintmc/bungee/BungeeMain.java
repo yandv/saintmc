@@ -16,6 +16,8 @@ import com.google.common.io.ByteStreams;
 import lombok.Getter;
 import lombok.Setter;
 import net.md_5.bungee.api.ProxyServer;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.config.ListenerInfo;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.api.scheduler.ScheduledTask;
@@ -61,17 +63,26 @@ import tk.yallandev.saintmc.common.server.ServerManager;
 import tk.yallandev.saintmc.common.server.ServerType;
 import tk.yallandev.saintmc.common.server.loadbalancer.server.MinigameServer;
 import tk.yallandev.saintmc.common.server.loadbalancer.server.ProxiedServer;
+import tk.yallandev.saintmc.common.utils.string.MessageBuilder;
 import tk.yallandev.saintmc.discord.DiscordMain;
 import tk.yallandev.saintmc.update.UpdatePlugin;
 
 @Getter
 public class BungeeMain extends Plugin {
 
-	private static final String[] BROADCAST = new String[] {
-			"§4§lANUNCIO §eDigite §b/discord§e para entrar em nosso discord!",
-			"§4§lANUNCIO §eUse §b/report <player>§e para denunciar um jogador!",
-			"§4§lANUNCIO §eCompre vips em §b" + CommonConst.STORE + "§e!",
-			"§4§lANUNCIO §eO servidor está em fase §1§lBETA§e, caso encontre algum bug reporte em nosso discord!" };
+	private static final TextComponent[] BROADCAST = new TextComponent[] {
+			new MessageBuilder("§4§lANUNCIO §eEntre em nosso discord ")
+					.addExtre(new MessageBuilder("§b" + CommonConst.DISCORD)
+							.setClickEvent(ClickEvent.Action.OPEN_URL, CommonConst.DISCORD).create())
+					.addExtre(new TextComponent("§e!")).create(),
+			new MessageBuilder("§4§lANUNCIO §eUse §b/report <player>§e para denunciar um jogador!").create(),
+			new MessageBuilder("§4§lANUNCIO §eCompre vips em §b")
+					.addExtre(new MessageBuilder("§b" + CommonConst.STORE)
+							.setClickEvent(ClickEvent.Action.OPEN_URL, CommonConst.STORE).create())
+					.addExtre(new TextComponent("§e!")).create(),
+			new MessageBuilder(
+					"§4§lANUNCIO §eO servidor está em fase §1§lBETA§e, caso encontre algum bug reporte em nosso discord!")
+							.create() };
 
 	@Getter
 	private static BungeeMain instance;
@@ -261,7 +272,7 @@ public class BungeeMain extends Plugin {
 		general.debug("The server has been loaded all the reports!");
 
 		ProxyServer.getInstance().getScheduler().schedule(this, () -> {
-			String message = BROADCAST[CommonConst.RANDOM.nextInt(BROADCAST.length)];
+			TextComponent message = BROADCAST[CommonConst.RANDOM.nextInt(BROADCAST.length)];
 
 			ProxyServer.getInstance().broadcast(message);
 		}, 0, 5, TimeUnit.MINUTES);

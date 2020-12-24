@@ -29,6 +29,7 @@ import tk.yallandev.saintmc.bukkit.event.update.UpdateEvent;
 import tk.yallandev.saintmc.bukkit.event.update.UpdateEvent.UpdateType;
 import tk.yallandev.saintmc.bukkit.event.vanish.PlayerHideToPlayerEvent;
 import tk.yallandev.saintmc.bukkit.event.vanish.PlayerShowToPlayerEvent;
+import tk.yallandev.saintmc.common.account.status.StatusType;
 import tk.yallandev.saintmc.common.utils.DateUtils;
 import tk.yallandev.saintmc.kitpvp.GameMain;
 import tk.yallandev.saintmc.kitpvp.event.challenge.shadow.ShadowFightFinishEvent;
@@ -272,6 +273,7 @@ public class ShadowWarp extends Warp implements DuelWarp {
 		secondLocation = BukkitMain.getInstance().getLocationFromConfig("shadow.pos2");
 		getScoreboard().setWarp(this);
 		getWarpSettings().setSpawnEnabled(false);
+		getWarpSettings().setStatusType(StatusType.SHADOW);
 	}
 
 	@EventHandler

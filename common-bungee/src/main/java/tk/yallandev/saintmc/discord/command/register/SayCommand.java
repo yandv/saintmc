@@ -84,7 +84,7 @@ public class SayCommand implements CommandClass {
 			restAction.complete();
 	}
 
-	@Command(name = "anuncio", runAsync = true)
+	@Command(name = "	", runAsync = true)
 	public void anuncioCommand(DiscordCommandArgs cmdArgs) {
 		if (!cmdArgs.getSender().getAsMember().hasPermission(Permission.ADMINISTRATOR))
 			return;

@@ -21,35 +21,35 @@ public class KitCommand implements CommandClass {
 		Gamer gamer = GameMain.getInstance().getGamerManager().getGamer(player.getUniqueId());
 
 		if (args.length == 0) {
-			player.sendMessage(" §e* §fUse §a/kit <kitName>§f para selecionar um kit.");
+			player.sendMessage("§cUse /kit <kitName> para selecionar um kit.");
 			return;
 		}
 
 		if (!gamer.getWarp().getWarpSettings().isKitEnabled()) {
-			player.sendMessage(" §c* §fEssa warp não permite kit!");
+			player.sendMessage("§cVocê não pode selecionar kit nessa warp!");
 			return;
 		}
 
 		Kit kit = GameMain.getInstance().getKitManager().getKit(args[0]);
 
 		if (kit == null) {
-			player.sendMessage(" §c* §fO kit §a" + args[0] + "§f não existe!");
+			player.sendMessage("§cO kit " + args[0] + " não existe!");
 			return;
 		}
 
 		if (gamer.hasKit()) {
-			player.sendMessage(" §c* §fVocê já está §ausando§f um kit!");
+			player.sendMessage("§cVocê não pode selecionar outro kit!");
 			return;
 		}
 
 		if (!gamer.hasKitPermission(kit)) {
-			player.sendMessage(" §c* §fVocê não possui este kit!");
+			player.sendMessage("§cVocê não possui permissão para selecionar esse kit!");
 			return;
 		}
 
 		gamer.setKit(kit);
 		GameMain.getInstance().getKitManager().selectKit(player, kit);
-		player.sendMessage(" §a* §fVocê selecionou o kit §a" + kit.getKitName() + "§f!");
+		player.sendMessage("§aVocê selecionou o kit " + kit.getKitName() + "!");
 	}
 
 }

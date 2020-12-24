@@ -73,7 +73,7 @@ public class StatusListener implements Listener {
 					.isStatusable(gamer.getUuid());
 
 		boolean duels = (event.getWarp() instanceof DuelWarp);
-		StatusType statusType = duels ? StatusType.SHADOW : StatusType.PVP;
+		StatusType statusType = event.getWarp().getWarpSettings().getStatusType();
 
 		NormalStatus playerStatus = CommonGeneral.getInstance().getStatusManager().loadStatus(player.getUniqueId(),
 				statusType, NormalStatus.class);
@@ -87,12 +87,12 @@ public class StatusListener implements Listener {
 			winnerXp *= 1.5;
 			winnerMoney *= 1.5;
 		}
-		
+
 		Member killerMember = CommonGeneral.getInstance().getMemberManager().getMember(killer.getUniqueId());
 
 		if (killerMember.hasGroupPermission(Group.ULTIMATE))
 			winnerXp *= 2;
-		
+
 		if (killerMember.hasGroupPermission(Group.EXTREME))
 			winnerMoney *= 2;
 

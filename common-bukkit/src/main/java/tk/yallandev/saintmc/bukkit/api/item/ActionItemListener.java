@@ -1,6 +1,7 @@
 package tk.yallandev.saintmc.bukkit.api.item;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -39,11 +40,7 @@ public class ActionItemListener implements Listener {
 			if (stack.getType() == Material.AIR)
 				throw new Exception();
 
-			Constructor<?> caller = MinecraftReflection.getCraftItemStackClass()
-					.getDeclaredConstructor(ItemStack.class);
-			caller.setAccessible(true);
-			ItemStack item = (ItemStack) caller.newInstance(stack);
-			NbtCompound compound = (NbtCompound) NbtFactory.fromItemTag(item);
+			NbtCompound compound = getNbtCompound(stack);
 
 			if (!compound.containsKey("interactHandler")) {
 				return;
@@ -57,7 +54,7 @@ public class ActionItemListener implements Listener {
 			Player player = event.getPlayer();
 			Action action = event.getAction();
 
-			event.setCancelled(handler.onInteract(player, null, event.getClickedBlock(), item,
+			event.setCancelled(handler.onInteract(player, null, event.getClickedBlock(), stack,
 					action.name().contains("RIGHT") ? ActionType.RIGHT : ActionType.LEFT));
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -72,11 +69,7 @@ public class ActionItemListener implements Listener {
 		ItemStack stack = event.getPlayer().getItemInHand();
 
 		try {
-			Constructor<?> caller = MinecraftReflection.getCraftItemStackClass()
-					.getDeclaredConstructor(ItemStack.class);
-			caller.setAccessible(true);
-			ItemStack item = (ItemStack) caller.newInstance(stack);
-			NbtCompound compound = (NbtCompound) NbtFactory.fromItemTag(item);
+			NbtCompound compound = (NbtCompound) getNbtCompound(stack);
 
 			if (!compound.containsKey("interactHandler")) {
 				return;
@@ -90,7 +83,7 @@ public class ActionItemListener implements Listener {
 			Player player = event.getPlayer();
 
 			event.setCancelled(
-					handler.onInteract(player, event.getRightClicked(), null, item, ActionType.CLICK_PLAYER));
+					handler.onInteract(player, event.getRightClicked(), null, stack, ActionType.CLICK_PLAYER));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -104,25 +97,21 @@ public class ActionItemListener implements Listener {
 		ItemStack stack = event.getCurrentItem();
 
 		try {
-			Constructor<?> caller = MinecraftReflection.getCraftItemStackClass()
-					.getDeclaredConstructor(ItemStack.class);
-			caller.setAccessible(true);
-			ItemStack item = (ItemStack) caller.newInstance(stack);
-			NbtCompound compound = (NbtCompound) NbtFactory.fromItemTag(item);
+			NbtCompound compound = getNbtCompound(stack);
 
 			if (!compound.containsKey("interactHandler")) {
 				return;
 			}
 
 			Interact handler = ActionItemStack.getHandler(compound.getInteger("interactHandler"));
-
+			
 			if (handler == null || handler.getInteractType() == InteractType.PLAYER || !handler.isInventoryClick())
 				return;
 
 			Player player = (Player) event.getWhoClicked();
 
 			player.closeInventory();
-			event.setCancelled(handler.onInteract(player, null, null, item, ActionType.LEFT));
+			event.setCancelled(handler.onInteract(player, null, null, stack, ActionType.LEFT));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -140,11 +129,7 @@ public class ActionItemListener implements Listener {
 			if (stack.getType() == Material.AIR)
 				throw new Exception();
 
-			Constructor<?> caller = MinecraftReflection.getCraftItemStackClass()
-					.getDeclaredConstructor(ItemStack.class);
-			caller.setAccessible(true);
-			ItemStack item = (ItemStack) caller.newInstance(stack);
-			NbtCompound compound = (NbtCompound) NbtFactory.fromItemTag(item);
+			NbtCompound compound = getNbtCompound(stack);
 
 			if (!compound.containsKey("interactHandler")) {
 				return;
@@ -175,4 +160,12 @@ public class ActionItemListener implements Listener {
 						b.getMetadata("interactHandler").get(0).asInt()));
 	}
 
+	private NbtCompound getNbtCompound(ItemStack stack) throws NoSuchMethodException, SecurityException,
+			InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+		Constructor<?> caller = MinecraftReflection.getCraftItemStackClass().getDeclaredConstructor(ItemStack.class);
+		caller.setAccessible(true);
+		ItemStack item = (ItemStack) caller.newInstance(stack);
+		NbtCompound compound = (NbtCompound) NbtFactory.fromItemTag(item);
+		return compound;
+	}
 }

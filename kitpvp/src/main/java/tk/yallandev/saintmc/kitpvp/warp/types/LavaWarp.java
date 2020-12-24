@@ -53,6 +53,7 @@ public class LavaWarp extends Warp {
 		getScoreboard().setWarp(this);
 
 		challengeMap = new HashMap<>();
+		getWarpSettings().setStatusType(StatusType.LAVA);
 	}
 
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
@@ -62,9 +63,8 @@ public class LavaWarp extends Warp {
 
 			if (inWarp(player)) {
 				if (event.getCause() == DamageCause.LAVA) {
-					Entry<ChallengeStage, ChallengeInfo> entry = challengeMap.computeIfAbsent(player.getUniqueId(),
-							v -> new AbstractMap.SimpleEntry<ChallengeStage, ChallengeInfo>(
-									getNearestChallenge(player.getLocation()), new ChallengeInfo()));
+					Entry<ChallengeStage, ChallengeInfo> entry = startChallenge(player.getUniqueId(),
+							getNearestChallenge(player.getLocation()));
 
 					if (!entry.getValue().isRunning()) {
 						player.sendMessage("§aVocê iniciou o desafio de lava "
@@ -78,12 +78,12 @@ public class LavaWarp extends Warp {
 					getScoreboard().updateScore(player, entry.getValue());
 				} else {
 					if (event.getCause() == DamageCause.FIRE_TICK) {
-						if (challengeMap.containsKey(player.getUniqueId())) {
+						if (isInChallenge(player.getUniqueId())) {
 							Entry<ChallengeStage, ChallengeInfo> entry = challengeMap.get(player.getUniqueId());
 
 							if (entry.getValue().isRunning() && !entry.getValue().isFinished()) {
 								if (System.currentTimeMillis() - entry.getValue().getLastDamage() > 3000l) {
-									challengeMap.remove(player.getUniqueId());
+									removeChallenge(player.getUniqueId());
 
 									if (entry.getKey() == ChallengeStage.TRAINAING)
 										Bukkit.getPluginManager().callEvent(
@@ -114,6 +114,9 @@ public class LavaWarp extends Warp {
 	public void onPlayerFinishChallenge(PlayerFinishChallengeEvent event) {
 		Player player = event.getPlayer();
 
+		handleInventory(player);
+		player.teleport(getSpawnLocation());
+
 		ChallengeStatus challengeStatus = CommonGeneral.getInstance().getStatusManager()
 				.loadStatus(player.getUniqueId(), StatusType.LAVA, ChallengeStatus.class);
 		ChallengeType challengeType = ChallengeType.valueOf(event.getChallengeType().name());
@@ -138,8 +141,6 @@ public class LavaWarp extends Warp {
 			player.sendMessage("§aO seu record neste modo é §7"
 					+ StringUtils.formatTime(challengeStatus.getTime(challengeType)) + "§a!");
 
-		player.teleport(getSpawnLocation());
-
 		if (event.getChallengeType().ordinal() >= ChallengeStage.HARD.ordinal()) {
 			FireworkAPI.spawn(player.getLocation().add(0, 0, 1), Color.AQUA, true);
 			FireworkAPI.spawn(player.getLocation().add(1, 0, 0), Color.AQUA, true);
@@ -148,14 +149,12 @@ public class LavaWarp extends Warp {
 		}
 
 		if (event.getChallengeType() == ChallengeStage.HARDCORE) {
-			for (Player p : Bukkit.getOnlinePlayers()) {
+			Bukkit.getOnlinePlayers().forEach(p -> {
 				p.sendMessage("§9Lava Challenge> §fO jogador §a" + player.getName()
 						+ "§f passou o desafio de lava §4Extreme§f!");
 				p.playSound(p.getLocation(), Sound.ENDERDRAGON_GROWL, 1f, 1f);
-			}
+			});
 		}
-
-		handleInventory(player);
 	}
 
 	@EventHandler
@@ -191,11 +190,11 @@ public class LavaWarp extends Warp {
 		if (event.getWarp() == this) {
 			Player player = event.getPlayer();
 
-			if (challengeMap.containsKey(player.getUniqueId())) {
+			if (isInChallenge(player.getUniqueId())) {
 				Entry<ChallengeStage, ChallengeInfo> entry = challengeMap.get(player.getUniqueId());
 
 				if (entry.getValue().isRunning() && !entry.getValue().isFinished()) {
-					challengeMap.remove(player.getUniqueId());
+					removeChallenge(player.getUniqueId());
 					Bukkit.getPluginManager()
 							.callEvent(new PlayerStopChallengeEvent(player, entry.getKey(), entry.getValue()).death());
 					entry.getValue().setFinished(true);
@@ -246,9 +245,54 @@ public class LavaWarp extends Warp {
 				.type(Material.LAVA_BUCKET).build();
 	}
 
+	/**
+	 * 
+	 * Start the challenge based in the nearest challenge location from player
+	 * 
+	 * @param uniqueId
+	 * @param nearestChallenge
+	 * @return
+	 */
+
+	private Entry<ChallengeStage, ChallengeInfo> startChallenge(UUID uniqueId, ChallengeStage nearestChallenge) {
+		return challengeMap.computeIfAbsent(uniqueId,
+				v -> new AbstractMap.SimpleEntry<ChallengeStage, ChallengeInfo>(nearestChallenge, new ChallengeInfo()));
+	}
+
+	/**
+	 * 
+	 * Return if the player is in a challenge
+	 * 
+	 * @param uniqueId
+	 * @return
+	 */
+
+	public boolean isInChallenge(UUID uniqueId) {
+		return this.challengeMap.containsKey(uniqueId);
+	}
+
+	/**
+	 * 
+	 * Remove the uniqueId from the challenge
+	 * 
+	 * @param uniqueId
+	 */
+
+	private void removeChallenge(UUID uniqueId) {
+		challengeMap.remove(uniqueId);
+	}
+
 	public String formatTime(long startTime, long time) {
 		return StringUtils.formatTime((int) ((startTime - time) / 1000));
 	}
+
+	/**
+	 * 
+	 * 
+	 * 
+	 * @param location
+	 * @return
+	 */
 
 	public ChallengeStage getNearestChallenge(Location location) {
 		return Arrays.asList(ChallengeStage.values()).stream()

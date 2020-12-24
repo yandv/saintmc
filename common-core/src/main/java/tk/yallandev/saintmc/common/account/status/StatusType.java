@@ -10,12 +10,12 @@ import tk.yallandev.saintmc.common.account.status.types.normal.NormalStatus;
 @Getter
 public enum StatusType {
 
-	PVP("pvp", NormalStatus.class), GLADIATOR("gladiator", NormalStatus.class),
-	LOBBY("lobby-combat", NormalStatus.class), SHADOW("shadow", NormalStatus.class),
+	LOBBY("lobby-combat", NormalStatus.class), GLADIATOR("gladiator", NormalStatus.class),
 
+	PVP("pvp", NormalStatus.class), FPS("fps", NormalStatus.class), SHADOW("shadow", NormalStatus.class),
 	LAVA("lava", ChallengeStatus.class), MLG("mlg", ChallengeStatus.class),
 
-	HG("hungergames", GameStatus.class), SW_SOLO("skywars-solo", GameStatus.class),
+	HG("hungergames", GameStatus.class), EVENTO("evento", GameStatus.class), SW_SOLO("skywars-solo", GameStatus.class),
 	SW_TEAM("skywars-team", GameStatus.class), SW_SQUAD("skywars-squad", GameStatus.class);
 
 	private String mongoCollection;

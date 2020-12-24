@@ -76,13 +76,12 @@ public class WarpManager {
 		if (gamer == null)
 			return;
 
-		Warp lastWarp = gamer.getWarp();
-
-		if (lastWarp != null) {
-			Bukkit.getPluginManager().callEvent(new PlayerWarpQuitEvent(gamer.getPlayer(), lastWarp));
-			CommonGeneral.getInstance().debug(gamer.getPlayer().getName() + " leave from " + lastWarp.getName());
+		if (gamer.getWarp() != null) {
+			gamer.getWarp().getPlayers().remove(gamer.getUuid());
+			Bukkit.getPluginManager().callEvent(new PlayerWarpQuitEvent(gamer.getPlayer(), gamer.getWarp()));
+			CommonGeneral.getInstance().debug(gamer.getPlayer().getName() + " leave from " + gamer.getWarp().getName());
 		}
-		
+
 		warp.registerListener();
 
 		if (warp.getScoreboard() != null)
@@ -91,7 +90,8 @@ public class WarpManager {
 		gamer.setWarp(warp);
 		gamer.setKit(null);
 		gamer.getPlayer().teleport(warp.getSpawnLocation());
-		
+		warp.getPlayers().add(player.getUniqueId());
+
 		player.setFireTicks(0);
 
 		Bukkit.getPluginManager().callEvent(new PlayerWarpJoinEvent(gamer.getPlayer(), warp));
@@ -99,6 +99,7 @@ public class WarpManager {
 	}
 
 	public void removeWarp(Gamer gamer) {
+		gamer.getWarp().getPlayers().remove(gamer.getUuid());
 		Bukkit.getPluginManager().callEvent(new PlayerWarpQuitEvent(gamer.getPlayer(), gamer.getWarp()));
 
 		gamer.setWarp(null);
@@ -106,7 +107,7 @@ public class WarpManager {
 
 	public void teleport(Player player, Warp warp, int time) {
 		setWarp(player, warp.getName(), false);
-		player.sendMessage("§a§l> §fVocê foi teletransportado para a warp §a" + warp.getName() + "§f!");
+		player.sendMessage("§aVocê entrou na warp " + warp.getName() + "!");
 	}
 
 }

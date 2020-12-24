@@ -72,25 +72,23 @@ public class ProtectionListener implements Listener {
 
 		Gamer gamer = GameMain.getInstance().getGamerManager().getGamer(player.getUniqueId());
 
-		if (!gamer.isSpawnProtection())
-			return;
+		if (gamer.isSpawnProtection()) {
+			Warp warp = GameMain.getInstance().getGamerManager().getGamer(player.getUniqueId()).getWarp();
 
-		Warp warp = GameMain.getInstance().getGamerManager().getGamer(player.getUniqueId()).getWarp();
+			if (warp.getWarpSettings().isSpawnProtection()) {
+				Location to = event.getTo();
+				double distX = to.getX() - warp.getSpawnLocation().getX();
+				double distZ = to.getZ() - warp.getSpawnLocation().getZ();
 
-		if (!warp.getWarpSettings().isSpawnProtection())
-			return;
+				double distance = (distX * distX) + (distZ * distZ);
+				double spawnRadius = warp.getSpawnRadius() * warp.getSpawnRadius();
 
-		Location to = event.getTo();
-		double distX = to.getX() - warp.getSpawnLocation().getX();
-		double distZ = to.getZ() - warp.getSpawnLocation().getZ();
-
-		double distance = (distX * distX) + (distZ * distZ);
-		double spawnRadius = warp.getSpawnRadius() * warp.getSpawnRadius();
-
-		if (distance > spawnRadius) {
-			gamer.setSpawnProtection(false);
-			player.sendMessage("§cVocê perdeu a proteção do spawn!");
-			Bukkit.getPluginManager().callEvent(new PlayerLostProtectionEvent(player, warp));
+				if (distance > spawnRadius) {
+					gamer.setSpawnProtection(false);
+					player.sendMessage("§cVocê perdeu a proteção do spawn!");
+					Bukkit.getPluginManager().callEvent(new PlayerLostProtectionEvent(player, warp));
+				}
+			}
 		}
 	}
 

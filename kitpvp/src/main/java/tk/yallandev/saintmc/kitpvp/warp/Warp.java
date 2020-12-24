@@ -1,6 +1,10 @@
 
 package tk.yallandev.saintmc.kitpvp.warp;
 
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
+
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -33,6 +37,8 @@ public abstract class Warp extends ManualRegisterableListener implements Command
 
 	private WarpSetting warpSettings = new WarpSetting();
 	private WarpScoreboard scoreboard;
+	
+	private Set<UUID> players;
 
 	public Warp(String name, Location location, WarpScoreboard warpScoreboard) {
 		this.name = name;
@@ -40,6 +46,8 @@ public abstract class Warp extends ManualRegisterableListener implements Command
 		this.spawnLocation = location;
 		this.spawnRadius = 10;
 		this.scoreboard = warpScoreboard;
+		
+		this.players = new HashSet<>();
 	}
 
 	public String getId() {
@@ -59,7 +67,7 @@ public abstract class Warp extends ManualRegisterableListener implements Command
 				scoreboard.unregister();
 			}
 	}
-
+	
 	public abstract ItemStack getItem();
 
 	@Override

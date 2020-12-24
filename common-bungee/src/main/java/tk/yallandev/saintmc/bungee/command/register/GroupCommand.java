@@ -58,16 +58,23 @@ public class GroupCommand implements CommandClass {
 		}
 
 		if (group.ordinal() < Group.YOUTUBER.ordinal() && group.ordinal() >= Group.PRO.ordinal()) {
-			sender.sendMessage(" §e* §fO grupo §a" + group.name() + "§f pode ser setado, somente, temporariamente.");
+			sender.sendMessage("§cO grupo " + group.name() + " pode ser setado, somente, temporariamente.");
 			return;
 		}
 
 		if (cmdArgs.isPlayer()) {
 			switch (playerGroup) {
 			case ADMIN: {
-				if (group.ordinal() > Group.ADMIN.ordinal()) {
-					sender.sendMessage(" §c* §fVocê só pode manejar o grupo §4§lDIRETOR§f ou inferior!");
-					sender.sendMessage(" §c* §fSó o console consegue manejar §4§lDONO§f!");
+				if (group.ordinal() >= Group.ADMIN.ordinal()) {
+					sender.sendMessage(
+							"§cVocê só pode manejar o grupo " + Tag.DEVELOPER.getPrefix() + "§c ou inferior!");
+					return;
+				}
+				break;
+			}
+			case DONO: {
+				if (group.ordinal() > Group.DONO.ordinal()) {
+					sender.sendMessage("§cVocê só pode manejar o grupo " + Tag.ADMIN.getPrefix() + "§c ou inferior!");
 					return;
 				}
 				break;

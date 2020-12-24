@@ -22,7 +22,6 @@ public class BukkitPacketController extends PacketController {
 		}
 
 		player.sendPluginMessage(BukkitMain.getInstance(), "server:packet", b.toByteArray());
-		
 	}
 
 }

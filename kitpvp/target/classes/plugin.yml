@@ -1,5 +1,5 @@
 name: Kitpvp
-version: 1.0.169
+version: 1.0.177
 main: tk.yallandev.saintmc.kitpvp.GameMain
 author: yandv
 softdepend: [BukkitCommon]

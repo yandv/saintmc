@@ -131,7 +131,15 @@ public class MessageListener implements Listener {
 		case "Lobby":
 			event.setCancelled(true);
 
-			if (!searchServer(player, proxiedPlayer, ServerType.LOBBY))
+			if (!searchServer(player, proxiedPlayer,
+					manager.getServer(proxiedPlayer.getServer().getInfo().getName()).getServerType().getServerLobby()))
+				player.sendMessage("§cNenhum servidor encontrado!");
+
+			break;
+		case "LobbyHG":
+			event.setCancelled(true);
+
+			if (!searchServer(player, proxiedPlayer, ServerType.LOBBY_HG))
 				player.sendMessage("§cNenhum servidor encontrado!");
 
 			break;
