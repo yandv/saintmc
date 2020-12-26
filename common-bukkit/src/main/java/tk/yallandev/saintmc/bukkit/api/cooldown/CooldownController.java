@@ -1,6 +1,5 @@
 package tk.yallandev.saintmc.bukkit.api.cooldown;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -17,7 +16,6 @@ import org.bukkit.inventory.ItemStack;
 
 import lombok.Getter;
 import tk.yallandev.saintmc.CommonConst;
-import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.bukkit.api.actionbar.ActionBarAPI;
 import tk.yallandev.saintmc.bukkit.api.cooldown.event.CooldownFinishEvent;
 import tk.yallandev.saintmc.bukkit.api.cooldown.event.CooldownStartEvent;
@@ -26,7 +24,6 @@ import tk.yallandev.saintmc.bukkit.api.cooldown.types.Cooldown;
 import tk.yallandev.saintmc.bukkit.api.cooldown.types.ItemCooldown;
 import tk.yallandev.saintmc.bukkit.api.listener.ManualRegisterableListener;
 import tk.yallandev.saintmc.bukkit.api.listener.RegisterableListener;
-import tk.yallandev.saintmc.bukkit.bukkit.BukkitMember;
 import tk.yallandev.saintmc.bukkit.event.update.UpdateEvent;
 import tk.yallandev.saintmc.bukkit.event.update.UpdateEvent.UpdateType;
 
@@ -75,19 +72,6 @@ public class CooldownController implements Listener {
 				if (cool.getName().equals(cooldown.getName())) {
 					cool.update(cooldown.getDuration(), cooldown.getStartTime());
 					add = false;
-				}
-			}
-
-			if (cooldown instanceof ItemCooldown) {
-				try {
-					BukkitMember member = (BukkitMember) CommonGeneral.getInstance().getMemberManager()
-							.getMember(player.getUniqueId());
-
-					if (member.getCustomClient() != null)
-						member.getCustomClient().sendCooldown(cooldown.getName(),
-								((ItemCooldown) cooldown).getItem().getType(), (int) cooldown.getDuration());
-				} catch (IOException e) {
-					e.printStackTrace();
 				}
 			}
 

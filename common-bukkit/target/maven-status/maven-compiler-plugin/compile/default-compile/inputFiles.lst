@@ -41,7 +41,6 @@ C:\Users\Allan\git\saintmc\common-bukkit\src\main\java\tk\yallandev\saintmc\bukk
 C:\Users\Allan\git\saintmc\common-bukkit\src\main\java\tk\yallandev\saintmc\bukkit\event\account\PlayerChangeGroupEvent.java
 C:\Users\Allan\git\saintmc\common-bukkit\src\main\java\tk\yallandev\saintmc\bukkit\controller\SkinController.java
 C:\Users\Allan\git\saintmc\common-bukkit\src\main\java\tk\yallandev\saintmc\bukkit\api\character\CharacterListener.java
-C:\Users\Allan\git\saintmc\common-bukkit\src\main\java\tk\yallandev\saintmc\bukkit\api\client\lunar\NotificationLevel.java
 C:\Users\Allan\git\saintmc\common-bukkit\src\main\java\tk\yallandev\saintmc\bukkit\api\scoreboard\Score.java
 C:\Users\Allan\git\saintmc\common-bukkit\src\main\java\tk\yallandev\saintmc\bukkit\event\server\PlayerChangeEvent.java
 C:\Users\Allan\git\saintmc\common-bukkit\src\main\java\tk\yallandev\saintmc\bukkit\permission\PermissionManager.java
@@ -126,7 +125,6 @@ C:\Users\Allan\git\saintmc\common-bukkit\src\main\java\tk\yallandev\saintmc\bukk
 C:\Users\Allan\git\saintmc\common-bukkit\src\main\java\net\saintmc\anticheat\utils\Util.java
 C:\Users\Allan\git\saintmc\common-bukkit\src\main\java\tk\yallandev\saintmc\bukkit\api\worldedit\block\future\FutureBlock.java
 C:\Users\Allan\git\saintmc\common-bukkit\src\main\java\tk\yallandev\saintmc\bukkit\api\protocol\ProtocolGetter.java
-C:\Users\Allan\git\saintmc\common-bukkit\src\main\java\tk\yallandev\saintmc\bukkit\api\client\lunar\LunarClient.java
 C:\Users\Allan\git\saintmc\common-bukkit\src\main\java\tk\yallandev\saintmc\bukkit\permission\injector\FieldReplacer.java
 C:\Users\Allan\git\saintmc\common-bukkit\src\main\java\net\saintmc\anticheat\alert\impl\AlertImpl.java
 C:\Users\Allan\git\saintmc\common-bukkit\src\main\java\tk\yallandev\saintmc\bukkit\api\worldedit\arena\ArenaType.java
@@ -171,7 +169,6 @@ C:\Users\Allan\git\saintmc\common-bukkit\src\main\java\tk\yallandev\saintmc\bukk
 C:\Users\Allan\git\saintmc\common-bukkit\src\main\java\tk\yallandev\saintmc\bukkit\event\server\ServerPlayerLeaveEvent.java
 C:\Users\Allan\git\saintmc\common-bukkit\src\main\java\tk\yallandev\saintmc\bukkit\event\account\PlayerChangeMedalEvent.java
 C:\Users\Allan\git\saintmc\common-bukkit\src\main\java\tk\yallandev\saintmc\bukkit\exploit\register\PacketLimiterExploit.java
-C:\Users\Allan\git\saintmc\common-bukkit\src\main\java\tk\yallandev\saintmc\bukkit\api\client\CustomClient.java
 C:\Users\Allan\git\saintmc\common-bukkit\src\main\java\tk\yallandev\saintmc\bukkit\api\character\NPC.java
 C:\Users\Allan\git\saintmc\common-bukkit\src\main\java\tk\yallandev\saintmc\bukkit\api\cooldown\event\CooldownFinishEvent.java
 C:\Users\Allan\git\saintmc\common-bukkit\src\main\java\net\saintmc\anticheat\AnticheatController.java

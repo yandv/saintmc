@@ -63,18 +63,12 @@ public class LoginConfiguration {
 	}
 
 	public boolean clearSessions() {
-		if (sessionMap == null)
-			sessionMap = new HashMap<>();
-
 		sessionMap.clear();
 		save();
 		return true;
 	}
 
 	public boolean startSession(String ipAddress) {
-		if (sessionMap == null)
-			sessionMap = new HashMap<>();
-
 		Session session = sessionMap.get(ipAddress);
 
 		if (session == null) {
@@ -87,11 +81,20 @@ public class LoginConfiguration {
 		return true;
 	}
 
+	public void removeSession(String ipAddress) {
+		sessionMap.remove(ipAddress);
+		save();
+	}
+
 	public boolean hasSession(String ipAddress) {
+		return sessionMap.containsKey(ipAddress) ? !sessionMap.get(ipAddress).hasExpired() : false;
+	}
+
+	public Session getSession(String ipAddress) {
 		if (sessionMap == null)
 			sessionMap = new HashMap<>();
 
-		return sessionMap.containsKey(ipAddress) ? !sessionMap.get(ipAddress).hasExpired() : false;
+		return sessionMap.get(ipAddress);
 	}
 
 	public void logOut() {
@@ -128,4 +131,5 @@ public class LoginConfiguration {
 		CRACKED, ORIGINAL;
 
 	}
+
 }

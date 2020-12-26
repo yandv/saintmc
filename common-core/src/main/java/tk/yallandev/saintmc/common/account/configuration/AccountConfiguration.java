@@ -23,7 +23,7 @@ public class AccountConfiguration {
 	private boolean adminItems = true;
 	private boolean adminOnJoin = true;
 	
-	private boolean seeingClatchat = false;
+	private boolean seeingClanchat = false;
 	private boolean seeingStaffchat = true;
 	private boolean seeingStafflog = false;
 	
@@ -118,8 +118,8 @@ public class AccountConfiguration {
 	}
 	
 	public void setSeeingClatchat(boolean seeingClatchat) {
-		if (this.seeingClatchat != seeingClatchat) {
-			this.seeingClatchat = seeingClatchat;
+		if (this.seeingClanchat != seeingClatchat) {
+			this.seeingClanchat = seeingClatchat;
 			save();
 		}
 	}

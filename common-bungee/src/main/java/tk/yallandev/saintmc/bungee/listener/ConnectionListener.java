@@ -26,10 +26,12 @@ import tk.yallandev.saintmc.CommonConst;
 import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.bungee.BungeeMain;
 import tk.yallandev.saintmc.bungee.bungee.BungeeMember;
+import tk.yallandev.saintmc.common.account.Member;
 import tk.yallandev.saintmc.common.permission.Group;
 import tk.yallandev.saintmc.common.server.ServerManager;
 import tk.yallandev.saintmc.common.server.ServerType;
 import tk.yallandev.saintmc.common.server.loadbalancer.server.ProxiedServer;
+import tk.yallandev.saintmc.common.utils.ip.Session;
 import tk.yallandev.saintmc.common.utils.string.StringCenter;
 
 public class ConnectionListener implements Listener {
@@ -71,7 +73,10 @@ public class ConnectionListener implements Listener {
 			return;
 		}
 
-		ProxiedServer fallbackServer = manager.getBalancer(kickedFrom.getServerType().getServerLobby()).next();
+		Member member = CommonGeneral.getInstance().getMemberManager().getMember(player.getUniqueId());
+		ProxiedServer fallbackServer = member.getLoginConfiguration().isLogged()
+				? manager.getBalancer(kickedFrom.getServerType().getServerLobby()).next()
+				: null;
 
 		if (fallbackServer == null || fallbackServer.getServerInfo() == null) {
 			event.getPlayer().disconnect(event.getKickReasonComponent());
@@ -90,13 +95,38 @@ public class ConnectionListener implements Listener {
 		}
 
 		event.setCancelled(true);
+		event.setCancelServer(fallbackServer.getServerInfo());
 	}
 
 	@EventHandler
 	public void onSearchServer(SearchServerEvent event) {
-		boolean logged = event.getPlayer().getAccountType() == AccountType.CRACKED ? CommonGeneral.getInstance()
-				.getMemberManager().getMember(event.getPlayer().getUniqueId()).getLoginConfiguration().isLogged()
+		Member member = CommonGeneral.getInstance().getMemberManager().getMember(event.getPlayer().getUniqueId());
+		boolean logged = event.getPlayer().getAccountType() == AccountType.CRACKED
+				? member.getLoginConfiguration().isLogged()
 				: true;
+
+		if (event.getPlayer().getAccountType() == AccountType.CRACKED) {
+			String ipAddress = event.getPlayer().getAddress().getHostString();
+
+			if (member.getLoginConfiguration()
+					.getAccountType() == tk.yallandev.saintmc.common.account.configuration.LoginConfiguration.AccountType.CRACKED) {
+
+				Session session = member.getLoginConfiguration().getSession(ipAddress);
+
+				if (session != null) {
+					if (session.hasExpired()) {
+						logged = false;
+						member.sendMessage("§cSua sessão expirou!");
+						member.getLoginConfiguration().removeSession(ipAddress);
+					} else {
+						logged = true;
+						member.getLoginConfiguration().login(ipAddress);
+						member.sendMessage("§aAutenticado automaticamente pelo servidor!");
+					}
+				}
+			}
+		}
+
 		Entry<ProxiedServer, ServerType> entry = searchServer(event.getPlayer(), logged, true);
 
 		ProxiedServer server = entry.getKey();

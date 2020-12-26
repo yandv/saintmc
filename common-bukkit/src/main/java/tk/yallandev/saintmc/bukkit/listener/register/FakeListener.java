@@ -6,9 +6,13 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import com.comphenix.protocol.wrappers.WrappedGameProfile;
+import com.comphenix.protocol.wrappers.WrappedSignedProperty;
+
 import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.bukkit.BukkitMain;
 import tk.yallandev.saintmc.bukkit.api.player.PlayerAPI;
+import tk.yallandev.saintmc.bukkit.api.player.TextureFetcher;
 import tk.yallandev.saintmc.bukkit.listener.Listener;
 import tk.yallandev.saintmc.common.account.Member;
 
@@ -26,11 +30,26 @@ public class FakeListener extends Listener {
 				public void run() {
 					if (player.isOnline()) {
 						if (member.isUsingFake())
-							PlayerAPI.changePlayerName(player, member.getFakeName());
+							new BukkitRunnable() {
 
-						if (member.hasSkin())
-							PlayerAPI.changePlayerSkin(player, member.getSkinProfile().getPlayerName(),
-									member.getSkinProfile().getUniqueId(), true);
+								@Override
+								public void run() {
+									PlayerAPI.changePlayerName(player, member.getFakeName());
+								}
+							}.runTask(BukkitMain.getInstance());
+
+						if (member.hasSkin()) {
+							WrappedSignedProperty property = TextureFetcher.loadTexture(new WrappedGameProfile(
+									member.getSkinProfile().getUniqueId(), member.getSkinProfile().getPlayerName()));
+
+							new BukkitRunnable() {
+
+								@Override
+								public void run() {
+									PlayerAPI.changePlayerSkin(player, property, true);
+								}
+							}.runTask(BukkitMain.getInstance());
+						}
 					}
 				}
 			}.runTaskAsynchronously(BukkitMain.getInstance());

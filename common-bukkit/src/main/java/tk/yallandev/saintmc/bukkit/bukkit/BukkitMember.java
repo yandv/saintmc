@@ -11,7 +11,6 @@ import lombok.Getter;
 import lombok.Setter;
 import net.md_5.bungee.api.chat.BaseComponent;
 import tk.yallandev.saintmc.bukkit.BukkitMain;
-import tk.yallandev.saintmc.bukkit.api.client.CustomClient;
 import tk.yallandev.saintmc.bukkit.api.scoreboard.Scoreboard;
 import tk.yallandev.saintmc.bukkit.event.account.PlayerChangeLeagueEvent;
 import tk.yallandev.saintmc.bukkit.event.account.PlayerChangeTagEvent;
@@ -38,9 +37,7 @@ public class BukkitMember extends Member {
 	private transient boolean cacheOnQuit;
 	@Setter
 	private transient Profile lastTell;
-	@Setter
-	private transient CustomClient customClient;
-
+	
 	public BukkitMember(MemberModel memberModel) {
 		super(memberModel);
 	}

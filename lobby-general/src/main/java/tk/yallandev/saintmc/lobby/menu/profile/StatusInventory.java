@@ -21,7 +21,7 @@ public class StatusInventory {
 	public StatusInventory(Player player) {
 		Member member = CommonGeneral.getInstance().getMemberManager().getMember(player.getUniqueId());
 
-		MenuInventory inv = new MenuInventory("§7Seu status", 5);
+		MenuInventory inv = new MenuInventory("§7§nSeu status", 5);
 
 		inv.setItem(13, new ItemBuilder().type(Material.SKULL_ITEM).durability(3).skin(player.getName())
 				.name((member.getGroup() == Group.MEMBRO ? "§7" + player.getName()

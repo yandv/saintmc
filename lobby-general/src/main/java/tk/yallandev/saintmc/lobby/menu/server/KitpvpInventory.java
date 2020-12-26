@@ -79,7 +79,7 @@ public class KitpvpInventory {
 				builder.durability(5);
 			}
 
-			builder.lore("", "§f" + server.getOnlinePlayers() + " jogadores conectados.", "",
+			builder.lore("", "§8" + server.getOnlinePlayers() + " jogadores conectados.",
 					(server.isFull() ? "§c" : "§a") + "Clique para entrar.");
 
 			if (w % 9 == 8) {

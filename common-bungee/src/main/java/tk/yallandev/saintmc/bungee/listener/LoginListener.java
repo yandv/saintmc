@@ -352,11 +352,10 @@ public class LoginListener implements Listener {
 			}
 		}
 
-		CommonGeneral.getInstance().getPlayerData().checkCache(uniqueId);
-
 		member.setJoinData(playerName, event.getConnection().getAddress().getHostString());
 		member.setFakeName(member.getPlayerName());
 		member.setServerType(ServerType.NONE);
+		member.getLoginConfiguration().logOut();
 
 		Ban activeBan = null;
 
@@ -391,13 +390,6 @@ public class LoginListener implements Listener {
 						+ CommonConst.DISCORD);
 				return false;
 			}
-		}
-
-		if (member.getLoginConfiguration().getAccountType() == AccountType.CRACKED) {
-			if (member.getLoginConfiguration().hasSession(ipAddress)) {
-				member.getLoginConfiguration().login(ipAddress);
-			} else
-				member.getLoginConfiguration().logOut();
 		}
 
 		if (member.getClanUniqueId() != null) {

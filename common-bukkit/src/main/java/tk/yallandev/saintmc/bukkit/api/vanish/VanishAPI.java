@@ -3,6 +3,7 @@ package tk.yallandev.saintmc.bukkit.api.vanish;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -16,12 +17,11 @@ import tk.yallandev.saintmc.common.account.Member;
 import tk.yallandev.saintmc.common.permission.Group;
 
 public class VanishAPI {
-
-	private HashMap<UUID, Group> vanishedToGroup;
-
-	private Set<UUID> hideAllPlayers;
-
+	
 	private final static VanishAPI instance = new VanishAPI();
+
+	private Map<UUID, Group> vanishedToGroup;
+	private Set<UUID> hideAllPlayers;
 
 	public VanishAPI() {
 		vanishedToGroup = new HashMap<>();

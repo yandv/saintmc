@@ -7,6 +7,7 @@ import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
 import lombok.AllArgsConstructor;
@@ -87,6 +88,7 @@ public class SkinInventory {
 							member.setSkinProfile(skin.getProfile());
 							p.sendMessage("§aSua skin foi alterada para " + skin.getDisplayName() + "!");
 							p.closeInventory();
+							p.playSound(p.getLocation(), Sound.LEVEL_UP, .8f, .2f);
 
 							Bukkit.getScheduler().runTaskAsynchronously(BukkitMain.getInstance(),
 									() -> PlayerAPI.changePlayerSkin(p, skin.getProfile().getPlayerName(),
@@ -99,6 +101,8 @@ public class SkinInventory {
 				}
 			}
 
+			menuInventory.setItem(48, new ItemBuilder().name("§aVoltar").type(Material.ARROW).build(),
+					(p, inv, type, stack, slot) -> new SkinInventory(player, member, MenuType.GENERAL));
 			menuInventory.setItem(49, new ItemBuilder().name("§cRestaurar skin").type(Material.BARRIER)
 					.lore("§7Clique para restaurar sua skin.").build(), (p, inv, type, stack, slot) -> {
 						p.performCommand("skin #");

@@ -44,8 +44,7 @@ public class YoutubeCommand implements CommandClass {
 		Member member = (Member) args.getSender();
 
 		if (args.getArgs().length != 1) {
-			player.sendMessage(
-					"§eUse /fake <player> para trocar de nick! §7(Cooldown de 1 minuto para trocar de fake)");
+			player.sendMessage("§cUso /fake <player> para trocar de nick!");
 			return;
 		}
 
@@ -142,7 +141,13 @@ public class YoutubeCommand implements CommandClass {
 		Member member = CommonGeneral.getInstance().getMemberManager().getMember(player.getUniqueId());
 
 		if (args.getArgs().length != 1) {
-			new SkinInventory(player, member, MenuType.GENERAL);
+			new BukkitRunnable() {
+
+				@Override
+				public void run() {
+					new SkinInventory(player, member, MenuType.GENERAL);
+				}
+			}.runTask(BukkitMain.getInstance());
 			return;
 		}
 
