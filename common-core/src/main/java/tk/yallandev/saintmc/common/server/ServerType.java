@@ -2,34 +2,28 @@ package tk.yallandev.saintmc.common.server;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import tk.yallandev.saintmc.common.utils.string.NameUtils;
 
 @Getter
 @AllArgsConstructor
 public enum ServerType {
 
-	LOGIN("Login"), LOBBY("Lobby"), LOBBY_HG("Lobby HG"),
+	LOGIN, LOBBY, LOBBY_HG, LOBBY_SKYWARS,
+	LOBBY_BEDWARS,
 
-	HUNGERGAMES("HG"), FULLIRON("PvP FullIron"), SIMULATOR("PvP Simulator"), GLADIATOR("Gladiator"),
+	FULLIRON, SIMULATOR, GLADIATOR,
 
-	EVENTO("Evento"),
+	EVENTO, HUNGERGAMES,
 
-	SW_SOLO("Skywars Solo"), SW_TEAM("Skywars Team"), SW_SQUAD("Skywars Squad"),
+	SW_SOLO, SW_TEAM, SW_SQUAD, BW_SOLO, BW_TEAM, BW_SQUAD,
 
-	CLANXCLAN("Clan x Clan"),
+	CLANXCLAN,
 
-	SCREENSHARE("Screenshare"),
+	SCREENSHARE,
 
-	NETWORK(), NONE;
-
-	private String serverName;
-
-	ServerType() {
-		serverName = NameUtils.formatString(name());
-	}
+	NETWORK, NONE;
 
 	public boolean isLobby() {
-		return this == LOBBY;
+		return this.name().contains("LOBBY");
 	}
 
 	public ServerType getServerLobby() {

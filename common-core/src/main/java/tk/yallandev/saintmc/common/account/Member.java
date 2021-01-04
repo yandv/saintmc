@@ -213,7 +213,7 @@ public abstract class Member implements CommandSender {
 
 		this.medalList = new ArrayList<>();
 
-		this.league = League.INICIANTE;
+		this.league = League.values()[0];
 		this.reputation = 5;
 
 		this.firstLogin = System.currentTimeMillis();
@@ -418,7 +418,7 @@ public abstract class Member implements CommandSender {
 
 	public boolean hasGroupPermission(Group groupToUse) {
 		if (getServerGroup() == Group.YOUTUBERPLUS)
-			return Group.TRIAL.ordinal() >= groupToUse.ordinal();
+			return Group.AJUDANTE.ordinal() >= groupToUse.ordinal();
 		else if (getServerGroup() == Group.STREAMER)
 			return Group.MODPLUS.ordinal() >= groupToUse.ordinal();
 		return getServerGroup().ordinal() >= groupToUse.ordinal();

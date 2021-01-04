@@ -25,24 +25,29 @@ import tk.yallandev.saintmc.common.permission.Group;
 public abstract class Tag {
 
 	public static final Tag DONO = TagWrapper.create("§4§lDONO§4", Group.DONO);
-	public static final Tag ADMIN = TagWrapper.create("§4§lADMIN§4", Group.ADMIN);
-	public static final Tag DEVELOPER = TagWrapper.create("§3§lDEV§3", Group.DEVELOPER);
-	public static final Tag INVESTPLUS = TagWrapper.create("§a§lINVEST+§a", Group.INVESTPLUS);
+	public static final Tag ADMIN = TagWrapper.create("§c§lADMIN§c", Group.ADMIN);
+	public static final Tag DEVELOPER = TagWrapper.create("§3§lDEVELOPER§3", Group.DEVELOPER);
 	public static final Tag MODPLUS = TagWrapper.create("§5§LMOD+§5", Group.MODPLUS);
-	public static final Tag INVEST = TagWrapper.create("§a§lINVEST§a", Group.INVEST);
+	public static final Tag MODGC = TagWrapper.create("§5§LMODGC§5", Group.MODGC);
 	public static final Tag MOD = TagWrapper.create("§5§lMOD§5", Group.MOD);
-	public static final Tag TRIAL = TagWrapper.create("§5§lTRIAL§5", Group.TRIAL);
-	public static final Tag BUILDER = TagWrapper.create("§e§lBUILDER§e", Group.BUILDER, true);
-	public static final Tag DESIGNER = TagWrapper.create("§2§lDESIGNER§2", Group.DESIGNER, true);
-	public static final Tag YOUTUBERPLUS = TagWrapper.create("§3§lYT+§3", Group.YOUTUBERPLUS, true);
-	public static final Tag YOUTUBER = TagWrapper.create("§b§lYT§b", Arrays.asList(Group.YOUTUBER, Group.YOUTUBERPLUS),
-			true);
+	public static final Tag AJUDANTE = TagWrapper.create("§e§lAJUDANTE§e", Group.AJUDANTE);
+	public static final Tag BUILDER = TagWrapper.create("§2§lBUILDER§2", Group.BUILDER, true);
+	public static final Tag YOUTUBERPLUS = TagWrapper.create("§3§lYOUTUBER+§3", Group.YOUTUBERPLUS, true);
+	public static final Tag YOUTUBER = TagWrapper.create("§b§lYOUTUBER§b",
+			Arrays.asList(Group.YOUTUBER, Group.YOUTUBERPLUS), true);
+	public static final Tag PARTNER = TagWrapper.create("§b§lPARTNER§b",
+			Arrays.asList(Group.YOUTUBER, Group.YOUTUBERPLUS, Group.PARTNER), true);
 	public static final Tag STREAMER = TagWrapper.create("§3§lSTREAMER§3", Group.STREAMER, true);
 	public static final Tag BETA = TagWrapper.create("§1§lBETA§1", Group.BETA, true);
-	public static final Tag NITRO = TagWrapper.create("§d§lNITRO§d", Group.NITRO, true);
-	public static final Tag ULTIMATE = TagWrapper.create("§d§lULTIMATE§d", Group.ULTIMATE);
-	public static final Tag EXTREME = TagWrapper.create("§4§lEXTREME§4", Group.EXTREME);
-	public static final Tag PRO = TagWrapper.create("§6§lPRO§6", Group.PRO);
+	public static final Tag NORD = TagWrapper.create("§6§lNORD§6", Group.NORD);
+	public static final Tag ELITE = TagWrapper.create("§c§lELITE§c", Group.ELITE);
+	public static final Tag PRO = TagWrapper.create("§e§lPRO§e", Group.PRO);
+
+	public static final Tag COPA = TagWrapper.create("§e§lCOPA§e", null);
+	public static final Tag WARRIOR = TagWrapper.create("§7§lWARRIOR§7", null);
+	public static final Tag T2021 = TagWrapper.create("§b§l2021§b", null);
+	public static final Tag T2020 = TagWrapper.create("§b§l2020§b", null);
+
 	public static final Tag MEMBRO = TagWrapper.create("MEMBRO", "§7", Group.MEMBRO);
 
 	public int ordinal() {

@@ -27,45 +27,36 @@ public class CommonConst {
 
 	public static final Pattern NICKNAME_PATTERN = Pattern.compile("[a-zA-Z0-9_]{1,16}");
 
-	public static final String SERVER_NAME = "ClouthNetwork";
-	public static final String KICK_PREFIX = "ClouthNetwork";
+	public static final String SERVER_NAME = "NordMC";
+	public static final String KICK_PREFIX = "NordMC";
 
-	public static final String IP_END = "clouth-network.com.br";
+	public static final String IP_END = "nordmc.com.br";
 
 	/*
 	 * HOWEVER
 	 */
 
-	public static final String WEBSITE = "clouth-network.com.br/";
-	public static final String SITE = "clouth-network.com.br";
-	public static final String STORE = "loja.clouth-network.com.br";
-	public static final String TWITTER = "twitter.clouth-network.com.br";
-	public static final String DISCORD = "discord.clouth-network.com.br";
-	public static final String TORNEIO_DISCORD = "torneio.clouth-network.com.br/";
+	public static final String WEBSITE = "nordmc.com.br/";
+	public static final String SITE = "nordmc.com.br";
+	public static final String STORE = "loja.nordmc.com.br";
+	public static final String TWITTER = "twitter.nordmc.com.br";
+	public static final String DISCORD = "discord.nordmc.com.br";
+	public static final String TORNEIO_DISCORD = "torneio.nordmc.com.br/";
 
 	/*
 	 * FORM
 	 */
 
-	public static final String TRIAL_FORM = "https://trial.clouth-network.com.br/";
-	public static final String HELPER_FORM = "https://helper.clouth-network.com.br/";
-	public static final String YOUTUBER_FORM = "https://youtuber.clouth-network.com.br/";
-	public static final String APPEAL_FORM = "https://appeal.clouth-network.com.br/";
-
-	/*
-	 * PAINEL
-	 */
-
-	public static final String PAINEL = "https://painel.clouth-network.com.br/";
-	public static final String PAINEL_PROFILE = "https://painel.clouth-network.com.br/profile/";
-	public static final String DASHBOARD = "https://painel.clouth-network.com.br/dashboard/";
-	public static final String DASHBOARD_PROFILE = "https://painel.clouth-network.com.br/dashboard/profile/";
+	public static final String TRIAL_FORM = "https://trial.nordmc.com.br/";
+	public static final String HELPER_FORM = "https://helper.nordmc.com.br/";
+	public static final String YOUTUBER_FORM = "https://youtuber.nordmc.com.br/";
+	public static final String APPEAL_FORM = "https://appeal.nordmc.com.br/";
 
 	/*
 	 * API
 	 */
 
-	public static final String API = "http://api.clouthnetwork.spectrum-mc.net:3333";
+	public static final String API = "http://api.nordmc.spectrum-mc.net:3333";
 	public static final String DOWNLOAD_KEY = "kangaroo123";
 
 	public static final String SKIN_URL = "https://sessionserver.mojang.com/session/minecraft/profile/%s?unsigned=false";

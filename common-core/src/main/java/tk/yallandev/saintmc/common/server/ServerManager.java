@@ -39,6 +39,8 @@ public class ServerManager {
 
 		balancers.put(ServerType.LOBBY, new LeastConnection<>());
 		balancers.put(ServerType.LOBBY_HG, new LeastConnection<>());
+		balancers.put(ServerType.LOBBY_SKYWARS, new LeastConnection<>());
+		balancers.put(ServerType.LOBBY_BEDWARS, new LeastConnection<>());
 		balancers.put(ServerType.LOGIN, new LeastConnection<>());
 		balancers.put(ServerType.SCREENSHARE, new LeastConnection<>());
 
@@ -53,6 +55,10 @@ public class ServerManager {
 		balancers.put(ServerType.SW_SOLO, new MostConnection<>());
 		balancers.put(ServerType.SW_TEAM, new MostConnection<>());
 		balancers.put(ServerType.SW_SQUAD, new MostConnection<>());
+		
+		balancers.put(ServerType.BW_SOLO, new MostConnection<>());
+		balancers.put(ServerType.BW_TEAM, new MostConnection<>());
+		balancers.put(ServerType.BW_SQUAD, new MostConnection<>());
 	}
 
 	public BaseBalancer<ProxiedServer> getBalancer(ServerType type) {

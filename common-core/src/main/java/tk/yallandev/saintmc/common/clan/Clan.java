@@ -256,7 +256,7 @@ public abstract class Clan {
 	}
 
 	public void onMemberChat(MemberChatEvent event) {
-
+		
 	}
 
 	public void onMemberOnline(MemberOnlineEvent event) {

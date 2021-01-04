@@ -14,10 +14,10 @@ import tk.yallandev.saintmc.common.permission.group.StreamerGroup;
 
 public enum Group {
 
-	MEMBRO, PRO, EXTREME, ULTIMATE, NITRO, BETA, STREAMER, YOUTUBER, YOUTUBERPLUS(new StreamerGroup()), DESIGNER,
-	BUILDER, TRIAL(new ModeratorGroup()), MOD(new ModeratorGroup()), INVEST(new ModeratorGroup()),
-	MODPLUS(new ModeratorGroup()), INVESTPLUS(new ModeratorGroup()), DEVELOPER(new OwnerGroup()),
-	ADMIN(new OwnerGroup()), DONO(new OwnerGroup());
+	MEMBRO, PRO, ELITE, NORD, BETA, STREAMER, PARTNER, YOUTUBER, YOUTUBERPLUS(new StreamerGroup()), BUILDER,
+	AJUDANTE(new ModeratorGroup()), MOD(new ModeratorGroup()), MODGC(new ModeratorGroup()),
+	MODPLUS(new ModeratorGroup()), ADMIN(new OwnerGroup()), DEVELOPER(new OwnerGroup()),
+	DONO(new OwnerGroup());
 
 	private GroupInterface group;
 

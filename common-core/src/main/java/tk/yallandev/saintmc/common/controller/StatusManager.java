@@ -40,18 +40,6 @@ public class StatusManager {
 		map.put(statusType, status);
 		return status;
 	}
-
-	/**
-	 * 
-	 * To rapid
-	 * 
-	 * @param <T>
-	 * @param uuid
-	 * @param statusType
-	 * @param clazz
-	 * @return
-	 */
-
 	public <T> T loadStatus(UUID uuid, StatusType statusType, Class<? extends T> clazz) {
 		Map<StatusType, Status> map = statusMap.containsKey(uuid) ? statusMap.get(uuid)
 				: statusMap.computeIfAbsent(uuid, v -> new HashMap<>());

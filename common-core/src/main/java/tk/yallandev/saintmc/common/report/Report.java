@@ -170,7 +170,6 @@ public class Report {
 	}
 
 	public void denyPlayer() {
-
 		CommonGeneral.getInstance().getReportData().deleteReport(getPlayerUniqueId());
 		CommonGeneral.getInstance().getReportManager().unloadReport(getPlayerUniqueId());
 	}
