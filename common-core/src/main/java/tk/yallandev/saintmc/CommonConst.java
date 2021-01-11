@@ -51,6 +51,8 @@ public class CommonConst {
 	public static final String HELPER_FORM = "https://helper.nordmc.com.br/";
 	public static final String YOUTUBER_FORM = "https://youtuber.nordmc.com.br/";
 	public static final String APPEAL_FORM = "https://appeal.nordmc.com.br/";
+	
+	public static final boolean LOBBY_HG = false;
 
 	/*
 	 * API

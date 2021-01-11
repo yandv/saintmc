@@ -28,13 +28,13 @@ public class ScreenshareMain extends JavaPlugin implements Listener {
 	private static Scoreboard scoreboard;
 
 	{
-		scoreboard = new SimpleScoreboard("§4§lSCREENSHARE");
+		scoreboard = new SimpleScoreboard("§6§lSCREENSHARE");
 
 		scoreboard.blankLine(5);
 		scoreboard.setScore(4, new Score("§fVocê está na screenshare", "2"));
 		scoreboard.setScore(3, new Score("§fObedeça o staff", "1"));
 		scoreboard.blankLine(2);
-		scoreboard.setScore(1, new Score("§c" + CommonConst.WEBSITE, "site"));
+		scoreboard.setScore(1, new Score("§e" + CommonConst.WEBSITE, "site"));
 	}
 
 	@Override
@@ -61,7 +61,7 @@ public class ScreenshareMain extends JavaPlugin implements Listener {
 	public void onDisable() {
 		super.onDisable();
 	}
-	
+
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		Player player = event.getPlayer();
@@ -88,7 +88,7 @@ public class ScreenshareMain extends JavaPlugin implements Listener {
 	public void onEntityDamage(EntityDamageEvent event) {
 		if (event.getCause() == DamageCause.VOID)
 			event.getEntity().teleport(BukkitMain.getInstance().getLocationFromConfig("spawn"));
-		
+
 		event.setCancelled(true);
 	}
 

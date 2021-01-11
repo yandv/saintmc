@@ -12,14 +12,12 @@
 		<module>common-bungee</module>
 		<module>common-bukkit</module>
 		<module>kitpvp</module>
-		<module>lobby</module>
 		<module>hungergames</module>
 		<module>gladiator</module>
 		<module>screenshare</module>
 		<module>anticheat</module>
 		<module>login</module>
 		<module>skywars</module>
-		<module>ranking-component</module>
 		<module>lobby-general</module>
 		<module>lobby-normal</module>
 		<module>lobby-hg</module>

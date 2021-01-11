@@ -9,7 +9,6 @@ import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
-import tk.yallandev.saintmc.CommonConst;
 import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.bungee.BungeeMain;
 import tk.yallandev.saintmc.bungee.bungee.BungeeMember;
@@ -271,8 +270,7 @@ public class ServerCommand implements CommandClass {
 			return;
 		}
 
-		String serverId = args[0].endsWith(CommonConst.IP_END) ? args[0] : args[0] + "." + CommonConst.IP_END;
-
+		String serverId = args[0];
 		ProxiedServer server = BungeeMain.getInstance().getServerManager().getServerByName(serverId);
 
 		if (server == null || server.getServerInfo() == null) {

@@ -38,29 +38,29 @@ public class ShadowScoreboard extends WarpScoreboard {
 	private List<FightPingUpdate> observersList;
 
 	public ShadowScoreboard() {
-		super(new SimpleScoreboard("§4§l1v1"));
+		super(new SimpleScoreboard("§6§l1v1"));
 
 		scoreboard.blankLine(11);
-		scoreboard.setScore(10, new Score("Vitórias: §e0", "wins"));
-		scoreboard.setScore(9, new Score("Derrotas: §e0", "loses"));
-		scoreboard.setScore(8, new Score("Winstreak: §e0", "winstreak"));
+		scoreboard.setScore(10, new Score("Vitórias: §a0", "wins"));
+		scoreboard.setScore(9, new Score("Derrotas: §a0", "loses"));
+		scoreboard.setScore(8, new Score("Winstreak: §a0", "winstreak"));
 		scoreboard.blankLine(7);
 		scoreboard.setScore(6, new Score("Ranking: §7(§f-§7)", "rank"));
 		scoreboard.setScore(5, new Score("Xp: §a0", "xp"));
 		scoreboard.blankLine(4);
 		scoreboard.setScore(3, new Score("Jogadores: §b" + Bukkit.getOnlinePlayers().size(), "players"));
 		scoreboard.blankLine(2);
-		scoreboard.setScore(1, new Score("§c" + CommonConst.SITE, "site"));
+		scoreboard.setScore(1, new Score("§e" + CommonConst.SITE, "site"));
 
-		searchingScoreboard = new SimpleScoreboard("§4§lPROCURANDO");
+		searchingScoreboard = new SimpleScoreboard("§6§lPROCURANDO");
 
 		searchingScoreboard.blankLine(5);
-		searchingScoreboard.setScore(4, new Score("Procurando: §e1v1 rápido", "searching"));
-		searchingScoreboard.setScore(3, new Score("Tempo: §e0s", "time"));
+		searchingScoreboard.setScore(4, new Score("Procurando: §a1v1 rápido", "searching"));
+		searchingScoreboard.setScore(3, new Score("Tempo: §a0s", "time"));
 		searchingScoreboard.blankLine(2);
-		searchingScoreboard.setScore(1, new Score("§c" + CommonConst.SITE, "site"));
+		searchingScoreboard.setScore(1, new Score("§e" + CommonConst.SITE, "site"));
 
-		fightScoreboard = new SimpleScoreboard("§4§l1v1");
+		fightScoreboard = new SimpleScoreboard("§6§l1v1");
 
 		fightScoreboard.blankLine(8);
 		fightScoreboard.setScore(7, new Score("§9Ninguém: §e0ms", "playerPing"));
@@ -69,7 +69,7 @@ public class ShadowScoreboard extends WarpScoreboard {
 		fightScoreboard.setScore(4, new Score("Warp: §a1v1", "warp"));
 		fightScoreboard.setScore(3, new Score("Winstreak: §70", "winstreak"));
 		fightScoreboard.blankLine(2);
-		fightScoreboard.setScore(1, new Score("§c" + CommonConst.SITE, "site"));
+		fightScoreboard.setScore(1, new Score("§e" + CommonConst.SITE, "site"));
 
 		observersList = new ArrayList<>();
 	}
@@ -106,12 +106,12 @@ public class ShadowScoreboard extends WarpScoreboard {
 		fightScoreboard.createScoreboard(target);
 
 		fightScoreboard.updateScore(player,
-				new Score("Winstreak: §7" + CommonGeneral.getInstance().getStatusManager()
+				new Score("Winstreak: §a" + CommonGeneral.getInstance().getStatusManager()
 						.loadStatus(player.getUniqueId(), StatusType.SHADOW, NormalStatus.class).getKillstreak(),
 						"winstreak"));
 
 		fightScoreboard.updateScore(target,
-				new Score("Winstreak: §7" + CommonGeneral.getInstance().getStatusManager()
+				new Score("Winstreak: §a" + CommonGeneral.getInstance().getStatusManager()
 						.loadStatus(target.getUniqueId(), StatusType.SHADOW, NormalStatus.class).getKillstreak(),
 						"winstreak"));
 
@@ -213,9 +213,9 @@ public class ShadowScoreboard extends WarpScoreboard {
 			NormalStatus normalStatus = CommonGeneral.getInstance().getStatusManager().loadStatus(player.getUniqueId(),
 					StatusType.SHADOW, NormalStatus.class);
 
-			scoreboard.updateScore(player, new Score("Vitórias: §e" + normalStatus.getKills(), "wins"));
-			scoreboard.updateScore(player, new Score("Derrotas: §e" + normalStatus.getDeaths(), "loses"));
-			scoreboard.updateScore(player, new Score("Winstreak: §e" + normalStatus.getKillstreak(), "winstreak"));
+			scoreboard.updateScore(player, new Score("Vitórias: §a" + normalStatus.getKills(), "wins"));
+			scoreboard.updateScore(player, new Score("Derrotas: §a" + normalStatus.getDeaths(), "loses"));
+			scoreboard.updateScore(player, new Score("Winstreak: §a" + normalStatus.getKillstreak(), "winstreak"));
 
 			scoreboard.updateScore(player, new Score("Xp: §a" + member.getXp(), "xp"));
 			scoreboard.updateScore(player, new Score("Coins: §6" + member.getMoney(), "coins"));

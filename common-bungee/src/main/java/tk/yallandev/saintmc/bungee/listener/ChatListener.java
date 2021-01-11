@@ -98,17 +98,15 @@ public class ChatListener implements Listener {
 				if (event.isCommand()) {
 					if (blockedCommands.contains(command)) {
 						event.setCancelled(true);
-						player.sendMessage(
-								"§4§l> §fVocê não pode §cexecutar§f esse comando enquanto estiver na §escreenshare§f!");
+						player.sendMessage("§cVocê não pode executar esse comando na Screenshare!");
 					}
 				}
-
 			}
 
 			if (!player.getLoginConfiguration().isLogged()) {
 				if (!allowedCommands.contains(command)) {
 					event.setCancelled(true);
-					player.sendMessage("§4§l> §fVocê não pode §cexecutar§f esse comando enquanto não estiver logado!");
+					player.sendMessage("§cVocê não pode executar esse comando antes de se logar!");
 					return;
 				}
 			}
@@ -116,8 +114,7 @@ public class ChatListener implements Listener {
 
 		if (!event.isCommand())
 			if (player.getAccountConfiguration().isStaffChatEnabled()) {
-				if (player.hasGroupPermission(Group.TRIAL)) {
-
+				if (player.hasGroupPermission(Group.AJUDANTE)) {
 					if (!player.getAccountConfiguration().isSeeingStaffchat()) {
 						player.sendMessage("§cVocê estava falando no staffchat sem pode ver ele!");
 						player.sendMessage(
@@ -128,7 +125,7 @@ public class ChatListener implements Listener {
 					}
 
 					CommonGeneral.getInstance().getMemberManager().getMembers().stream().filter(
-							m -> m.hasGroupPermission(Group.TRIAL) && m.getAccountConfiguration().isSeeingStaffchat())
+							m -> m.hasGroupPermission(Group.AJUDANTE) && m.getAccountConfiguration().isSeeingStaffchat())
 							.forEach(m -> m.sendMessage(
 									"§e§l[STAFF] " + Tag.getByName(player.getGroup().toString()).getPrefix() + " "
 											+ player.getPlayerName() + "§f: " + event.getMessage()));

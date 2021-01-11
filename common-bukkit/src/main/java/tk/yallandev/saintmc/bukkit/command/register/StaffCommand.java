@@ -26,7 +26,27 @@ import tk.yallandev.saintmc.update.UpdatePlugin;
 
 public class StaffCommand implements CommandClass {
 
-	@Command(name = "setspawn", groupToUse = Group.TRIAL)
+	@Command(name = "say", groupToUse = Group.AJUDANTE, usage = "/<command> <mesage>")
+	public void broadcastCommand(CommandArgs cmdArgs) {
+		CommandSender sender = cmdArgs.getSender();
+		String[] args = cmdArgs.getArgs();
+
+		if (args.length == 0) {
+			sender.sendMessage("§eUso /" + cmdArgs.getLabel() + " <mensagem> para mandar uma mensagem para todos.");
+			return;
+		}
+
+		String msg = "";
+
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < args.length; i++)
+			sb.append(args[i]).append(" ");
+		msg = sb.toString();
+
+		Bukkit.broadcastMessage("§6§nNord§a§nMC§7 » §f" + msg.replace("&", "§"));
+	}
+
+	@Command(name = "setspawn", groupToUse = Group.AJUDANTE)
 	public void setspawnCommand(CommandArgs cmdArgs) {
 		if (!cmdArgs.isPlayer())
 			return;
@@ -35,11 +55,11 @@ public class StaffCommand implements CommandClass {
 
 		if (CommonGeneral.getInstance().getServerType() == ServerType.HUNGERGAMES)
 			if (!Member.hasGroupPermission(p.getUniqueId(), Group.MODPLUS)
-					&& !Member.isGroup(p.getUniqueId(), Group.TRIAL)) {
+					&& !Member.isGroup(p.getUniqueId(), Group.AJUDANTE)) {
 				p.sendMessage(" §c* §fVocê não tem §cpermissão§f para executar esse comando!");
 				return;
 			} else if (!Member.hasGroupPermission(p.getUniqueId(), Group.ADMIN)
-					&& !Member.isGroup(p.getUniqueId(), Group.TRIAL)) {
+					&& !Member.isGroup(p.getUniqueId(), Group.AJUDANTE)) {
 				p.sendMessage(" §c* §fVocê não tem §cpermissão§f para executar esse comando!");
 				return;
 			}
@@ -81,7 +101,7 @@ public class StaffCommand implements CommandClass {
 			cmdArgs.getSender().sendMessage("§cNenhuma atualização disponível!");
 	}
 
-	@Command(name = "admin", aliases = { "adm" }, groupToUse = Group.TRIAL)
+	@Command(name = "admin", aliases = { "adm" }, groupToUse = Group.AJUDANTE)
 	public void admin(CommandArgs cmdArgs) {
 		if (!cmdArgs.isPlayer())
 			return;
@@ -121,6 +141,7 @@ public class StaffCommand implements CommandClass {
 						public void run() {
 							AdminMode.getInstance().setAdmin(p, member);
 						}
+
 					}.runTaskLater(BukkitMain.getInstance(), 5l);
 				}
 
@@ -135,14 +156,14 @@ public class StaffCommand implements CommandClass {
 		}
 	}
 
-	@Command(name = "updatevanish", groupToUse = Group.TRIAL)
+	@Command(name = "updatevanish", groupToUse = Group.AJUDANTE)
 	public void updatevanish(CommandArgs args) {
 		if (args.isPlayer()) {
 			VanishAPI.getInstance().updateVanishToPlayer(((BukkitMember) args.getSender()).getPlayer());
 		}
 	}
 
-	@Command(name = "visible", aliases = { "vis", "visivel" }, groupToUse = Group.TRIAL)
+	@Command(name = "visible", aliases = { "vis", "visivel" }, groupToUse = Group.AJUDANTE)
 	public void visibleCommand(CommandArgs args) {
 		if (!args.isPlayer())
 			return;
@@ -152,7 +173,7 @@ public class StaffCommand implements CommandClass {
 		p.sendMessage("\n §a* §fVocê está visível para todos os jogadores!\n§f");
 	}
 
-	@Command(name = "invisible", aliases = { "invis", "invisivel" }, groupToUse = Group.TRIAL)
+	@Command(name = "invisible", aliases = { "invis", "invisivel" }, groupToUse = Group.AJUDANTE)
 	public void invisibleCommand(CommandArgs args) {
 		if (!args.isPlayer()) {
 			return;
@@ -180,7 +201,7 @@ public class StaffCommand implements CommandClass {
 		p.sendMessage("\n §a* §fVocê está invisivel para §a" + group.toString() + " e inferiores§f!\n§f");
 	}
 
-	@Command(name = "inventorysee", aliases = { "invsee", "inv" }, groupToUse = Group.TRIAL)
+	@Command(name = "inventorysee", aliases = { "invsee", "inv" }, groupToUse = Group.AJUDANTE)
 	public void inventorysee(CommandArgs args) {
 		if (!args.isPlayer())
 			return;
@@ -222,7 +243,7 @@ public class StaffCommand implements CommandClass {
 			BukkitMain.getInstance().getServerConfig().setChatState(ChatState.ENABLED);
 			sender.sendMessage(" §a* §fO chat está disponível para todos!");
 			CommonGeneral.getInstance().getMemberManager().broadcast("§7" + sender.getName() + " ativou o chat!",
-					Group.TRIAL);
+					Group.AJUDANTE);
 		} else if (args.getArgs()[0].equalsIgnoreCase("off")) {
 			if (!BukkitMain.getInstance().getServerConfig().getChatState().isEnabled()) {
 				sender.sendMessage(" §c* §fO chat já está §cdesativado§f!");
@@ -235,7 +256,7 @@ public class StaffCommand implements CommandClass {
 			sender.sendMessage(" §a* §fO chat agora está disponível somente para §a"
 					+ BukkitMain.getInstance().getServerConfig().getChatState().name() + "§f!");
 			CommonGeneral.getInstance().getMemberManager().broadcast("§7" + sender.getName() + " desativou o chat!",
-					Group.TRIAL);
+					Group.AJUDANTE);
 		} else {
 			ChatState chatState = null;
 
@@ -275,7 +296,7 @@ public class StaffCommand implements CommandClass {
 		sender.sendMessage("§aHead of " + sender.getName());
 	}
 
-	@Command(name = "clearchat", aliases = { "limparchat", "cc" }, groupToUse = Group.TRIAL)
+	@Command(name = "clearchat", aliases = { "limparchat", "cc" }, groupToUse = Group.AJUDANTE)
 	public void clearchat(CommandArgs args) {
 		for (Player p : Bukkit.getOnlinePlayers()) {
 			for (int i = 0; i < 100; i++)

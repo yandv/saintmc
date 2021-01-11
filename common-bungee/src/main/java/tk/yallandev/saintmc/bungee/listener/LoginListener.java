@@ -1,14 +1,13 @@
 package tk.yallandev.saintmc.bungee.listener;
 
-import java.awt.Color;
 import java.lang.reflect.Field;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
-import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
@@ -16,8 +15,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
-import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.MessageBuilder;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.connection.PendingConnection;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -32,7 +29,6 @@ import net.md_5.bungee.connection.InitialHandler;
 import net.md_5.bungee.connection.LoginResult;
 import net.md_5.bungee.event.EventHandler;
 import net.md_5.bungee.event.EventPriority;
-import tk.yallandev.saintmc.BungeeConst;
 import tk.yallandev.saintmc.CommonConst;
 import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.bungee.BungeeMain;
@@ -49,14 +45,12 @@ import tk.yallandev.saintmc.common.clan.event.member.MemberOnlineEvent;
 import tk.yallandev.saintmc.common.permission.Group;
 import tk.yallandev.saintmc.common.report.Report;
 import tk.yallandev.saintmc.common.server.ServerType;
-import tk.yallandev.saintmc.common.utils.DateUtils;
 import tk.yallandev.saintmc.common.utils.ip.FetchAddressException;
 import tk.yallandev.saintmc.common.utils.ip.IpFetcher;
 import tk.yallandev.saintmc.common.utils.ip.IpInfo;
 import tk.yallandev.saintmc.common.utils.ip.IpInfo.IpStatus;
 import tk.yallandev.saintmc.common.utils.supertype.FutureCallback;
 import tk.yallandev.saintmc.common.utils.web.WebHelper.Method;
-import tk.yallandev.saintmc.discord.utils.MessageUtils;
 
 public class LoginListener implements Listener {
 
@@ -121,15 +115,16 @@ public class LoginListener implements Listener {
 					}
 				}
 
-				event.completeIntent(BungeeMain.getInstance());
 			} catch (Exception ex) {
 				event.setCancelled(true);
 				event.setCancelReason(
 						"§cO servidor não conseguiu fazer as verificações de ip!\n§f\n§c" + CommonConst.DISCORD);
-				event.completeIntent(BungeeMain.getInstance());
-				ex.printStackTrace();
-				return;
+				CommonGeneral.getInstance().getLogger().log(Level.WARNING,
+						"An error occured when checking the player " + event.getConnection().getName() + " account!",
+						ex);
 			}
+
+			event.completeIntent(BungeeMain.getInstance());
 		});
 
 	}
@@ -147,13 +142,15 @@ public class LoginListener implements Listener {
 //					return;
 //				}
 				loadMember(event);
-				event.completeIntent(BungeeMain.getInstance());
 			} catch (Exception ex) {
 				event.setCancelled(true);
 				event.setCancelReason("§cSua conta não foi carregada!\n§f\n§c" + CommonConst.DISCORD);
-				event.completeIntent(BungeeMain.getInstance());
-				ex.printStackTrace();
+				CommonGeneral.getInstance().getLogger().log(Level.WARNING,
+						"An error occured when loading the player " + event.getConnection().getName() + " account!",
+						ex);
 			}
+
+			event.completeIntent(BungeeMain.getInstance());
 		});
 	}
 
@@ -202,18 +199,6 @@ public class LoginListener implements Listener {
 						CommonGeneral.getInstance().getClanManager().unload(clan.getUniqueId());
 					}
 				}
-
-				if (member.hasGroupPermission(Group.TRIAL))
-					MessageUtils.sendMessage(BungeeConst.DISCORD_CHANNEL_PLAYER_LOG,
-							new MessageBuilder(new EmbedBuilder()
-									.setColor(Color.RED)
-									.setAuthor(
-											member.getPlayerName(), CommonConst.PAINEL_PROFILE + member.getPlayerName(),
-											"https://mc-heads.net/avatar/" + member.getPlayerName())
-									.appendDescription("Ficou "
-											+ DateUtils.formatDifference(member.getSessionTime() / 1000) + " online!")
-									.setFooter("Registro de saida do servidor").setTimestamp(Instant.now()).build())
-											.build());
 
 				member.setLeaveData();
 			}

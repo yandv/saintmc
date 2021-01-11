@@ -30,14 +30,6 @@ public class ProtocolGetter {
 			BukkitMain.getInstance().getLogger().info("ProtocolSupport encontrado!");
 			protocolSupport = true;
 		} catch (ClassNotFoundException e) {
-//			if (version.equals("v1_7_R4")) {
-//				try {
-//					Class.forName("org.spigotmc.ProtocolInjector");
-//					BukkitMain.getInstance().getLogger().info("ProtocolHack encontrado!");
-//					protocolHack = true;
-//				} catch (ClassNotFoundException e2) {
-//				}
-//			}
 		}
 
 		try {
@@ -46,7 +38,7 @@ public class ProtocolGetter {
 			viaVersion = true;
 		} catch (ClassNotFoundException e) {
 		}
-		
+
 		try {
 			String version = Bukkit.getServer().getClass().getPackage().getName().substring(23);
 
@@ -91,8 +83,8 @@ public class ProtocolGetter {
 
 		return ProtocolVersion.UNKNOWN;
 	}
-	
+
 	public static int getPing(Player player) {
-		return ((CraftPlayer)player).getHandle().ping;
+		return ((CraftPlayer) player).getHandle().ping;
 	}
 }

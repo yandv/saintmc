@@ -1,6 +1,7 @@
 C:\Users\Allan\git\saintmc\common-bukkit\src\main\java\tk\yallandev\saintmc\bukkit\command\register\ServerCommand.java
 C:\Users\Allan\git\saintmc\common-bukkit\src\main\java\tk\yallandev\saintmc\bukkit\event\player\MenuOpenEvent.java
 C:\Users\Allan\git\saintmc\common-bukkit\src\main\java\tk\yallandev\saintmc\bukkit\bukkit\BukkitMember.java
+C:\Users\Allan\git\saintmc\common-bukkit\src\main\java\tk\yallandev\saintmc\bukkit\menu\account\PreferencesInventory.java
 C:\Users\Allan\git\saintmc\common-bukkit\src\main\java\tk\yallandev\saintmc\bukkit\permission\injector\regexperm\PermissiblePEX.java
 C:\Users\Allan\git\saintmc\common-bukkit\src\main\java\tk\yallandev\saintmc\bukkit\networking\packet\BukkitPacketController.java
 C:\Users\Allan\git\saintmc\common-bukkit\src\main\java\tk\yallandev\saintmc\bukkit\api\menu\click\MenuClickHandler.java

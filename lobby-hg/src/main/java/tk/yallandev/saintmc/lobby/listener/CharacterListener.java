@@ -47,7 +47,7 @@ public class CharacterListener implements Listener {
 			}
 		}, ServerType.HUNGERGAMES);
 
-		createCharacter("§bEvento", "broowk", "npc-pvp", new Interact() {
+		createCharacter("§bEvento", "yandv", "npc-evento", new Interact() {
 
 			@Override
 			public boolean onInteract(Player player, boolean right) {

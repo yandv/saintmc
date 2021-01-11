@@ -2,23 +2,23 @@ package tk.yallandev.saintmc.common.server;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import tk.yallandev.saintmc.CommonConst;
 
 @Getter
 @AllArgsConstructor
 public enum ServerType {
 
-	LOGIN, LOBBY, LOBBY_HG, LOBBY_SKYWARS,
-	LOBBY_BEDWARS,
+	LOGIN, LOBBY, LOBBY_HG, LOBBY_SKYWARS, LOBBY_BEDWARS,
 
 	FULLIRON, SIMULATOR, GLADIATOR,
 
 	EVENTO, HUNGERGAMES,
 
-	SW_SOLO, SW_TEAM, SW_SQUAD, BW_SOLO, BW_TEAM, BW_SQUAD,
+	SW_SOLO, SW_TEAM, SW_SQUAD,
 
-	CLANXCLAN,
+	BW_SOLO, BW_TEAM, BW_SQUAD,
 
-	SCREENSHARE,
+	CLANXCLAN, SCREENSHARE,
 
 	NETWORK, NONE;
 
@@ -30,7 +30,7 @@ public enum ServerType {
 		switch (this) {
 		case HUNGERGAMES:
 		case EVENTO:
-			return LOBBY_HG;
+			return CommonConst.LOBBY_HG ? LOBBY_HG : LOBBY;
 		default:
 			return LOBBY;
 		}

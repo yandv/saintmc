@@ -28,9 +28,7 @@ public class Updater {
 	private static Updater instance;
 
 	private CommonGeneral general;
-
 	private UpdateType updateType;
-
 	private List<PluginInfo> pluginList;
 
 	public Updater() {

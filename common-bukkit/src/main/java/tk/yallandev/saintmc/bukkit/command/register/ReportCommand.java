@@ -29,7 +29,7 @@ public class ReportCommand implements CommandClass {
 
 		Member member = CommonGeneral.getInstance().getMemberManager().getMember(sender.getUniqueId());
 
-		if (!member.hasGroupPermission(Group.TRIAL)) {
+		if (!member.hasGroupPermission(Group.AJUDANTE)) {
 			sender.sendMessage("§cVocê não tem permissão para executar esse comando!");
 			return;
 		}

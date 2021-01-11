@@ -5,7 +5,6 @@ import java.util.UUID;
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteStreams;
 
-import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.connection.Server;
 import net.md_5.bungee.api.event.PluginMessageEvent;
@@ -37,7 +36,7 @@ public class MessageListener implements Listener {
 
 		if (event.getTag().equalsIgnoreCase("WDL|INIT") || (event.getTag().equalsIgnoreCase("PERMISSIONSREPL")
 				&& (new String(event.getData())).contains("mod.worlddownloader"))) {
-			proxiedPlayer.disconnect(TextComponent.fromLegacyText("§cConexão cancelada!"));
+			proxiedPlayer.disconnect("§cConexão cancelada!");
 			return;
 		}
 	}
@@ -143,6 +142,20 @@ public class MessageListener implements Listener {
 				player.sendMessage("§cNenhum servidor encontrado!");
 
 			break;
+		case "LobbySW":
+			event.setCancelled(true);
+
+			if (!searchServer(player, proxiedPlayer, ServerType.LOBBY_SKYWARS))
+				player.sendMessage("§cNenhum servidor encontrado!");
+
+			break;
+		case "LobbyBW":
+			event.setCancelled(true);
+
+			if (!searchServer(player, proxiedPlayer, ServerType.LOBBY_BEDWARS))
+				player.sendMessage("§cNenhum servidor encontrado!");
+
+			break;
 		default:
 			break;
 		}
@@ -154,12 +167,12 @@ public class MessageListener implements Listener {
 		if (server == null || server.getServerInfo() == null)
 			return false;
 
-		if (server.isFull() && !player.hasGroupPermission(Group.ULTIMATE)) {
+		if (server.isFull() && !player.hasGroupPermission(Group.ELITE)) {
 			proxiedPlayer.sendMessage("§cO servidor está cheio!");
 			return true;
 		}
 
-		if (!server.canBeSelected() && !player.hasGroupPermission(Group.TRIAL)) {
+		if (!server.canBeSelected() && !player.hasGroupPermission(Group.AJUDANTE)) {
 			proxiedPlayer.sendMessage("§cO servidor não está disponível para membros!");
 			return true;
 		}

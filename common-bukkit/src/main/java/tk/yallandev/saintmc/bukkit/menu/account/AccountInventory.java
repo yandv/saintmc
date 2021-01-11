@@ -28,10 +28,10 @@ public class AccountInventory {
 
 	public AccountInventory(Player sender, Member player) {
 		MenuInventory menu = new MenuInventory("§7§nConta de " + player.getPlayerName(), 5);
-		boolean isStaff = Member.hasGroupPermission(sender.getUniqueId(), Group.DEVELOPER);
+		boolean isStaff = Member.hasGroupPermission(sender.getUniqueId(), Group.AJUDANTE);
 
 		String lore = isStaff
-				? "\n§7Fake: §f" + player.getFakeName() + "\n§7Discord: §f" + player.getDiscordName() + "\n§7Conta: §f"
+				? "\n§7Fake: §f" + player.getFakeName() + "\n§7Conta: §f"
 						+ player.getLoginConfiguration().getAccountType().name()
 				: "\n§7";
 

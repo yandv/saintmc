@@ -141,7 +141,7 @@ public class GifcodeCommand implements CommandClass {
 		}
 		case SUCCESS: {
 			CommonGeneral.getInstance().getMemberManager()
-					.broadcast("§7O " + sender.getName() + " resgatou o código " + code + "!", Group.TRIAL);
+					.broadcast("§7O " + sender.getName() + " resgatou o código " + code + "!", Group.AJUDANTE);
 			break;
 		}
 		case NOT_FOUND: {

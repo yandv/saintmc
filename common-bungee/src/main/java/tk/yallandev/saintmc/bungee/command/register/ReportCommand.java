@@ -1,17 +1,13 @@
 package tk.yallandev.saintmc.bungee.command.register;
 
-import java.awt.Color;
 import java.util.Arrays;
 import java.util.UUID;
 
-import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.MessageBuilder;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
-import tk.yallandev.saintmc.BungeeConst;
 import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.bungee.command.BungeeCommandArgs;
 import tk.yallandev.saintmc.common.account.Member;
@@ -23,7 +19,6 @@ import tk.yallandev.saintmc.common.command.CommandSender;
 import tk.yallandev.saintmc.common.permission.Group;
 import tk.yallandev.saintmc.common.report.Report;
 import tk.yallandev.saintmc.common.utils.DateUtils;
-import tk.yallandev.saintmc.discord.utils.MessageUtils;
 
 public class ReportCommand implements CommandClass {
 
@@ -159,7 +154,7 @@ public class ReportCommand implements CommandClass {
 					new ComponentBuilder("§aClique para se teletransportar!").create()));
 
 			CommonGeneral.getInstance().getMemberManager().getMembers().stream()
-					.filter(member -> member.hasGroupPermission(Group.TRIAL)
+					.filter(member -> member.hasGroupPermission(Group.AJUDANTE)
 							&& member.getAccountConfiguration().isReportEnabled())
 					.forEach(member -> {
 						member.sendMessage("§c§lREPORT");
@@ -173,11 +168,6 @@ public class ReportCommand implements CommandClass {
 						member.sendMessage(text);
 					});
 
-			MessageUtils.sendMessage(BungeeConst.DISCORD_CHANNEL_REPORT_LOG,
-					new MessageBuilder().setEmbed(new EmbedBuilder().setColor(Color.RED).setAuthor("Report")
-							.addField("Suspeito: ", report.getPlayerName(), true)
-							.addField("Reportado por: ", cmdArgs.getPlayer().getName(), true)
-							.addField("Motivo: ", builder.toString().trim(), false).build()).build());
 			player.setCooldown("report-command", System.currentTimeMillis() + 120000l);
 		} else {
 			sender.sendMessage(" §a* §fVocê reportou o jogador §a" + target.getPlayerName() + "§f por §a"

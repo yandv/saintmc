@@ -41,14 +41,14 @@ public class FakeListener extends Listener {
 						if (member.hasSkin()) {
 							WrappedSignedProperty property = TextureFetcher.loadTexture(new WrappedGameProfile(
 									member.getSkinProfile().getUniqueId(), member.getSkinProfile().getPlayerName()));
+							if (property != null)
+								new BukkitRunnable() {
 
-							new BukkitRunnable() {
-
-								@Override
-								public void run() {
-									PlayerAPI.changePlayerSkin(player, property, true);
-								}
-							}.runTask(BukkitMain.getInstance());
+									@Override
+									public void run() {
+										PlayerAPI.changePlayerSkin(player, property, true);
+									}
+								}.runTask(BukkitMain.getInstance());
 						}
 					}
 				}

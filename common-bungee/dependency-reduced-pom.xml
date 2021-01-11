@@ -199,12 +199,6 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>tk.yallandev</groupId>
-      <artifactId>lojasquare-bungeecord</artifactId>
-      <version>0.0.1-SNAPSHOT</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
       <version>1.18.4</version>

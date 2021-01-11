@@ -23,6 +23,7 @@ import tk.yallandev.saintmc.bukkit.BukkitMain;
 import tk.yallandev.saintmc.bukkit.bukkit.BukkitMember;
 import tk.yallandev.saintmc.bukkit.command.BukkitCommandArgs;
 import tk.yallandev.saintmc.bukkit.menu.account.AccountInventory;
+import tk.yallandev.saintmc.bukkit.menu.account.PreferencesInventory;
 import tk.yallandev.saintmc.common.account.League;
 import tk.yallandev.saintmc.common.account.Member;
 import tk.yallandev.saintmc.common.account.MemberModel;
@@ -42,6 +43,12 @@ import tk.yallandev.saintmc.common.utils.string.MessageBuilder;
 import tk.yallandev.saintmc.common.utils.string.NameUtils;
 
 public class AccountCommand implements CommandClass {
+
+	@Command(name = "preferences", aliases = { "pref", "preferencias" })
+	public void preferencesCommand(BukkitCommandArgs cmdArgs) {
+		if (cmdArgs.isPlayer())
+			new PreferencesInventory(cmdArgs.getPlayer(), null);
+	}
 
 	@Command(name = "account", aliases = { "acc", "info", "perfil", "profile" }, runAsync = true)
 	public void accountCommand(BukkitCommandArgs cmdArgs) {
@@ -83,7 +90,7 @@ public class AccountCommand implements CommandClass {
 			}
 
 			if (!player.getUniqueId().equals(sender.getUniqueId()))
-				if (!Member.hasGroupPermission(sender.getUniqueId(), Group.TRIAL)) {
+				if (!Member.hasGroupPermission(sender.getUniqueId(), Group.AJUDANTE)) {
 					sender.sendMessage("§cVocê não pode ver o perfil de outros jogadores!");
 					return;
 				}
@@ -117,13 +124,16 @@ public class AccountCommand implements CommandClass {
 					i -= 1;
 				}
 
-				message.addExtra(new MessageBuilder(t == Tag.MEMBRO ? "§7§lMEMBRO" : t.getPrefix())
-						.setHoverEvent(new HoverEvent(Action.SHOW_TEXT,
-								new TextComponent[] { new TextComponent("§fExemplo: " + t.getPrefix()
-										+ player.getPlayerName() + "\n\n§aClique para selecionar!") }))
-						.setClickEvent(new ClickEvent(net.md_5.bungee.api.chat.ClickEvent.Action.RUN_COMMAND,
-								"/tag " + t.getName()))
-						.create());
+				message.addExtra(
+						new MessageBuilder(t == Tag.MEMBRO ? "§7§lMEMBRO" : t.getPrefix() + " ")
+								.setHoverEvent(
+										new HoverEvent(Action.SHOW_TEXT,
+												new TextComponent[] { new TextComponent("§fExemplo: " + t.getPrefix()
+														+ (t == Tag.MEMBRO ? "" : " ") + player.getPlayerName()
+														+ "\n\n§aClique para selecionar!") }))
+								.setClickEvent(new ClickEvent(net.md_5.bungee.api.chat.ClickEvent.Action.RUN_COMMAND,
+										"/tag " + t.getName()))
+								.create());
 				i -= 1;
 			}
 
@@ -292,7 +302,7 @@ public class AccountCommand implements CommandClass {
 				+ player.getLeague().getName());
 		player.sendMessage("§eSeu xp §e" + player.getXp());
 
-		if (player.getLeague() == League.CLOUTH) {
+		if (player.getLeague() == League.values()[League.values().length - 1]) {
 			player.sendMessage("");
 			player.sendMessage("§aVocê está no maior rank do servidor");
 			player.sendMessage("aContinue ganhando XP para ficar no topo do ranking");
@@ -322,9 +332,8 @@ public class AccountCommand implements CommandClass {
 		switch (args[0].toLowerCase()) {
 		case "doar":
 		case "give":
-
 			if (args.length <= 2) {
-				member.sendMessage("§eUse §a/" + cmdArgs.getLabel()
+				member.sendMessage("§cUso /" + cmdArgs.getLabel()
 						+ " give <player> <money> para enviar money para algum jogador!");
 			} else {
 				UUID uuid = CommonGeneral.getInstance().getUuid(args[1]);
@@ -582,7 +591,7 @@ public class AccountCommand implements CommandClass {
 			member = (BukkitMember) CommonGeneral.getInstance().getMemberManager().getMember(args[0]);
 
 			if (member != null && member.isUsingFake()
-					&& !Member.hasGroupPermission(sender.getUniqueId(), Group.TRIAL)) {
+					&& !Member.hasGroupPermission(sender.getUniqueId(), Group.AJUDANTE)) {
 				sender.sendMessage(" §c* §fO jogador §a" + args[0] + "§f está offline!");
 				return;
 			}
@@ -594,7 +603,7 @@ public class AccountCommand implements CommandClass {
 		}
 
 		if (!member.getAccountConfiguration().isTellEnabled())
-			if (!sender.hasGroupPermission(Group.TRIAL)) {
+			if (!sender.hasGroupPermission(Group.AJUDANTE)) {
 				sender.sendMessage("§cO tell desse jogador está desativado!");
 				return;
 			}

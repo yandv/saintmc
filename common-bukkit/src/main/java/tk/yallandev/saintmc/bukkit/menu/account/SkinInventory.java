@@ -5,14 +5,12 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import tk.yallandev.saintmc.bukkit.BukkitMain;
 import tk.yallandev.saintmc.bukkit.api.item.ItemBuilder;
 import tk.yallandev.saintmc.bukkit.api.menu.MenuInventory;
 import tk.yallandev.saintmc.bukkit.api.player.PlayerAPI;
@@ -90,9 +88,8 @@ public class SkinInventory {
 							p.closeInventory();
 							p.playSound(p.getLocation(), Sound.LEVEL_UP, .8f, .2f);
 
-							Bukkit.getScheduler().runTaskAsynchronously(BukkitMain.getInstance(),
-									() -> PlayerAPI.changePlayerSkin(p, skin.getProfile().getPlayerName(),
-											skin.getProfile().getUniqueId(), true));
+							PlayerAPI.changePlayerSkin(p, skin.getProfile().getPlayerName(),
+									skin.getProfile().getUniqueId(), true);
 						});
 
 				w++;

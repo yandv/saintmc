@@ -30,9 +30,9 @@ public class GamerListener implements Listener {
 			player.setAllowFlight(true);
 			player.setFlying(true);
 
-//			if (member.getGroup().ordinal() <= Group.YOUTUBER.ordinal()
-//					&& member.getGroup().ordinal() >= Group.PRO.ordinal())
-			if (member.getGroup().ordinal() >= Group.PRO.ordinal())
+			if (member.getGroup().ordinal() <= Group.YOUTUBER.ordinal()
+					&& member.getGroup().ordinal() >= Group.PRO.ordinal())
+//			if (member.getGroup().ordinal() >= Group.PRO.ordinal())
 				Bukkit.broadcastMessage(Tag.valueOf(member.getGroup().name()).getPrefix() + " " + player.getName()
 						+ " §6entrou no lobby!");
 		} else {

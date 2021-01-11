@@ -27,14 +27,13 @@ import tk.yallandev.saintmc.common.tag.Tag;
 
 public class StaffCommand implements CommandClass {
 
-	@Command(name = "glist", groupToUse = Group.TRIAL, usage = "/<command>", aliases = { "onlines", "online" })
+	@Command(name = "glist", groupToUse = Group.AJUDANTE, usage = "/<command>", aliases = { "onlines", "online" })
 	public void glistCommand(CommandArgs cmdArgs) {
-		cmdArgs.getSender().sendMessage(" §a* §fJogadores online no servidor: §a"
-				+ ProxyServer.getInstance().getOnlineCount() + " jogadores! §7(No total)");
+		cmdArgs.getSender().sendMessage("§aTemos " + ProxyServer.getInstance().getOnlineCount() + " jogadores online!");
 		cmdArgs.getSender().sendMessage("");
 		ProxyServer.getInstance().getServers().values().stream()
 				.sorted((o1, o2) -> o1.getName().compareTo(o2.getName())).forEach(info -> cmdArgs.getSender()
-						.sendMessage(" §a * §f" + info.getName() + " -§a " + info.getPlayers().size() + " jogadores"));
+						.sendMessage("§9" + info.getName() + " §7-§a " + info.getPlayers().size() + " online"));
 		cmdArgs.getSender().sendMessage("");
 	}
 
@@ -45,8 +44,7 @@ public class StaffCommand implements CommandClass {
 		String[] args = cmdArgs.getArgs();
 
 		if (args.length == 0) {
-			sender.sendMessage(
-					" §e* §fUse §a/" + cmdArgs.getLabel() + " <mensagem>§f para mandar uma mensagem para todos.");
+			sender.sendMessage("§eUso /" + cmdArgs.getLabel() + " <mensagem> para mandar uma mensagem para todos.");
 			return;
 		}
 
@@ -61,10 +59,10 @@ public class StaffCommand implements CommandClass {
 		ProxyServer.getInstance().broadcast(TextComponent.fromLegacyText("§c§lAVISO §f" + msg.replace("&", "§")));
 		ProxyServer.getInstance().broadcast(TextComponent.fromLegacyText(" "));
 		CommonGeneral.getInstance().getMemberManager()
-				.broadcast("§7O " + sender.getName() + " enviou uma mensagem global!", Group.TRIAL);
+				.broadcast("§7O " + sender.getName() + " enviou uma mensagem global!", Group.AJUDANTE);
 	}
 
-	@Command(name = "maintence", aliases = { "manutencao" }, groupToUse = Group.DEVELOPER)
+	@Command(name = "maintence", aliases = { "manutencao" }, groupToUse = Group.DONO)
 	public void maintenceCommand(CommandArgs cmdArgs) {
 		BungeeMain.getInstance().setMaintenceMode(!BungeeMain.getInstance().isMaintenceMode());
 		ProxyServer.getInstance()
@@ -79,7 +77,7 @@ public class StaffCommand implements CommandClass {
 		}
 	}
 
-	@Command(name = "staffchat", groupToUse = Group.TRIAL, usage = "/<command>", aliases = { "sc" })
+	@Command(name = "staffchat", groupToUse = Group.AJUDANTE, usage = "/<command>", aliases = { "sc" })
 	public void staffchatCommand(CommandArgs cmdArgs) {
 		if (!cmdArgs.isPlayer())
 			return;
@@ -119,7 +117,7 @@ public class StaffCommand implements CommandClass {
 				member.getAccountConfiguration().setSeeingStaffchat(true);
 	}
 
-	@Command(name = "stafflog", groupToUse = Group.TRIAL, usage = "/<command>", aliases = { "sl" })
+	@Command(name = "stafflog", groupToUse = Group.AJUDANTE, usage = "/<command>", aliases = { "sl" })
 	public void stafflogCommand(CommandArgs cmdArgs) {
 		if (!cmdArgs.isPlayer())
 			return;
@@ -135,7 +133,7 @@ public class StaffCommand implements CommandClass {
 		}
 	}
 
-	@Command(name = "fakelist", runAsync = true, groupToUse = Group.TRIAL, usage = "/<command> <player> <server>")
+	@Command(name = "fakelist", runAsync = true, groupToUse = Group.AJUDANTE, usage = "/<command> <player> <server>")
 	public void fakelistCommand(CommandArgs cmdArgs) {
 		CommandSender sender = cmdArgs.getSender();
 
@@ -155,13 +153,13 @@ public class StaffCommand implements CommandClass {
 		sender.sendMessage(" ");
 
 		CommonGeneral.getInstance().getMemberManager().getMembers().stream()
-				.filter(member -> member.hasGroupPermission(Group.TRIAL))
+				.filter(member -> member.hasGroupPermission(Group.AJUDANTE))
 				.sorted((o1, o2) -> o1.getServerGroup().compareTo(o2.getServerGroup()))
 				.forEach(member -> sender.sendMessage("§7" + member.getPlayerName() + " §8- §f"
 						+ Tag.valueOf(member.getServerGroup().name()).getPrefix()));
 	}
 
-	@Command(name = "find", groupToUse = Group.TRIAL, usage = "/<command> <player>")
+	@Command(name = "find", groupToUse = Group.AJUDANTE, usage = "/<command> <player>")
 	public void findCommand(CommandArgs cmdArgs) {
 		CommandSender sender = cmdArgs.getSender();
 		String[] args = cmdArgs.getArgs();
@@ -188,8 +186,7 @@ public class StaffCommand implements CommandClass {
 		sender.sendMessage(new BaseComponent[] { txt, text });
 	}
 
-	@Command(name = "screenshare", aliases = {
-			"ss" }, groupToUse = Group.MODPLUS, usage = "/<command> <player> <server>")
+	@Command(name = "screenshare", aliases = { "ss" }, groupToUse = Group.MODGC, usage = "/<command> <player> <server>")
 	public void screenshareCommand(BungeeCommandArgs cmdArgs) {
 		if (!cmdArgs.isPlayer())
 			return;
@@ -198,14 +195,14 @@ public class StaffCommand implements CommandClass {
 		String[] args = cmdArgs.getArgs();
 
 		if (args.length == 0) {
-			sender.sendMessage(" §e* §fUse §a/screenshare <player>§f para enviar alguém para screenshare.");
+			sender.sendMessage("§cUso /screenshare <player> para enviar alguém para screenshare.");
 			return;
 		}
 
 		ProxiedPlayer proxiedPlayer = ProxyServer.getInstance().getPlayer(args[0]);
 
 		if (proxiedPlayer == null) {
-			sender.sendMessage(" §a* §fO jogador §c" + args[0] + "§f está offline!");
+			sender.sendMessage("§cO jogador " + args[0] + " está offline!");
 			return;
 		}
 
@@ -213,18 +210,19 @@ public class StaffCommand implements CommandClass {
 				.getMember(proxiedPlayer.getUniqueId());
 
 		if (member == null) {
-			sender.sendMessage(" §a* §fO jogador §c" + args[0] + "§f está offline!");
+			sender.sendMessage("§cO jogador " + args[0] + " está offline!");
 			return;
 		}
 
 		if (!member.getLoginConfiguration().isLogged()) {
-			sender.sendMessage(" §a* §fO jogador não está logado no servidor!");
+			sender.sendMessage("§cO jogador não está logado no servidor!");
 			return;
 		}
 
 		if (member.isScreensharing()) {
 			if (member.getScreenshareStaff().equals(sender.getUniqueId())) {
-				sender.sendMessage(" §a* §fVocê liberou o jogador da §aScreenshare§f!");
+				CommonGeneral.getInstance().getMemberManager().broadcast(
+						"§aO jogador " + member.getPlayerName() + " foi liberado da Screenshare§f!", Group.AJUDANTE);
 
 				member.setScreensharing(false);
 				member.setScreenshareStaff(null);
@@ -241,12 +239,12 @@ public class StaffCommand implements CommandClass {
 				return;
 			}
 
-			sender.sendMessage(" §c* §fVocê não pode retirar esse jogador da §aScreenshare§f!");
+			sender.sendMessage("§cVocê não pode tirar esse jogador da Screenshare.");
 		} else {
 			ProxiedServer server = BungeeMain.getPlugin().getServerManager().getBalancer(ServerType.SCREENSHARE).next();
 
 			if (server == null || server.getServerInfo() == null) {
-				sender.sendMessage("§c§l> §fNenhuma sala de §aScreenshare§f está disponível no momento!");
+				sender.sendMessage("§c Nenhuma sala de Screenshare está disponível no momento!");
 				return;
 			}
 
@@ -257,7 +255,8 @@ public class StaffCommand implements CommandClass {
 			proxiedPlayer.connect(server.getServerInfo());
 			member.getProxiedPlayer().connect(server.getServerInfo());
 
-			sender.sendMessage(" §a* §fVocê enviou o jogador §a" + member.getPlayerName() + "§f para §aScreenshare§f!");
+			CommonGeneral.getInstance().getMemberManager().broadcast(
+					"§aO jogador " + member.getPlayerName() + " foi enviado para Screenshare§f!", Group.AJUDANTE);
 		}
 	}
 

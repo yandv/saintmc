@@ -30,21 +30,21 @@ public class ScoreboardListener implements Listener {
 	public static final Scoreboard DEFAULT_SCOREBOARD;
 
 	static {
-		DEFAULT_SCOREBOARD = new SimpleScoreboard("§4§lLOBBY");
+		DEFAULT_SCOREBOARD = new SimpleScoreboard("§6§lLOBBY");
 
 		DEFAULT_SCOREBOARD.blankLine(12);
-		DEFAULT_SCOREBOARD.setScore(11, new Score("§cNormal: ", "normal"));
+		DEFAULT_SCOREBOARD.setScore(11, new Score("§eNormal: ", "normal"));
 		DEFAULT_SCOREBOARD.setScore(10, new Score(" §fWins: ", "wins"));
 		DEFAULT_SCOREBOARD.setScore(9, new Score(" §fKills: ", "kills"));
 		DEFAULT_SCOREBOARD.blankLine(8);
-		DEFAULT_SCOREBOARD.setScore(7, new Score("§cEventos: ", "event"));
+		DEFAULT_SCOREBOARD.setScore(7, new Score("§eEventos: ", "event"));
 		DEFAULT_SCOREBOARD.setScore(6, new Score(" §fWins: ", "event-wins"));
 		DEFAULT_SCOREBOARD.setScore(5, new Score(" §fKills: ", "event-kills"));
 		DEFAULT_SCOREBOARD.blankLine(4);
 		DEFAULT_SCOREBOARD.setScore(3,
-				new Score("§fJogadores: §e" + BukkitMain.getInstance().getServerManager().getTotalNumber(), "online"));
+				new Score("§fJogadores: §a" + BukkitMain.getInstance().getServerManager().getTotalNumber(), "online"));
 		DEFAULT_SCOREBOARD.blankLine(2);
-		DEFAULT_SCOREBOARD.setScore(1, new Score("§c" + CommonConst.SITE, "site"));
+		DEFAULT_SCOREBOARD.setScore(1, new Score("§e" + CommonConst.SITE, "site"));
 	}
 
 	@EventHandler(priority = EventPriority.MONITOR)
@@ -54,7 +54,7 @@ public class ScoreboardListener implements Listener {
 
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onPlayerJoin(PlayerChangeEvent event) {
-		DEFAULT_SCOREBOARD.updateScore(new Score("Jogadores: §e" + event.getTotalMembers(), "online"));
+		DEFAULT_SCOREBOARD.updateScore(new Score("Jogadores: §a" + event.getTotalMembers(), "online"));
 	}
 
 	@EventHandler
@@ -70,7 +70,7 @@ public class ScoreboardListener implements Listener {
 								+ (group == Group.MEMBRO ? "§7§lMEMBRO" : Tag.valueOf(group.name()).getPrefix()),
 								"group"));
 			}
-		}.runTaskLater(LobbyPlatform.getInstance().getPlugin(), 10l);
+		}.runTaskLater(LobbyPlatform.getInstance(), 10l);
 	}
 
 	@EventHandler
@@ -84,7 +84,7 @@ public class ScoreboardListener implements Listener {
 				DEFAULT_SCOREBOARD.updateScore(event.getPlayer(),
 						new Score("Ranking: §7(" + league.getColor() + league.getSymbol() + "§7)", "ranking"));
 			}
-		}.runTaskLater(LobbyPlatform.getInstance().getPlugin(), 10l);
+		}.runTaskLater(LobbyPlatform.getInstance(), 10l);
 	}
 
 	@EventHandler
@@ -105,7 +105,7 @@ public class ScoreboardListener implements Listener {
 
 		Group group = member.getGroup();
 		League league = member.getLeague();
-		
+
 		GameStatus status = CommonGeneral.getInstance().getStatusManager().loadStatus(player.getUniqueId(),
 				StatusType.HG, GameStatus.class);
 
@@ -131,9 +131,9 @@ public class ScoreboardListener implements Listener {
 			@Override
 			public void run() {
 				DEFAULT_SCOREBOARD.updateScore(new Score(
-						"§fJogadores: §e" + BukkitMain.getInstance().getServerManager().getTotalNumber(), "online"));
+						"§fJogadores: §a" + BukkitMain.getInstance().getServerManager().getTotalNumber(), "online"));
 			}
-		}.runTaskLater(LobbyPlatform.getInstance().getPlugin(), 20l);
+		}.runTaskLater(LobbyPlatform.getInstance(), 20l);
 	}
 
 }

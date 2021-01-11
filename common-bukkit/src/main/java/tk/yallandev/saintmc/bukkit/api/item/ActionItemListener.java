@@ -31,31 +31,26 @@ public class ActionItemListener implements Listener {
 
 	@EventHandler
 	public void onPlayerInteract(PlayerInteractEvent event) {
-		if (event.getItem() == null)
+		if (event.getItem() == null || event.getItem().getType() == Material.AIR)
 			return;
 
 		ItemStack stack = event.getItem();
 
 		try {
-			if (stack.getType() == Material.AIR)
-				throw new Exception();
-
 			NbtCompound compound = getNbtCompound(stack);
 
-			if (!compound.containsKey("interactHandler")) {
-				return;
+			if (compound.containsKey("interactHandler")) {
+				Interact handler = ActionItemStack.getHandler(compound.getInteger("interactHandler"));
+
+				if (handler == null || handler.getInteractType() == InteractType.PLAYER)
+					return;
+
+				Player player = event.getPlayer();
+				Action action = event.getAction();
+
+				event.setCancelled(handler.onInteract(player, null, event.getClickedBlock(), stack,
+						action.name().contains("RIGHT") ? ActionType.RIGHT : ActionType.LEFT));
 			}
-
-			Interact handler = ActionItemStack.getHandler(compound.getInteger("interactHandler"));
-
-			if (handler == null || handler.getInteractType() == InteractType.PLAYER)
-				return;
-
-			Player player = event.getPlayer();
-			Action action = event.getAction();
-
-			event.setCancelled(handler.onInteract(player, null, event.getClickedBlock(), stack,
-					action.name().contains("RIGHT") ? ActionType.RIGHT : ActionType.LEFT));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -71,19 +66,17 @@ public class ActionItemListener implements Listener {
 		try {
 			NbtCompound compound = (NbtCompound) getNbtCompound(stack);
 
-			if (!compound.containsKey("interactHandler")) {
-				return;
+			if (compound.containsKey("interactHandler")) {
+				Interact handler = ActionItemStack.getHandler(compound.getInteger("interactHandler"));
+
+				if (handler == null || handler.getInteractType() == InteractType.CLICK)
+					return;
+
+				Player player = event.getPlayer();
+
+				event.setCancelled(
+						handler.onInteract(player, event.getRightClicked(), null, stack, ActionType.CLICK_PLAYER));
 			}
-
-			Interact handler = ActionItemStack.getHandler(compound.getInteger("interactHandler"));
-
-			if (handler == null || handler.getInteractType() == InteractType.CLICK)
-				return;
-
-			Player player = event.getPlayer();
-
-			event.setCancelled(
-					handler.onInteract(player, event.getRightClicked(), null, stack, ActionType.CLICK_PLAYER));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -99,19 +92,17 @@ public class ActionItemListener implements Listener {
 		try {
 			NbtCompound compound = getNbtCompound(stack);
 
-			if (!compound.containsKey("interactHandler")) {
-				return;
+			if (compound.containsKey("interactHandler")) {
+				Interact handler = ActionItemStack.getHandler(compound.getInteger("interactHandler"));
+
+				if (handler == null || handler.getInteractType() == InteractType.PLAYER || !handler.isInventoryClick())
+					return;
+
+				Player player = (Player) event.getWhoClicked();
+
+				player.closeInventory();
+				event.setCancelled(handler.onInteract(player, null, null, stack, ActionType.LEFT));
 			}
-
-			Interact handler = ActionItemStack.getHandler(compound.getInteger("interactHandler"));
-			
-			if (handler == null || handler.getInteractType() == InteractType.PLAYER || !handler.isInventoryClick())
-				return;
-
-			Player player = (Player) event.getWhoClicked();
-
-			player.closeInventory();
-			event.setCancelled(handler.onInteract(player, null, null, stack, ActionType.LEFT));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -120,27 +111,22 @@ public class ActionItemListener implements Listener {
 	@SuppressWarnings("deprecation")
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onBlockPlace(BlockPlaceEvent event) {
-		if (event.getItemInHand() == null)
+		if (event.getItemInHand() == null || event.getItemInHand().getType() == Material.AIR)
 			return;
 
 		ItemStack stack = event.getItemInHand();
 
 		try {
-			if (stack.getType() == Material.AIR)
-				throw new Exception();
-
 			NbtCompound compound = getNbtCompound(stack);
 
-			if (!compound.containsKey("interactHandler")) {
-				return;
+			if (compound.containsKey("interactHandler")) {
+				Block b = event.getBlock();
+				int id = compound.getInteger("interactHandler");
+				b.setMetadata("interactHandler", new FixedMetadataValue(BukkitMain.getInstance(), id));
+				b.getDrops().clear();
+				b.getDrops().add(ActionItemStack
+						.setTag(new ItemStack(event.getBlock().getType(), 1, event.getBlock().getData()), id));
 			}
-
-			Block b = event.getBlock();
-			int id = compound.getInteger("interactHandler");
-			b.setMetadata("interactHandler", new FixedMetadataValue(BukkitMain.getInstance(), id));
-			b.getDrops().clear();
-			b.getDrops().add(ActionItemStack
-					.setTag(new ItemStack(event.getBlock().getType(), 1, event.getBlock().getData()), id));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

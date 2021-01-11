@@ -16,20 +16,6 @@ public class ListInventory<T> {
 
 	private MenuInventory menu;
 
-	/**
-	 * 
-	 * 
-	 * 
-	 * @param name         inventory display name
-	 * @param list         list of the supertype
-	 * @param size         size of the inventory
-	 * @param itemsPerPage items per page
-	 * @param page
-	 * @param start        slot to start
-	 * @param itemHandler  item handler
-	 * @param emptyName    Display name of item that appears when the list is empty
-	 */
-
 	public ListInventory(String name, List<T> list, int size, int itemsPerPage, int page, int start,
 			ItemHandler<T> itemHandler, String emptyName) {
 		menu = new MenuInventory(name, size);
@@ -68,6 +54,13 @@ public class ListInventory<T> {
 			menu.setItem(new MenuItem(new ItemBuilder().type(Material.ARROW).name("§aPágina " + (page + 1)).build(),
 					(p, inventory, clickType, item, slot) -> new ReportListInventory(p, page + 1)), 53);
 	}
+
+	/**
+	 * 
+	 * Player will open the inventory
+	 * 
+	 * @param player
+	 */
 
 	public void openInventory(Player player) {
 		menu.open(player);

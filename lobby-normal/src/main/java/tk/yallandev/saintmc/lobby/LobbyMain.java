@@ -3,25 +3,23 @@ package tk.yallandev.saintmc.lobby;
 import java.io.File;
 
 import org.bukkit.Bukkit;
-import org.bukkit.plugin.java.JavaPlugin;
 
 import lombok.Getter;
 import tk.yallandev.saintmc.CommonConst;
 import tk.yallandev.saintmc.lobby.listener.CharacterListener;
 import tk.yallandev.saintmc.lobby.listener.PlayerListener;
 import tk.yallandev.saintmc.lobby.listener.ScoreboardListener;
+import tk.yallandev.saintmc.lobby.menu.server.ServerInventory;
 import tk.yallandev.saintmc.update.UpdatePlugin;
 
-public class LobbyMain extends JavaPlugin {
+public class LobbyMain extends LobbyPlatform {
 
 	@Getter
 	private static LobbyMain instance;
 
-	private LobbyPlatform platform;
-
 	@Override
 	public void onLoad() {
-
+		super.onLoad();
 		UpdatePlugin.Shutdown shutdown = new UpdatePlugin.Shutdown() {
 
 			@Override
@@ -36,24 +34,19 @@ public class LobbyMain extends JavaPlugin {
 			return;
 
 		instance = this;
-
-		super.onLoad();
 	}
 
 	@Override
 	public void onEnable() {
-		platform = new LobbyPlatform(this);
-
-		platform.onEnable();
+		super.onEnable();
+		ServerInventory.LOBBY_HG = false;
 		getServer().getPluginManager().registerEvents(new CharacterListener(), this);
 		getServer().getPluginManager().registerEvents(new PlayerListener(), this);
 		getServer().getPluginManager().registerEvents(new ScoreboardListener(), this);
-		super.onEnable();
 	}
 
 	@Override
 	public void onDisable() {
-		platform.onDisable();
 		super.onDisable();
 	}
 

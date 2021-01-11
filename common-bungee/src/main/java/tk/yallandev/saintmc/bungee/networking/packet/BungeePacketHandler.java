@@ -38,7 +38,7 @@ public class BungeePacketHandler implements tk.yallandev.saintmc.common.networki
 
 			CommonGeneral.getInstance().getMemberManager().getMembers().stream()
 					.filter(o -> !o.getServerId().equalsIgnoreCase(server.getServerId())
-							&& o.hasGroupPermission(Group.TRIAL) && o.getAccountConfiguration().isAnticheatEnabled())
+							&& o.hasGroupPermission(Group.AJUDANTE) && o.getAccountConfiguration().isAnticheatEnabled())
 					.forEach(m -> m.sendMessage(new MessageBuilder(
 							"§9Spectrum> §fO jogador §d" + player.getName() + "§f está usando §c" + hackName + " §e("
 									+ anticheatPacket.getAlertIndex() + "/" + anticheatPacket.getMaxAlerts() + ")§f!")

@@ -3,7 +3,6 @@ package tk.yallandev.saintmc.lobby;
 import java.io.File;
 
 import org.bukkit.Bukkit;
-import org.bukkit.plugin.java.JavaPlugin;
 
 import lombok.Getter;
 import tk.yallandev.saintmc.CommonConst;
@@ -12,12 +11,10 @@ import tk.yallandev.saintmc.lobby.listener.PlayerListener;
 import tk.yallandev.saintmc.lobby.listener.ScoreboardListener;
 import tk.yallandev.saintmc.update.UpdatePlugin;
 
-public class LobbyMain extends JavaPlugin {
+public class LobbyMain extends LobbyPlatform {
 
 	@Getter
 	private static LobbyMain instance;
-
-	private LobbyPlatform platform;
 
 	@Override
 	public void onLoad() {
@@ -42,18 +39,14 @@ public class LobbyMain extends JavaPlugin {
 
 	@Override
 	public void onEnable() {
-		platform = new LobbyPlatform(this);
-
-		platform.onEnable();
+		super.onEnable();
 		getServer().getPluginManager().registerEvents(new CharacterListener(), this);
 		getServer().getPluginManager().registerEvents(new PlayerListener(), this);
 		getServer().getPluginManager().registerEvents(new ScoreboardListener(), this);
-		super.onEnable();
 	}
 
 	@Override
 	public void onDisable() {
-		platform.onDisable();
 		super.onDisable();
 	}
 

@@ -4,7 +4,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.bukkit.Bukkit;
-import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -19,29 +19,31 @@ import tk.yallandev.saintmc.lobby.command.FlyCommand;
 import tk.yallandev.saintmc.lobby.listener.GamerListener;
 import tk.yallandev.saintmc.lobby.listener.HologramListener;
 import tk.yallandev.saintmc.lobby.listener.LoginListener;
+import tk.yallandev.saintmc.lobby.listener.PlayerListener;
 import tk.yallandev.saintmc.lobby.listener.TabListener;
 import tk.yallandev.saintmc.lobby.listener.WorldListener;
 import tk.yallandev.saintmc.lobby.manager.PlayerManager;
 
 @Getter
 @RequiredArgsConstructor
-public class LobbyPlatform {
+public abstract class LobbyPlatform extends JavaPlugin {
 
 	@Getter
 	@Setter
 	private static LobbyPlatform instance;
 
-	private final Plugin plugin;
-
 	private PlayerManager playerManager;
 
-	private String lobbyAddress = CommonGeneral.getInstance().getServerId().contains(".")
-			? CommonGeneral.getInstance().getServerId().split("\\.")[0].toUpperCase()
-			: CommonGeneral.getInstance().getServerId().toUpperCase();
+	private String lobbyAddress;
 
+	@Override
 	public void onEnable() {
 		instance = this;
 		playerManager = new PlayerManager();
+
+		lobbyAddress = CommonGeneral.getInstance().getServerId().contains(".")
+				? CommonGeneral.getInstance().getServerId().split("\\.")[0].toUpperCase()
+				: CommonGeneral.getInstance().getServerId().toUpperCase();
 
 		if (lobbyAddress.equalsIgnoreCase("lobby") || lobbyAddress.length() >= 4)
 			lobbyAddress = "§kA?";
@@ -51,19 +53,21 @@ public class LobbyPlatform {
 
 		loadServers();
 
-		plugin.getServer().getMessenger().registerOutgoingPluginChannel(plugin, "BungeeCord");
+		getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
 		BukkitCommandFramework.INSTANCE.registerCommands(new FlyCommand());
 
-		plugin.getServer().getPluginManager().registerEvents(new TabListener(), plugin);
-		plugin.getServer().getPluginManager().registerEvents(new WorldListener(), plugin);
-		plugin.getServer().getPluginManager().registerEvents(new WorldListener(), plugin);
-		plugin.getServer().getPluginManager().registerEvents(new HologramListener(), plugin);
-		plugin.getServer().getPluginManager().registerEvents(new GamerListener(), plugin);
+		getServer().getPluginManager().registerEvents(new TabListener(), this);
+		getServer().getPluginManager().registerEvents(new PlayerListener(), this);
+		getServer().getPluginManager().registerEvents(new WorldListener(), this);
+		getServer().getPluginManager().registerEvents(new WorldListener(), this);
+		getServer().getPluginManager().registerEvents(new HologramListener(), this);
+		getServer().getPluginManager().registerEvents(new GamerListener(), this);
 
 		if (!CommonGeneral.getInstance().isLoginServer())
-			Bukkit.getPluginManager().registerEvents(new LoginListener(), plugin);
+			Bukkit.getPluginManager().registerEvents(new LoginListener(), this);
 	}
 
+	@Override
 	public void onDisable() {
 
 	}

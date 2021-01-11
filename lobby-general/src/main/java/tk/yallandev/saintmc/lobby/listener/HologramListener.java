@@ -36,7 +36,7 @@ public class HologramListener implements Listener {
 				createClan();
 				createWins();
 			}
-		}.runTaskTimer(LobbyPlatform.getInstance().getPlugin(), 80, 20 * 60 * 10);
+		}.runTaskTimer(LobbyPlatform.getInstance(), 80, 20 * 60 * 10);
 		createPvP();
 	}
 

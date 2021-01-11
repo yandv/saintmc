@@ -22,8 +22,6 @@ import tk.yallandev.saintmc.lobby.menu.server.ServerInventory.SendClick;
 
 public class HungergamesInventory {
 
-	protected static final ProxiedServer HungerGamesServer = null;
-
 	public HungergamesInventory(Player player) {
 		Member member = CommonGeneral.getInstance().getMemberManager().getMember(player.getUniqueId());
 		List<ProxiedServer> serverList = getInitialProps(member);
@@ -87,23 +85,11 @@ public class HungergamesInventory {
 		} else {
 			int w = 10;
 
-//			boolean avaiableServer = false;
-//
 			for (ProxiedServer proxiedServer : serverList) {
 				HungerGamesServer server = (HungerGamesServer) proxiedServer;
 
 				if (server.getTime() <= 0)
 					continue;
-
-//				if (server.getState() == MinigameState.WAITING || server.getState() == MinigameState.STARTING
-//						|| server.getState() == MinigameState.PREGAME) {
-//					if (!member.hasGroupPermission(Group.TRIAL)) {
-//						if (avaiableServer)
-//							continue;
-//
-//						avaiableServer = true;
-//					}
-//				}
 
 				ItemBuilder builder = new ItemBuilder();
 				builder.type(Material.STAINED_GLASS_PANE);
@@ -133,7 +119,7 @@ public class HungergamesInventory {
 					break;
 				}
 				case NONE: {
-					if (!member.hasGroupPermission(Group.TRIAL))
+					if (!member.hasGroupPermission(Group.AJUDANTE))
 						continue;
 
 					nameId = "§4" + name;

@@ -25,7 +25,7 @@ import tk.yallandev.saintmc.common.utils.DateUtils;
 
 public class BanCommand implements CommandClass {
 
-	@Command(name = "ban", aliases = { "banir" }, runAsync = true, groupToUse = Group.TRIAL)
+	@Command(name = "ban", aliases = { "banir" }, runAsync = true, groupToUse = Group.AJUDANTE)
 	public void banCommand(CommandArgs cmdArgs) {
 		CommandSender sender = cmdArgs.getSender();
 		String[] args = cmdArgs.getArgs();
@@ -91,7 +91,7 @@ public class BanCommand implements CommandClass {
 		}
 	}
 
-	@Command(name = "tempban", runAsync = true, groupToUse = Group.TRIAL)
+	@Command(name = "tempban", runAsync = true, groupToUse = Group.AJUDANTE)
 	public void tempbanCommand(BungeeCommandArgs cmdArgs) {
 		CommandSender sender = cmdArgs.getSender();
 		String[] args = cmdArgs.getArgs();
@@ -218,7 +218,7 @@ public class BanCommand implements CommandClass {
 		}
 	}
 
-	@Command(name = "mute", aliases = { "silenciar" }, runAsync = true, groupToUse = Group.TRIAL)
+	@Command(name = "mute", aliases = { "silenciar" }, runAsync = true, groupToUse = Group.AJUDANTE)
 	public void muteCommand(BungeeCommandArgs cmdArgs) {
 		CommandSender sender = cmdArgs.getSender();
 		String[] args = cmdArgs.getArgs();
@@ -283,7 +283,7 @@ public class BanCommand implements CommandClass {
 		}
 	}
 
-	@Command(name = "tempmute", runAsync = true, groupToUse = Group.TRIAL)
+	@Command(name = "tempmute", runAsync = true, groupToUse = Group.AJUDANTE)
 	public void tempmuteCommand(BungeeCommandArgs cmdArgs) {
 		CommandSender sender = cmdArgs.getSender();
 		String[] args = cmdArgs.getArgs();
@@ -401,7 +401,7 @@ public class BanCommand implements CommandClass {
 		}
 	}
 
-	@Command(name = "warn", aliases = { "avisar" }, runAsync = true, groupToUse = Group.TRIAL)
+	@Command(name = "warn", aliases = { "avisar" }, runAsync = true, groupToUse = Group.AJUDANTE)
 	public void warnCommand(BungeeCommandArgs cmdArgs) {
 		CommandSender sender = cmdArgs.getSender();
 		String[] args = cmdArgs.getArgs();

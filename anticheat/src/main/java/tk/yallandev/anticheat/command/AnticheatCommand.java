@@ -15,7 +15,7 @@ import tk.yallandev.saintmc.common.permission.Group;
 
 public class AnticheatCommand implements CommandClass {
 
-	@Command(name = "anticheat", aliases = { "ac" }, groupToUse = Group.TRIAL)
+	@Command(name = "anticheat", aliases = { "ac" }, groupToUse = Group.AJUDANTE)
 	public void anticheatCommand(CommandArgs cmdArgs) {
 		CommandSender sender = cmdArgs.getSender();
 		String[] args = cmdArgs.getArgs();

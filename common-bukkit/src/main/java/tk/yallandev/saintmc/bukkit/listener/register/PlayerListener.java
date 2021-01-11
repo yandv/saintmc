@@ -92,10 +92,11 @@ public class PlayerListener extends Listener {
 	public void onPlayerChangeLeague(PlayerChangeLeagueEvent event) {
 		if (event.getPlayer() != null && event.getNewLeague().ordinal() > event.getOldLeague().ordinal()) {
 
-			if (event.getNewLeague() == League.CLOUTH) {
+			if (event.getNewLeague() == League.values()[League.values().length - 1]) {
 				Bukkit.broadcastMessage(" ");
 				Bukkit.broadcastMessage("§e" + event.getBukkitMember().getPlayerName() + "§f subiu para o rank "
-						+ League.CLOUTH.getColor() + League.CLOUTH.getName() + "§f!");
+						+ League.values()[League.values().length - 1].getColor()
+						+ League.values()[League.values().length - 1].getName() + "§f!");
 				Bukkit.broadcastMessage(" ");
 
 				Bukkit.getOnlinePlayers()

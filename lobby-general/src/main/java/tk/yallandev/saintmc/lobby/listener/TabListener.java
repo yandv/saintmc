@@ -23,9 +23,9 @@ public class TabListener implements Listener {
 	private Tablist tablist;
 
 	public TabListener() {
-		tablist = new Tablist(
-				"\n§c§lCLOUTH\n§f\n§7Nome: §f%name% §9- §7Grupo: %group%\n§f                                                 §f",
-				"\n§a" + CommonConst.SITE + "\n§b" + CommonConst.DISCORD.replace("http://", "") + "\n§f ") {
+		tablist = new Tablist("\n§6§l" + CommonConst.SERVER_NAME.toUpperCase()
+				+ "\n§f\n§7Nome: §f%name% §7- §7Grupo: %group%\n§f                                                 §f",
+				"\n§e" + CommonConst.SITE + "\n§e" + CommonConst.DISCORD.replace("http://", "") + "\n§f ") {
 
 			@Override
 			public String[] replace(Player player, String header, String footer) {
@@ -52,7 +52,7 @@ public class TabListener implements Listener {
 			public void run() {
 				tablist.updateTab(event.getPlayer());
 			}
-		}.runTaskLater(LobbyPlatform.getInstance().getPlugin(), 10l);
+		}.runTaskLater(LobbyPlatform.getInstance(), 10l);
 	}
 
 	@EventHandler
@@ -63,7 +63,7 @@ public class TabListener implements Listener {
 			public void run() {
 				tablist.updateTab(event.getPlayer());
 			}
-		}.runTaskLater(LobbyPlatform.getInstance().getPlugin(), 10l);
+		}.runTaskLater(LobbyPlatform.getInstance(), 10l);
 	}
 
 	@EventHandler

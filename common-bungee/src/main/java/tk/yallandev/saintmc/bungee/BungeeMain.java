@@ -32,10 +32,10 @@ import tk.yallandev.saintmc.bungee.controller.BungeePunishManager;
 import tk.yallandev.saintmc.bungee.controller.BungeeServerManager;
 import tk.yallandev.saintmc.bungee.controller.GiftcodeController;
 import tk.yallandev.saintmc.bungee.listener.ChatListener;
-import tk.yallandev.saintmc.bungee.listener.ConnectionListener;
 import tk.yallandev.saintmc.bungee.listener.LoginListener;
 import tk.yallandev.saintmc.bungee.listener.MessageListener;
 import tk.yallandev.saintmc.bungee.listener.PacketListener;
+import tk.yallandev.saintmc.bungee.listener.ScreenshareListener;
 import tk.yallandev.saintmc.bungee.listener.ServerListener;
 import tk.yallandev.saintmc.bungee.listener.StoreListener;
 import tk.yallandev.saintmc.bungee.networking.packet.BungeePacketHandler;
@@ -64,24 +64,26 @@ import tk.yallandev.saintmc.common.server.ServerType;
 import tk.yallandev.saintmc.common.server.loadbalancer.server.MinigameServer;
 import tk.yallandev.saintmc.common.server.loadbalancer.server.ProxiedServer;
 import tk.yallandev.saintmc.common.utils.string.MessageBuilder;
-import tk.yallandev.saintmc.discord.DiscordMain;
 import tk.yallandev.saintmc.update.UpdatePlugin;
 
 @Getter
 public class BungeeMain extends Plugin {
 
 	private static final TextComponent[] BROADCAST = new TextComponent[] {
-			new MessageBuilder("§4§lANUNCIO §eEntre em nosso discord ")
-					.addExtre(new MessageBuilder("§b" + CommonConst.DISCORD)
-							.setClickEvent(ClickEvent.Action.OPEN_URL, CommonConst.DISCORD).create())
-					.addExtre(new TextComponent("§e!")).create(),
-			new MessageBuilder("§4§lANUNCIO §eUse §b/report <player>§e para denunciar um jogador!").create(),
-			new MessageBuilder("§4§lANUNCIO §eCompre vips em §b")
-					.addExtre(new MessageBuilder("§b" + CommonConst.STORE)
-							.setClickEvent(ClickEvent.Action.OPEN_URL, CommonConst.STORE).create())
-					.addExtre(new TextComponent("§e!")).create(),
+			new MessageBuilder("§6§nNord§a§nMC§7 » §fAcesse nosso ")
+					.addExtre(new MessageBuilder("§bdiscord")
+							.setClickEvent(ClickEvent.Action.OPEN_URL, "https://" + CommonConst.DISCORD).create())
+					.addExtre(new TextComponent(" §fe fique por dentro das novidades!")).create(),
+			new MessageBuilder("§6§nNord§a§nMC§7 » §fUse §a/report <player>§f para denunciar um jogador!").create(),
+			new MessageBuilder("§6§nNord§a§nMC§7 » §fCompre vip em nossa ")
+					.addExtre(new MessageBuilder("§aloja")
+							.setClickEvent(ClickEvent.Action.OPEN_URL, "https://" + CommonConst.STORE).create())
+					.addExtre(new TextComponent("§f!")).create(),
 			new MessageBuilder(
-					"§4§lANUNCIO §eO servidor está em fase §1§lBETA§e, caso encontre algum bug reporte em nosso discord!")
+					"§6§nNord§a§nMC§7 » §fO servidor está em fase §1§lBETA§f, caso encontre algum bug reporte em nosso ")
+							.addExtre(new MessageBuilder("§bdiscord!")
+									.setClickEvent(ClickEvent.Action.OPEN_URL, "https://" + CommonConst.DISCORD)
+									.create())
 							.create() };
 
 	@Getter
@@ -90,15 +92,11 @@ public class BungeeMain extends Plugin {
 	private CommonGeneral general;
 
 	private PunishManager punishManager;
-
 	private BotController botController;
-
 	private ServerManager serverManager;
 
 	private PacketController packetController;
 	private GiftcodeController giftcodeController;
-
-	private DiscordMain discord;
 
 	private PubSubListener pubSubListener;
 
@@ -277,14 +275,6 @@ public class BungeeMain extends Plugin {
 			ProxyServer.getInstance().broadcast(message);
 		}, 0, 5, TimeUnit.MINUTES);
 
-		ProxyServer.getInstance().getScheduler().runAsync(this, new Runnable() {
-
-			@Override
-			public void run() {
-				discord = new DiscordMain();
-			}
-		});
-
 		System.setProperty("DEBUG.MONGO", "false");
 		System.setProperty("DB.TRACE", "false");
 
@@ -312,10 +302,10 @@ public class BungeeMain extends Plugin {
 		getProxy().getPluginManager().registerListener(this, new LoginListener());
 		getProxy().getPluginManager().registerListener(this, new ChatListener());
 		getProxy().getPluginManager().registerListener(this, new PacketListener());
-		getProxy().getPluginManager().registerListener(this, new ConnectionListener(serverManager));
 		getProxy().getPluginManager().registerListener(this, new MessageListener(serverManager));
-		getProxy().getPluginManager().registerListener(this, new ServerListener());
+		getProxy().getPluginManager().registerListener(this, new ServerListener(serverManager));
 		getProxy().getPluginManager().registerListener(this, new StoreListener());
+		getProxy().getPluginManager().registerListener(this, new ScreenshareListener());
 	}
 
 	private void loadConfiguration() {

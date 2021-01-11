@@ -3,6 +3,7 @@ package tk.yallandev.saintmc.bukkit.api.menu;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import org.bukkit.Bukkit;
@@ -38,6 +39,8 @@ public class MenuInventory {
 	@Getter
 	private boolean reopenInventory = false;
 
+	private static Map<String, Long> openDelay = new HashMap<>();
+
 	public MenuInventory(String title, int rows) {
 		this(title, rows, false);
 	}
@@ -47,12 +50,12 @@ public class MenuInventory {
 		this.rows = rows;
 		this.title = title;
 		this.onePerPlayer = onePerPlayer;
-		
+
 		if (!onePerPlayer) {
 			this.inv = Bukkit.createInventory(new MenuHolder(this), rows * 9, "");
 		}
 	}
-	
+
 	public void addItem(MenuItem item) {
 		setItem(firstEmpty(), item);
 	}
@@ -114,6 +117,9 @@ public class MenuInventory {
 	}
 
 	public void open(Player p) {
+		if (isCooldown(p.getName()))
+			return;
+
 		if (!onePerPlayer) {
 			p.openInventory(inv);
 			Bukkit.getPluginManager().callEvent(new MenuOpenEvent(p, inv));
@@ -141,9 +147,9 @@ public class MenuInventory {
 			((MenuHolder) p.getOpenInventory().getTopInventory().getHolder()).setMenu(this);
 		}
 		updateTitle(p);
-		p = null;
+		setCooldown(p.getName());
 	}
-	
+
 	public void updateSlot(Player player, int slot) {
 		if (slotItem.containsKey(slot))
 			player.getOpenInventory().getTopInventory().setItem(slot, slotItem.get(slot).getStack());
@@ -210,5 +216,13 @@ public class MenuInventory {
 	public Inventory getInventory() {
 		return inv;
 	}
-	
+
+	public boolean isCooldown(String playerName) {
+		return openDelay.containsKey(playerName) && openDelay.get(playerName) > System.currentTimeMillis();
+	}
+
+	public void setCooldown(String playerName) {
+		openDelay.put(playerName, System.currentTimeMillis() + 200);
+	}
+
 }

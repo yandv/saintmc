@@ -127,7 +127,7 @@ public class AdminMode {
 					if (player.isOnline())
 						if (CommonGeneral.getInstance().getServerType() != ServerType.SCREENSHARE)
 							if (member.getAccountConfiguration().isAdminOnJoin())
-								if (member.hasGroupPermission(Group.TRIAL))
+								if (member.hasGroupPermission(Group.AJUDANTE))
 									if (!AdminMode.getInstance().isAdmin(player))
 										AdminMode.getInstance().setAdmin(player, member);
 				}

@@ -55,7 +55,7 @@ public abstract class Warp extends ManualRegisterableListener implements Command
 	}
 
 	public boolean inWarp(Player player) {
-		return GameMain.getInstance().getGamerManager().getGamer(player.getUniqueId()).getWarp() == this;
+		return this.players.contains(player.getUniqueId());
 	}
 
 	@EventHandler(priority = EventPriority.MONITOR)

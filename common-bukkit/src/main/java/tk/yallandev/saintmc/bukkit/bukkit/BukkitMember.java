@@ -37,7 +37,7 @@ public class BukkitMember extends Member {
 	private transient boolean cacheOnQuit;
 	@Setter
 	private transient Profile lastTell;
-	
+
 	public BukkitMember(MemberModel memberModel) {
 		super(memberModel);
 	}

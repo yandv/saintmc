@@ -317,7 +317,7 @@ public class RdmParty implements Party {
 		}
 
 		if (hasStarted()) {
-			if (Member.hasGroupPermission(gamer.getUuid(), Group.TRIAL)) {
+			if (Member.hasGroupPermission(gamer.getUuid(), Group.AJUDANTE)) {
 				spectate(gamer);
 				return false;
 			}

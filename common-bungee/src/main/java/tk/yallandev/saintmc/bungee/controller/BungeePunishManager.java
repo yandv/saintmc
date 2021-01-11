@@ -51,7 +51,7 @@ public class BungeePunishManager implements PunishManager {
 
 		member.getPunishmentHistory().ban(ban);
 		CommonGeneral.getInstance().getMemberManager().getMembers().forEach(m -> {
-			if (m.hasGroupPermission(Group.TRIAL)) {
+			if (m.hasGroupPermission(Group.AJUDANTE)) {
 				if (ban.isPermanent()) {
 					m.sendMessage("§cO jogador " + member.getPlayerName() + " foi banido pelo " + ban.getBannedBy()
 							+ " por " + ban.getReason() + "!");
@@ -106,7 +106,7 @@ public class BungeePunishManager implements PunishManager {
 		member.getPunishmentHistory().mute(mute);
 
 		CommonGeneral.getInstance().getMemberManager().getMembers().stream().forEach(m -> {
-			if (m.hasGroupPermission(Group.TRIAL)) {
+			if (m.hasGroupPermission(Group.AJUDANTE)) {
 
 				if (mute.isPermanent()) {
 					m.sendMessage("§cO jogador " + member.getPlayerName() + " foi mutado pelo " + mute.getMutedBy()
@@ -154,7 +154,7 @@ public class BungeePunishManager implements PunishManager {
 		CommonGeneral.getInstance().getPlayerData().updateMember(member, "punishmentHistory");
 
 		CommonGeneral.getInstance().getMemberManager().getMembers().stream()
-				.filter(m -> m.hasGroupPermission(Group.TRIAL)).forEach(m -> {
+				.filter(m -> m.hasGroupPermission(Group.AJUDANTE)).forEach(m -> {
 
 					TextComponent textComponent = new TextComponent("§cO jogador §c" + member.getPlayerName()
 							+ " foi avisado pelo " + warn.getWarnedBy() + " por " + warn.getReason() + "!");

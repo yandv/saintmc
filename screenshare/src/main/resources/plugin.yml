@@ -1,5 +1,5 @@
 name: Screenshare
-version: 1.0.7
+version: 1.0
 main: tk.yallandev.saintmc.screenshare.ScreenshareMain
 author: yandv
 softdepend: [BukkitCommon]

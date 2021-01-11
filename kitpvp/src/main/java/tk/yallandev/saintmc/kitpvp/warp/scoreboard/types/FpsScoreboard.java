@@ -15,16 +15,16 @@ import tk.yallandev.saintmc.kitpvp.warp.scoreboard.WarpScoreboard;
 public class FpsScoreboard extends WarpScoreboard {
 
 	public FpsScoreboard() {
-		super(new SimpleScoreboard("§4§lFPS"));
+		super(new SimpleScoreboard("§6§lFPS"));
 
 		scoreboard.blankLine(8);
-		scoreboard.setScore(7, new Score("§fKills: §e0", "kills"));
-		scoreboard.setScore(6, new Score("§fDeaths: §e0", "deaths"));
-		scoreboard.setScore(5, new Score("§fKillstreak: §e0", "killstreak"));
+		scoreboard.setScore(7, new Score("§fKills: §a0", "kills"));
+		scoreboard.setScore(6, new Score("§fDeaths: §a0", "deaths"));
+		scoreboard.setScore(5, new Score("§fKillstreak: §a0", "killstreak"));
 		scoreboard.blankLine(4);
-		scoreboard.setScore(3, new Score("§fJogadores: §b" + Bukkit.getOnlinePlayers().size(), "players"));
+		scoreboard.setScore(3, new Score("§fJogadores: §a" + Bukkit.getOnlinePlayers().size(), "players"));
 		scoreboard.blankLine(2);
-		scoreboard.setScore(1, new Score("§c" + CommonConst.SITE, "site"));
+		scoreboard.setScore(1, new Score("§e" + CommonConst.SITE, "site"));
 	}
 
 	@Override

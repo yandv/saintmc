@@ -15,7 +15,7 @@ public class ConfirmInventory {
 	public ConfirmInventory(Player player, String confirmTitle, ConfirmHandler handler, MenuInventory topInventory) {
 		MenuInventory menu = new MenuInventory(confirmTitle, 4);
 
-		MenuClickHandler yesHandler = new MenuClickHandler() {
+		MenuClickHandler confirm = new MenuClickHandler() {
 
 			@Override
 			public void onClick(Player p, Inventory inv, ClickType type, ItemStack stack, int slot) {
@@ -23,7 +23,7 @@ public class ConfirmInventory {
 			}
 		};
 
-		MenuClickHandler noHandler = new MenuClickHandler() {
+		MenuClickHandler noConfirm = new MenuClickHandler() {
 
 			@Override
 			public void onClick(Player p, Inventory inv, ClickType type, ItemStack stack, int slot) {
@@ -37,22 +37,22 @@ public class ConfirmInventory {
 		};
 
 		menu.setItem(10, new ItemBuilder().type(Material.STAINED_GLASS_PANE).durability(14).name("§cRejeitar").build(),
-				noHandler);
+				noConfirm);
 		menu.setItem(11, new ItemBuilder().type(Material.STAINED_GLASS_PANE).durability(14).name("§cRejeitar").build(),
-				noHandler);
+				noConfirm);
 		menu.setItem(19, new ItemBuilder().type(Material.STAINED_GLASS_PANE).durability(14).name("§cRejeitar").build(),
-				noHandler);
+				noConfirm);
 		menu.setItem(20, new ItemBuilder().type(Material.STAINED_GLASS_PANE).durability(14).name("§cRejeitar").build(),
-				noHandler);
+				noConfirm);
 
 		menu.setItem(15, new ItemBuilder().type(Material.STAINED_GLASS_PANE).durability(5).name("§aAceitar").build(),
-				yesHandler);
+				confirm);
 		menu.setItem(16, new ItemBuilder().type(Material.STAINED_GLASS_PANE).durability(5).name("§aAceitar").build(),
-				yesHandler);
+				confirm);
 		menu.setItem(24, new ItemBuilder().type(Material.STAINED_GLASS_PANE).durability(5).name("§aAceitar").build(),
-				yesHandler);
+				confirm);
 		menu.setItem(25, new ItemBuilder().type(Material.STAINED_GLASS_PANE).durability(5).name("§aAceitar").build(),
-				yesHandler);
+				confirm);
 
 		menu.open(player);
 	}

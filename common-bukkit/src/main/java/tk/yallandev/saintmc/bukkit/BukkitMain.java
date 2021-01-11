@@ -33,6 +33,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import com.google.common.io.ByteArrayDataInput;
+import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 
 import lombok.Getter;
@@ -283,7 +284,7 @@ public class BukkitMain extends JavaPlugin {
 						"blockdata", "clone", "debug", "defaultgamemode", "entitydata", "execute", "fill", "gamemode",
 						"pardon", "pardon-ip", "replaceitem", "setidletimeout", "stats", "testforblock", "title",
 						"trigger", "viaver", "ps", "holograms", "hd", "holo", "hologram", "restart", "filter",
-						"packetlog", "pl", "plugins", "whitelist", "tps", "pl", "plugins", "ver", "version", "?");
+						"packetlog", "whitelist", "tps", "?");
 
 				BukkitCommandFramework.INSTANCE.loadCommands("tk.yallandev.saintmc.bukkit.command.register");
 
@@ -292,8 +293,7 @@ public class BukkitMain extends JavaPlugin {
 					world.setWeatherDuration(0);
 					world.setThunderDuration(0);
 					world.setThundering(false);
-					
-					
+
 				});
 			}
 		}.runTaskLater(this, 3l);
@@ -387,6 +387,13 @@ public class BukkitMain extends JavaPlugin {
 		}
 
 		p.sendPluginMessage(getInstance(), "BungeeCord", b.toByteArray());
+	}
+
+	public void sendServer(Player player, String serverType) {
+		ByteArrayDataOutput out = ByteStreams.newDataOutput();
+		out.writeUTF(serverType);
+		player.sendPluginMessage(getInstance(), "BungeeCord", out.toByteArray());
+		player.closeInventory();
 	}
 
 	public Location getLocationFromConfig(String config) {

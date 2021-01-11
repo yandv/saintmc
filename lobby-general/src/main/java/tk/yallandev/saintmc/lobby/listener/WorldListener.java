@@ -1,3 +1,4 @@
+
 package tk.yallandev.saintmc.lobby.listener;
 
 import org.bukkit.Material;
@@ -15,6 +16,7 @@ import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.ItemSpawnEvent;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.weather.WeatherChangeEvent;
 
 import tk.yallandev.saintmc.CommonGeneral;
@@ -28,7 +30,7 @@ public class WorldListener implements Listener {
 	public void onBlockExplode(BlockExplodeEvent e) {
 		e.blockList().clear();
 	}
-	
+
 	@EventHandler
 	public void onEntityDamage(EntityDamageEvent e) {
 		e.setCancelled(true);
@@ -66,7 +68,7 @@ public class WorldListener implements Listener {
 				.getMember(e.getPlayer().getUniqueId());
 
 		if (player.isBuildEnabled())
-			if (player.hasGroupPermission(Group.DEVELOPER)) {
+			if (player.hasGroupPermission(Group.DONO)) {
 				e.setCancelled(false);
 				return;
 			}
@@ -80,7 +82,7 @@ public class WorldListener implements Listener {
 				.getMember(e.getPlayer().getUniqueId());
 
 		if (player.isBuildEnabled())
-			if (player.hasGroupPermission(Group.DEVELOPER)) {
+			if (player.hasGroupPermission(Group.DONO)) {
 				e.setCancelled(false);
 				return;
 			}
@@ -89,14 +91,26 @@ public class WorldListener implements Listener {
 	}
 
 	@EventHandler
+	public void onPlayerPlayerInteract(PlayerInteractEvent event) {
+		BukkitMember player = (BukkitMember) CommonGeneral.getInstance().getMemberManager()
+				.getMember(event.getPlayer().getUniqueId());
+
+		if (player.isBuildEnabled())
+			if (player.hasGroupPermission(Group.DONO)) {
+				event.setCancelled(false);
+				return;
+			}
+
+		event.setCancelled(true);
+	}
+
+	@EventHandler
 	public void onPlayerMoveUpdate(PlayerMoveUpdateEvent event) {
 		Player player = event.getPlayer();
 		Material type = event.getTo().getBlock().getRelative(BlockFace.DOWN).getType();
 
-		if (type == Material.SLIME_BLOCK) {
-			player.setVelocity(player.getLocation().getDirection().multiply(1.8F).setY(0.7F));
-			player.setFallDistance(-1.0F);
-		}
+		if (type == Material.SLIME_BLOCK)
+			player.setVelocity(player.getLocation().getDirection().multiply(2.9F).setY(0.9F));
 	}
 
 	@EventHandler
@@ -105,7 +119,7 @@ public class WorldListener implements Listener {
 				.getMember(event.getPlayer().getUniqueId());
 
 		if (player.isBuildEnabled())
-			if (player.hasGroupPermission(Group.DEVELOPER)) {
+			if (player.hasGroupPermission(Group.DONO)) {
 				event.setCancelled(false);
 				return;
 			}

@@ -71,7 +71,7 @@ public class AlertController implements net.saintmc.anticheat.alert.AlertControl
 									.collect(Collectors.toList())))));
 
 		CommonGeneral.getInstance().getMemberManager().getMemberMap().values().stream()
-				.filter(member -> member.hasGroupPermission(Group.TRIAL)
+				.filter(member -> member.hasGroupPermission(Group.AJUDANTE)
 						&& member.getAccountConfiguration().isAnticheatEnabled())
 				.forEach(member -> member.sendMessage(messageBuilder.create()));
 

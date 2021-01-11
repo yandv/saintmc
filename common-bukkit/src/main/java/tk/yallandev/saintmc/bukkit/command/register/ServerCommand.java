@@ -149,7 +149,7 @@ public class ServerCommand implements CommandClass {
 		}
 	}
 
-	@Command(name = "tps", aliases = { "ticks" }, groupToUse = Group.TRIAL)
+	@Command(name = "tps", aliases = { "ticks" }, groupToUse = Group.AJUDANTE)
 	public void tpsCommand(CommandArgs cmdArgs) {
 		CommandSender sender = cmdArgs.getSender();
 

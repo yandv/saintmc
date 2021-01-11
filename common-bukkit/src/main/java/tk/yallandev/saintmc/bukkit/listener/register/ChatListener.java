@@ -154,7 +154,7 @@ public class ChatListener extends Listener {
 		BukkitMember player = (BukkitMember) CommonGeneral.getInstance().getMemberManager()
 				.getMember(event.getPlayer().getUniqueId());
 
-		if (!player.hasGroupPermission(Group.ULTIMATE)) {
+		if (!player.hasGroupPermission(Group.ELITE)) {
 			if (player.isOnCooldown("chat-delay")) {
 				event.setCancelled(true);
 				player.sendMessage(
@@ -163,7 +163,7 @@ public class ChatListener extends Listener {
 			}
 
 			player.setCooldown("chat-delay",
-					System.currentTimeMillis() + (player.hasGroupPermission(Group.EXTREME) ? 1000l : 3000l));
+					System.currentTimeMillis() + (player.hasGroupPermission(Group.PRO) ? 1000l : 3000l));
 		}
 
 		if (player.hasGroupPermission(Group.PRO))

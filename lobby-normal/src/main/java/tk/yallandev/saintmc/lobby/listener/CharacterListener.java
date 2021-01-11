@@ -23,8 +23,10 @@ import tk.yallandev.saintmc.bukkit.event.server.ServerPlayerLeaveEvent;
 import tk.yallandev.saintmc.common.server.ServerType;
 import tk.yallandev.saintmc.lobby.LobbyMain;
 import tk.yallandev.saintmc.lobby.menu.server.GladiatorInventory;
+import tk.yallandev.saintmc.lobby.menu.server.HungergamesInventory;
 import tk.yallandev.saintmc.lobby.menu.server.KitpvpInventory;
-import tk.yallandev.saintmc.lobby.menu.server.SkywarsInventory;
+import tk.yallandev.saintmc.lobby.menu.server.ServerInventory;
+import tk.yallandev.saintmc.lobby.menu.server.skywars.SkywarsInventory;
 
 public class CharacterListener implements Listener {
 
@@ -37,27 +39,39 @@ public class CharacterListener implements Listener {
 
 			@Override
 			public boolean onInteract(Player player, boolean right) {
-				sendPlayer(player, "LobbyHG");
-				return false;
-			}
-		}, ServerType.HUNGERGAMES);
 
-		createCharacter("§bSkywars", "DoutorBiscoito", "npc-skywars", new Interact() {
-
-			@Override
-			public boolean onInteract(Player player, boolean right) {
-
-				if (right) {
-					new SkywarsInventory(player);
-				} else {
-					sendPlayer(player, "SWSolo");
+				if (ServerInventory.LOBBY_HG)
+					sendPlayer(player, "LobbyHG");
+				else {
+					if (right)
+						sendPlayer(player, "Hungergames");
+					else
+						new HungergamesInventory(player);
 				}
 
 				return false;
 			}
-		}, ServerType.SW_SOLO, ServerType.SW_SQUAD, ServerType.SW_TEAM);
+		}, ServerType.HUNGERGAMES, ServerType.LOBBY_HG);
 
-		createCharacter("§bKitPvP", "broowk", "npc-pvp", new Interact() {
+		createCharacter("§bSkywars", "SpectroPlayer", "npc-skywars", new Interact() {
+
+			@Override
+			public boolean onInteract(Player player, boolean right) {
+				new SkywarsInventory(player);
+				return false;
+			}
+		}, ServerType.LOBBY_SKYWARS, ServerType.SW_SOLO, ServerType.SW_SQUAD, ServerType.SW_TEAM);
+
+		createCharacter("§bBedwars", "DoutorBiscoito", "npc-bedwars", new Interact() {
+
+			@Override
+			public boolean onInteract(Player player, boolean right) {
+				sendPlayer(player, "LobbyBW");
+				return false;
+			}
+		}, ServerType.LOBBY_BEDWARS, ServerType.BW_SOLO, ServerType.BW_SQUAD, ServerType.BW_TEAM);
+
+		createCharacter("§bKitPvP", "yandv", "npc-pvp", new Interact() {
 
 			@Override
 			public boolean onInteract(Player player, boolean right) {

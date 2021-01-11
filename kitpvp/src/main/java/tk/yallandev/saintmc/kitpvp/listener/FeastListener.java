@@ -122,12 +122,7 @@ public class FeastListener implements Listener {
 
 	void fillChest(Chest chest) {
 		for (int x = 0; x < CommonConst.RANDOM.nextInt(3) + 2; x++) {
-
-//			Bukkit.broadcastMessage("X: " + x);
-
 			Item item = itemList.get(CommonConst.RANDOM.nextInt(itemList.size()));
-
-//			Bukkit.broadcastMessage(item.itemStack.toString());
 
 			if (CommonConst.RANDOM.nextInt(100) <= item.chance) {
 				int slot;
@@ -137,7 +132,6 @@ public class FeastListener implements Listener {
 				} while (chest.getInventory().getItem(slot) != null);
 
 				chest.getInventory().setItem(slot, item.itemStack);
-//				Bukkit.broadcastMessage("Slot: " + slot);
 			}
 		}
 	}

@@ -1,5 +1,6 @@
 tk\yallandev\saintmc\bukkit\command\register\StaffCommand$2.class
 tk\yallandev\saintmc\bukkit\event\admin\PlayerAdminModeEvent.class
+tk\yallandev\saintmc\bukkit\menu\account\PreferencesInventory$Config.class
 tk\yallandev\saintmc\bukkit\listener\register\TagListener.class
 tk\yallandev\saintmc\bukkit\event\player\PlayerKnockbackEvent.class
 tk\yallandev\saintmc\bukkit\networking\redis\BukkitPubSubHandler$4.class
@@ -35,6 +36,7 @@ tk\yallandev\saintmc\bukkit\event\player\PlayerCommandEvent.class
 tk\yallandev\saintmc\bukkit\command\register\ServerCommand$1.class
 tk\yallandev\saintmc\bukkit\controller\SkinController.class
 tk\yallandev\saintmc\bukkit\menu\account\SkinInventory$MenuType.class
+tk\yallandev\saintmc\bukkit\listener\register\FakeListener$1$2.class
 tk\yallandev\saintmc\bukkit\api\item\ActionItemStack$ActionType.class
 tk\yallandev\saintmc\bukkit\api\listener\ManualRegisterableListener.class
 tk\yallandev\saintmc\bukkit\listener\register\ChatListener$3.class
@@ -128,6 +130,7 @@ tk\yallandev\saintmc\bukkit\permission\injector\regexperm\PermissiblePEX.class
 tk\yallandev\saintmc\bukkit\api\title\types\SimpleTitle.class
 tk\yallandev\saintmc\bukkit\menu\account\punish\BanListInventory$1.class
 net\saintmc\anticheat\storage\MoveStorage.class
+tk\yallandev\saintmc\bukkit\menu\account\PreferencesInventory.class
 tk\yallandev\saintmc\bukkit\menu\report\ReportInformationListInventory$2.class
 tk\yallandev\saintmc\bukkit\api\title\Title.class
 tk\yallandev\saintmc\bukkit\command\BukkitCommandFramework$1.class
@@ -200,6 +203,7 @@ tk\yallandev\saintmc\bukkit\api\cooldown\event\CooldownStartEvent.class
 tk\yallandev\saintmc\bukkit\event\player\TeleportAllEvent.class
 tk\yallandev\saintmc\bukkit\event\vanish\PlayerShowToPlayerEvent.class
 tk\yallandev\saintmc\bukkit\api\menu\MenuListener$1.class
+tk\yallandev\saintmc\bukkit\menu\account\PreferencesInventory$2.class
 tk\yallandev\saintmc\bukkit\listener\register\ReportListener.class
 tk\yallandev\saintmc\bukkit\api\tag\Chroma.class
 tk\yallandev\saintmc\bukkit\event\account\PlayerUpdatedFieldEvent.class
@@ -229,6 +233,7 @@ tk\yallandev\saintmc\BukkitConst.class
 net\saintmc\anticheat\check\CheckController$CheckType.class
 net\saintmc\anticheat\utils\Util.class
 tk\yallandev\saintmc\bukkit\listener\register\CommandListener.class
+tk\yallandev\saintmc\bukkit\menu\account\PreferencesInventory$1.class
 tk\yallandev\saintmc\bukkit\permission\injector\regexperm\PEXPermissionSubscriptionMap.class
 net\saintmc\anticheat\check\CheckController.class
 tk\yallandev\saintmc\bukkit\api\menu\types\ConfirmInventory$1.class

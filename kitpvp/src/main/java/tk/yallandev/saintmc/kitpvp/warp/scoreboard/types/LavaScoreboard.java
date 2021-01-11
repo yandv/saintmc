@@ -25,7 +25,7 @@ public class LavaScoreboard extends WarpScoreboard {
 	private Scoreboard challengeScoreboard;
 
 	public LavaScoreboard() {
-		super(new SimpleScoreboard("§4§lLAVA CHALLENGE"));
+		super(new SimpleScoreboard("§6§lLAVA CHALLENGE"));
 
 		scoreboard.blankLine(15);
 		scoreboard.setScore(14, new Score("§4Extremo: ", "top"));
@@ -41,16 +41,16 @@ public class LavaScoreboard extends WarpScoreboard {
 		scoreboard.setScore(4, new Score(" Passou: §a0", "pass3"));
 		scoreboard.setScore(3, new Score(" Tempo record: §70s", "record3"));
 		scoreboard.blankLine(2);
-		scoreboard.setScore(1, new Score("§c" + CommonConst.SITE, "site"));
+		scoreboard.setScore(1, new Score("§e" + CommonConst.SITE, "site"));
 
-		challengeScoreboard = new SimpleScoreboard("§4§lLAVA CHALLENGE");
+		challengeScoreboard = new SimpleScoreboard("§6§lLAVA CHALLENGE");
 
 		challengeScoreboard.blankLine(6);
 		challengeScoreboard.setScore(5, new Score("§aDesafio: §7", "mode"));
 		challengeScoreboard.setScore(4, new Score(" Tempo atual: §a0", "time"));
 		challengeScoreboard.setScore(3, new Score(" Tempo record: §c0", "record"));
 		challengeScoreboard.blankLine(2);
-		challengeScoreboard.setScore(1, new Score("§c" + CommonConst.SITE, "site"));
+		challengeScoreboard.setScore(1, new Score("§e" + CommonConst.SITE, "site"));
 	}
 
 	@EventHandler

@@ -31,10 +31,10 @@ import tk.yallandev.saintmc.login.LoginMain;
 
 public class PlayerListener implements Listener {
 
-	private static final Scoreboard SCOREBOARD = new SimpleScoreboard("§4§lLOGIN");
-	private static final Tablist TABLIST = new Tablist(
-			"\n§c§lCLOUTH§f§lNETWORK\n§f\n§7Nome: §f%name% §9- §7Grupo: %group%\n§f                                                 §f",
-			"\n§a" + CommonConst.SITE + "\n§b" + CommonConst.DISCORD.replace("http://", "") + "\n§f ") {
+	private static final Scoreboard SCOREBOARD = new SimpleScoreboard("§6§lLOGIN");
+	private static final Tablist TABLIST = new Tablist("\n§6§l" + CommonConst.SERVER_NAME.toUpperCase()
+			+ "\n§f\n§7Nome: §f%name% §7- §7Grupo: %group%\n§f                                                 §f",
+			"\n§e" + CommonConst.SITE + "\n§e" + CommonConst.DISCORD.replace("http://", "") + "\n§f ") {
 
 		@Override
 		public String[] replace(Player player, String header, String footer) {
@@ -60,7 +60,7 @@ public class PlayerListener implements Listener {
 		SCOREBOARD.setScore(4, new Score("§fRegistre-se usando", "3"));
 		SCOREBOARD.setScore(3, new Score("§f/register <senha>", "4"));
 		SCOREBOARD.blankLine(2);
-		SCOREBOARD.setScore(1, new Score("§c" + CommonConst.SITE, "site"));
+		SCOREBOARD.setScore(1, new Score("§e" + CommonConst.SITE, "site"));
 	}
 
 	@EventHandler(priority = EventPriority.LOWEST)

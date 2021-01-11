@@ -14,6 +14,7 @@ import tk.yallandev.saintmc.bukkit.api.item.ItemBuilder;
 import tk.yallandev.saintmc.bukkit.api.menu.MenuInventory;
 import tk.yallandev.saintmc.bukkit.api.menu.click.ClickType;
 import tk.yallandev.saintmc.bukkit.api.menu.click.MenuClickHandler;
+import tk.yallandev.saintmc.bukkit.menu.account.PreferencesInventory;
 import tk.yallandev.saintmc.bukkit.menu.account.SkinInventory;
 import tk.yallandev.saintmc.bukkit.menu.account.SkinInventory.MenuType;
 import tk.yallandev.saintmc.common.account.Member;
@@ -63,7 +64,7 @@ public class ProfileInventory {
 
 					@Override
 					public void onClick(Player player, Inventory inv, ClickType type, ItemStack stack, int slot) {
-						new PreferencesInventory(player);
+						new PreferencesInventory(player, ProfileInventory.this.getClass());
 					}
 				});
 

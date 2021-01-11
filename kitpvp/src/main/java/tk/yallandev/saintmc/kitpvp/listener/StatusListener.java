@@ -13,7 +13,6 @@ import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import tk.yallandev.saintmc.CommonConst;
 import tk.yallandev.saintmc.CommonGeneral;
-import tk.yallandev.saintmc.common.account.Member;
 import tk.yallandev.saintmc.common.account.status.StatusType;
 import tk.yallandev.saintmc.common.account.status.types.normal.NormalStatus;
 import tk.yallandev.saintmc.common.permission.Group;
@@ -22,7 +21,6 @@ import tk.yallandev.saintmc.kitpvp.GameMain;
 import tk.yallandev.saintmc.kitpvp.event.challenge.shadow.ShadowFightStartEvent;
 import tk.yallandev.saintmc.kitpvp.event.warp.PlayerWarpDeathEvent;
 import tk.yallandev.saintmc.kitpvp.gamer.Gamer;
-import tk.yallandev.saintmc.kitpvp.utils.RewardCalculator;
 import tk.yallandev.saintmc.kitpvp.warp.DuelWarp;
 import tk.yallandev.saintmc.kitpvp.warp.types.LavaWarp;
 import tk.yallandev.saintmc.kitpvp.warp.types.PartyWarp;
@@ -80,25 +78,12 @@ public class StatusListener implements Listener {
 		NormalStatus killerStatus = CommonGeneral.getInstance().getStatusManager().loadStatus(killer.getUniqueId(),
 				statusType, NormalStatus.class);
 
-		int winnerXp = RewardCalculator.calculateReward(player, playerStatus, killer, killerStatus);
+		int winnerXp = duels ? CommonConst.RANDOM.nextInt(2) + 5 : CommonConst.RANDOM.nextInt(2) + 5;
 		int winnerMoney = 50;
-
-		if (duels) {
-			winnerXp *= 1.5;
-			winnerMoney *= 1.5;
-		}
-
-		Member killerMember = CommonGeneral.getInstance().getMemberManager().getMember(killer.getUniqueId());
-
-		if (killerMember.hasGroupPermission(Group.ULTIMATE))
-			winnerXp *= 2;
-
-		if (killerMember.hasGroupPermission(Group.EXTREME))
-			winnerMoney *= 2;
 
 		int lostXp = CommonConst.RANDOM.nextInt(8) + 1;
 		int lostMoney = 20 * (CommonGeneral.getInstance().getMemberManager().getMember(killer.getUniqueId())
-				.hasGroupPermission(Group.EXTREME) ? 2 : 1);
+				.hasGroupPermission(Group.PRO) ? 2 : 1);
 
 		player.spigot()
 				.sendMessage(
@@ -127,13 +112,15 @@ public class StatusListener implements Listener {
 										.create());
 
 		if (event.getWarp() instanceof ShadowWarp) {
-			int mushroomSoup = (int) Arrays.asList(killer.getInventory().getContents()).stream()
+			long mushroomSoup = Arrays.asList(killer.getInventory().getContents()).stream()
 					.filter(item -> item != null && item.getType() == Material.MUSHROOM_SOUP).count();
 
-			player.sendMessage("§cO jogador ficou com " + (CommonConst.DECIMAL_FORMAT.format(killer.getHealth()))
-					+ " corações e com " + (mushroomSoup) + " sopas!");
-			killer.sendMessage("§aVocê ficou com " + (CommonConst.DECIMAL_FORMAT.format(killer.getHealth()))
-					+ " corações e com " + (mushroomSoup) + " sopas!");
+			player.sendMessage("§cVocê perdeu o duelo contra o jogador " + killer.getName() + " que ficou com"
+					+ (CommonConst.DECIMAL_FORMAT.format(killer.getHealth())) + " corações e com " + mushroomSoup
+					+ " sopas!");
+			killer.sendMessage("§aVocê venceu o duelo contra o jogador " + player.getName() + ", ficando com "
+					+ (CommonConst.DECIMAL_FORMAT.format(killer.getHealth())) + " corações e com " + mushroomSoup
+					+ " sopas!");
 		}
 
 		if (statusable) {

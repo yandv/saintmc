@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
 import tk.yallandev.saintmc.CommonGeneral;
@@ -70,6 +71,11 @@ public class WarpManager {
 			CommonGeneral.getInstance().getLogger().info("The warp " + warpName + " doesnt exist!");
 			return;
 		}
+
+		Entity entity = player.getPassenger();
+
+		if (entity != null)
+			entity.leaveVehicle();
 
 		Gamer gamer = GameMain.getInstance().getGamerManager().getGamer(player.getUniqueId());
 

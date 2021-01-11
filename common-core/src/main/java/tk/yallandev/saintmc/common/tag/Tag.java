@@ -25,15 +25,15 @@ import tk.yallandev.saintmc.common.permission.Group;
 public abstract class Tag {
 
 	public static final Tag DONO = TagWrapper.create("§4§lDONO§4", Group.DONO);
+	public static final Tag DEV = TagWrapper.create("§3§lDEVELOPER§3", Group.DONO);
 	public static final Tag ADMIN = TagWrapper.create("§c§lADMIN§c", Group.ADMIN);
-	public static final Tag DEVELOPER = TagWrapper.create("§3§lDEVELOPER§3", Group.DEVELOPER);
 	public static final Tag MODPLUS = TagWrapper.create("§5§LMOD+§5", Group.MODPLUS);
 	public static final Tag MODGC = TagWrapper.create("§5§LMODGC§5", Group.MODGC);
 	public static final Tag MOD = TagWrapper.create("§5§lMOD§5", Group.MOD);
 	public static final Tag AJUDANTE = TagWrapper.create("§e§lAJUDANTE§e", Group.AJUDANTE);
 	public static final Tag BUILDER = TagWrapper.create("§2§lBUILDER§2", Group.BUILDER, true);
-	public static final Tag YOUTUBERPLUS = TagWrapper.create("§3§lYOUTUBER+§3", Group.YOUTUBERPLUS, true);
-	public static final Tag YOUTUBER = TagWrapper.create("§b§lYOUTUBER§b",
+	public static final Tag YOUTUBERPLUS = TagWrapper.create("§3§lYT+§3", Group.YOUTUBERPLUS, true);
+	public static final Tag YOUTUBER = TagWrapper.create("§b§lYT§b",
 			Arrays.asList(Group.YOUTUBER, Group.YOUTUBERPLUS), true);
 	public static final Tag PARTNER = TagWrapper.create("§b§lPARTNER§b",
 			Arrays.asList(Group.YOUTUBER, Group.YOUTUBERPLUS, Group.PARTNER), true);

@@ -201,12 +201,5 @@
       <scope>system</scope>
       <systemPath>C:/Users/Allan/Desktop/Coisas do Allan/Aula/libraries/paperspigot-1.8.8-R0.1-SNAPSHOT.jar</systemPath>
     </dependency>
-    <dependency>
-      <groupId>me.levansj01.launcher</groupId>
-      <artifactId>Verus</artifactId>
-      <version>b2443</version>
-      <scope>system</scope>
-      <systemPath>C:/Users/Allan/Desktop/Coisas do Allan/Aula/libraries/SPOILER_Verus-API-1.2.1.jar</systemPath>
-    </dependency>
   </dependencies>
 </project>

@@ -136,7 +136,7 @@ public class AccountListener extends Listener {
 			}
 		}
 
-		if (!member.hasGroupPermission(Group.TRIAL)) {
+		if (!member.hasGroupPermission(Group.AJUDANTE)) {
 			if (Bukkit.getOnlinePlayers().size() >= Bukkit.getMaxPlayers() + 20) {
 				event.disallow(PlayerLoginEvent.Result.KICK_OTHER, "§cO servidor está lotado!");
 				return;

@@ -23,6 +23,7 @@ import tk.yallandev.saintmc.bukkit.api.menu.click.ClickType;
 import tk.yallandev.saintmc.bukkit.api.menu.click.MenuClickHandler;
 import tk.yallandev.saintmc.common.server.ServerType;
 import tk.yallandev.saintmc.lobby.LobbyPlatform;
+import tk.yallandev.saintmc.lobby.menu.server.skywars.SkywarsInventory;
 
 public class ServerInventory {
 
@@ -70,51 +71,46 @@ public class ServerInventory {
 				.lore("", " §7Um servidor onde há uma batalha brutal", " §7com kits onde apenas um será o campeão", "",
 						"§8" + getTotalNumber(ServerType.LOBBY_HG, EVENTO, HUNGERGAMES) + " jogadores conectados",
 						"§aClique para conectar.")
-				.build(), new MenuClickHandler() {
-
-					@Override
-					public void onClick(Player p, Inventory inv, ClickType type, ItemStack stack, int slot) {
-						if (LOBBY_HG) {
-							ByteArrayDataOutput out = ByteStreams.newDataOutput();
-							out.writeUTF("LobbyHG");
-							player.sendPluginMessage(LobbyPlatform.getInstance().getPlugin(), "BungeeCord",
-									out.toByteArray());
-							player.closeInventory();
-							return;
-						}
-
-						if (type == ClickType.LEFT) {
-							new HungergamesInventory(p);
-							return;
-						}
-
-						ByteArrayDataOutput out = ByteStreams.newDataOutput();
-						out.writeUTF("Hungergames");
-						player.sendPluginMessage(LobbyPlatform.getInstance().getPlugin(), "BungeeCord",
-								out.toByteArray());
-						player.closeInventory();
+				.build(), (p, inv, type, stack, slot) -> {
+					if (LOBBY_HG) {
+						sendServer(player, "LobbyHG");
+						return;
 					}
+
+					if (type == ClickType.LEFT) {
+						new HungergamesInventory(p);
+						return;
+					}
+
+					ByteArrayDataOutput out = ByteStreams.newDataOutput();
+					out.writeUTF("Hungergames");
+					player.sendPluginMessage(LobbyPlatform.getInstance(), "BungeeCord", out.toByteArray());
+					player.closeInventory();
 				});
 
 		menuInventory.setItem(12, new ItemBuilder().name("§aGladiator").type(Material.IRON_FENCE)
 				.lore("", " §7Um servidor onde há uma duelos individuais", " §7contra outros jogadores para saber quem",
 						" §7é o melhor gladiador", "", "§8" + getTotalNumber(GLADIATOR) + " jogadores conectados",
 						"§aClique para conectar.")
-				.build(), new MenuClickHandler() {
-
-					@Override
-					public void onClick(Player p, Inventory inv, ClickType type, ItemStack stack, int slot) {
-						if (type == ClickType.LEFT) {
-							new GladiatorInventory(p);
-							return;
-						}
-
-						ByteArrayDataOutput out = ByteStreams.newDataOutput();
-						out.writeUTF("Gladiator");
-						player.sendPluginMessage(LobbyPlatform.getInstance().getPlugin(), "BungeeCord",
-								out.toByteArray());
-						player.closeInventory();
+				.build(), (p, inv, type, stack, slot) -> {
+					if (type == ClickType.LEFT) {
+						new GladiatorInventory(p);
+						return;
 					}
+
+					sendServer(player, "Gladiator");
+				});
+
+		menuInventory.setItem(13,
+				new ItemBuilder().name("§aSkyWars").type(Material.EYE_OF_ENDER)
+						.lore("", " §7Um servidor onde há uma duelos individuais",
+								" §7contra outros jogadores para saber quem", " §7é o melhor gladiador", "",
+								"§8" + getTotalNumber(ServerType.SW_SOLO, ServerType.SW_TEAM, ServerType.SW_SQUAD)
+										+ " jogadores conectados",
+								"§aClique para conectar.")
+						.build(),
+				(p, inv, type, stack, slot) -> {
+					new SkywarsInventory(p);
 				});
 
 //		menuInventory.setItem(12,
@@ -175,7 +171,7 @@ public class ServerInventory {
 	public void sendServer(Player player, String serverType) {
 		ByteArrayDataOutput out = ByteStreams.newDataOutput();
 		out.writeUTF(serverType);
-		player.sendPluginMessage(LobbyPlatform.getInstance().getPlugin(), "BungeeCord", out.toByteArray());
+		player.sendPluginMessage(LobbyPlatform.getInstance(), "BungeeCord", out.toByteArray());
 		player.closeInventory();
 	}
 
@@ -184,7 +180,7 @@ public class ServerInventory {
 	}
 
 	@RequiredArgsConstructor
-	static class SendClick implements MenuClickHandler {
+	public static class SendClick implements MenuClickHandler {
 
 		private final String serverId;
 
