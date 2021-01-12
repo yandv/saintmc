@@ -132,20 +132,33 @@ public class MenuInventory {
 					|| !(((MenuHolder) p.getOpenInventory().getTopInventory().getHolder()).isOnePerPlayer())) {
 				createAndOpenInventory(p);
 			} else {
-				// Update the current inventory of player
+				Inventory topInventory = p.getOpenInventory().getTopInventory();
+
 				for (int i = 0; i < rows * 9; i++) {
 					if (slotItem.containsKey(i)) {
-						p.getOpenInventory().getTopInventory().setItem(i, slotItem.get(i).getStack());
-					} else {
-						p.getOpenInventory().getTopInventory().setItem(i, null);
-					}
+						ItemStack oldItem = p.getOpenInventory().getTopInventory().getItem(i);
+						ItemStack newItem = slotItem.get(i).getStack();
+
+						if (oldItem == null || newItem == null) {
+							topInventory.setItem(i, newItem);
+							continue;
+						}
+
+						boolean update = !(oldItem.getType() == newItem.getType()
+								&& oldItem.getDurability() == newItem.getDurability()
+								&& oldItem.getAmount() == newItem.getAmount());
+
+						if (update)
+							topInventory.setItem(i, newItem);
+					} else
+						topInventory.setItem(i, null);
 				}
-				p.updateInventory();
 			}
 
 			Bukkit.getPluginManager().callEvent(new MenuOpenEvent(p, p.getOpenInventory().getTopInventory()));
 			((MenuHolder) p.getOpenInventory().getTopInventory().getHolder()).setMenu(this);
 		}
+
 		updateTitle(p);
 		setCooldown(p.getName());
 	}
@@ -176,11 +189,6 @@ public class MenuInventory {
 			packet.getIntegers().write(1, rows * 9);
 
 			BukkitMain.getInstance().getProcotolManager().sendServerPacket(p, packet);
-			int i = 0;
-			for (ItemStack item : p.getInventory().getContents()) {
-				p.getInventory().setItem(i, item);
-				i += 1;
-			}
 			p.updateInventory();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -189,9 +197,11 @@ public class MenuInventory {
 
 	public void createAndOpenInventory(Player p) {
 		Inventory playerInventory = Bukkit.createInventory(new MenuHolder(this), rows * 9, this.title);
+
 		for (Entry<Integer, MenuItem> entry : slotItem.entrySet()) {
 			playerInventory.setItem(entry.getKey(), entry.getValue().getStack());
 		}
+
 		p.openInventory(playerInventory);
 	}
 
