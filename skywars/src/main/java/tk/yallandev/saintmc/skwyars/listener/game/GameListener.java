@@ -33,6 +33,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import tk.yallandev.saintmc.CommonConst;
 import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.bukkit.BukkitMain;
 import tk.yallandev.saintmc.bukkit.api.title.Title;
@@ -238,6 +239,8 @@ public class GameListener implements Listener {
 	public void onFoodLevelChange(FoodLevelChangeEvent event) {
 		if (GameGeneral.getInstance().getMinigameState().isPregame())
 			event.setCancelled(true);
+		else
+			event.setCancelled(CommonConst.RANDOM.nextInt(10) + 1 >= 5);
 	}
 
 	@EventHandler

@@ -214,13 +214,6 @@ public class BukkitMain extends JavaPlugin {
 		skinManager = new SkinController();
 		worldeditController = new WorldeditController();
 
-//		CheckController checkController = new CheckController();
-//		anticheatController = new AnticheatController(checkController, new AlertController());
-//
-//		checkController.registerCheck(new MovementCheck());
-//		checkController.registerCheck(new CombatCheck(this));
-//		pm.registerEvents(new StorageListener(), getInstance());
-
 		hologramController = new HologramController(getInstance());
 		packetController = new BukkitPacketController();
 
