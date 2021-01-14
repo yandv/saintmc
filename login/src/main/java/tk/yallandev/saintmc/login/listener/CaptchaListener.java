@@ -69,7 +69,8 @@ public class CaptchaListener implements Listener {
 
 	@EventHandler
 	public void onCaptchaSuccess(CaptchaSuccessEvent event) {
-		captchaMap.get(event.getPlayer()).setComplete(true);
+		if (captchaMap.containsKey(event.getPlayer()))
+			captchaMap.get(event.getPlayer()).setComplete(true);
 	}
 
 	@EventHandler

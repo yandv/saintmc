@@ -1,18 +1,15 @@
 package tk.yallandev.saintmc.lobby.menu.server;
 
+import static tk.yallandev.saintmc.common.server.ServerType.EVENTO;
 import static tk.yallandev.saintmc.common.server.ServerType.FULLIRON;
 import static tk.yallandev.saintmc.common.server.ServerType.GLADIATOR;
-import static tk.yallandev.saintmc.common.server.ServerType.SIMULATOR;
 import static tk.yallandev.saintmc.common.server.ServerType.HUNGERGAMES;
-import static tk.yallandev.saintmc.common.server.ServerType.EVENTO;
+import static tk.yallandev.saintmc.common.server.ServerType.SIMULATOR;
 
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-
-import com.google.common.io.ByteArrayDataOutput;
-import com.google.common.io.ByteStreams;
 
 import lombok.RequiredArgsConstructor;
 import tk.yallandev.saintmc.bukkit.BukkitMain;
@@ -22,7 +19,6 @@ import tk.yallandev.saintmc.bukkit.api.menu.MenuUpdateHandler;
 import tk.yallandev.saintmc.bukkit.api.menu.click.ClickType;
 import tk.yallandev.saintmc.bukkit.api.menu.click.MenuClickHandler;
 import tk.yallandev.saintmc.common.server.ServerType;
-import tk.yallandev.saintmc.lobby.LobbyPlatform;
 import tk.yallandev.saintmc.lobby.menu.server.skywars.SkywarsInventory;
 
 public class ServerInventory {
@@ -63,7 +59,7 @@ public class ServerInventory {
 							return;
 						}
 
-						sendServer(player, "PVP");
+						BukkitMain.getInstance().sendServer(player, ServerType.SIMULATOR, ServerType.FULLIRON);
 					}
 				});
 
@@ -72,20 +68,12 @@ public class ServerInventory {
 						"§8" + getTotalNumber(ServerType.LOBBY_HG, EVENTO, HUNGERGAMES) + " jogadores conectados",
 						"§aClique para conectar.")
 				.build(), (p, inv, type, stack, slot) -> {
-					if (LOBBY_HG) {
-						sendServer(player, "LobbyHG");
+					if (LOBBY_HG || type == ClickType.LEFT) {
+						BukkitMain.getInstance().sendServer(player, ServerType.HUNGERGAMES);
 						return;
 					}
 
-					if (type == ClickType.LEFT) {
-						new HungergamesInventory(p);
-						return;
-					}
-
-					ByteArrayDataOutput out = ByteStreams.newDataOutput();
-					out.writeUTF("Hungergames");
-					player.sendPluginMessage(LobbyPlatform.getInstance(), "BungeeCord", out.toByteArray());
-					player.closeInventory();
+					new HungergamesInventory(p);
 				});
 
 		menuInventory.setItem(12, new ItemBuilder().name("§aGladiator").type(Material.IRON_FENCE)
@@ -98,7 +86,7 @@ public class ServerInventory {
 						return;
 					}
 
-					sendServer(player, "Gladiator");
+					BukkitMain.getInstance().sendServer(player, ServerType.GLADIATOR);
 				});
 
 		menuInventory.setItem(13,
@@ -166,13 +154,6 @@ public class ServerInventory {
 //						sendServer(player, "SWSolo");
 //					}
 //				});
-	}
-
-	public void sendServer(Player player, String serverType) {
-		ByteArrayDataOutput out = ByteStreams.newDataOutput();
-		out.writeUTF(serverType);
-		player.sendPluginMessage(LobbyPlatform.getInstance(), "BungeeCord", out.toByteArray());
-		player.closeInventory();
 	}
 
 	public int getTotalNumber(ServerType... serverTypes) {

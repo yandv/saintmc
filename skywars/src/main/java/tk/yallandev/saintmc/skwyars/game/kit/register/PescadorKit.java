@@ -11,7 +11,7 @@ public class PescadorKit extends DefaultKit {
 
 	public PescadorKit() {
 		super("Pescador", new ItemBuilder().type(Material.FISHING_ROD).build(),
-				"Com sua vara empurre seus oponentes para longe!", 19000);
+				"Com sua vara empurre seus oponentes para longe!", 19000, 450);
 	}
 
 	@Override

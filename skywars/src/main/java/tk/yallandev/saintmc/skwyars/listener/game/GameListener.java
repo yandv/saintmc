@@ -11,6 +11,7 @@ import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.block.Chest;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -100,8 +101,12 @@ public class GameListener implements Listener {
 		World w = world;
 
 		GameGeneral.getInstance().getLocationController().getChestList().forEach(chest -> {
-			chest.getChest(w).getBlockInventory().clear();
-			chest.fill(w);
+			Chest c = chest.getChest(w);
+
+			if (c != null) {
+				c.getBlockInventory().clear();
+				chest.fill(w);
+			}
 		});
 
 		BukkitMain.getInstance().setTagControl(false);

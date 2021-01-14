@@ -26,6 +26,7 @@ public class SelectorInventory {
 	private static int itemsPerPage = 20;
 
 	public SelectorInventory(Player player, int page, InventoryType inventoryType, OrderType orderType) {
+		Member member = CommonGeneral.getInstance().getMemberManager().getMember(player.getUniqueId());
 		Gamer gamer = GameGeneral.getInstance().getGamerController().getGamer(player);
 		MenuInventory menu = new MenuInventory(inventoryType.getDisplayName(), 6, true);
 		List<Kit> kits = new ArrayList<>(GameGeneral.getInstance().getAbilityController().getKits());
@@ -38,30 +39,20 @@ public class SelectorInventory {
 
 		for (Kit kit : kits) {
 			if (inventoryType == InventoryType.STORE) {
-				int money = CommonGeneral.getInstance().getMemberManager().getMember(player.getUniqueId()).getMoney();
-
 				if (!gamer.hasKit(kit.getName())) {
 					ItemBuilder item = new ItemBuilder()
-							.lore("§f\n§7" + kit.getDescription() + "\n\n§7Preço: §f" + kit.getPrice() + "\n"
-									+ (money > kit.getPrice() ? "§aClique para comprar!"
+							.lore("§f\n§7" + kit.getDescription() + "\n\n§7Preço em Moedas: §a" + kit.getPrice()
+									+ "\n§7Preço em Cash: §6" + kit.getCashPrice() + "\n\n"
+									+ (member.getMoney() > kit.getPrice() || member.getCash() > kit.getCashPrice()
+											? "§aClique para comprar!"
 											: "§cVocê não possui money para comprar esse kit!"))
 							.type(kit.getKitIcon().getType()).durability(kit.getKitIcon().getDurability())
-							.name((money > kit.getPrice() ? "§a" : "§c") + NameUtils.formatString(kit.getName()));
+							.hideAttributes()
+							.name((member.getMoney() > kit.getPrice() || member.getCash() > kit.getCashPrice() ? "§a"
+									: "§c") + NameUtils.formatString(kit.getName()));
 
 					items.add(new MenuItem(item.build(), (p, inv, type, stack, slot) -> {
-						if (money > kit.getPrice()) {
-							Member member = CommonGeneral.getInstance().getMemberManager().getMember(p.getUniqueId());
-
-							member.removeMoney(kit.getPrice());
-							member.addPermission(
-									CommonGeneral.getInstance().getServerType().name().toLowerCase().replace("_", "-")
-											+ ".kit." + kit.getName().toLowerCase());
-							p.sendMessage("Você comprou o kit " + kit.getName() + "!");
-							p.closeInventory();
-						} else {
-							p.closeInventory();
-							p.sendMessage("§cVocê não possui moedas para comprar esse kit!");
-						}
+						new BuyInventory(player, kit, page, orderType);
 					}));
 				}
 			} else {
@@ -134,6 +125,10 @@ public class SelectorInventory {
 					if (inventoryType != InventoryType.STORE)
 						new SelectorInventory(p, page, InventoryType.STORE, orderType);
 				});
+
+		if (inventoryType == InventoryType.STORE)
+			menu.setItem(49, new ItemBuilder().type(Material.EMERALD).name("§aInformações")
+					.lore("", "§7Suas moedas: §f" + member.getMoney(), "§7Seu cash: §6" + member.getCash()).build());
 
 		if (page != 1) {
 			menu.setItem(new MenuItem(new ItemBuilder().type(Material.ARROW).name("§aPágina " + (page - 1)).build(),

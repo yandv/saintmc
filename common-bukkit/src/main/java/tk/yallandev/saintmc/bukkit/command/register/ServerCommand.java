@@ -21,6 +21,7 @@ import tk.yallandev.saintmc.common.command.CommandClass;
 import tk.yallandev.saintmc.common.command.CommandFramework.Command;
 import tk.yallandev.saintmc.common.command.CommandSender;
 import tk.yallandev.saintmc.common.permission.Group;
+import tk.yallandev.saintmc.common.server.ServerType;
 import tk.yallandev.saintmc.common.utils.DateUtils;
 import tk.yallandev.saintmc.common.utils.string.StringUtils;
 
@@ -40,7 +41,7 @@ public class ServerCommand implements CommandClass {
 			return;
 		}
 
-		BukkitMain.getInstance().sendPlayerToEvent(((BukkitMember) sender).getPlayer());
+		BukkitMain.getInstance().sendServer(((BukkitMember) sender).getPlayer(), ServerType.EVENTO);
 		sender.setCooldown("connect-command", 4);
 	}
 
@@ -204,7 +205,8 @@ public class ServerCommand implements CommandClass {
 	}
 
 	private String format(double tps) {
-		return (tps > BukkitConst.TPS * 0.9d ? ChatColor.GREEN : (tps > BukkitConst.TPS * 0.8d ? ChatColor.YELLOW : ChatColor.RED)).toString()
+		return (tps > BukkitConst.TPS * 0.9d ? ChatColor.GREEN
+				: (tps > BukkitConst.TPS * 0.8d ? ChatColor.YELLOW : ChatColor.RED)).toString()
 				+ (tps > BukkitConst.TPS ? "*" : "") + Math.min(Math.round(tps * 100.0D) / 100.0D, BukkitConst.TPS);
 	}
 }

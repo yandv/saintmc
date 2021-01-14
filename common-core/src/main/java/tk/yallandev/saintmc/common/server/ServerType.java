@@ -15,6 +15,8 @@ public enum ServerType {
 	EVENTO, HUNGERGAMES,
 
 	SW_SOLO, SW_TEAM, SW_SQUAD,
+	
+	SK_SOLO, SK_TEAM, SK_SQUAD,
 
 	BW_SOLO, BW_TEAM, BW_SQUAD,
 

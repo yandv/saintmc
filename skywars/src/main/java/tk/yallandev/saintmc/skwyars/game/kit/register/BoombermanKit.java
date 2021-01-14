@@ -11,7 +11,7 @@ public class BoombermanKit extends DefaultKit {
 
 	public BoombermanKit() {
 		super("Boomberman", new ItemStack(Material.TNT), "Cause fortes explosões e assim derrote seus inimigos!",
-				11000);
+				11000, 450);
 	}
 
 	@Override

@@ -30,7 +30,7 @@ import com.mojang.authlib.properties.Property;
 import tk.yallandev.saintmc.bukkit.utils.string.StringLoreUtils;
 
 public class ItemBuilder {
-	
+
 	private Material material;
 	private int amount;
 	private short durability;
@@ -38,15 +38,15 @@ public class ItemBuilder {
 	private boolean glow;
 	private String displayName;
 	private HashMap<Enchantment, Integer> enchantments;
-	private ArrayList<String> lore;
-	
+	private List<String> lore;
+
 	private Color color;
 	private String skinOwner;
 	private String skinUrl;
 
 	private boolean hideAttributes;
 	private boolean unbreakable;
-	
+
 	public ItemBuilder() {
 		material = Material.STONE;
 		amount = 1;
@@ -70,17 +70,17 @@ public class ItemBuilder {
 		this.amount = amount;
 		return this;
 	}
-	
+
 	public ItemBuilder durability(short durability) {
 		this.durability = durability;
 		return this;
 	}
-	
+
 	public ItemBuilder durability(int durability) {
-		this.durability = (short)durability;
+		this.durability = (short) durability;
 		return this;
 	}
-	
+
 	public ItemBuilder name(String text) {
 		if (!useMeta) {
 			useMeta = true;
@@ -97,10 +97,10 @@ public class ItemBuilder {
 		if (enchantments == null) {
 			enchantments = new HashMap<>();
 		}
-		
+
 		if (level == 0)
 			return this;
-		
+
 		enchantments.put(enchantment, level);
 		return this;
 	}
@@ -109,19 +109,19 @@ public class ItemBuilder {
 		if (!this.useMeta) {
 			this.useMeta = true;
 		}
-		
+
 		if (this.lore == null)
 			this.lore = new ArrayList<>(StringLoreUtils.getLore(30, text));
 		else
 			this.lore.addAll(StringLoreUtils.getLore(30, text));
-		
+
 		return this;
 	}
-	
-	public ItemBuilder lore(String ... lore) {
+
+	public ItemBuilder lore(String... lore) {
 		return lore(Arrays.asList(lore));
 	}
-	
+
 	public ItemBuilder lore(List<String> text) {
 		if (!this.useMeta) {
 			this.useMeta = true;
@@ -136,7 +136,7 @@ public class ItemBuilder {
 	}
 
 	public ItemBuilder glow() {
-		glow = true;		
+		glow = true;
 		return this;
 	}
 
@@ -145,13 +145,13 @@ public class ItemBuilder {
 		this.color = color;
 		return this;
 	}
-	
+
 	public ItemBuilder skin(String skin) {
 		this.useMeta = true;
 		this.skinOwner = skin;
-		return this;		
+		return this;
 	}
-	
+
 	public ItemBuilder skinURL(String skinURL) {
 		this.useMeta = true;
 		this.skinUrl = skinURL;
@@ -163,51 +163,55 @@ public class ItemBuilder {
 		this.hideAttributes = true;
 		return this;
 	}
-	
+
 	public ItemBuilder showAttributes() {
 		this.useMeta = true;
 		this.hideAttributes = false;
 		return this;
 	}
-	
+
 	public ItemBuilder unbreakable() {
 		this.unbreakable = true;
 		return this;
 	}
-	
+
 	public ItemStack build() {
 		ItemStack stack = new ItemStack(material, amount, durability);
-		
+
 		if (enchantments != null && !enchantments.isEmpty()) {
 			for (Entry<Enchantment, Integer> entry : enchantments.entrySet()) {
 				stack.addUnsafeEnchantment(entry.getKey(), entry.getValue());
 			}
 		}
-		
+
 		if (useMeta) {
 			ItemMeta meta = stack.getItemMeta();
-			
+
 			if (displayName != null) {
 				meta.setDisplayName(displayName.replace("&", "§"));
 			}
-			
+
 			if (lore != null && !lore.isEmpty()) {
 				meta.setLore(lore);
 			}
-			
+
 			/** Colored Leather Armor */
 			if (color != null) {
 				if (meta instanceof LeatherArmorMeta) {
 					((LeatherArmorMeta) meta).setColor(color);
 				}
 			}
-			
+
 			/** Skull Heads */
 			if (meta instanceof SkullMeta) {
 				SkullMeta skullMeta = (SkullMeta) meta;
 				if (skinUrl != null) {
 					GameProfile profile = new GameProfile(UUID.randomUUID(), null);
-					profile.getProperties().put("textures", new Property("textures", Base64.getEncoder().encodeToString(String.format("{textures:{SKIN:{url:\"%s\"}}}", skinUrl).getBytes(StandardCharsets.UTF_8))));
+					profile.getProperties().put("textures",
+							new Property("textures",
+									Base64.getEncoder()
+											.encodeToString(String.format("{textures:{SKIN:{url:\"%s\"}}}", skinUrl)
+													.getBytes(StandardCharsets.UTF_8))));
 					try {
 						Field field = skullMeta.getClass().getDeclaredField("profile");
 						field.setAccessible(true);
@@ -216,22 +220,22 @@ public class ItemBuilder {
 						e.printStackTrace();
 					}
 				} else if (skinOwner != null) {
-					skullMeta.setOwner(skinOwner);					
+					skullMeta.setOwner(skinOwner);
 				}
 			}
-			
+
 			meta.spigot().setUnbreakable(unbreakable);
-			
+
 			/** Item Flags */
 			if (hideAttributes) {
 				meta.addItemFlags(ItemFlag.values());
 			} else {
 				meta.removeItemFlags(ItemFlag.values());
 			}
-			
+
 			stack.setItemMeta(meta);
 		}
-		
+
 		if (glow && (enchantments == null || enchantments.isEmpty())) {
 			try {
 				Constructor<?> caller = MinecraftReflection.getCraftItemStackClass()
@@ -246,23 +250,23 @@ public class ItemBuilder {
 				e.printStackTrace();
 			}
 		}
-		
+
 		material = Material.STONE;
 		amount = 1;
 		durability = 0;
-		
+
 		if (useMeta) {
 			useMeta = false;
 		}
-		
+
 		if (glow) {
 			glow = false;
 		}
-		
+
 		if (hideAttributes) {
 			hideAttributes = false;
 		}
-		
+
 		if (unbreakable) {
 			unbreakable = false;
 		}
@@ -270,12 +274,12 @@ public class ItemBuilder {
 		if (displayName != null) {
 			displayName = null;
 		}
-		
+
 		if (enchantments != null) {
 			enchantments.clear();
 			enchantments = null;
 		}
-		
+
 		if (lore != null) {
 			lore.clear();
 			lore = null;
@@ -302,32 +306,33 @@ public class ItemBuilder {
 		}
 		return stack;
 	}
-	
+
 	public static ItemBuilder fromStack(ItemStack stack) {
-		ItemBuilder builder =  new ItemBuilder().type(stack.getType()).amount(stack.getAmount()).durability(stack.getDurability());
-		
+		ItemBuilder builder = new ItemBuilder().type(stack.getType()).amount(stack.getAmount())
+				.durability(stack.getDurability());
+
 		if (stack.hasItemMeta()) {
 			ItemMeta meta = stack.getItemMeta();
-			
+
 			if (meta.hasDisplayName())
 				builder.name(meta.getDisplayName());
-			
+
 			if (meta.hasLore())
 				builder.lore(meta.getLore());
-			
+
 			if (meta instanceof LeatherArmorMeta) {
 				Color color = ((LeatherArmorMeta) meta).getColor();
 				if (color != null)
-					builder.color(color);				
+					builder.color(color);
 			}
-			
+
 			if (meta instanceof SkullMeta) {
 				SkullMeta sm = (SkullMeta) meta;
 				if (sm.hasOwner())
 					builder.skin(sm.getOwner());
 			}
 		}
-		
+
 		return builder;
 	}
 }

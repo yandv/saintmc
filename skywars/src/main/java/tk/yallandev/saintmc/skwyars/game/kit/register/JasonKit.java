@@ -11,7 +11,7 @@ public class JasonKit extends DefaultKit {
 
 	public JasonKit() {
 		super("Jason", new ItemBuilder().type(Material.STONE_SWORD).build(),
-				"Mate seus inimigos utilizando sua espada, os persiga até que não sobre mais nada!", 17000);
+				"Mate seus inimigos utilizando sua espada, os persiga até que não sobre mais nada!", 17000, 450);
 	}
 
 	@Override

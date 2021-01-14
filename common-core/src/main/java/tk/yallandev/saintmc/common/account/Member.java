@@ -103,6 +103,7 @@ public abstract class Member implements CommandSender {
 	 */
 
 	private int money;
+	private int cash;
 	private int xp;
 	private int position = -1;
 	private League league;
@@ -167,6 +168,7 @@ public abstract class Member implements CommandSender {
 		tournamentGroup = memberModel.getTournamentGroup();
 
 		money = memberModel.getMoney();
+		cash = memberModel.getCash();
 		xp = memberModel.getXp();
 		position = memberModel.getPosition();
 		league = memberModel.getLeague();
@@ -530,6 +532,27 @@ public abstract class Member implements CommandSender {
 
 		setMoney(getMoney() + money);
 		return money;
+	}
+
+	public int removeCash(int cash) {
+		if (cash < 0)
+			cash = 0;
+
+		setCash(getCash() - cash);
+		return cash;
+	}
+
+	public int addCash(int cash) {
+		if (cash < 0)
+			cash = 0;
+
+		setCash(getCash() + cash);
+		return cash;
+	}
+
+	public void setCash(int cash) {
+		this.cash = cash;
+		save("cash");
 	}
 
 	public void setPosition(int position) {

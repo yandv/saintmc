@@ -18,12 +18,12 @@ import tk.yallandev.saintmc.common.server.loadbalancer.server.SkywarsServer;
 import tk.yallandev.saintmc.common.utils.string.StringUtils;
 import tk.yallandev.saintmc.lobby.menu.server.ServerInventory.SendClick;
 
-public class SkywarsSoloInventory {
+public class SkywarsMapSelectionInventory {
 
-	public SkywarsSoloInventory(Player player) {
+	public SkywarsMapSelectionInventory(Player player, ServerType serverType) {
 		Member member = CommonGeneral.getInstance().getMemberManager().getMember(player.getUniqueId());
 		List<ProxiedServer> serverList = new ArrayList<>(
-				BukkitMain.getInstance().getServerManager().getBalancer(ServerType.SW_SOLO).getList());
+				BukkitMain.getInstance().getServerManager().getBalancer(serverType).getList());
 
 		MenuInventory menu = new MenuInventory("§7§nSelecionar o Mapa",
 				2 + (serverList.size() == 0 ? 1 : (serverList.size() / 7) + 1));

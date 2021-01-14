@@ -12,7 +12,7 @@ public class FerreiroKit extends DefaultKit {
 
 	public FerreiroKit() {
 		super("Ferreiro", new ItemStack(Material.ANVIL),
-				"Use sua experiencia em forjas para melhorar ou fundir seus equipamentos!", 15000);
+				"Use sua experiencia em forjas para melhorar ou fundir seus equipamentos!", 15000, 450);
 	}
 
 	@Override

@@ -11,7 +11,7 @@ public class MisticoKit extends DefaultKit {
 
 	public MisticoKit() {
 		super("Mistico", new ItemStack(Material.ENCHANTMENT_TABLE),
-				"Use suas habilidades místicas para fortalecer seus equipamentos!", 15000);
+				"Use suas habilidades místicas para fortalecer seus equipamentos!", 15000, 450);
 	}
 
 	@Override

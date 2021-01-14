@@ -12,7 +12,7 @@ public class ArqueiroKit extends DefaultKit {
 
 	public ArqueiroKit() {
 		super("Arqueiro", new ItemStack(Material.ARROW),
-				"Honre as habilidades de seus antepassados, e destrua-os com seu poderoso arco!", 6500);
+				"Honre as habilidades de seus antepassados, e destrua-os com seu poderoso arco!", 6500, 450);
 	}
 
 	@Override

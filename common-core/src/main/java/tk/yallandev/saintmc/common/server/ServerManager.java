@@ -55,7 +55,11 @@ public class ServerManager {
 		balancers.put(ServerType.SW_SOLO, new MostConnection<>());
 		balancers.put(ServerType.SW_TEAM, new MostConnection<>());
 		balancers.put(ServerType.SW_SQUAD, new MostConnection<>());
-		
+
+		balancers.put(ServerType.SK_SOLO, new MostConnection<>());
+		balancers.put(ServerType.SK_TEAM, new MostConnection<>());
+		balancers.put(ServerType.SK_SQUAD, new MostConnection<>());
+
 		balancers.put(ServerType.BW_SOLO, new MostConnection<>());
 		balancers.put(ServerType.BW_TEAM, new MostConnection<>());
 		balancers.put(ServerType.BW_SQUAD, new MostConnection<>());
@@ -85,7 +89,7 @@ public class ServerManager {
 		if (server == null) {
 			if (type == ServerType.HUNGERGAMES)
 				server = new HungerGamesServer(serverId, type, onlinePlayers, new HashSet<>(), true);
-			else if (type.name().startsWith("SW"))
+			else if (type.name().startsWith("SW") || type.name().startsWith("SK") || type.name().startsWith("BW"))
 				server = new SkywarsServer(serverId, type, onlinePlayers, new HashSet<>(), true);
 			else
 				server = new ProxiedServer(serverId, type, onlinePlayers, new HashSet<>(), maxPlayers, true);

@@ -11,7 +11,7 @@ public class FiremanKit extends DefaultKit {
 
 	public FiremanKit() {
 		super("Fireman", new ItemStack(Material.LAVA_BUCKET),
-				"Utilize de suas resistências para derrotar seus inimigos!", 23000);
+				"Utilize de suas resistências para derrotar seus inimigos!", 23000, 450);
 	}
 
 	@Override

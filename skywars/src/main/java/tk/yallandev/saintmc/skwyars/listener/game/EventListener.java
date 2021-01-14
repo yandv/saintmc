@@ -41,7 +41,7 @@ public class EventListener implements Listener {
 
 				Bukkit.getOnlinePlayers().forEach(player -> {
 					player.teleport(GameMain.getInstance().getLocationFromConfig("deathmatch"));
-					player.setNoDamageTicks(20 * 10);
+					player.setNoDamageTicks(20);
 					player.sendMessage(" ");
 					player.sendMessage("§aVocê está invencível por 10 segundos!");
 					player.sendMessage("§aPrepare-se para batalhar pela vitória!");

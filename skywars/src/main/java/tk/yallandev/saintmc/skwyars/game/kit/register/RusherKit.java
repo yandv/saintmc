@@ -11,7 +11,7 @@ public class RusherKit extends DefaultKit {
 
 	public RusherKit() {
 		super("Rusher", new ItemBuilder().type(Material.POTION).amount(1).durability(16418).build(),
-				"Seja o mais rápido entre eles, destrua-os em uma velocidade impressionante!", 20000);
+				"Seja o mais rápido entre eles, destrua-os em uma velocidade impressionante!", 20000, 450);
 	}
 
 	@Override

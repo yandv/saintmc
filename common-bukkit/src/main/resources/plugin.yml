@@ -1,6 +1,6 @@
 name: BukkitCommon
 main: tk.yallandev.saintmc.bukkit.BukkitMain
-version: 1.0.35
+version: 1.0.43
 author: yandv
 depend: [ProtocolLib]
 load: STARTUP

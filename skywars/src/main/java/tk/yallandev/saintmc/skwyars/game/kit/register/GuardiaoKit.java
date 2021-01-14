@@ -11,7 +11,7 @@ public class GuardiaoKit extends DefaultKit {
 
 	public GuardiaoKit() {
 		super("Guardião", new ItemBuilder().type(Material.DIAMOND_BOOTS).build(),
-				"Avance contra seus inimigos e os destrua com suas habilidades!", 26000);
+				"Avance contra seus inimigos e os destrua com suas habilidades!", 26000, 450);
 	}
 
 	@Override

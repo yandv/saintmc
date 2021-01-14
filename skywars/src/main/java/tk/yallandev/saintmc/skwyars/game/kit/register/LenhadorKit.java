@@ -11,7 +11,7 @@ public class LenhadorKit extends DefaultKit {
 
 	public LenhadorKit() {
 		super("Lenhador", new ItemBuilder().type(Material.DIAMOND_AXE).build(),
-				"Use seu machado e suas madeiras para cortar seus oponentes até o fim!", 20000);
+				"Use seu machado e suas madeiras para cortar seus oponentes até o fim!", 20000, 450);
 	}
 
 	@Override

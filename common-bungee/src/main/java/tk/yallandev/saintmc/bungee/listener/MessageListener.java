@@ -58,6 +58,39 @@ public class MessageListener implements Listener {
 		String subChannel = in.readUTF();
 
 		switch (subChannel) {
+		case "SearchServer": {
+
+			String server = in.readUTF();
+
+			if (server.contains("-")) {
+
+				String[] split = server.split("-");
+
+				for (String s : split) {
+					try {
+						ServerType serverType = ServerType.valueOf(s);
+
+						if (!searchServer(player, proxiedPlayer, serverType))
+							return;
+					} catch (Exception ex) {
+					}
+				}
+
+				player.sendMessage("§cNenhum servidor encontrado!");
+			} else {
+				ServerType serverType = null;
+
+				try {
+					serverType = ServerType.valueOf(server);
+				} catch (Exception ex) {
+					return;
+				}
+
+				if (!searchServer(player, proxiedPlayer, serverType))
+					player.sendMessage("§cNenhum servidor encontrado!");
+			}
+			break;
+		}
 		case "HandleBan": {
 			BungeeMain.getInstance().getPunishManager().ban(player, new Ban(player.getUniqueId(),
 					player.getPlayerName(), "CONSOLE", UUID.randomUUID(), "Autoban - Cheating", -1));

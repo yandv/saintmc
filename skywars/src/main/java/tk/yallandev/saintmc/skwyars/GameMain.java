@@ -27,6 +27,7 @@ import tk.yallandev.saintmc.skwyars.command.ModeratorCommand;
 import tk.yallandev.saintmc.skwyars.game.ModeType;
 import tk.yallandev.saintmc.skwyars.game.SkywarsType;
 import tk.yallandev.saintmc.skwyars.listener.GamerListener;
+import tk.yallandev.saintmc.skwyars.listener.LuckyListener;
 import tk.yallandev.saintmc.skwyars.listener.MessageListener;
 import tk.yallandev.saintmc.skwyars.listener.PlayerListener;
 import tk.yallandev.saintmc.skwyars.listener.ScoreboardListener;
@@ -46,6 +47,8 @@ public class GameMain extends JavaPlugin {
 
 	private SkywarsType skywarsType = SkywarsType.SOLO;
 	private ModeType modeType = ModeType.INSANE;
+
+	private boolean luckyWars = true;
 
 	private String mapName;
 	private int y;
@@ -112,6 +115,9 @@ public class GameMain extends JavaPlugin {
 		else if (CommonGeneral.getInstance().getServerType() == ServerType.SW_SQUAD)
 			skywarsType = SkywarsType.SQUAD;
 
+		if (CommonGeneral.getInstance().getServerType().name().startsWith("SK"))
+			luckyWars = true;
+
 		getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
 
 		gameGeneral.onEnable();
@@ -142,6 +148,9 @@ public class GameMain extends JavaPlugin {
 		Bukkit.getPluginManager().registerEvents(new UpdateListener(), this);
 		Bukkit.getPluginManager().registerEvents(new MessageListener(), this);
 		Bukkit.getPluginManager().registerEvents(new WorldListener(), this);
+
+		if (isLuckyWars())
+			Bukkit.getPluginManager().registerEvents(new LuckyListener(), this);
 	}
 
 	public int getMaxPlayers() {

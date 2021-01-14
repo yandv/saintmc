@@ -10,7 +10,7 @@ public class LancadorKit extends DefaultKit {
 
 	public LancadorKit() {
 		super("Lançador", new ItemBuilder().type(Material.SNOW_BALL).build(),
-				"Com sua incrivel pontaria, jogue projeteis em seus oponentes!", 7000);
+				"Com sua incrivel pontaria, jogue projeteis em seus oponentes!", 7000, 450);
 	}
 
 	@Override

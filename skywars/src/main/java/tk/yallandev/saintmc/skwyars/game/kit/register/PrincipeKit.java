@@ -10,7 +10,7 @@ public class PrincipeKit extends DefaultKit {
 
 	public PrincipeKit() {
 		super("Principe", new ItemBuilder().type(Material.DIAMOND_CHESTPLATE).build(),
-				"Lute como um verdadeiro príncipe, o herdeiro do trono!", 23000);
+				"Lute como um verdadeiro príncipe, o herdeiro do trono!", 23000, 450);
 	}
 
 	@Override

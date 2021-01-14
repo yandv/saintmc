@@ -1,6 +1,6 @@
 name: Login
 author: yandv
 main: tk.yallandev.saintmc.login.LoginMain
-version: 1.2.21
+version: 1.2.22
 softdepend: [BukkitCommon]
 load: POSTWORLD

@@ -32,6 +32,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
+import com.google.common.base.Joiner;
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
@@ -355,19 +356,6 @@ public class BukkitMain extends JavaPlugin {
 		player.sendPluginMessage(getInstance(), "BungeeCord", b.toByteArray());
 	}
 
-	public void sendPlayerToEvent(Player p) {
-		ByteArrayOutputStream b = new ByteArrayOutputStream();
-		DataOutputStream out = new DataOutputStream(b);
-
-		try {
-			out.writeUTF("Event");
-		} catch (Exception e) {
-			e.printStackTrace(System.out);
-		}
-
-		p.sendPluginMessage(getInstance(), "BungeeCord", b.toByteArray());
-	}
-
 	public void sendPlayer(Player p, String server) {
 		ByteArrayOutputStream b = new ByteArrayOutputStream();
 		DataOutputStream out = new DataOutputStream(b);
@@ -382,9 +370,10 @@ public class BukkitMain extends JavaPlugin {
 		p.sendPluginMessage(getInstance(), "BungeeCord", b.toByteArray());
 	}
 
-	public void sendServer(Player player, String serverType) {
+	public void sendServer(Player player, ServerType... serverType) {
 		ByteArrayDataOutput out = ByteStreams.newDataOutput();
-		out.writeUTF(serverType);
+		out.writeUTF("SearchServer");
+		out.writeUTF(Joiner.on('-').join(serverType));
 		player.sendPluginMessage(getInstance(), "BungeeCord", out.toByteArray());
 		player.closeInventory();
 	}

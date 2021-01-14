@@ -94,6 +94,7 @@ public class MemberModel {
 	 */
 
 	private int money;
+	private int cash;
 	private int xp;
 	private int position;
 	private League league;
@@ -157,6 +158,7 @@ public class MemberModel {
 
 		tournamentGroup = member.getTournamentGroup();
 
+		cash = member.getCash();
 		money = member.getMoney();
 		xp = member.getXp();
 		position = member.getPosition();

@@ -12,17 +12,17 @@ public class CangaceiroKit extends DefaultKit {
 
 	public CangaceiroKit() {
 		super("Cangaceiro", new ItemStack(Material.LEATHER_CHESTPLATE),
-				"Com o seu facão, arranque a cabeça de seus oponentes fora!", 30000);
+				"Com o seu facão, arranque a cabeça de seus oponentes fora!", 30000, 450);
 	}
 
 	@Override
 	public void apply(Player player) {
-		player.getInventory().addItem(new ItemBuilder().type(Material.LEATHER_CHESTPLATE).amount(1).build());
+		player.getInventory().addItem(new ItemBuilder().type(Material.IRON_CHESTPLATE).amount(1).build());
 		player.getInventory().addItem(new ItemBuilder().type(Material.LEATHER_LEGGINGS).amount(1).build());
 		player.getInventory().addItem(new ItemBuilder().type(Material.DIAMOND_BOOTS).amount(1).build());
 		player.getInventory().addItem(new ItemBuilder().type(Material.DIAMOND_HELMET).amount(1).build());
-		player.getInventory().addItem(new ItemBuilder().type(Material.DIAMOND_SWORD)
-				.enchantment(Enchantment.DAMAGE_ALL, 3).amount(3).build());
+		player.getInventory().addItem(new ItemBuilder().type(Material.IRON_SWORD).name("§eFacão")
+				.enchantment(Enchantment.DAMAGE_ALL, 2).amount(3).build());
 	}
 
 }

@@ -11,7 +11,7 @@ public class MagoKit extends DefaultKit {
 
 	public MagoKit() {
 		super("Mago", new ItemStack(Material.BLAZE_POWDER),
-				"Utilize de suas valiosas magias para atormentar seus oponentes e se bonificar!", 13000);
+				"Utilize de suas valiosas magias para atormentar seus oponentes e se bonificar!", 13000, 450);
 	}
 
 	@Override

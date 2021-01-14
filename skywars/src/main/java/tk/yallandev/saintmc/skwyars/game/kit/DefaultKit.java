@@ -16,5 +16,6 @@ public abstract class DefaultKit implements Kit {
 	private final String description;
 
 	private int price = 15000;
+	private int cashPrice = 500;
 
 }

@@ -11,7 +11,7 @@ public class IronmanKit extends DefaultKit {
 
 	public IronmanKit() {
 		super("Ironman", new ItemBuilder().type(Material.IRON_CHESTPLATE).build(),
-				"Use da proteção de um golem de ferro para vencer a partida!", 25000);
+				"Use da proteção de um golem de ferro para vencer a partida!", 25000, 450);
 	}
 
 	@Override

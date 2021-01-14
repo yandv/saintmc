@@ -12,7 +12,7 @@ public class MineradorKit extends DefaultKit {
 
 	public MineradorKit() {
 		super("Minerador", new ItemStack(Material.DIAMOND_PICKAXE),
-				"Use sua experiencia em mineração para combater seus inimigos!", 17000);
+				"Use sua experiencia em mineração para combater seus inimigos!", 17000, 450);
 	}
 
 	@Override

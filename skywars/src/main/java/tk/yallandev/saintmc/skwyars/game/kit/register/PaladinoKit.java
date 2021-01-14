@@ -12,7 +12,7 @@ public class PaladinoKit extends DefaultKit {
 
 	public PaladinoKit() {
 		super("Paladino", new ItemStack(Material.DIAMOND_SWORD),
-				"Seja um verdadeiro paladino e destrua todos seus oponentes!", 20000);
+				"Seja um verdadeiro paladino e destrua todos seus oponentes!", 20000, 450);
 	}
 
 	@Override
