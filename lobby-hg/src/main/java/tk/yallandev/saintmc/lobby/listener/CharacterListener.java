@@ -51,7 +51,7 @@ public class CharacterListener implements Listener {
 
 			@Override
 			public boolean onInteract(Player player, boolean right) {
-				BukkitMain.getInstance().sendPlayerToEvent(player);
+//				BukkitMain.getInstance().sendPlayerToEvent(player);
 				return false;
 			}
 		}, ServerType.EVENTO);

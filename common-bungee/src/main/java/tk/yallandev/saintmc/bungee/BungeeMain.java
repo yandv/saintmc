@@ -64,23 +64,24 @@ import tk.yallandev.saintmc.common.server.ServerType;
 import tk.yallandev.saintmc.common.server.loadbalancer.server.MinigameServer;
 import tk.yallandev.saintmc.common.server.loadbalancer.server.ProxiedServer;
 import tk.yallandev.saintmc.common.utils.string.MessageBuilder;
-import tk.yallandev.saintmc.update.UpdatePlugin;
 
 @Getter
 public class BungeeMain extends Plugin {
 
+	private static final String BROADCAST_PREFIX = "§6§lNORD §e> ";
+
 	private static final TextComponent[] BROADCAST = new TextComponent[] {
-			new MessageBuilder("§6§nNord§a§nMC§7 » §fAcesse nosso ")
+			new MessageBuilder(BROADCAST_PREFIX + "§fAcesse nosso ")
 					.addExtre(new MessageBuilder("§bdiscord")
 							.setClickEvent(ClickEvent.Action.OPEN_URL, "https://" + CommonConst.DISCORD).create())
 					.addExtre(new TextComponent(" §fe fique por dentro das novidades!")).create(),
-			new MessageBuilder("§6§nNord§a§nMC§7 » §fUse §a/report <player>§f para denunciar um jogador!").create(),
-			new MessageBuilder("§6§nNord§a§nMC§7 » §fCompre vip em nossa ")
+			new MessageBuilder(BROADCAST_PREFIX + "§fUse §a/report <player>§f para denunciar um jogador!").create(),
+			new MessageBuilder(BROADCAST_PREFIX + "§fCompre vip em nossa ")
 					.addExtre(new MessageBuilder("§aloja")
 							.setClickEvent(ClickEvent.Action.OPEN_URL, "https://" + CommonConst.STORE).create())
 					.addExtre(new TextComponent("§f!")).create(),
-			new MessageBuilder(
-					"§6§nNord§a§nMC§7 » §fO servidor está em fase §1§lBETA§f, caso encontre algum bug reporte em nosso ")
+			new MessageBuilder(BROADCAST_PREFIX
+					+ "§fO servidor está em fase §1§lBETA§f, caso encontre algum bug reporte em nosso ")
 							.addExtre(new MessageBuilder("§bdiscord!")
 									.setClickEvent(ClickEvent.Action.OPEN_URL, "https://" + CommonConst.DISCORD)
 									.create())
@@ -116,25 +117,6 @@ public class BungeeMain extends Plugin {
 	@SuppressWarnings("deprecation")
 	@Override
 	public void onEnable() {
-
-		try {
-			UpdatePlugin.Shutdown shutdown = new UpdatePlugin.Shutdown() {
-
-				@Override
-				public void stop() {
-					System.exit(0);
-				}
-
-			};
-
-			if (UpdatePlugin.update(
-					new File(BungeeMain.class.getProtectionDomain().getCodeSource().getLocation().getPath()),
-					"BungeeCommon", CommonConst.DOWNLOAD_KEY, shutdown))
-				return;
-		} catch (Exception ex) {
-			CommonGeneral.getInstance().debug("Couldn't connect to http://apidata.saintmc.net/!");
-		}
-
 		loadConfiguration();
 
 		/**

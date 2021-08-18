@@ -35,7 +35,7 @@ public class CharacterListener implements Listener {
 	public CharacterListener() {
 		hologramList = new ArrayList<>();
 
-		createCharacter("§bHungerGames", "CabecinhaDeKiwi", "npc-hg", new Interact() {
+		createCharacter("§bHungerGames", "JacksterPvP", "npc-hg", new Interact() {
 
 			@Override
 			public boolean onInteract(Player player, boolean right) {
@@ -71,7 +71,7 @@ public class CharacterListener implements Listener {
 			}
 		}, ServerType.LOBBY_BEDWARS, ServerType.BW_SOLO, ServerType.BW_SQUAD, ServerType.BW_TEAM);
 
-		createCharacter("§bKitPvP", "yandv", "npc-pvp", new Interact() {
+		createCharacter("§bKitPvP", "cheatey", "npc-pvp", new Interact() {
 
 			@Override
 			public boolean onInteract(Player player, boolean right) {
@@ -86,7 +86,7 @@ public class CharacterListener implements Listener {
 			}
 		}, ServerType.FULLIRON, ServerType.SIMULATOR);
 
-		createCharacter("§bGladiator", "SpectroPlayer", "npc-gladiator", new Interact() {
+		createCharacter("§bGladiator", "Blaaackoutz", "npc-gladiator", new Interact() {
 
 			@Override
 			public boolean onInteract(Player player, boolean right) {

@@ -40,13 +40,13 @@ import tk.yallandev.saintmc.common.utils.string.StringCenter;
 import tk.yallandev.saintmc.common.utils.string.StringUtils;
 import tk.yallandev.saintmc.common.utils.string.StringUtils.TimeFormat;
 
+@SuppressWarnings("deprecation")
 public class ServerListener implements Listener {
 
-	private static final String MOTD_HEADER = StringCenter.centered("§b§lNORD §7» §6Servidores de PvP", 127);
+	private static final String MOTD_HEADER = StringCenter.centered("§b§lNORD §f» §6www." + CommonConst.SITE, 127);
 	private static final String SERVER_NOT_FOUND = StringCenter.centered("§4§nServidor não encontrado!", 127);
 
-	private static final String[] MOTD_LIST = new String[] { StringCenter.centered("§b" + CommonConst.DISCORD, 127),
-			StringCenter.centered("§b" + CommonConst.WEBSITE, 127) };
+	private static final String[] MOTD_LIST = new String[] { StringCenter.centered("§c§lVENHA TESTAR AGORA NOSSO HG!", 127) };
 
 	private ServerManager manager;
 
@@ -167,6 +167,7 @@ public class ServerListener implements Listener {
 		}
 
 		event.setServer(server.getServerInfo());
+		System.out.println(CommonConst.GSON.toJson(server));
 	}
 
 	/*

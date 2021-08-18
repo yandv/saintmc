@@ -2,8 +2,6 @@ package tk.yallandev.saintmc.kitpvp.command;
 
 import tk.yallandev.saintmc.CommonConst;
 import tk.yallandev.saintmc.CommonGeneral;
-import tk.yallandev.saintmc.bukkit.BukkitMain;
-import tk.yallandev.saintmc.bukkit.bukkit.BukkitMember;
 import tk.yallandev.saintmc.bukkit.command.BukkitCommandArgs;
 import tk.yallandev.saintmc.common.account.Member;
 import tk.yallandev.saintmc.common.command.CommandClass;
@@ -47,7 +45,6 @@ public class PartyCommand implements CommandClass {
 				return;
 			}
 
-			BukkitMain.getInstance().sendPlayerToEvent(((BukkitMember) sender).getPlayer());
 			player.setCooldown("connect-command", 4);
 			break;
 		}

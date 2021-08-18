@@ -1,7 +1,5 @@
 package tk.yallandev.saintmc.screenshare;
 
-import java.io.File;
-
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -21,7 +19,6 @@ import tk.yallandev.saintmc.bukkit.BukkitMain;
 import tk.yallandev.saintmc.bukkit.api.scoreboard.Score;
 import tk.yallandev.saintmc.bukkit.api.scoreboard.Scoreboard;
 import tk.yallandev.saintmc.bukkit.api.scoreboard.impl.SimpleScoreboard;
-import tk.yallandev.saintmc.update.UpdatePlugin;
 
 public class ScreenshareMain extends JavaPlugin implements Listener {
 
@@ -39,20 +36,6 @@ public class ScreenshareMain extends JavaPlugin implements Listener {
 
 	@Override
 	public void onEnable() {
-		UpdatePlugin.Shutdown shutdown = new UpdatePlugin.Shutdown() {
-
-			@Override
-			public void stop() {
-				Bukkit.shutdown();
-			}
-
-		};
-
-		if (UpdatePlugin.update(
-				new File(ScreenshareMain.class.getProtectionDomain().getCodeSource().getLocation().getPath()),
-				"Screenshare", CommonConst.DOWNLOAD_KEY, shutdown))
-			return;
-
 		Bukkit.getPluginManager().registerEvents(this, this);
 		super.onEnable();
 	}

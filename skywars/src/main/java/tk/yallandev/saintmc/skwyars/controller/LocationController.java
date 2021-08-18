@@ -9,8 +9,6 @@ import org.bukkit.Location;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonParser;
 
 import lombok.Getter;
 import tk.yallandev.saintmc.skwyars.GameMain;
@@ -28,13 +26,13 @@ public class LocationController {
 		locationMap = new HashMap<>();
 		chestList = new ArrayList<>();
 
-		JsonArray jsonArray = JsonParser.parseString(GameMain.getInstance().getConfig().getString("chests", "[]"))
-				.getAsJsonArray();
-
-		for (int x = 0; x < jsonArray.size(); x++) {
-			Chest chest = gson.fromJson(jsonArray.get(x), Chest.class);
-			chestList.add(chest);
-		}
+//		JsonArray jsonArray = JsonParser.parseJson()(GameMain.getInstance().getConfig().getString("chests", "[]"))
+//				.getAsJsonArray();
+//
+//		for (int x = 0; x < jsonArray.size(); x++) {
+//			Chest chest = gson.fromJson(jsonArray.get(x), Chest.class);
+//			chestList.add(chest);
+//		}
 	}
 
 	public void registerLocation(String string, Location location) {

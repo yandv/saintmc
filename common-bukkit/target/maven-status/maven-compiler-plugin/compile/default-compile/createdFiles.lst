@@ -19,7 +19,6 @@ tk\yallandev\saintmc\bukkit\api\scoreboard\Scoreboard.class
 tk\yallandev\saintmc\bukkit\api\worldedit\WorldeditController$Position.class
 tk\yallandev\saintmc\bukkit\event\server\ServerUpdateEvent.class
 tk\yallandev\saintmc\bukkit\api\server\impl\ServerImpl.class
-tk\yallandev\test\ChromaTest.class
 tk\yallandev\saintmc\bukkit\api\server\impl\StorableServer.class
 tk\yallandev\saintmc\bukkit\permission\injector\regexperm\PermissibleInjector$ClassPresencePermissibleInjector.class
 tk\yallandev\saintmc\bukkit\api\menu\MenuListener.class
@@ -28,7 +27,6 @@ tk\yallandev\saintmc\bukkit\api\cooldown\types\ItemCooldown.class
 tk\yallandev\saintmc\bukkit\api\menu\click\ClickType.class
 tk\yallandev\saintmc\bukkit\api\scoreboard\Score.class
 tk\yallandev\saintmc\bukkit\event\server\ServerEvent.class
-tk\yallandev\test\ChromaTest$Chroma.class
 tk\yallandev\saintmc\bukkit\listener\register\CombatListener.class
 tk\yallandev\saintmc\bukkit\menu\ListInventory.class
 tk\yallandev\saintmc\bukkit\menu\report\ReportInventory.class
@@ -60,7 +58,6 @@ tk\yallandev\saintmc\bukkit\event\player\MenuOpenEvent.class
 tk\yallandev\saintmc\bukkit\event\server\ServerPlayerLeaveEvent.class
 tk\yallandev\saintmc\bukkit\api\worldedit\arena\ArenaType$3.class
 tk\yallandev\saintmc\bukkit\bukkit\BukkitMember.class
-tk\yallandev\test\ChromaTest$1.class
 tk\yallandev\saintmc\bukkit\BukkitMain$1.class
 tk\yallandev\saintmc\bukkit\api\player\TextureFetcher$1.class
 tk\yallandev\saintmc\bukkit\api\packet\PacketBuilder.class
@@ -208,7 +205,6 @@ tk\yallandev\saintmc\bukkit\listener\register\ReportListener.class
 tk\yallandev\saintmc\bukkit\api\tag\Chroma.class
 tk\yallandev\saintmc\bukkit\event\account\PlayerUpdatedFieldEvent.class
 tk\yallandev\saintmc\bukkit\command\register\ModeratorCommand$6.class
-tk\yallandev\saintmc\bukkit\BukkitMain$3.class
 tk\yallandev\saintmc\bukkit\utils\string\StringTypewriter.class
 tk\yallandev\saintmc\bukkit\api\cooldown\event\CooldownStopEvent.class
 tk\yallandev\saintmc\bukkit\networking\redis\BukkitPubSubHandler$5.class
@@ -247,14 +243,12 @@ net\saintmc\anticheat\storage\Storage.class
 tk\yallandev\saintmc\bukkit\listener\register\MoveListener.class
 net\saintmc\anticheat\alert\AlertController.class
 tk\yallandev\saintmc\bukkit\command\register\YoutubeCommand$2.class
-tk\yallandev\saintmc\bukkit\event\PlayerOpenInventoryEvent.class
 tk\yallandev\saintmc\bukkit\permission\injector\regexperm\RegexPermissions$EventListener.class
 tk\yallandev\saintmc\bukkit\api\worldedit\block\future\types\DefaultFutureBlock.class
 net\saintmc\anticheat\alert\AlertType.class
 tk\yallandev\saintmc\bukkit\api\item\ActionItemListener.class
 tk\yallandev\saintmc\bukkit\command\register\ModeratorCommand$8.class
 tk\yallandev\saintmc\bukkit\event\account\PlayerTryChangeTagEvent.class
-tk\yallandev\saintmc\bukkit\command\register\StaffCommand$3.class
 tk\yallandev\saintmc\bukkit\utils\string\StringTypewriter$DisplayType.class
 tk\yallandev\saintmc\bukkit\event\account\PlayerChangeTagEvent.class
 tk\yallandev\saintmc\bukkit\command\register\StaffCommand.class

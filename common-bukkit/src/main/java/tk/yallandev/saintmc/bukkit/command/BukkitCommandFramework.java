@@ -191,7 +191,7 @@ public class BukkitCommandFramework implements CommandFramework {
 			org.bukkit.command.Command cmd = new BukkitCommand(command.name(), cmdLabel, plugin, command.groupToUse());
 			knownCommands.put(cmdLabel, cmd);
 		} else {
-			
+
 			/*
 			 * Já que alguns comandos não carregam primeiramente aqui e eles ficam sem o
 			 * grupo do servidor, mas ele é necessário!

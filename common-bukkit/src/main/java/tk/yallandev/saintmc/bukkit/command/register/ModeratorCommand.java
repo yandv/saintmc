@@ -1,3 +1,4 @@
+
 package tk.yallandev.saintmc.bukkit.command.register;
 
 import java.text.DecimalFormat;

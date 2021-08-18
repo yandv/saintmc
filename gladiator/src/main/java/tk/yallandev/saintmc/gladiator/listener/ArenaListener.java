@@ -133,7 +133,7 @@ public class ArenaListener implements Listener {
 				.getMember(player.getUniqueId());
 
 		if (member.isBuildEnabled()) {
-			if (member.hasGroupPermission(Group.DEVELOPER))
+			if (member.hasGroupPermission(Group.DONO))
 				event.setCancelled(false);
 		} else
 			event.setCancelled(true);
@@ -166,7 +166,7 @@ public class ArenaListener implements Listener {
 				.getMember(player.getUniqueId());
 
 		if (member.isBuildEnabled()) {
-			if (member.hasGroupPermission(Group.DEVELOPER))
+			if (member.hasGroupPermission(Group.DONO))
 				event.setCancelled(false);
 		} else
 			event.setCancelled(true);

@@ -27,7 +27,7 @@ import tk.yallandev.saintmc.common.utils.string.StringUtils;
 
 public class ServerCommand implements CommandClass {
 
-	@Command(name = "torneio")
+	@Command(name = "torneio", aliases = { "battlenord" })
 	public void eventoCommand(CommandArgs cmdArgs) {
 		if (!cmdArgs.isPlayer())
 			return;

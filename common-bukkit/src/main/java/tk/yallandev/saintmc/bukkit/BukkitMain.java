@@ -2,7 +2,6 @@ package tk.yallandev.saintmc.bukkit;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
-import java.io.File;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -41,7 +40,6 @@ import lombok.Getter;
 import lombok.Setter;
 import net.saintmc.anticheat.AnticheatController;
 import tk.yallandev.hologramapi.controller.HologramController;
-import tk.yallandev.saintmc.CommonConst;
 import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.bukkit.api.character.CharacterListener;
 import tk.yallandev.saintmc.bukkit.api.cooldown.CooldownController;
@@ -81,7 +79,6 @@ import tk.yallandev.saintmc.common.server.ServerManager;
 import tk.yallandev.saintmc.common.server.ServerType;
 import tk.yallandev.saintmc.common.server.loadbalancer.server.MinigameState;
 import tk.yallandev.saintmc.common.utils.ClassGetter;
-import tk.yallandev.saintmc.update.UpdatePlugin;
 
 @Getter
 @SuppressWarnings("deprecation")
@@ -130,20 +127,6 @@ public class BukkitMain extends JavaPlugin {
 
 	@Override
 	public void onEnable() {
-		UpdatePlugin.Shutdown shutdown = new UpdatePlugin.Shutdown() {
-
-			@Override
-			public void stop() {
-				Bukkit.shutdown();
-			}
-
-		};
-
-		if (UpdatePlugin.update(
-				new File(BukkitMain.class.getProtectionDomain().getCodeSource().getLocation().getPath()),
-				"BukkitCommon", CommonConst.DOWNLOAD_KEY, shutdown))
-			return;
-
 		try {
 
 			MongoConnection mongo = new MongoConnection(new Credentials(

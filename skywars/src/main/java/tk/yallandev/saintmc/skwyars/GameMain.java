@@ -2,7 +2,6 @@ package tk.yallandev.saintmc.skwyars;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
-import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -18,7 +17,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import lombok.Getter;
-import tk.yallandev.saintmc.CommonConst;
 import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.bukkit.command.BukkitCommandFramework;
 import tk.yallandev.saintmc.common.server.ServerType;
@@ -35,7 +33,6 @@ import tk.yallandev.saintmc.skwyars.listener.StatusListener;
 import tk.yallandev.saintmc.skwyars.listener.UpdateListener;
 import tk.yallandev.saintmc.skwyars.listener.WorldListener;
 import tk.yallandev.saintmc.skwyars.scheduler.SchedulerListener;
-import tk.yallandev.saintmc.update.UpdatePlugin;
 
 @Getter
 public class GameMain extends JavaPlugin {
@@ -68,19 +65,6 @@ public class GameMain extends JavaPlugin {
 
 	@Override
 	public void onEnable() {
-		UpdatePlugin.Shutdown shutdown = new UpdatePlugin.Shutdown() {
-
-			@Override
-			public void stop() {
-				Bukkit.shutdown();
-			}
-
-		};
-
-		if (UpdatePlugin.update(new File(GameMain.class.getProtectionDomain().getCodeSource().getLocation().getPath()),
-				"Skywars", CommonConst.DOWNLOAD_KEY, shutdown))
-			return;
-
 		WorldCreator worldCreator = new WorldCreator("lobby");
 
 		worldCreator.type(WorldType.FLAT);

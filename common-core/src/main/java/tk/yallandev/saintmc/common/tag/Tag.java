@@ -40,8 +40,8 @@ public abstract class Tag {
 	public static final Tag STREAMER = TagWrapper.create("§3§lSTREAMER§3", Group.STREAMER, true);
 	public static final Tag BETA = TagWrapper.create("§1§lBETA§1", Group.BETA, true);
 	public static final Tag NORD = TagWrapper.create("§6§lNORD§6", Group.NORD);
-	public static final Tag ELITE = TagWrapper.create("§c§lELITE§c", Group.ELITE);
-	public static final Tag PRO = TagWrapper.create("§e§lPRO§e", Group.PRO);
+	public static final Tag ELITE = TagWrapper.create("§b§lELITE§b", Group.ELITE);
+	public static final Tag PRO = TagWrapper.create("§a§lPRO§a", Group.PRO);
 
 	public static final Tag COPA = TagWrapper.create("§e§lCOPA§e", null);
 	public static final Tag WARRIOR = TagWrapper.create("§7§lWARRIOR§7", null);

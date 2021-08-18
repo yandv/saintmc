@@ -51,6 +51,9 @@ public class ScreenshareListener implements Listener {
 		if (member == null)
 			return;
 
+		if (player.getServer() == null)
+			return;
+
 		ProxiedServer server = BungeeMain.getInstance().getServerManager()
 				.getServer(player.getServer().getInfo().getName());
 

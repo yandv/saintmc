@@ -1,16 +1,10 @@
 package tk.yallandev.saintmc.lobby;
 
-import java.io.File;
-
-import org.bukkit.Bukkit;
-
 import lombok.Getter;
-import tk.yallandev.saintmc.CommonConst;
 import tk.yallandev.saintmc.lobby.listener.CharacterListener;
 import tk.yallandev.saintmc.lobby.listener.PlayerListener;
 import tk.yallandev.saintmc.lobby.listener.ScoreboardListener;
 import tk.yallandev.saintmc.lobby.menu.server.ServerInventory;
-import tk.yallandev.saintmc.update.UpdatePlugin;
 
 public class LobbyMain extends LobbyPlatform {
 
@@ -20,19 +14,6 @@ public class LobbyMain extends LobbyPlatform {
 	@Override
 	public void onLoad() {
 		super.onLoad();
-		UpdatePlugin.Shutdown shutdown = new UpdatePlugin.Shutdown() {
-
-			@Override
-			public void stop() {
-				Bukkit.shutdown();
-			}
-
-		};
-
-		if (UpdatePlugin.update(new File(LobbyMain.class.getProtectionDomain().getCodeSource().getLocation().getPath()),
-				"Lobby", CommonConst.DOWNLOAD_KEY, shutdown))
-			return;
-
 		instance = this;
 	}
 

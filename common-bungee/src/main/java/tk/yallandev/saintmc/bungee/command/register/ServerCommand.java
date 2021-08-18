@@ -5,10 +5,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
+import tk.yallandev.saintmc.CommonConst;
 import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.bungee.BungeeMain;
 import tk.yallandev.saintmc.bungee.bungee.BungeeMember;
@@ -100,6 +103,50 @@ public class ServerCommand implements CommandClass {
 			sender.sendMessage("§cVocê não pode mandar um aviso de gravação no servidor atual!");
 			break;
 		}
+		}
+	}
+
+	@Command(name = "serverconfig", aliases = { "sconfig" }, groupToUse = Group.DONO)
+	public void serverconfigCommand(BungeeCommandArgs cmdArgs) {
+		CommandSender sender = cmdArgs.getSender();
+		String[] args = cmdArgs.getArgs();
+
+		if (args.length == 0) {
+			sender.sendMessage("§aUse /" + cmdArgs.getLabel() + " create <hostname> <address> <serverType>");
+			return;
+		}
+
+		if (args[0].equalsIgnoreCase("create")) {
+			String hostname = args[1];
+			String address = args[2];
+			ServerType serverType = null;
+
+			try {
+				serverType = ServerType.valueOf(args[3].toUpperCase());
+			} catch (Exception ex) {
+				sender.sendMessage("§cO serverType não existe!");
+				return;
+			}
+
+			CommonGeneral.getInstance().getServerData().getQuery()
+					.create(new String[] { CommonConst.GSON.toJson(new Server(hostname, address, serverType)) });
+			sender.sendMessage("§aO servidor " + hostname + " foi criado.");
+
+			if (CommonGeneral.getInstance().getServerData().getQuery().findOne("hostname", hostname) == null) {
+				CommonGeneral.getInstance().getServerData().getQuery()
+						.create(new String[] { CommonConst.GSON.toJson(new Server(hostname, address, serverType)) });
+				sender.sendMessage("§aO servidor " + hostname + " foi criado.");
+			} else
+				sender.sendMessage("§aO servidor " + hostname + " foi deletado.");
+		} else if (args[0].equalsIgnoreCase("delete")) {
+			String hostname = args[1];
+
+			if (CommonGeneral.getInstance().getServerData().getQuery().findOne("hostname", hostname) == null)
+				sender.sendMessage("§cO servidor " + hostname + " não existe!");
+			else {
+				CommonGeneral.getInstance().getServerData().getQuery().deleteOne("hostname", hostname);
+				sender.sendMessage("§aO servidor " + hostname + " foi deletado.");
+			}
 		}
 	}
 
@@ -473,5 +520,15 @@ public class ServerCommand implements CommandClass {
 		}
 
 		return serverList;
+	}
+
+	@AllArgsConstructor
+	@Getter
+	public class Server {
+
+		private String hostname;
+		private String address;
+		private ServerType serverType;
+
 	}
 }

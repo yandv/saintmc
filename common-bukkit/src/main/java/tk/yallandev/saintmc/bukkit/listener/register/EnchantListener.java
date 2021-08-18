@@ -21,14 +21,14 @@ import tk.yallandev.saintmc.bukkit.api.item.ItemBuilder;
 import tk.yallandev.saintmc.bukkit.listener.Listener;
 
 public class EnchantListener extends Listener {
-	
-	public static final ItemStack LAPIS = new ItemBuilder().name("§aLapis Lazuli").durability(4).type(Material.INK_SACK).amount(3).build();
-	
+
+	public static final ItemStack LAPIS = new ItemBuilder().name("§aLapis Lazuli").durability(4).type(Material.INK_SACK)
+			.amount(3).build();
+
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onEnchantItem(EnchantItemEvent event) {
 		if (event.getInventory() instanceof EnchantingInventory)
 			((EnchantingInventory) event.getInventory()).setSecondary(LAPIS);
-		
 	}
 
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -43,16 +43,16 @@ public class EnchantListener extends Listener {
 			if (event.getRawSlot() == 1)
 				event.setCancelled(true);
 	}
-	
+
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onItemSpawn(ItemSpawnEvent event) {
 		if (event.getEntity().getType() == EntityType.DROPPED_ITEM) {
 			Item item = event.getEntity();
-			
+
 			if (item.getItemStack().getType() == Material.INK_SACK)
 				if (item.getItemStack().getDurability() == 4) {
 					ItemStack itemStack = item.getItemStack();
-					
+
 					if (itemStack.hasItemMeta())
 						if (itemStack.getItemMeta().hasDisplayName())
 							if (itemStack.getItemMeta().getDisplayName().equalsIgnoreCase("§aLapis Lazuli")) {
@@ -61,16 +61,16 @@ public class EnchantListener extends Listener {
 				}
 		}
 	}
-	
+
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onPlayerDropItem(PlayerDropItemEvent event) {
 		if (event.getItemDrop().getType() == EntityType.DROPPED_ITEM) {
 			Item item = event.getItemDrop();
-			
+
 			if (item.getItemStack().getType() == Material.INK_SACK)
 				if (item.getItemStack().getDurability() == 4) {
 					ItemStack itemStack = item.getItemStack();
-					
+
 					if (itemStack.hasItemMeta())
 						if (itemStack.getItemMeta().hasDisplayName())
 							if (itemStack.getItemMeta().getDisplayName().equalsIgnoreCase("§aLapis Lazuli")) {
@@ -79,18 +79,18 @@ public class EnchantListener extends Listener {
 				}
 		}
 	}
-	
+
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onPrepareItemEnchant(PrepareItemEnchantEvent event) {
-        CraftInventoryView view = (CraftInventoryView)event.getView();
-        ContainerEnchantTable table = (ContainerEnchantTable)view.getHandle();
-        
-        for (int x = 0; x < table.costs.length; x++) {
-        	int cost = table.costs[x];
-        	
-        	if (cost <= 4)
-        		table.costs[x] = CommonConst.RANDOM.nextInt(4) + 1;
-        }
+		CraftInventoryView view = (CraftInventoryView) event.getView();
+		ContainerEnchantTable table = (ContainerEnchantTable) view.getHandle();
+
+		for (int x = 0; x < table.costs.length; x++) {
+			int cost = table.costs[x];
+
+			if (cost <= 4)
+				table.costs[x] = CommonConst.RANDOM.nextInt(4) + 1;
+		}
 	}
 
 }

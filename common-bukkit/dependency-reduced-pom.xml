@@ -27,34 +27,6 @@
   </repositories>
   <dependencies>
     <dependency>
-      <groupId>org.github.paperspigot</groupId>
-      <artifactId>paperspigot-api</artifactId>
-      <version>1.8.8-R0.1-SNAPSHOT</version>
-      <scope>provided</scope>
-      <exclusions>
-        <exclusion>
-          <artifactId>commons-lang</artifactId>
-          <groupId>commons-lang</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>json-simple</artifactId>
-          <groupId>com.googlecode.json-simple</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>ebean</artifactId>
-          <groupId>org.avaje</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>snakeyaml</artifactId>
-          <groupId>org.yaml</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>bungeecord-chat</artifactId>
-          <groupId>net.md-5</groupId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
       <groupId>com.comphenix.protocol</groupId>
       <artifactId>ProtocolLib</artifactId>
       <version>4.2.1</version>
@@ -87,6 +59,10 @@
       <scope>provided</scope>
       <exclusions>
         <exclusion>
+          <artifactId>bungeecord-chat</artifactId>
+          <groupId>net.md-5</groupId>
+        </exclusion>
+        <exclusion>
           <artifactId>bungeecord-config</artifactId>
           <groupId>net.md-5</groupId>
         </exclusion>
@@ -96,10 +72,6 @@
         </exclusion>
         <exclusion>
           <artifactId>bungeecord-protocol</artifactId>
-          <groupId>net.md-5</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>bungeecord-chat</artifactId>
           <groupId>net.md-5</groupId>
         </exclusion>
       </exclusions>
@@ -199,7 +171,7 @@
       <artifactId>paperspigot</artifactId>
       <version>1.8.8-R0.1-SNAPSHOT</version>
       <scope>system</scope>
-      <systemPath>C:/Users/Allan/Desktop/Coisas do Allan/Aula/libraries/paperspigot-1.8.8-R0.1-SNAPSHOT.jar</systemPath>
+      <systemPath>C:/spigot.jar</systemPath>
     </dependency>
   </dependencies>
 </project>

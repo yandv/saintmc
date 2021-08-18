@@ -1,8 +1,5 @@
 package tk.yallandev.saintmc.common.data.impl;
 
-import static tk.yallandev.saintmc.common.utils.json.JsonUtils.elementToString;
-import static tk.yallandev.saintmc.common.utils.json.JsonUtils.mapToObject;
-
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -133,7 +130,7 @@ public class PlayerDataImpl implements PlayerData {
 			if (fields == null || fields.isEmpty() || fields.size() < 40)
 				return null;
 
-			player = mapToObject(fields, MemberModel.class);
+			player = JsonUtils.mapToObject(fields, MemberModel.class);
 		}
 
 		return player;
@@ -213,7 +210,7 @@ public class PlayerDataImpl implements PlayerData {
 						try (Jedis jedis = redisDatabase.getPool().getResource()) {
 							Pipeline pipe = jedis.pipelined();
 							jedis.hset("account:" + member.getUniqueId().toString(), fieldName,
-									elementToString(element));
+									JsonUtils.elementToString(element));
 
 							JsonObject json = new JsonObject();
 							json.add("uniqueId", new JsonPrimitive(member.getUniqueId().toString()));
@@ -293,7 +290,7 @@ public class PlayerDataImpl implements PlayerData {
 	}
 
 	public static Query<JsonElement> createDefault(MongoConnection mongoConnection) {
-		return new MongoQuery(mongoConnection, "saintmc-common", "account");
+		return new MongoQuery(mongoConnection, mongoConnection.getDataBase(), "account");
 	}
 
 }

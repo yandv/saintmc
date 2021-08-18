@@ -6,14 +6,12 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.bukkit.GameMode;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.player.PlayerEatSoupEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.Plugin;
 
@@ -26,13 +24,9 @@ import com.comphenix.protocol.wrappers.EnumWrappers.EntityUseAction;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import net.saintmc.anticheat.account.Member;
 import net.saintmc.anticheat.alert.AlertMetadata;
 import net.saintmc.anticheat.alert.AlertType;
 import net.saintmc.anticheat.check.CheckClass;
-import net.saintmc.anticheat.controller.MemberController;
-import net.saintmc.anticheat.storage.InventoryChangeStorage;
-import net.saintmc.anticheat.storage.InventoryCloseStorage;
 import tk.yallandev.saintmc.bukkit.api.protocol.ProtocolGetter;
 import tk.yallandev.saintmc.bukkit.event.update.UpdateEvent;
 import tk.yallandev.saintmc.bukkit.event.update.UpdateEvent.UpdateType;
@@ -87,25 +81,6 @@ public class CombatCheck extends PacketAdapter implements CheckClass, Listener {
 				return;
 
 		checkCps(player, true);
-	}
-
-	@EventHandler(priority = EventPriority.MONITOR)
-	public boolean onPlayerEatSoup(PlayerEatSoupEvent interactStorage) {
-		Member member = MemberController.INSTANCE.load(interactStorage.getPlayer());
-
-		InventoryChangeStorage change = member.getLastChangeStorage();
-		InventoryCloseStorage close = member.getLastInventoryClose();
-
-		if (change == null || change.getCurrentItem() == null
-				|| change.getCurrentItem().getType() != Material.MUSHROOM_SOUP)
-			return false;
-
-		if (close == null || change.getTickTime() > close.getTickTime() + 5) {
-			alert(member, AlertType.AUTOSOUP);
-			return true;
-		}
-
-		return false;
 	}
 
 	@EventHandler

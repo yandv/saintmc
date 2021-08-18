@@ -30,7 +30,7 @@ public class PunishDataImpl implements PunishData {
 	private Query<JsonElement> query;
 
 	public PunishDataImpl(MongoConnection mongoDatabase) {
-		database = mongoDatabase.getDatabase("saintmc-punish");
+		database = mongoDatabase.getDatabase(mongoDatabase.getDataBase() + "-punish");
 		this.query = createDefault(mongoDatabase);
 	}
 

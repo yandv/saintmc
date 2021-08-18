@@ -156,7 +156,7 @@ public class WorldListener implements Listener {
 				.getMember(e.getPlayer().getUniqueId());
 
 		if (player.isBuildEnabled())
-			if (player.hasGroupPermission(Group.DEVELOPER)) {
+			if (player.hasGroupPermission(Group.DONO)) {
 				e.setCancelled(false);
 				return;
 			}
@@ -170,7 +170,7 @@ public class WorldListener implements Listener {
 				.getMember(e.getPlayer().getUniqueId());
 
 		if (player.isBuildEnabled())
-			if (player.hasGroupPermission(Group.DEVELOPER)) {
+			if (player.hasGroupPermission(Group.DONO)) {
 				e.setCancelled(false);
 				return;
 			}
@@ -184,7 +184,7 @@ public class WorldListener implements Listener {
 				.getMember(e.getPlayer().getUniqueId());
 
 		if (player.isBuildEnabled())
-			if (player.hasGroupPermission(Group.DEVELOPER)) {
+			if (player.hasGroupPermission(Group.DONO)) {
 				e.setCancelled(false);
 				return;
 			}

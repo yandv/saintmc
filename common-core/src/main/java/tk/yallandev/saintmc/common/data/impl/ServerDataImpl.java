@@ -9,6 +9,7 @@ import java.util.UUID;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
+import lombok.Getter;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.Pipeline;
 import tk.yallandev.saintmc.CommonConst;
@@ -37,8 +38,9 @@ import tk.yallandev.saintmc.common.utils.json.JsonBuilder;
 public class ServerDataImpl implements ServerData {
 
 	private RedisDatabase redisDatabase;
+	@Getter
 	private Query<JsonElement> query;
-
+	
 	public ServerDataImpl(MongoConnection mongoConnection, RedisDatabase redisDatabase) {
 		this.query = createDefault(mongoConnection);
 		this.redisDatabase = redisDatabase;
@@ -323,7 +325,7 @@ public class ServerDataImpl implements ServerData {
 	}
 
 	public static Query<JsonElement> createDefault(MongoConnection mongoConnection) {
-		return new MongoQuery(mongoConnection, "saintmc-common", "serverId");
+		return new MongoQuery(mongoConnection, mongoConnection.getDataBase(), "serverId");
 	}
 
 }

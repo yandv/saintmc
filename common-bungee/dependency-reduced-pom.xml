@@ -27,110 +27,6 @@
   </repositories>
   <dependencies>
     <dependency>
-      <groupId>com.mariaum</groupId>
-      <artifactId>zartema-proxy</artifactId>
-      <version>1.15-SNAPSHOT</version>
-      <scope>provided</scope>
-      <exclusions>
-        <exclusion>
-          <artifactId>flow-nbt</artifactId>
-          <groupId>com.flowpowered</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>netty-codec-haproxy</artifactId>
-          <groupId>io.netty</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>netty-codec-http</artifactId>
-          <groupId>io.netty</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>netty-resolver-dns</artifactId>
-          <groupId>io.netty</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>netty-handler</artifactId>
-          <groupId>io.netty</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>netty-transport-native-epoll</artifactId>
-          <groupId>io.netty</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>zartema-log4j</artifactId>
-          <groupId>com.mariaum</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>zartema-native</artifactId>
-          <groupId>com.mariaum</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>zartema-protocol</artifactId>
-          <groupId>com.mariaum</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>zartema-query</artifactId>
-          <groupId>com.mariaum</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>jopt-simple</artifactId>
-          <groupId>net.sf.jopt-simple</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>mysql-connector-java</artifactId>
-          <groupId>mysql</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>terminalconsoleappender</artifactId>
-          <groupId>net.minecrell</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>jline-terminal-jansi</artifactId>
-          <groupId>org.jline</groupId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>com.mariaum</groupId>
-      <artifactId>zartema-api</artifactId>
-      <version>1.15-SNAPSHOT</version>
-      <scope>provided</scope>
-      <exclusions>
-        <exclusion>
-          <artifactId>zartema-chat</artifactId>
-          <groupId>com.mariaum</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>zartema-config</artifactId>
-          <groupId>com.mariaum</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>zartema-event</artifactId>
-          <groupId>com.mariaum</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>netty-transport-native-unix-common</artifactId>
-          <groupId>io.netty</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>snakeyaml</artifactId>
-          <groupId>org.yaml</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>slf4j-api</artifactId>
-          <groupId>org.slf4j</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>httpclient</artifactId>
-          <groupId>org.apache.httpcomponents</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>zartema-protocol</artifactId>
-          <groupId>com.mariaum</groupId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
       <groupId>net.md-5</groupId>
       <artifactId>bungeecord-api</artifactId>
       <version>1.8-SNAPSHOT</version>
@@ -169,6 +65,10 @@
           <groupId>org.jetbrains</groupId>
         </exclusion>
         <exclusion>
+          <artifactId>slf4j-api</artifactId>
+          <groupId>org.slf4j</groupId>
+        </exclusion>
+        <exclusion>
           <artifactId>nv-websocket-client</artifactId>
           <groupId>com.neovisionaries</groupId>
         </exclusion>
@@ -191,10 +91,6 @@
         <exclusion>
           <artifactId>jackson-databind</artifactId>
           <groupId>com.fasterxml.jackson.core</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>slf4j-api</artifactId>
-          <groupId>org.slf4j</groupId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -299,6 +195,13 @@
           <groupId>org.apache.commons</groupId>
         </exclusion>
       </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>com.mariaum</groupId>
+      <artifactId>zartema-proxy</artifactId>
+      <version>1.17-R0.1-SNAPSHOT</version>
+      <scope>system</scope>
+      <systemPath>C:/Zartema.jar</systemPath>
     </dependency>
   </dependencies>
 </project>

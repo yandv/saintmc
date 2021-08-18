@@ -46,15 +46,9 @@
 		<dependency>
 			<groupId>com.mariaum</groupId>
 			<artifactId>zartema-proxy</artifactId>
-			<version>1.15-SNAPSHOT</version>
-			<scope>provided</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>com.mariaum</groupId>
-			<artifactId>zartema-api</artifactId>
-			<version>1.15-SNAPSHOT</version>
-			<scope>provided</scope>
+			<version>1.17-R0.1-SNAPSHOT</version>
+			<scope>system</scope>
+			<systemPath>C:/Zartema.jar</systemPath>
 		</dependency>
 
 		<dependency>

@@ -33,7 +33,7 @@ public class StatusDataImpl implements StatusData {
 	private com.mongodb.client.MongoDatabase database;
 
 	public StatusDataImpl(MongoConnection mongoDatabase) {
-		database = mongoDatabase.getDatabase("saintmc-status");
+		database = mongoDatabase.getDatabase(mongoDatabase.getDataBase() + "-database");
 	}
 
 	@Override

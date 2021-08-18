@@ -17,7 +17,7 @@ public class IpDataImpl implements IpData {
 	private MongoQuery mongoQuery;
 
 	public IpDataImpl(MongoConnection mongoConnection) {
-		mongoQuery = new MongoQuery(mongoConnection, "saintmc-common", "ip");
+		mongoQuery = new MongoQuery(mongoConnection, mongoConnection.getDataBase(), "ip");
 	}
 
 	@Override

@@ -2,7 +2,6 @@ tk\yallandev\saintmc\bungee\command\BungeeCommandFramework$BungeeCompleter.class
 tk\yallandev\saintmc\bungee\controller\GiftcodeController.class
 tk\yallandev\saintmc\bungee\networking\redis\BungeePubSubHandler$7.class
 tk\yallandev\saintmc\bungee\listener\PartyListener.class
-tk\yallandev\saintmc\bungee\BungeeMain$2.class
 tk\yallandev\saintmc\bungee\command\register\PartyCommand.class
 tk\yallandev\saintmc\bungee\networking\redis\BungeePubSubHandler$3.class
 tk\yallandev\saintmc\bungee\listener\LoginListener$2.class
@@ -47,6 +46,7 @@ tk\yallandev\saintmc\bungee\listener\StoreListener.class
 tk\yallandev\saintmc\bungee\BungeeMain.class
 tk\yallandev\saintmc\bungee\networking\redis\BungeePubSubHandler$8.class
 tk\yallandev\saintmc\bungee\command\register\GifcodeCommand.class
+tk\yallandev\saintmc\bungee\command\register\ServerCommand$Server.class
 tk\yallandev\saintmc\bungee\BungeeMain$1.class
 tk\yallandev\saintmc\bungee\networking\redis\BungeePubSubHandler$1.class
 tk\yallandev\saintmc\bungee\event\player\PlayerUpdateFieldEvent.class

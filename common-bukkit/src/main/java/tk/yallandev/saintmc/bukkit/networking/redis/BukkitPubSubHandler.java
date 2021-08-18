@@ -43,7 +43,7 @@ public class BukkitPubSubHandler extends JedisPubSub {
 
 	@Override
 	public void onMessage(String channel, String message) {
-		JsonObject jsonObject = (JsonObject) JsonParser.parseString(message);
+		JsonObject jsonObject = JsonParser.parseString(message).getAsJsonObject();
 
 		if (channel.equals("server-members")) {
 			BukkitMain.getInstance().getServerManager().setTotalMembers(jsonObject.get("totalMembers").getAsInt());

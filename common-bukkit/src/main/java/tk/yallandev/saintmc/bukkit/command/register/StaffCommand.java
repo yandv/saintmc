@@ -1,13 +1,10 @@
 package tk.yallandev.saintmc.bukkit.command.register;
 
-import java.io.File;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import tk.yallandev.saintmc.CommonConst;
 import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.bukkit.BukkitMain;
 import tk.yallandev.saintmc.bukkit.api.item.ItemBuilder;
@@ -22,7 +19,6 @@ import tk.yallandev.saintmc.common.command.CommandFramework.Command;
 import tk.yallandev.saintmc.common.command.CommandSender;
 import tk.yallandev.saintmc.common.permission.Group;
 import tk.yallandev.saintmc.common.server.ServerType;
-import tk.yallandev.saintmc.update.UpdatePlugin;
 
 public class StaffCommand implements CommandClass {
 
@@ -43,7 +39,7 @@ public class StaffCommand implements CommandClass {
 			sb.append(args[i]).append(" ");
 		msg = sb.toString();
 
-		Bukkit.broadcastMessage("§6§nNord§a§nMC§7 » §f" + msg.replace("&", "§"));
+		Bukkit.broadcastMessage("§6§lNORD §e> §f" + msg.replace("&", "§"));
 	}
 
 	@Command(name = "setspawn", groupToUse = Group.AJUDANTE)
@@ -80,25 +76,6 @@ public class StaffCommand implements CommandClass {
 		String configName = a[0];
 		BukkitMain.getInstance().registerLocationInConfig(p.getLocation(), configName);
 		p.sendMessage(" §a* §fVocê setou a warp §a" + configName + "§f!");
-	}
-
-	@Command(name = "update", groupToUse = Group.MODPLUS, runAsync = true)
-	public void updateCommand(CommandArgs cmdArgs) {
-		UpdatePlugin.Shutdown shutdown = new UpdatePlugin.Shutdown() {
-
-			@Override
-			public void stop() {
-				Bukkit.shutdown();
-			}
-
-		};
-
-		if (UpdatePlugin.update(
-				new File(BukkitMain.class.getProtectionDomain().getCodeSource().getLocation().getPath()),
-				"BukkitCommon", CommonConst.DOWNLOAD_KEY, shutdown)) {
-			cmdArgs.getSender().sendMessage("§aAtualizando o plugin!");
-		} else
-			cmdArgs.getSender().sendMessage("§cNenhuma atualização disponível!");
 	}
 
 	@Command(name = "admin", aliases = { "adm" }, groupToUse = Group.AJUDANTE)

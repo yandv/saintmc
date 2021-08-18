@@ -2,7 +2,6 @@ package br.com.saintmc.hungergames;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
-import java.io.File;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -35,7 +34,6 @@ import br.com.saintmc.hungergames.listener.register.UpdateListener;
 import br.com.saintmc.hungergames.scheduler.SchedulerListener;
 import br.com.saintmc.hungergames.utils.ServerConfig;
 import lombok.Getter;
-import tk.yallandev.saintmc.CommonConst;
 import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.bukkit.BukkitMain;
 import tk.yallandev.saintmc.bukkit.bukkit.BukkitMember;
@@ -46,7 +44,6 @@ import tk.yallandev.saintmc.common.server.loadbalancer.server.MinigameState;
 import tk.yallandev.saintmc.common.tag.Tag;
 import tk.yallandev.saintmc.common.tag.TagWrapper;
 import tk.yallandev.saintmc.common.utils.string.StringUtils;
-import tk.yallandev.saintmc.update.UpdatePlugin;
 
 @Getter
 public class GameMain extends JavaPlugin {
@@ -76,19 +73,6 @@ public class GameMain extends JavaPlugin {
 
 	@Override
 	public void onLoad() {
-		UpdatePlugin.Shutdown shutdown = new UpdatePlugin.Shutdown() {
-
-			@Override
-			public void stop() {
-				Bukkit.shutdown();
-			}
-
-		};
-
-		if (UpdatePlugin.update(new File(GameMain.class.getProtectionDomain().getCodeSource().getLocation().getPath()),
-				"HungerGames", CommonConst.DOWNLOAD_KEY, shutdown))
-			return;
-
 		instance = this;
 
 		general = new GameGeneral();
@@ -166,8 +150,8 @@ public class GameMain extends JavaPlugin {
 				long time = System.currentTimeMillis();
 
 				try {
-					for (int x = 0; x <= 32; x++) {
-						for (int z = 0; z <= 32; z++) {
+					for (int x = 0; x <= 28; x++) {
+						for (int z = 0; z <= 28; z++) {
 							world.getSpawnLocation().clone().add(x * 16, 0, z * 16).getChunk().load();
 							world.getSpawnLocation().clone().add(x * -16, 0, z * -16).getChunk().load();
 							world.getSpawnLocation().clone().add(x * 16, 0, z * -16).getChunk().load();
@@ -199,7 +183,7 @@ public class GameMain extends JavaPlugin {
 				world.setGameRuleValue("announceAdvancements", "false");
 				org.bukkit.WorldBorder border = world.getWorldBorder();
 				border.setCenter(0, 0);
-				border.setSize(1000);
+				border.setSize(800);
 
 				CommonGeneral.getInstance().debug("[World] World has been loaded!");
 
