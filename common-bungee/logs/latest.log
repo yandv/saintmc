@@ -1,7 +1,0 @@
-[10:39:55] [main/INFO] [org.mongodb.driver.cluster]: Cluster created with settings {hosts=[177.54.152.149:27017], mode=SINGLE, requiredClusterType=UNKNOWN, serverSelectionTimeout='30000 ms', maxWaitQueueSize=500}
-[10:39:55] [cluster-ClusterId{value='5f4cfdab329e9e2cacc406e3', description='null'}-177.54.152.149:27017/INFO] [org.mongodb.driver.connection]: Opened connection [connectionId{localValue:1, serverValue:15874}] to 177.54.152.149:27017
-[10:39:55] [cluster-ClusterId{value='5f4cfdab329e9e2cacc406e3', description='null'}-177.54.152.149:27017/INFO] [org.mongodb.driver.cluster]: Monitor thread successfully connected to server with description ServerDescription{address=177.54.152.149:27017, type=STANDALONE, state=CONNECTED, ok=true, version=ServerVersion{versionList=[4, 4, 0]}, minWireVersion=0, maxWireVersion=9, maxDocumentSize=16777216, logicalSessionTimeoutMinutes=30, roundTripTimeNanos=20526900}
-[10:39:56] [main/INFO] [net.dv8tion.jda.api.JDA]: Login Successful!
-[10:39:57] [JDA MainWS-ReadThread/INFO] [net.dv8tion.jda.internal.requests.WebSocketClient]: Connected to WebSocket
-[10:39:58] [JDA MainWS-ReadThread/INFO] [net.dv8tion.jda.api.JDA]: Finished Loading!
-[10:52:08] [Thread-10/INFO] [org.mongodb.driver.connection]: Opened connection [connectionId{localValue:2, serverValue:15883}] to 177.54.152.149:27017

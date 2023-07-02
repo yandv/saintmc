@@ -128,7 +128,7 @@ public class AccountListener extends Listener {
 		member.setPlayer(event.getPlayer());
 
 		if (event.getResult() == PlayerLoginEvent.Result.KICK_FULL) {
-			if (member.hasGroupPermission(Group.PRO))
+			if (member.hasGroupPermission(Group.VIP))
 				event.setResult(PlayerLoginEvent.Result.ALLOWED);
 			else {
 				event.disallow(PlayerLoginEvent.Result.KICK_OTHER, "§cO servidor está cheio!");
@@ -136,7 +136,7 @@ public class AccountListener extends Listener {
 			}
 		}
 
-		if (!member.hasGroupPermission(Group.AJUDANTE)) {
+		if (!member.hasGroupPermission(Group.TRIAL)) {
 			if (Bukkit.getOnlinePlayers().size() >= Bukkit.getMaxPlayers() + 20) {
 				event.disallow(PlayerLoginEvent.Result.KICK_OTHER, "§cO servidor está lotado!");
 				return;

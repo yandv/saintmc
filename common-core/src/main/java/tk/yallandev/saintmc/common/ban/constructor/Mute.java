@@ -4,11 +4,13 @@ import java.util.UUID;
 
 import lombok.Getter;
 import lombok.Setter;
+import tk.yallandev.saintmc.common.ban.Category;
 
 @Getter
 @Setter
 public class Mute {
 
+	private Category category;
 	private UUID uniqueId;
 	private int id = 0;
 
@@ -24,7 +26,8 @@ public class Mute {
 	private String unmutedBy;
 	private UUID unmutedByUuid;
 
-	public Mute(UUID uniqueId, String mutedBy, UUID mutedByUuid, String reason, long muteExpire) {
+	public Mute(Category category,UUID uniqueId, String mutedBy, UUID mutedByUuid, String reason, long muteExpire) {
+		this.category = category;
 		this.uniqueId = uniqueId;
 		this.mutedBy = mutedBy;
 		this.mutedByUuid = mutedByUuid;

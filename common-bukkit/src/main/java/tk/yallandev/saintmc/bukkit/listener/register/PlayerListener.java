@@ -45,7 +45,7 @@ public class PlayerListener extends Listener {
 		}
 
 		if (getServerConfig().isWhitelist()) {
-			if (player.hasGroupPermission(Group.STREAMER)
+			if (player.hasGroupPermission(Group.YOUTUBERPLUS)
 					|| getServerConfig().hasWhitelist(new Profile(player.getPlayerName(), player.getUniqueId())))
 				event.allow();
 			else

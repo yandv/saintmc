@@ -23,24 +23,26 @@ public class AnticheatInventory {
 		menu.setItem(11, new ItemBuilder().name("§aAutosoup Test").type(Material.MUSHROOM_SOUP).build(), new MenuClickHandler() {
 			
 			@Override
-			public void onClick(Player p, Inventory inv, ClickType type, ItemStack stack, int slot) {
+			public boolean onClick(Player p, Inventory inv, ClickType type, ItemStack stack, int slot) {
 				new AutosoupInventory(player, tester);
+				return false;
 			}
 		});
 		
 		menu.setItem(13, new ItemBuilder().name("§aAutoclick Test").type(Material.STONE_SWORD).build(), new MenuClickHandler() {
 			
 			@Override
-			public void onClick(Player p, Inventory inv, ClickType type, ItemStack stack, int slot) {
+			public boolean onClick(Player p, Inventory inv, ClickType type, ItemStack stack, int slot) {
 				new AutoclickInventory(player, tester);
+				return false;
 			}
 		});
 		
 		menu.setItem(15, new ItemBuilder().name("§aForcefield Test").type(Material.STONE_SWORD).build(), new MenuClickHandler() {
 			
 			@Override
-			public void onClick(Player p, Inventory inv, ClickType type, ItemStack stack, int slot) {
-				
+			public boolean onClick(Player p, Inventory inv, ClickType type, ItemStack stack, int slot) {
+				return false;
 			}
 		});
 		

@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import br.com.saintmc.hungergames.game.GameState;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 
@@ -20,102 +21,113 @@ import tk.yallandev.saintmc.common.permission.Group;
 @Data
 public class ServerConfig {
 
-	@Getter
-	private static ServerConfig instance = new ServerConfig();
+    @Getter
+    private static ServerConfig instance = new ServerConfig();
 
-	private SimpleKit defaultSimpleKit = null;
+    private SimpleKit defaultSimpleKit = null;
 
-	private Map<KitType, Kit> defaultKit;
-	private Map<KitType, List<Kit>> disabledKits;
+    private Map<KitType, Kit> defaultKit;
+    private Map<KitType, List<Kit>> disabledKits;
 
-	private Map<Integer, String> commandMap;
+    private Map<GameState, Map<Integer, String>> commandMap;
 
-	private boolean timeInWaiting = false;
+    private boolean timeInWaiting = false;
 
-	private boolean spectatorEnabled = true;
-	private boolean respawnEnabled = true;
-	private boolean joinEnabled;
+    private boolean spectatorEnabled = true;
+    private boolean respawnEnabled = true;
+    private boolean joinEnabled;
 
-	private boolean finalBattle = true;
-	private boolean forceWin = true;
-	private boolean surpriseDisable = true;
+    private boolean finalBattle = true;
+    private boolean forceWin = true;
+    private boolean surpriseDisable = true;
 
-	private boolean buildEnabled = true;
-	private boolean placeEnabled = true;
-	private boolean bucketEnabled = true;
-	private Set<Material> materialSet;
+    private boolean buildEnabled = true;
+    private boolean placeEnabled = true;
+    private boolean bucketEnabled = true;
+    private Set<Material> materialSet;
 
-	private boolean pvpEnabled = true;
-	private boolean damageEnabled = true;
+    private boolean pvpEnabled = true;
+    private boolean damageEnabled = true;
 
-	private Group spectatorGroup;
-	private Group respawnGroup;
-	private Group kitSpawnGroup;
+    private Group spectatorGroup;
+    private Group respawnGroup;
+    private Group kitSpawnGroup;
 
-	private String title = "§6§l§k??";
+    public ServerConfig() {
+        defaultKit = new HashMap<>();
+        disabledKits = new HashMap<>();
 
-	public ServerConfig() {
-		defaultKit = new HashMap<>();
-		disabledKits = new HashMap<>();
+        commandMap = new HashMap<>();
 
-		commandMap = new HashMap<>();
+        spectatorGroup = Group.VIP;
+        respawnGroup = Group.VIP;
+        kitSpawnGroup = Group.PENTA;
 
-		spectatorGroup = Group.PRO;
-		respawnGroup = Group.PRO;
-		kitSpawnGroup = Group.ELITE;
+        materialSet = new HashSet<>();
+    }
 
-		materialSet = new HashSet<>();
-	}
+    public void registerCommand(GameState gameState, Integer time, String command) {
+        commandMap.computeIfAbsent(gameState, v -> new HashMap<>()).put(time, command);
+    }
 
-	public void registerCommand(Integer time, String command) {
-		commandMap.put(time, command);
-	}
+    public void execute(GameState gameState, Integer time) {
+        if (!commandMap.containsKey(gameState)) {
+            return;
+        }
 
-	public void execute(Integer time) {
-		if (commandMap.containsKey(time)) {
-			String label = commandMap.get(time);
+        if (!commandMap.get(gameState).containsKey(time)) {
+            return;
+        }
 
-			if (label.contains(";")) {
-				for (String command : label.split(";"))
-					Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
-			} else {
-				Bukkit.dispatchCommand(Bukkit.getConsoleSender(), label);
-			}
-		}
-	}
+        String label = commandMap.get(gameState).get(time);
 
-	public boolean isDisabled(Kit kit, KitType kitType) {
-		return disabledKits.computeIfAbsent(kitType, v -> new ArrayList<>()).contains(kit);
-	}
+        if (label.contains(";")) {
+            for (String command : label.split("; *"))
+                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
+        } else {
+            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), label);
+        }
 
-	public void disableKit(Kit kit, KitType kitType) {
-		if (isDisabled(kit, kitType))
-			return;
+        commandMap.get(gameState).remove(time);
+    }
 
-		disabledKits.computeIfAbsent(kitType, v -> new ArrayList<>()).add(kit);
-	}
+    public void clearCommands() {
+        commandMap.clear();
+    }
 
-	public void enableKit(Kit kit, KitType kitType) {
-		if (!isDisabled(kit, kitType))
-			return;
+    public boolean isDisabled(Kit kit, KitType kitType) {
+        return disabledKits.computeIfAbsent(kitType, v -> new ArrayList<>()).contains(kit);
+    }
 
-		disabledKits.computeIfAbsent(kitType, v -> new ArrayList<>()).remove(kit);
-	}
+    public void disableKit(Kit kit, KitType kitType) {
+        if (isDisabled(kit, kitType)) {
+            return;
+        }
 
-	public boolean hasPrimaryKit() {
-		return defaultKit.containsKey(KitType.PRIMARY);
-	}
+        disabledKits.computeIfAbsent(kitType, v -> new ArrayList<>()).add(kit);
+    }
 
-	public boolean hasSecondaryKit() {
-		return defaultKit.containsKey(KitType.SECONDARY);
-	}
+    public void enableKit(Kit kit, KitType kitType) {
+        if (!isDisabled(kit, kitType)) {
+            return;
+        }
 
-	public boolean hasDefaultSimpleKit() {
-		return defaultSimpleKit != null;
-	}
+        disabledKits.computeIfAbsent(kitType, v -> new ArrayList<>()).remove(kit);
+    }
 
-	public int getPlayersToStart() {
-		return 5;
-	}
+    public boolean hasPrimaryKit() {
+        return defaultKit.containsKey(KitType.PRIMARY);
+    }
 
+    public boolean hasSecondaryKit() {
+        return defaultKit.containsKey(KitType.SECONDARY);
+    }
+
+    public boolean hasDefaultSimpleKit() {
+        return defaultSimpleKit != null;
+    }
+
+    public int getPlayersToStart() {
+        return 5;
+    }
 }

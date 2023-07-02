@@ -20,7 +20,7 @@ public class LoginMain extends JavaPlugin implements Listener {
 	@Getter
 	private static LoginMain instance;
 
-	public static final Tag ORIGINAL_TAG = TagWrapper.create("ORIGINAL", "§6§lORIGINAL§6", Group.PRO, 24)
+	public static final Tag ORIGINAL_TAG = TagWrapper.create("ORIGINAL", "§6§lORIGINAL§6", Group.VIP, 24)
 			.setCustom(true);
 	public static final Tag LOGGING_TAG = TagWrapper.create("LOGGING", "§8§lLOGANDO§8", Group.MEMBRO, 24)
 			.setCustom(true);

@@ -14,7 +14,7 @@ import tk.yallandev.saintmc.common.permission.Group;
 
 public class AnticheatCommand implements CommandClass {
 
-	@Command(name = "anticheat", aliases = { "ac" }, groupToUse = Group.AJUDANTE)
+	@Command(name = "anticheat", aliases = { "ac" }, groupToUse = Group.TRIAL)
 	public void anticheatCommand(CommandArgs cmdArgs) {
 		CommandSender sender = cmdArgs.getSender();
 		String[] args = cmdArgs.getArgs();
@@ -44,7 +44,7 @@ public class AnticheatCommand implements CommandClass {
 		}
 	}
 
-	@Command(name = "autoban", groupToUse = Group.AJUDANTE)
+	@Command(name = "autoban", groupToUse = Group.TRIAL)
 	public void autobanCommand(CommandArgs cmdArgs) {
 		CommandSender sender = cmdArgs.getSender();
 		String[] args = cmdArgs.getArgs();

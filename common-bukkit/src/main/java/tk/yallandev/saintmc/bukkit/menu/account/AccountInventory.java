@@ -28,7 +28,7 @@ public class AccountInventory {
 
 	public AccountInventory(Player sender, Member player) {
 		MenuInventory menu = new MenuInventory("§7§nConta de " + player.getPlayerName(), 5);
-		boolean isStaff = Member.hasGroupPermission(sender.getUniqueId(), Group.AJUDANTE);
+		boolean isStaff = Member.hasGroupPermission(sender.getUniqueId(), Group.TRIAL);
 
 		String lore = isStaff
 				? "\n§7Fake: §f" + player.getFakeName() + "\n§7Conta: §f"
@@ -73,8 +73,9 @@ public class AccountInventory {
 				new MenuClickHandler() {
 
 					@Override
-					public void onClick(Player p, Inventory inv, ClickType type, ItemStack stack, int slot) {
+					public boolean onClick(Player p, Inventory inv, ClickType type, ItemStack stack, int slot) {
 						new PunishmentInventory(sender, player);
+						return false;
 					}
 				});
 

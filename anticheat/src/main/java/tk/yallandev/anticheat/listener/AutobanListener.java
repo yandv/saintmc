@@ -52,7 +52,7 @@ public class AutobanListener extends ManualRegisterableListener {
 
 				if (time == 30 || time == 15 || time == 5) {
 					CommonGeneral.getInstance().getMemberManager().getMembers().stream()
-							.filter(member -> member.hasGroupPermission(Group.AJUDANTE)
+							.filter(member -> member.hasGroupPermission(Group.TRIAL)
 									&& member.getAccountConfiguration().isAnticheatEnabled())
 							.forEach(member -> member.sendMessage("§cO jogador " + entry.getValue().getPlayerName()
 									+ " será banido em " + time + " segundos!"));

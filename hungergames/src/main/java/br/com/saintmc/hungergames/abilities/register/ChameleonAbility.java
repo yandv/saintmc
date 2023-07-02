@@ -119,6 +119,7 @@ public class ChameleonAbility extends Ability {
 									morf(player, entityType);
 									disguise.setDisguised(true);
 								}
+								return false;
 							});
 
 					if (itemIndex % 9 == 6) {

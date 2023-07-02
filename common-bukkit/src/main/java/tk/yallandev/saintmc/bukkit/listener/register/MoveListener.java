@@ -28,8 +28,11 @@ public class MoveListener extends Listener {
 
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onUpdate(UpdateEvent event) {
+		Bukkit.broadcastMessage("update!");
 		if (event.getCurrentTick() % 5 == 0)
 			for (Player player : Bukkit.getOnlinePlayers()) {
+				player.sendMessage("atualizando...");
+
 				if (locationMap.containsKey(player.getUniqueId())) {
 					Location location = locationMap.get(player.getUniqueId());
 
@@ -38,6 +41,7 @@ public class MoveListener extends Listener {
 						PlayerMoveUpdateEvent playerMoveUpdateEvent = new PlayerMoveUpdateEvent(player, location,
 								player.getLocation());
 						Bukkit.getPluginManager().callEvent(playerMoveUpdateEvent);
+						player.sendMessage("sent!");
 
 						if (playerMoveUpdateEvent.isCancelled()) {
 							((CraftPlayer) player).getHandle().playerConnection.sendPacket(new PacketPlayOutPosition(

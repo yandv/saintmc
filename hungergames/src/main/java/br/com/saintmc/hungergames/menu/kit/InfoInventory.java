@@ -20,7 +20,7 @@ public class InfoInventory {
 		Gamer gamer = GameGeneral.getInstance().getGamerController().getGamer(player);
 		MenuInventory menu = new MenuInventory("§7Kit " + NameUtils.formatString(kit.getName()), 6, true);
 		
-		boolean hasKit = GameMain.DOUBLEKIT ? kitType == KitType.PRIMARY ? true : gamer.hasKit(kit.getName())
+		boolean hasKit = GameMain.getInstance().isDoubleKit() ? kitType == KitType.PRIMARY ? true : gamer.hasKit(kit.getName())
 				: gamer.hasKit(kit.getName());
 
 		menu.setItem(13, new ItemBuilder().name((hasKit ? "§a" : "§c") + NameUtils.formatString(kit.getName()))

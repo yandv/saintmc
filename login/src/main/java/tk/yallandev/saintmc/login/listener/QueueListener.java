@@ -107,7 +107,7 @@ public class QueueListener implements Listener {
 	}
 
 	public boolean hasPriority(Member member) {
-		return member.hasGroupPermission(Group.PRO);
+		return member.hasGroupPermission(Group.VIP);
 	}
 
 }

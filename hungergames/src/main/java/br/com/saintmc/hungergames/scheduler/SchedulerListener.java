@@ -86,7 +86,7 @@ public class SchedulerListener implements Listener {
 					Bukkit.getPluginManager().callEvent(new PlayerItemReceiveEvent(player));
 					player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 20 * 30, 1));
 
-					if (Member.hasGroupPermission(player.getUniqueId(), Group.PRO) || gamer.isWinner()) {
+					if (Member.hasGroupPermission(player.getUniqueId(), Group.VIP) || gamer.isWinner()) {
 						if (!gamer.hasKit(KitType.PRIMARY))
 							gamer.setNoKit(KitType.PRIMARY);
 

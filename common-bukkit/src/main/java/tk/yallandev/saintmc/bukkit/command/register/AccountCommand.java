@@ -90,7 +90,7 @@ public class AccountCommand implements CommandClass {
 			}
 
 			if (!player.getUniqueId().equals(sender.getUniqueId()))
-				if (!Member.hasGroupPermission(sender.getUniqueId(), Group.AJUDANTE)) {
+				if (!Member.hasGroupPermission(sender.getUniqueId(), Group.TRIAL)) {
 					sender.sendMessage("§cVocê não pode ver o perfil de outros jogadores!");
 					return;
 				}
@@ -282,6 +282,8 @@ public class AccountCommand implements CommandClass {
 		if (!cmdArgs.isPlayer())
 			return;
 
+		if (!CommonGeneral.getInstance().getServerType().name().contains("HG")) return;
+
 		Member player = CommonGeneral.getInstance().getMemberManager().getMember(cmdArgs.getSender().getUniqueId());
 
 		List<League> leagues = Arrays.asList(League.values());
@@ -393,32 +395,6 @@ public class AccountCommand implements CommandClass {
 			member.sendMessage("§aVocê possui " + member.getMoney() + " coins!");
 			break;
 		}
-	}
-
-	@Command(name = "youtuber")
-	public void youtuberCommand(CommandArgs cmdArgs) {
-		cmdArgs.getSender().sendMessage(new BaseComponent[] {
-				new MessageBuilder("§bPara receber tag por um vídeo que você fez no servidor clique nesta mensagem!")
-						.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, CommonConst.YOUTUBER_FORM))
-						.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
-								new BaseComponent[] { new MessageBuilder(CommonConst.YOUTUBER_FORM).create() }))
-						.create() });
-	}
-
-	@Command(name = "aplicar")
-	public void aplicarCommand(CommandArgs cmdArgs) {
-		cmdArgs.getSender().sendMessage(new BaseComponent[] {
-				new MessageBuilder("§dPara entrar na equipe de Trial, faça o formulário clicando nessa mensagem!")
-						.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, CommonConst.TRIAL_FORM))
-						.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
-								new BaseComponent[] { new MessageBuilder(CommonConst.TRIAL_FORM).create() }))
-						.create() });
-		cmdArgs.getSender().sendMessage(new BaseComponent[] {
-				new MessageBuilder("§9Para entrar na equipe de Helper, faça o formulário clicando nessa mensagem!")
-						.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, CommonConst.HELPER_FORM))
-						.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
-								new BaseComponent[] { new MessageBuilder(CommonConst.HELPER_FORM).create() }))
-						.create() });
 	}
 
 	@Command(name = "reply", usage = "/<command> <message>", aliases = { "r" })
@@ -591,7 +567,7 @@ public class AccountCommand implements CommandClass {
 			member = (BukkitMember) CommonGeneral.getInstance().getMemberManager().getMember(args[0]);
 
 			if (member != null && member.isUsingFake()
-					&& !Member.hasGroupPermission(sender.getUniqueId(), Group.AJUDANTE)) {
+					&& !Member.hasGroupPermission(sender.getUniqueId(), Group.TRIAL)) {
 				sender.sendMessage(" §c* §fO jogador §a" + args[0] + "§f está offline!");
 				return;
 			}
@@ -603,7 +579,7 @@ public class AccountCommand implements CommandClass {
 		}
 
 		if (!member.getAccountConfiguration().isTellEnabled())
-			if (!sender.hasGroupPermission(Group.AJUDANTE)) {
+			if (!sender.hasGroupPermission(Group.TRIAL)) {
 				sender.sendMessage("§cO tell desse jogador está desativado!");
 				return;
 			}

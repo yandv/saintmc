@@ -52,7 +52,7 @@ public class LoginListener implements Listener {
 
 		if (member.getLoginConfiguration().isLogged())
 			if (playerList.size() >= MAX_PLAYERS)
-				if (!member.hasGroupPermission(Group.PRO)) {
+				if (!member.hasGroupPermission(Group.VIP)) {
 					event.disallow(Result.KICK_OTHER,
 							"§4§l" + CommonConst.KICK_PREFIX + "\n§f\n§cO servidor de login está cheio!");
 				}

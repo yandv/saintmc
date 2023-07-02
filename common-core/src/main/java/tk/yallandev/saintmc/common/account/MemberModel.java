@@ -20,171 +20,173 @@ import tk.yallandev.saintmc.common.tag.Tag;
 @Getter
 public class MemberModel {
 
-	/*
-	 * Player Information
-	 * 
-	 */
+    /*
+     * Player Information
+     *
+     */
 
-	private String playerName;
-	private final UUID uniqueId;
+    private String playerName;
+    private final UUID uniqueId;
 
-	/*
-	 * Skin Information
-	 * 
-	 */
+    /*
+     * Skin Information
+     *
+     */
 
-	private Profile skinProfile;
+    private Profile skinProfile;
 
-	private String fakeName;
-	private Map<String, Long> cooldown;
+    private String fakeName;
+    private Map<String, Long> cooldown;
 
-	private String lastIpAddress;
+    private String lastIpAddress;
 
-	/*
-	 * Configuration
-	 * 
-	 */
+    /*
+     * Configuration
+     *
+     */
 
-	private AccountConfiguration accountConfiguration;
-	private LoginConfiguration loginConfiguration;
+    private AccountConfiguration accountConfiguration;
+    private LoginConfiguration loginConfiguration;
 
-	/*
-	 * History
-	 * 
-	 */
+    /*
+     * History
+     *
+     */
 
-	private PunishmentHistory punishmentHistory;
+    private PunishmentHistory punishmentHistory;
 
-	/*
-	 * Social Midia
-	 * 
-	 */
+    /*
+     * Social Midia
+     *
+     */
 
-	private Long discordId;
-	private String discordName;
-	private DiscordType discordType;
+    private Long discordId;
+    private String discordName;
+    private DiscordType discordType;
 
-	private UUID clanUniqueId;
+    private UUID clanUniqueId;
 
-	/*
-	 * Permission Information
-	 * 
-	 */
+    /*
+     * Permission Information
+     *
+     */
 
-	private Group group;
-	private Map<RankType, Long> ranks;
-	private Map<String, Long> permissions;
+    private Group group;
+    private Map<RankType, Long> ranks;
+    private Map<String, Long> permissions;
 
-	private Tag tag;
-	private boolean chroma;
+    private Tag tag;
+    private boolean chroma;
 
-	private List<Medal> medalList;
-	private Medal medal;
+    private List<Medal> medalList;
+    private Medal medal;
 
-	/*
-	 * Tournament
-	 * 
-	 */
+    /*
+     * Tournament
+     *
+     */
 
-	private TournamentGroup tournamentGroup;
+    private TournamentGroup tournamentGroup;
 
-	/*
-	 * Status Information
-	 * 
-	 */
+    /*
+     * Status Information
+     *
+     */
 
-	private int money;
-	private int cash;
-	private int xp;
-	private int position;
-	private League league;
+    private int money;
+    private int cash;
+    private int xp;
+    private int position;
+    private League league;
 
-	private int reputation;
+    private int reputation;
 
-	/*
-	 * Player time
-	 * 
-	 */
+    /*
+     * Player time
+     *
+     */
 
-	private long firstLogin;
-	private long lastLogin;
-	private long joinTime;
-	private long onlineTime;
+    private long firstLogin;
+    private long lastLogin;
+    private long joinTime;
+    private long onlineTime;
 
-	/*
-	 * Server Info
-	 * 
-	 */
+    /*
+     * Server Info
+     *
+     */
 
-	private String serverId = "";
-	private ServerType serverType;
+    private String serverId = "";
+    private ServerType serverType;
 
-	private String lastServerId;
-	private ServerType lastServerType;
+    private String lastServerId;
+    private ServerType lastServerType;
 
-	private boolean online;
+    private boolean online;
+    private String gladiatorInventory;
 
-	public MemberModel(Member member) {
-		playerName = member.getPlayerName();
-		uniqueId = member.getUniqueId();
+    public MemberModel(Member member) {
+        playerName = member.getPlayerName();
+        uniqueId = member.getUniqueId();
 
-		skinProfile = member.getSkinProfile();
+        skinProfile = member.getSkinProfile();
 
-		fakeName = member.getFakeName();
-		cooldown = member.getCooldown();
+        fakeName = member.getFakeName();
+        cooldown = member.getCooldown();
 
-		lastIpAddress = member.getLastIpAddress();
+        lastIpAddress = member.getLastIpAddress();
 
-		accountConfiguration = member.getAccountConfiguration();
-		loginConfiguration = member.getLoginConfiguration();
+        accountConfiguration = member.getAccountConfiguration();
+        loginConfiguration = member.getLoginConfiguration();
 
-		punishmentHistory = member.getPunishmentHistory();
+        punishmentHistory = member.getPunishmentHistory();
 
-		discordId = member.getDiscordId();
-		discordName = member.getDiscordName();
-		discordType = member.getDiscordType();
+        discordId = member.getDiscordId();
+        discordName = member.getDiscordName();
+        discordType = member.getDiscordType();
 
-		clanUniqueId = member.getClanUniqueId();
+        clanUniqueId = member.getClanUniqueId();
 
-		group = member.getGroup();
-		permissions = member.getPermissions();
-		ranks = member.getRanks();
+        group = member.getGroup();
+        permissions = member.getPermissions();
+        ranks = member.getRanks();
 
-		tag = member.getTag();
-		chroma = member.isChroma();
+        tag = member.getTag();
+        chroma = member.isChroma();
 
-		medalList = member.getMedalList();
-		medal = member.getMedal();
+        medalList = member.getMedalList();
+        medal = member.getMedal();
 
-		tournamentGroup = member.getTournamentGroup();
+        tournamentGroup = member.getTournamentGroup();
 
-		cash = member.getCash();
-		money = member.getMoney();
-		xp = member.getXp();
-		position = member.getPosition();
-		league = member.getLeague();
-		reputation = member.getReputation();
+        cash = member.getCash();
+        money = member.getMoney();
+        xp = member.getXp();
+        position = member.getPosition();
+        league = member.getLeague();
+        reputation = member.getReputation();
 
-		firstLogin = member.getFirstLogin();
-		lastLogin = member.getLastLogin();
-		joinTime = member.getJoinTime();
-		onlineTime = member.getOnlineTime();
+        firstLogin = member.getFirstLogin();
+        lastLogin = member.getLastLogin();
+        joinTime = member.getJoinTime();
+        onlineTime = member.getOnlineTime();
 
-		serverId = member.getServerId();
-		serverType = member.getServerType();
+        serverId = member.getServerId();
+        serverType = member.getServerType();
 
-		lastServerId = member.getServerId();
-		lastServerType = member.getServerType();
+        lastServerId = member.getServerId();
+        lastServerType = member.getServerType();
 
-		online = member.isOnline();
-	}
+        online = member.isOnline();
+        gladiatorInventory = member.getGladiatorInventory();
+    }
 
-	public List<Medal> getMedalList() {
+    public List<Medal> getMedalList() {
 
-		if (medalList == null)
-			medalList = new ArrayList<>();
+        if (medalList == null) {
+            medalList = new ArrayList<>();
+        }
 
-		return medalList;
-	}
-
+        return medalList;
+    }
 }

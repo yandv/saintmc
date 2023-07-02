@@ -1,0 +1,6 @@
+evento:
+  minimush:
+    force: 'chat off; clearchat; say &aOlá.'
+    commands:
+      - 'autocommand pregame 60 chat off; clearchat; say &aOlá, jogadores. O jogo começará em 60 segundos.'
+      - 'autocommand pregame 55 say &aParabéns aos tributos que sobreviveram ao treinamento.; togglekit'

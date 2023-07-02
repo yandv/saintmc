@@ -18,8 +18,6 @@ public class BungeeMember extends Member {
 
 	private transient ProxiedPlayer proxiedPlayer;
 
-	protected boolean screensharing;
-	protected UUID screenshareStaff;
 
 	public BungeeMember(MemberModel memberModel) {
 		super(memberModel);

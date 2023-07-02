@@ -119,7 +119,7 @@ public class HungergamesInventory {
 					break;
 				}
 				case NONE: {
-					if (!member.hasGroupPermission(Group.AJUDANTE))
+					if (!member.hasGroupPermission(Group.TRIAL))
 						continue;
 
 					nameId = "§4" + name;

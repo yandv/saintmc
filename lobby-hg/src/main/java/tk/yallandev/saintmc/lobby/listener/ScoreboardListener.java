@@ -27,110 +27,66 @@ import tk.yallandev.saintmc.lobby.LobbyPlatform;
 
 public class ScoreboardListener implements Listener {
 
-	public static final Scoreboard DEFAULT_SCOREBOARD;
+    public static final Scoreboard DEFAULT_SCOREBOARD;
 
-	static {
-		DEFAULT_SCOREBOARD = new SimpleScoreboard("§6§lLOBBY");
+    static {
+        DEFAULT_SCOREBOARD = new SimpleScoreboard("§b§lCOMPETITIVO");
 
-		DEFAULT_SCOREBOARD.blankLine(12);
-		DEFAULT_SCOREBOARD.setScore(11, new Score("§eNormal: ", "normal"));
-		DEFAULT_SCOREBOARD.setScore(10, new Score(" §fWins: ", "wins"));
-		DEFAULT_SCOREBOARD.setScore(9, new Score(" §fKills: ", "kills"));
-		DEFAULT_SCOREBOARD.blankLine(8);
-		DEFAULT_SCOREBOARD.setScore(7, new Score("§eEventos: ", "event"));
-		DEFAULT_SCOREBOARD.setScore(6, new Score(" §fWins: ", "event-wins"));
-		DEFAULT_SCOREBOARD.setScore(5, new Score(" §fKills: ", "event-kills"));
-		DEFAULT_SCOREBOARD.blankLine(4);
-		DEFAULT_SCOREBOARD.setScore(3,
-				new Score("§fJogadores: §a" + BukkitMain.getInstance().getServerManager().getTotalNumber(), "online"));
-		DEFAULT_SCOREBOARD.blankLine(2);
-		DEFAULT_SCOREBOARD.setScore(1, new Score("§e" + CommonConst.SITE, "site"));
-	}
+        DEFAULT_SCOREBOARD.blankLine(13);
+        DEFAULT_SCOREBOARD.setScore(12, new Score("§eComp: ", "comp"));
+        DEFAULT_SCOREBOARD.setScore(11, new Score(" Wins: §a0", "wins"));
+        DEFAULT_SCOREBOARD.setScore(10, new Score(" Kills: §a0", "kills"));
+        DEFAULT_SCOREBOARD.blankLine(9);
+        DEFAULT_SCOREBOARD.setScore(8, new Score("§eEventos: ", "event"));
+        DEFAULT_SCOREBOARD.setScore(7, new Score(" Wins: §a0", "event-wins"));
+        DEFAULT_SCOREBOARD.setScore(6, new Score(" Kills: §a0", "event-kills"));
+        DEFAULT_SCOREBOARD.blankLine(5);
+        DEFAULT_SCOREBOARD.setScore(4, new Score("Coins: §60", "coins"));
+        DEFAULT_SCOREBOARD.setScore(3, new Score("Jogadores: §a0", "online"));
+        DEFAULT_SCOREBOARD.blankLine(2);
+        DEFAULT_SCOREBOARD.setScore(1, new Score("§awww." + CommonConst.SITE, "site"));
+    }
 
-	@EventHandler(priority = EventPriority.MONITOR)
-	public void onPlayerJoin(PlayerJoinEvent event) {
-		handleScoreboard(event.getPlayer());
-	}
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onPlayerJoin(PlayerJoinEvent event) {
+        handleScoreboard(event.getPlayer());
+    }
 
-	@EventHandler(priority = EventPriority.MONITOR)
-	public void onPlayerJoin(PlayerChangeEvent event) {
-		DEFAULT_SCOREBOARD.updateScore(new Score("Jogadores: §a" + event.getTotalMembers(), "online"));
-	}
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onPlayerJoin(PlayerChangeEvent event) {
+        DEFAULT_SCOREBOARD.updateScore(new Score("Jogadores: §a" + event.getTotalMembers(), "online"));
+    }
 
-	@EventHandler
-	public void onPlayerChangeGroup(PlayerChangeGroupEvent event) {
-		new BukkitRunnable() {
+    @EventHandler
+    public void onPlayerScoreboardState(PlayerScoreboardStateEvent event) {
+        if (event.isScoreboardEnabled()) {
+            handleScoreboard(event.getPlayer());
+        }
+    }
 
-			@Override
-			public void run() {
-				Group group = event.getGroup();
+    private void handleScoreboard(Player player) {
+        Member member = CommonGeneral.getInstance().getMemberManager().getMember(player.getUniqueId());
 
-				DEFAULT_SCOREBOARD.updateScore(event.getPlayer(),
-						new Score("Grupo: "
-								+ (group == Group.MEMBRO ? "§7§lMEMBRO" : Tag.valueOf(group.name()).getPrefix()),
-								"group"));
-			}
-		}.runTaskLater(LobbyPlatform.getInstance(), 10l);
-	}
+        if (member == null) {
+            player.kickPlayer("§cSua conta não foi carregada!");
+            return;
+        }
 
-	@EventHandler
-	public void onPlayerChangeLeague(PlayerChangeLeagueEvent event) {
-		new BukkitRunnable() {
+        DEFAULT_SCOREBOARD.createScoreboard(player);
 
-			@Override
-			public void run() {
-				League league = event.getNewLeague();
+        Group group = member.getGroup();
+        League league = member.getLeague();
 
-				DEFAULT_SCOREBOARD.updateScore(event.getPlayer(),
-						new Score("Ranking: §7(" + league.getColor() + league.getSymbol() + "§7)", "ranking"));
-			}
-		}.runTaskLater(LobbyPlatform.getInstance(), 10l);
-	}
+        GameStatus status = CommonGeneral.getInstance().getStatusManager()
+                                         .loadStatus(player.getUniqueId(), StatusType.HG, GameStatus.class);
 
-	@EventHandler
-	public void onPlayerScoreboardState(PlayerScoreboardStateEvent event) {
-		if (event.isScoreboardEnabled())
-			handleScoreboard(event.getPlayer());
-	}
+        DEFAULT_SCOREBOARD.updateScore(player, new Score(" Wins: §a" + status.getWins(), "wins"));
+        DEFAULT_SCOREBOARD.updateScore(player, new Score(" Kills: §a" + status.getKills(), "kills"));
 
-	private void handleScoreboard(Player player) {
-		Member member = CommonGeneral.getInstance().getMemberManager().getMember(player.getUniqueId());
+        status = CommonGeneral.getInstance().getStatusManager()
+                              .loadStatus(player.getUniqueId(), StatusType.EVENTO, GameStatus.class);
 
-		if (member == null) {
-			player.kickPlayer("§cSua conta não foi carregada!");
-			return;
-		}
-
-		DEFAULT_SCOREBOARD.createScoreboard(player);
-
-		Group group = member.getGroup();
-		League league = member.getLeague();
-
-		GameStatus status = CommonGeneral.getInstance().getStatusManager().loadStatus(player.getUniqueId(),
-				StatusType.HG, GameStatus.class);
-
-		DEFAULT_SCOREBOARD.updateScore(player, new Score(
-				"§fGrupo: " + (group == Group.MEMBRO ? "§7§lMEMBRO" : Tag.valueOf(group.name()).getPrefix()), "group"));
-		DEFAULT_SCOREBOARD.updateScore(player,
-				new Score("Ranking: §7(" + league.getColor() + league.getSymbol() + "§7)", "ranking"));
-
-		DEFAULT_SCOREBOARD.updateScore(player, new Score(" §fWins: §a" + status.getWins(), "wins"));
-		DEFAULT_SCOREBOARD.updateScore(player, new Score(" §fKills: §a" + status.getKills(), "kills"));
-
-		status = CommonGeneral.getInstance().getStatusManager().loadStatus(player.getUniqueId(), StatusType.EVENTO,
-				GameStatus.class);
-
-		DEFAULT_SCOREBOARD.updateScore(player, new Score(" §fWins: §a" + status.getWins(), "event-wins"));
-		DEFAULT_SCOREBOARD.updateScore(player, new Score(" §fKills: §a" + status.getKills(), "event-kills"));
-
-		new BukkitRunnable() {
-
-			@Override
-			public void run() {
-				DEFAULT_SCOREBOARD.updateScore(new Score(
-						"§fJogadores: §a" + BukkitMain.getInstance().getServerManager().getTotalNumber(), "online"));
-			}
-		}.runTaskLater(LobbyPlatform.getInstance(), 20l);
-	}
-
+        DEFAULT_SCOREBOARD.updateScore(player, new Score(" Wins: §a" + status.getWins(), "event-wins"));
+        DEFAULT_SCOREBOARD.updateScore(player, new Score(" Kills: §a" + status.getKills(), "event-kills"));
+    }
 }

@@ -196,7 +196,7 @@ public class DeathListener extends GameListener {
 			if (battleKiller != null) {
 
 				int winnerXp = CommonConst.RANDOM.nextInt(5) + 12;
-				int winnerMoney = 50 * (battleKiller.isGroup(Group.PRO) ? 2 : 1);
+				int winnerMoney = 50 * (battleKiller.isGroup(Group.VIP) ? 2 : 1);
 				battleKiller.addXp(winnerXp);
 				battleKiller.addMoney(winnerMoney);
 
@@ -312,7 +312,7 @@ public class DeathListener extends GameListener {
 			String deathMessageId = "death-message-" + (causeString != null ? causeString.replace("_", "") : "null");
 
 			replaces.put("%player%", player.getName());
-			replaces.put("%player_Kit%", GameMain.DOUBLEKIT
+			replaces.put("%player_Kit%", GameMain.getInstance().isDoubleKit()
 					? gamer.hasKit(KitType.PRIMARY) && gamer.hasKit(KitType.SECONDARY)
 							? NameUtils.formatString(gamer.getKitName(KitType.PRIMARY)) + "/"
 									+ NameUtils.formatString(gamer.getKitName(KitType.SECONDARY))
@@ -326,7 +326,7 @@ public class DeathListener extends GameListener {
 				replaces.put("%killed_By%", killer.getName());
 
 				replaces.put("%killed_By_Kit%",
-						GameMain.DOUBLEKIT
+							 GameMain.getInstance().isDoubleKit()
 								? killerGamer.hasKit(KitType.PRIMARY) && killerGamer.hasKit(KitType.SECONDARY)
 										? NameUtils.formatString(killerGamer.getKitName(KitType.PRIMARY)) + "/"
 												+ NameUtils.formatString(killerGamer.getKitName(KitType.SECONDARY))
@@ -340,14 +340,14 @@ public class DeathListener extends GameListener {
 
 			String kickMessage = deathMessage(player, deathMessageId, replaces);
 
-			if (member.hasGroupPermission(Group.AJUDANTE)) {
+			if (member.hasGroupPermission(Group.TRIAL)) {
 				AdminMode.getInstance().setAdmin(player, Member.getMember(player.getUniqueId()));
 				gamer.setGamemaker(true);
 			} else {
 				gamer.setSpectator(true);
 			}
 
-			if (!member.hasGroupPermission(Group.AJUDANTE))
+			if (!member.hasGroupPermission(Group.TRIAL))
 				if (!member.hasGroupPermission(ServerConfig.getInstance().getSpectatorGroup()) && !gamer.isWinner()) {
 					int number = GameGeneral.getInstance().getPlayersInGame() + 1;
 

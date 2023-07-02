@@ -116,7 +116,7 @@ public class GameListener extends br.com.saintmc.hungergames.listener.GameListen
 		if (player == null)
 			return;
 
-		if (player.hasGroupPermission(Group.AJUDANTE))
+		if (player.hasGroupPermission(Group.TRIAL))
 			return;
 
 		if ((player.hasGroupPermission(ServerConfig.getInstance().getSpectatorGroup())
@@ -134,7 +134,7 @@ public class GameListener extends br.com.saintmc.hungergames.listener.GameListen
 
 		if (gamer.getDeathCause() == null) {
 			event.disallow(Result.KICK_OTHER,
-					player.hasGroupPermission(Group.PRO) ? "§cO jogo já iniciou e você não pode espectar!"
+					player.hasGroupPermission(Group.VIP) ? "§cO jogo já iniciou e você não pode espectar!"
 							: "§cO jogo já iniciou!");
 		} else {
 			event.disallow(Result.KICK_OTHER, "§cVocê morreu!");
@@ -190,7 +190,7 @@ public class GameListener extends br.com.saintmc.hungergames.listener.GameListen
 
 			GameMain.getInstance().checkWinner(gamer);
 
-			if (Member.hasGroupPermission(player.getUniqueId(), Group.PRO) || gamer.isWinner()) {
+			if (Member.hasGroupPermission(player.getUniqueId(), Group.VIP) || gamer.isWinner()) {
 				for (KitType kitType : KitType.values())
 					if (!gamer.hasKit(kitType))
 						if (ServerConfig.getInstance().getDefaultKit().containsKey(kitType))
@@ -206,7 +206,7 @@ public class GameListener extends br.com.saintmc.hungergames.listener.GameListen
 		} else {
 			event.setJoinMessage(null);
 
-			if (Member.hasGroupPermission(player.getUniqueId(), Group.AJUDANTE))
+			if (Member.hasGroupPermission(player.getUniqueId(), Group.TRIAL))
 				AdminMode.getInstance().setAdmin(player, Member.getMember(player.getUniqueId()));
 			else
 				gamer.setSpectator(true);
@@ -242,7 +242,7 @@ public class GameListener extends br.com.saintmc.hungergames.listener.GameListen
 		Member player = CommonGeneral.getInstance().getMemberManager().getMember(p.getUniqueId());
 		Gamer gamer = GameGeneral.getInstance().getGamerController().getGamer(p.getUniqueId());
 
-		if (player.hasGroupPermission(Group.AJUDANTE)) {
+		if (player.hasGroupPermission(Group.TRIAL)) {
 			gamer.setGamemaker(true);
 
 			if (!AdminMode.getInstance().isAdmin(p))

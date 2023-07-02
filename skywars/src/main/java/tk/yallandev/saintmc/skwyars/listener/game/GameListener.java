@@ -116,7 +116,7 @@ public class GameListener implements Listener {
 	public void onPlayerLogin(PlayerLoginEvent event) {
 		Member member = CommonGeneral.getInstance().getMemberManager().getMember(event.getPlayer().getUniqueId());
 
-		if (!member.hasGroupPermission(Group.AJUDANTE))
+		if (!member.hasGroupPermission(Group.TRIAL))
 			event.disallow(Result.KICK_OTHER, "§cServidor disponível somente para staff!");
 	}
 
@@ -233,7 +233,7 @@ public class GameListener implements Listener {
 		Player player = event.getPlayer();
 		Gamer gamer = GameGeneral.getInstance().getGamerController().getGamer(player);
 
-		if (Member.hasGroupPermission(player.getUniqueId(), Group.AJUDANTE))
+		if (Member.hasGroupPermission(player.getUniqueId(), Group.TRIAL))
 			AdminMode.getInstance().setAdmin(player,
 					CommonGeneral.getInstance().getMemberManager().getMember(player.getUniqueId()));
 		else

@@ -25,145 +25,154 @@ import tk.yallandev.saintmc.common.server.ServerType;
 
 public class TagListener implements Listener {
 
-	private BukkitMain main;
-	private ChromaListener listener;
+    private BukkitMain main;
+    private ChromaListener listener;
 
-	public TagListener() {
-		main = BukkitMain.getInstance();
-		listener = new ChromaListener();
+    public TagListener() {
+        main = BukkitMain.getInstance();
+        listener = new ChromaListener();
 
-		if (!BukkitMain.getInstance().isTagControl()) {
-			HandlerList.unregisterAll(this);
-			return;
-		}
+        if (!BukkitMain.getInstance().isTagControl()) {
+            HandlerList.unregisterAll(this);
+            return;
+        }
 
-		for (Player p : Bukkit.getServer().getOnlinePlayers()) {
-			Member player = CommonGeneral.getInstance().getMemberManager().getMember(p.getUniqueId());
+        for (Player p : Bukkit.getServer().getOnlinePlayers()) {
+            Member player = CommonGeneral.getInstance().getMemberManager().getMember(p.getUniqueId());
 
-			if (player == null)
-				continue;
+            if (player == null) {
+                continue;
+            }
 
-			player.setTag(player.getTag());
-		}
-	}
+            player.setTag(player.getTag());
+        }
+    }
 
-	@EventHandler
-	public void onPluginDisable(PluginDisableEvent event) {
-		for (Player p : Bukkit.getServer().getOnlinePlayers()) {
-			ScoreboardAPI.leaveCurrentTeamForOnlinePlayers(p);
-		}
-	}
+    @EventHandler
+    public void onPluginDisable(PluginDisableEvent event) {
+        for (Player p : Bukkit.getServer().getOnlinePlayers()) {
+            ScoreboardAPI.leaveCurrentTeamForOnlinePlayers(p);
+        }
+    }
 
-	@EventHandler(priority = EventPriority.MONITOR)
-	public void onPlayerQuit(PlayerQuitEvent event) {
-		ScoreboardAPI.leaveCurrentTeamForOnlinePlayers(event.getPlayer());
-	}
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onPlayerQuit(PlayerQuitEvent event) {
+        ScoreboardAPI.leaveCurrentTeamForOnlinePlayers(event.getPlayer());
+    }
 
-	@EventHandler(priority = EventPriority.MONITOR)
-	public void onPlayerJoin(PlayerJoinEvent e) {
-		if (!main.isTagControl())
-			return;
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onPlayerJoin(PlayerJoinEvent e) {
+        if (!main.isTagControl()) {
+            return;
+        }
 
-		Player p = e.getPlayer();
+        Player p = e.getPlayer();
 
-		BukkitMember player = (BukkitMember) CommonGeneral.getInstance().getMemberManager()
-				.getMember(e.getPlayer().getUniqueId());
+        BukkitMember player = (BukkitMember) CommonGeneral.getInstance().getMemberManager()
+                                                          .getMember(e.getPlayer().getUniqueId());
 
-		if (player == null) {
-			p.kickPlayer("§4§l" + CommonConst.KICK_PREFIX + "\n§f\n§fNão foi possível carregar sua conta!");
-			return;
-		}
+        if (player == null) {
+            p.kickPlayer("§4§l" + CommonConst.KICK_PREFIX + "\n§f\n§fNão foi possível carregar sua conta!");
+            return;
+        }
 
-		player.setTag(player.getTag() == null ? player.getDefaultTag() : player.getTag());
+        player.setTag(player.getTag() == null ? player.getDefaultTag() : player.getTag());
 
-		for (Player o : Bukkit.getOnlinePlayers()) {
-			if (!o.getUniqueId().equals(p.getUniqueId())) {
-				BukkitMember bp = (BukkitMember) CommonGeneral.getInstance().getMemberManager()
-						.getMember(o.getUniqueId());
+        for (Player o : Bukkit.getOnlinePlayers()) {
+            if (!o.getUniqueId().equals(p.getUniqueId())) {
+                BukkitMember bp = (BukkitMember) CommonGeneral.getInstance().getMemberManager()
+                                                              .getMember(o.getUniqueId());
 
-				if (bp == null)
-					continue;
+                if (bp == null) {
+                    continue;
+                }
 
-				String id = ScoreboardAPI.getTeamName(bp.getTag(), bp.getLeague(),
-						bp.getTag().isChroma() || bp.isChroma(), isClanTag(bp), bp.getClan());
+                String id = ScoreboardAPI.getTeamName(bp.getTag(), bp.getLeague(),
+                                                      bp.getTag().isChroma() || bp.isChroma(), isClanTag(bp),
+                                                      bp.getClan());
 
-				String tag = BukkitMain.getInstance().isOldTag() ? ChatColor.getLastColors(bp.getTag().getPrefix())
-						: bp.getTag().getPrefix();
-				String suffix = getSuffix(bp, isClanTag(bp));
+                String tag = BukkitMain.getInstance().isOldTag() ? ChatColor.getLastColors(bp.getTag().getPrefix())
+                                                                 : bp.getTag().getPrefix();
+                String suffix = "";
 
-				ScoreboardAPI.joinTeam(ScoreboardAPI.createTeamIfNotExistsToPlayer(p, id,
-						tag + (ChatColor.stripColor(tag).trim().length() > 0 ? " " : ""), suffix), o);
-			}
-		}
-	}
+                ScoreboardAPI.joinTeam(ScoreboardAPI.createTeamIfNotExistsToPlayer(p, id,
+                                                                                   tag +
+                                                                                   (ChatColor.stripColor(tag).trim()
+                                                                                             .length() > 0 ? " " : ""),
+                                                                                   suffix), o);
+            }
+        }
+    }
 
-	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-	public void onPlayerChangeTag(PlayerChangeTagEvent event) {
-		if (!main.isTagControl())
-			return;
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onPlayerChangeTag(PlayerChangeTagEvent event) {
+        if (!main.isTagControl()) {
+            return;
+        }
 
-		Player p = event.getPlayer();
-		BukkitMember player = (BukkitMember) event.getMember();
+        Player p = event.getPlayer();
+        BukkitMember player = (BukkitMember) event.getMember();
 
-		if (player == null)
-			return;
+        if (player == null) {
+            return;
+        }
 
-		String id = ScoreboardAPI.getTeamName(event.getNewTag(),
-				player.isUsingFake() ? League.values()[0] : player.getLeague(),
-				event.getNewTag().isChroma() || player.isChroma(), event.isClanTag(), player.getClan());
-		String oldId = ScoreboardAPI.getTeamName(event.getOldTag(),
-				player.isUsingFake() ? League.values()[0] : player.getLeague(),
-				event.getNewTag().isChroma() || player.isChroma(), event.isClanTag(), player.getClan());
+        String id = ScoreboardAPI.getTeamName(event.getNewTag(),
+                                              player.isUsingFake() ? League.values()[0] : player.getLeague(),
+                                              event.getNewTag().isChroma() || player.isChroma(), event.isClanTag(),
+                                              player.getClan());
+        String oldId = ScoreboardAPI.getTeamName(event.getOldTag(),
+                                                 player.isUsingFake() ? League.values()[0] : player.getLeague(),
+                                                 event.getNewTag().isChroma() || player.isChroma(), event.isClanTag(),
+                                                 player.getClan());
 
-		String tag = BukkitMain.getInstance().isOldTag() ? ChatColor.getLastColors(event.getNewTag().getPrefix())
-				: event.getNewTag().getPrefix();
-		String suffix = getSuffix(player, event.isClanTag());
+        String tag = BukkitMain.getInstance().isOldTag() ? ChatColor.getLastColors(event.getNewTag().getPrefix())
+                                                         : event.getNewTag().getPrefix();
+        String suffix = "";
 
-		if (event.getOldTag().isChroma() || player.isChroma())
-			if (listener.getChromaList().contains(new Chroma(id, tag, suffix)))
-				listener.getChromaList().remove(new Chroma(id, tag, suffix));
+        if (event.getOldTag().isChroma() || player.isChroma()) {
+            listener.getChromaList().remove(new Chroma(id, tag, suffix));
+        }
 
-		if (event.getNewTag().isChroma() || player.isChroma())
-			if (!listener.getChromaList().contains(new Chroma(id, tag, suffix)))
-				listener.getChromaList().add(new Chroma(id, tag, suffix));
+        if (event.getNewTag().isChroma() || player.isChroma()) {
+            if (!listener.getChromaList().contains(new Chroma(id, tag, suffix))) {
+                listener.getChromaList().add(new Chroma(id, tag, suffix));
+            }
+        }
 
-		/**
-		 * TICKs++
-		 */
+        /**
+         * TICKs++
+         */
 
-		if (listener.getChromaList().isEmpty())
-			listener.unregisterListener();
-		else
-			listener.registerListener();
+        if (listener.getChromaList().isEmpty()) {
+            listener.unregisterListener();
+        } else {
+            listener.registerListener();
+        }
 
-		for (Player o : Bukkit.getOnlinePlayers()) {
-			try {
-				ScoreboardAPI.leaveTeamToPlayer(o, oldId, p);
-				ScoreboardAPI.joinTeam(ScoreboardAPI.createTeamIfNotExistsToPlayer(o, id,
-						tag + (ChatColor.stripColor(tag).trim().length() > 0 ? " " : ""), suffix), p);
-			} catch (Exception ex) {
-			}
-		}
-	}
+        for (Player o : Bukkit.getOnlinePlayers()) {
+            try {
+                ScoreboardAPI.leaveTeamToPlayer(o, oldId, p);
+                ScoreboardAPI.joinTeam(ScoreboardAPI.createTeamIfNotExistsToPlayer(o, id,
+                                                                                   tag +
+                                                                                   (ChatColor.stripColor(tag).trim()
+                                                                                             .length() > 0 ? " " : ""),
+                                                                                   suffix), p);
+            } catch (Exception ex) {
+            }
+        }
+    }
 
-	private String getSuffix(BukkitMember player, boolean clanTag) {
-		if (BukkitMain.getInstance().isOldTag())
-			return "";
+    public boolean isClanTag(Member member) {
+        if (member.isUsingFake()) {
+            return false;
+        }
 
-		return (clanTag ? " §7[" + player.getClan().getClanAbbreviation() + "]"
-				: player.isUsingFake() ? " §7(" + League.values()[0].getColor() + League.values()[0].getSymbol() + "§7)"
-						: " §7(" + player.getLeague().getColor() + player.getLeague().getSymbol() + "§7)");
-	}
-
-	public boolean isClanTag(Member member) {
-		if (member.isUsingFake())
-			return false;
-
-		if (member.getAccountConfiguration().getClanDisplayType() == ClanDisplayType.ALL
-				|| (CommonGeneral.getInstance().getServerType() == ServerType.LOBBY
-						&& member.getAccountConfiguration().getClanDisplayType() == ClanDisplayType.LOBBY))
-			return member.getClan() != null;
-		return false;
-	}
-
+        if (member.getAccountConfiguration().getClanDisplayType() == ClanDisplayType.ALL
+            || (CommonGeneral.getInstance().getServerType() == ServerType.LOBBY
+                && member.getAccountConfiguration().getClanDisplayType() == ClanDisplayType.LOBBY)) {
+            return member.getClan() != null;
+        }
+        return false;
+    }
 }

@@ -120,15 +120,15 @@ public class Gamer {
 				|| player.hasPermission("tag.torneioplus"))
 			return true;
 
-		if (player.hasGroupPermission(Group.ELITE))
+		if (player.hasGroupPermission(Group.PENTA))
 			return true;
 
-		if (player.hasGroupPermission(Group.PRO))
-			if (GameMain.KITROTATE.get(Group.PRO).contains(kit.getName().toLowerCase()))
+		if (player.hasGroupPermission(Group.VIP))
+			if (GameMain.KITROTATE.get(Group.VIP).contains(kit.getName().toLowerCase()))
 				return true;
 
-		if (player.hasGroupPermission(Group.PRO))
-			if (GameMain.KITROTATE.get(Group.PRO).contains(kit.getName().toLowerCase()))
+		if (player.hasGroupPermission(Group.VIP))
+			if (GameMain.KITROTATE.get(Group.VIP).contains(kit.getName().toLowerCase()))
 				return true;
 
 		return GameMain.KITROTATE.get(Group.MEMBRO).contains(kit.getName().toLowerCase());

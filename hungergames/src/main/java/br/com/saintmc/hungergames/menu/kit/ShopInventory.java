@@ -83,12 +83,12 @@ public class ShopInventory {
 
 		if (page != 1) {
 			menu.setItem(new MenuItem(new ItemBuilder().type(Material.ARROW).name("§aPágina " + (page - 1)).build(),
-					(p, inventory, clickType, item, slot) -> new ShopInventory(p, page - 1)), 45);
+					(p, inventory, clickType, item, slot) -> {new ShopInventory(p, page - 1);return false;}), 45);
 		}
 
 		if (Math.ceil(items.size() / itemsPerPage) + 1 > page) {
 			menu.setItem(new MenuItem(new ItemBuilder().type(Material.ARROW).name("§aPágina " + (page + 1)).build(),
-					(p, inventory, clickType, item, slot) -> new ShopInventory(p, page + 1)), 53);
+					(p, inventory, clickType, item, slot) -> {new ShopInventory(p, page + 1);return false;}), 53);
 		}
 
 		menu.open(player);
@@ -101,7 +101,7 @@ public class ShopInventory {
 		private int page;
 
 		@Override
-		public void onClick(Player p, Inventory inv, ClickType type, ItemStack stack, int slot) {
+		public boolean onClick(Player p, Inventory inv, ClickType type, ItemStack stack, int slot) {
 			Member member = CommonGeneral.getInstance().getMemberManager().getMember(p.getUniqueId());
 
 			if (member.getMoney() >= kit.getPrice()) {
@@ -115,6 +115,8 @@ public class ShopInventory {
 								+ ", você precisa de mais " + (kit.getPrice() - member.getMoney()) + "!");
 				p.closeInventory();
 			}
+
+			return false;
 		}
 	}
 

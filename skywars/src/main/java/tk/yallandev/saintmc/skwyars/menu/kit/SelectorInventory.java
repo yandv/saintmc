@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.bukkit.event.inventory.InventoryType;
 import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.bukkit.api.item.ItemBuilder;
 import tk.yallandev.saintmc.bukkit.api.menu.MenuInventory;
@@ -53,6 +54,7 @@ public class SelectorInventory {
 
 					items.add(new MenuItem(item.build(), (p, inv, type, stack, slot) -> {
 						new BuyInventory(player, kit, page, orderType);
+						return false;
 					}));
 				}
 			} else {
@@ -68,6 +70,7 @@ public class SelectorInventory {
 					items.add(new MenuItem(item.build(), (p, inv, type, stack, slot) -> {
 						GameGeneral.getInstance().getGamerController().getGamer(p).selectKit(kit);
 						p.closeInventory();
+						return false;
 					}));
 				} else
 					items.add(new MenuItem(
@@ -77,6 +80,7 @@ public class SelectorInventory {
 							(p, inv, type, stack, slot) -> {
 								p.sendMessage("§cVocê não possui esse kit!");
 								p.closeInventory();
+								return false;
 							}));
 			}
 		}
@@ -117,6 +121,7 @@ public class SelectorInventory {
 				(p, inventory, clickType, item, slot) -> {
 					if (inventoryType != InventoryType.SELECTOR)
 						new SelectorInventory(p, page, InventoryType.SELECTOR, orderType);
+					return false;
 				});
 		menu.setItem(18,
 				new ItemBuilder().name("§aComprar kit").type(Material.INK_SACK)
@@ -124,6 +129,7 @@ public class SelectorInventory {
 				(p, inventory, clickType, item, slot) -> {
 					if (inventoryType != InventoryType.STORE)
 						new SelectorInventory(p, page, InventoryType.STORE, orderType);
+					return false;
 				});
 
 		if (inventoryType == InventoryType.STORE)
@@ -134,12 +140,13 @@ public class SelectorInventory {
 			menu.setItem(new MenuItem(new ItemBuilder().type(Material.ARROW).name("§aPágina " + (page - 1)).build(),
 					(p, inventory, clickType, item, slot) -> {
 						new SelectorInventory(p, page - 1, inventoryType, orderType);
+						return false;
 					}), 45);
 		}
 
 		if (Math.ceil(items.size() / itemsPerPage) + 1 > page) {
 			menu.setItem(new MenuItem(new ItemBuilder().type(Material.ARROW).name("§aPágina " + (page + 1)).build(), (p,
-					inventory, clickType, item, slot) -> new SelectorInventory(p, page + 1, inventoryType, orderType)),
+					inventory, clickType, item, slot) -> {new SelectorInventory(p, page + 1, inventoryType, orderType);return false;}),
 					53);
 		}
 

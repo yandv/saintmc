@@ -42,13 +42,14 @@ public class MenuCaptcha extends Captcha {
 					int wrongClicks = 0;
 
 					@Override
-					public void onClick(Player p, Inventory inv, ClickType type, ItemStack stack, int slot) {
+					public boolean onClick(Player p, Inventory inv, ClickType type, ItemStack stack, int slot) {
 						if (wrongClicks++ > 3) {
 							getCaptchaHandler().handle(false);
 							menuInventory.setReopenInventory(false);
 							p.closeInventory();
 							p.playSound(p.getLocation(), Sound.ANVIL_BREAK, 0.2f, 1.0f);
 						}
+						return false;
 					}
 				};
 
@@ -59,12 +60,14 @@ public class MenuCaptcha extends Captcha {
 				MenuClickHandler rightClick = new MenuClickHandler() {
 
 					@Override
-					public void onClick(Player p, Inventory inv, ClickType type, ItemStack stack, int slot) {
+					public boolean onClick(Player p, Inventory inv, ClickType type, ItemStack stack, int slot) {
 						getCaptchaHandler().handle(true);
 						menuInventory.setReopenInventory(false);
 						p.closeInventory();
 						p.playSound(p.getLocation(), Sound.LEVEL_UP, 1.0f, 1.0f);
+						return false;
 					}
+
 				};
 
 				menuInventory.setItem(CommonConst.RANDOM.nextInt(menuInventory.getInventory().getSize()),

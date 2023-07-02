@@ -38,6 +38,7 @@ import tk.yallandev.saintmc.bungee.bungee.BungeeMember;
 import tk.yallandev.saintmc.bungee.event.IpRemoveEvent;
 import tk.yallandev.saintmc.common.account.Member;
 import tk.yallandev.saintmc.common.account.configuration.LoginConfiguration.AccountType;
+import tk.yallandev.saintmc.common.ban.Category;
 import tk.yallandev.saintmc.common.ban.constructor.Ban;
 import tk.yallandev.saintmc.common.clan.Clan;
 import tk.yallandev.saintmc.common.clan.ClanModel;
@@ -90,13 +91,7 @@ public class LoginListener implements Listener {
 		CommonGeneral.getInstance().getCommonPlatform().runAsync(() -> {
 
 			try {
-				event.getConnection().setOnlineMode(true);
-				boolean passLogin = checkLogin(event);
-
-				if (!passLogin) {
-					event.completeIntent(BungeeMain.getInstance());
-					return;
-				}
+				event.getConnection().setOnlineMode(checkLogin(event));
 
 				if (!event.getConnection().isOnlineMode()) {
 					String ipAddress = event.getConnection().getAddress().getHostString();
@@ -286,6 +281,7 @@ public class LoginListener implements Listener {
 	 */
 
 	public boolean checkLogin(PreLoginEvent event) {
+		System.out.println("§aVerificando a conta do jogador " + event.getConnection().getName() + "...");
 		try {
 			JsonObject jsonObject = CommonConst.DEFAULT_WEB
 					.doRequest(CommonConst.MOJANG_FETCHER + event.getConnection().getName(), Method.GET)
@@ -294,12 +290,11 @@ public class LoginListener implements Listener {
 			if (jsonObject.has("name") && jsonObject.has("id"))
 				return true;
 		} catch (IllegalArgumentException e) {
-			event.getConnection().setOnlineMode(false);
-			return true;
+			return false;
 		} catch (Exception e) {
 		}
 
-		return true;
+		return false;
 	}
 
 	/**
@@ -356,8 +351,8 @@ public class LoginListener implements Listener {
 		String ipAddress = event.getConnection().getName();
 
 		if (BungeeMain.getInstance().getPunishManager().isIpBanned(ipAddress)) {
-			Ban ban = new Ban(member.getUniqueId(), member.getPlayerName(), "CONSOLE", UUID.randomUUID(),
-					"Conta alternativa", created ? -1 : System.currentTimeMillis() + (1000 * 60 * 60 * 24 * 7));
+			Ban ban = new Ban(Category.CHEATING, member.getUniqueId(), member.getPlayerName(), "CONSOLE", UUID.randomUUID(),
+							  Category.CHEATING.getReason(), created ? -1 : System.currentTimeMillis() + (1000 * 60 * 60 * 24 * 7));
 
 			member.getPunishmentHistory().ban(ban);
 

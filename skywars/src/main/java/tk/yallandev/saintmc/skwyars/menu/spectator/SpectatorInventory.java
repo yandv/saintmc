@@ -19,73 +19,79 @@ import tk.yallandev.saintmc.skwyars.gamer.Gamer;
 
 public class SpectatorInventory {
 
-	private static int itemsPerPage = 21;
+    private static int itemsPerPage = 21;
 
-	public SpectatorInventory(Player player, int page) {
-		MenuInventory menu = new MenuInventory("§7Players", 6, true);
+    public SpectatorInventory(Player player, int page) {
+        MenuInventory menu = new MenuInventory("§7Players", 6, true);
 
-		List<MenuItem> items = new ArrayList<>();
+        List<MenuItem> items = new ArrayList<>();
 
-		for (Gamer gamer : GameGeneral.getInstance().getGamerController().getStoreMap().values().stream()
-				.filter(gamer -> gamer.isPlaying()).sorted((g1, g2) -> g1.getPlayerName().compareTo(g2.getPlayerName()))
-				.collect(Collectors.toList())) {
-			items.add(new MenuItem(new ItemBuilder()
-					.type(Material.SKULL_ITEM).durability(3)
-					.skin(gamer.getPlayer().isOnline() ? gamer.getPlayer().getName() : gamer.getPlayerName())
-					.name("§e" + (gamer.getPlayer().isOnline() ? gamer.getPlayer().getName() : gamer.getPlayerName()))
-					.build(), (p, inv, type, stack, slot) -> {
-						if (gamer.getPlayer().isOnline())
-							p.teleport(gamer.getPlayer());
-						else
+        for (Gamer gamer : GameGeneral.getInstance().getGamerController().getStoreMap().values().stream()
+                                      .filter(gamer -> gamer.isPlaying())
+                                      .sorted((g1, g2) -> g1.getPlayerName().compareTo(g2.getPlayerName()))
+                                      .collect(Collectors.toList())) {
+            items.add(new MenuItem(new ItemBuilder().type(Material.SKULL_ITEM).durability(3)
+                                                    .skin(gamer.getPlayer().isOnline() ? gamer.getPlayer().getName() :
+                                                          gamer.getPlayerName()).name("§e" +
+                                                                                      (gamer.getPlayer().isOnline() ?
+                                                                                       gamer.getPlayer().getName() :
+                                                                                       gamer.getPlayerName())).build(),
+                                   (p, inv, type, stack, slot) -> {
+                                       if (gamer.getPlayer().isOnline()) {
+                                           p.teleport(gamer.getPlayer());
+                                       } else {
+                                           p.sendMessage("§cJogador offline!");
+                                       }
+                                       return false;
+                                   }));
+        }
 
-							p.sendMessage("§cJogador offline!");
-					}));
-		}
+        int pageStart = 0;
+        int pageEnd = itemsPerPage;
 
-		int pageStart = 0;
-		int pageEnd = itemsPerPage;
+        if (page > 1) {
+            pageStart = ((page - 1) * itemsPerPage);
+            pageEnd = (page * itemsPerPage);
+        }
 
-		if (page > 1) {
-			pageStart = ((page - 1) * itemsPerPage);
-			pageEnd = (page * itemsPerPage);
-		}
+        if (pageEnd > items.size()) {
+            pageEnd = items.size();
+        }
 
-		if (pageEnd > items.size()) {
-			pageEnd = items.size();
-		}
+        int w = 10;
 
-		int w = 10;
+        for (int i = pageStart; i < pageEnd; i++) {
+            MenuItem item = items.get(i);
+            menu.setItem(item, w);
 
-		for (int i = pageStart; i < pageEnd; i++) {
-			MenuItem item = items.get(i);
-			menu.setItem(item, w);
+            if (w % 9 == 7) {
+                w += 3;
+                continue;
+            }
 
-			if (w % 9 == 7) {
-				w += 3;
-				continue;
-			}
+            w += 1;
+        }
 
-			w += 1;
-		}
+        if (page != 1) {
+            menu.setItem(new MenuItem(new ItemBuilder().type(Material.ARROW).name("§aPágina " + (page - 1)).build(),
+                                      new MenuClickHandler() {
 
-		if (page != 1) {
-			menu.setItem(new MenuItem(new ItemBuilder().type(Material.ARROW).name("§aPágina " + (page - 1)).build(),
-					new MenuClickHandler() {
+                                          @Override
+                                          public boolean onClick(Player arg0, Inventory arg1, ClickType arg2, ItemStack arg3, int arg4) {
+                                              new SpectatorInventory(arg0, page - 1);
+                                              return false;
+                                          }
+                                      }), 45);
+        }
 
-						@Override
-						public void onClick(Player arg0, Inventory arg1, ClickType arg2, ItemStack arg3, int arg4) {
-							new SpectatorInventory(arg0, page - 1);
-						}
+        if (Math.ceil(items.size() / itemsPerPage) + 1 > page) {
+            menu.setItem(new MenuItem(new ItemBuilder().type(Material.ARROW).name("§aPágina " + (page + 1)).build(),
+                                      (p, inventory, clickType, item, slot) -> {
+                                          new SpectatorInventory(p, page + 1);
+                                          return false;
+                                      }), 53);
+        }
 
-					}), 45);
-		}
-
-		if (Math.ceil(items.size() / itemsPerPage) + 1 > page) {
-			menu.setItem(new MenuItem(new ItemBuilder().type(Material.ARROW).name("§aPágina " + (page + 1)).build(),
-					(p, inventory, clickType, item, slot) -> new SpectatorInventory(p, page + 1)), 53);
-		}
-
-		menu.open(player);
-	}
-
+        menu.open(player);
+    }
 }

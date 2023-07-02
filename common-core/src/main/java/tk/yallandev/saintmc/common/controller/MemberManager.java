@@ -1,9 +1,6 @@
 package tk.yallandev.saintmc.common.controller;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Predicate;
 
 import net.md_5.bungee.api.chat.TextComponent;
@@ -97,4 +94,7 @@ public class MemberManager extends StoreController<UUID, Member> {
 				.orElse(null);
 	}
 
+    public boolean hasServerGroup(UUID uniqueId, Group group) {
+		return Optional.ofNullable(getMember(uniqueId)).map(member -> member.hasGroupPermission(group)).orElse(false);
+    }
 }

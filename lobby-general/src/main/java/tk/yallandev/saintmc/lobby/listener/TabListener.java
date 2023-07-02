@@ -20,60 +20,58 @@ import tk.yallandev.saintmc.lobby.LobbyPlatform;
 
 public class TabListener implements Listener {
 
-	private Tablist tablist;
+    private Tablist tablist;
 
-	public TabListener() {
-		tablist = new Tablist("\n§6§l" + CommonConst.SERVER_NAME.toUpperCase()
-				+ "\n§f\n§7Nome: §f%name% §7- §7Grupo: %group%\n§f                                                 §f",
-				"\n§e" + CommonConst.SITE + "\n§e" + CommonConst.DISCORD.replace("http://", "") + "\n§f ") {
+    public TabListener() {
+        tablist = new Tablist("§f\n§b§l" + CommonConst.SERVER_NAME.toUpperCase() + "\n§f",
+                              "\n§bLoja: §f" + CommonConst.SITE + "\n§bDiscord: §f" +
+                              CommonConst.DISCORD.replace("http://", "") + "\n§f ") {
 
-			@Override
-			public String[] replace(Player player, String header, String footer) {
-				Member member = CommonGeneral.getInstance().getMemberManager().getMember(player.getUniqueId());
+            @Override
+            public String[] replace(Player player, String header, String footer) {
+                Member member = CommonGeneral.getInstance().getMemberManager().getMember(player.getUniqueId());
 
-				header = header.replace("%group%", member.getGroup() == Group.MEMBRO ? "§7§lMEMBRO"
-						: Tag.valueOf(member.getGroup().name()).getPrefix());
-				header = header.replace("%name%", member.getPlayerName());
+                header = header.replace("%group%", member.getGroup() == Group.MEMBRO ? "§7§lMEMBRO" :
+                                                   Tag.valueOf(member.getGroup().name()).getPrefix());
+                header = header.replace("%name%", member.getPlayerName());
 
-				footer = footer.replace("%name%", member.getPlayerName());
-				footer = footer.replace(".br/", "");
+                footer = footer.replace("%name%", member.getPlayerName());
+                footer = footer.replace(".br/", "");
 
-				return new String[] { header, footer };
-			}
+                return new String[]{header, footer};
+            }
+        };
+    }
 
-		};
-	}
+    @EventHandler
+    public void onPlayerChangeGroup(PlayerChangeGroupEvent event) {
+        new BukkitRunnable() {
 
-	@EventHandler
-	public void onPlayerChangeGroup(PlayerChangeGroupEvent event) {
-		new BukkitRunnable() {
+            @Override
+            public void run() {
+                tablist.updateTab(event.getPlayer());
+            }
+        }.runTaskLater(LobbyPlatform.getInstance(), 10l);
+    }
 
-			@Override
-			public void run() {
-				tablist.updateTab(event.getPlayer());
-			}
-		}.runTaskLater(LobbyPlatform.getInstance(), 10l);
-	}
+    @EventHandler
+    public void onPlayerChangeLeague(PlayerChangeLeagueEvent event) {
+        new BukkitRunnable() {
 
-	@EventHandler
-	public void onPlayerChangeLeague(PlayerChangeLeagueEvent event) {
-		new BukkitRunnable() {
+            @Override
+            public void run() {
+                tablist.updateTab(event.getPlayer());
+            }
+        }.runTaskLater(LobbyPlatform.getInstance(), 10l);
+    }
 
-			@Override
-			public void run() {
-				tablist.updateTab(event.getPlayer());
-			}
-		}.runTaskLater(LobbyPlatform.getInstance(), 10l);
-	}
+    @EventHandler
+    public void onPlayerJoin(PlayerJoinEvent event) {
+        tablist.addViewer(event.getPlayer());
+    }
 
-	@EventHandler
-	public void onPlayerJoin(PlayerJoinEvent event) {
-		tablist.addViewer(event.getPlayer());
-	}
-
-	@EventHandler(priority = EventPriority.LOWEST)
-	public void onPlayerQuit(PlayerQuitEvent e) {
-		tablist.removeViewer(e.getPlayer());
-	}
-
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onPlayerQuit(PlayerQuitEvent e) {
+        tablist.removeViewer(e.getPlayer());
+    }
 }

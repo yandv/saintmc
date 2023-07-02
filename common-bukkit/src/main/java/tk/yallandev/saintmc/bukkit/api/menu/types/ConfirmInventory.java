@@ -18,21 +18,24 @@ public class ConfirmInventory {
 		MenuClickHandler confirm = new MenuClickHandler() {
 
 			@Override
-			public void onClick(Player p, Inventory inv, ClickType type, ItemStack stack, int slot) {
+			public boolean onClick(Player p, Inventory inv, ClickType type, ItemStack stack, int slot) {
 				handler.onConfirm(true);
+				return false;
 			}
 		};
 
 		MenuClickHandler noConfirm = new MenuClickHandler() {
 
 			@Override
-			public void onClick(Player p, Inventory inv, ClickType type, ItemStack stack, int slot) {
+			public boolean onClick(Player p, Inventory inv, ClickType type, ItemStack stack, int slot) {
 				handler.onConfirm(false);
 
 				if (topInventory != null)
 					topInventory.open(p);
 				else
 					menu.close(p);
+
+				return false;
 			}
 		};
 

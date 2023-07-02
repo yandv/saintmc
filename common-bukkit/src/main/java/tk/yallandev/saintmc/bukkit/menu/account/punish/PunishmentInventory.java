@@ -24,6 +24,7 @@ public class PunishmentInventory {
 						.type(Material.PAPER).build(),
 				(p, inv, type, stack, slot) -> {
 					new BanListInventory(player, member, 1);
+					return false;
 				});
 		menu.setItem(31,
 				new ItemBuilder().name("§aHistórico de silenciamentos")
@@ -41,6 +42,7 @@ public class PunishmentInventory {
 		menu.setItem(49, new ItemBuilder().name("§aVoltar").type(Material.ARROW).build(),
 				(p, inv, type, stack, slot) -> {
 					new AccountInventory(player, member);
+					return false;
 				});
 
 		menu.open(player);

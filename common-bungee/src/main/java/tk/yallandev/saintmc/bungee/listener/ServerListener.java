@@ -43,7 +43,7 @@ import tk.yallandev.saintmc.common.utils.string.StringUtils.TimeFormat;
 @SuppressWarnings("deprecation")
 public class ServerListener implements Listener {
 
-	private static final String MOTD_HEADER = StringCenter.centered("§b§lNORD §f» §6www." + CommonConst.SITE, 127);
+	private static final String MOTD_HEADER = StringCenter.centered("§b§lPENTAMC §f» §6www." + CommonConst.SITE, 127);
 	private static final String SERVER_NOT_FOUND = StringCenter.centered("§4§nServidor não encontrado!", 127);
 
 	private static final String[] MOTD_LIST = new String[] { StringCenter.centered("§c§lVENHA TESTAR AGORA NOSSO HG!", 127) };
@@ -184,14 +184,7 @@ public class ServerListener implements Listener {
 
 		ProxiedServer server = manager.getServer(event.getTarget().getName());
 
-		if (server.getServerType() == ServerType.SCREENSHARE) {
-			if (player.isScreensharing() || player.hasGroupPermission(Group.MODPLUS))
-				player.sendMessage("§aBem vindo a Screenshare!");
-			else
-				event.setCancelled(true);
-
-			return;
-		} else if (server.getServerType() == ServerType.LOGIN) {
+		if (server.getServerType() == ServerType.LOGIN) {
 			if (player.getLoginConfiguration()
 					.getAccountType() == tk.yallandev.saintmc.common.account.configuration.LoginConfiguration.AccountType.ORIGINAL
 					&& !player.hasGroupPermission(Group.MODPLUS)) {
@@ -228,7 +221,7 @@ public class ServerListener implements Listener {
 
 		String message = "§aSucesso!";
 
-		if (server.isFull() && !player.hasGroupPermission(Group.PRO)) {
+		if (server.isFull() && !player.hasGroupPermission(Group.VIP)) {
 			event.setCancelled(true);
 			message = "§cO servidor está cheio!";
 		}

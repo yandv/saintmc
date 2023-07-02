@@ -50,7 +50,7 @@ public class KitListener implements Listener {
 				}
 			}
 
-			if (Member.hasGroupPermission(player.getUniqueId(), Group.PRO)) {
+			if (Member.hasGroupPermission(player.getUniqueId(), Group.VIP)) {
 				if (!gamer.isNoKit(event.getKitType())) {
 					player.sendMessage("§cVocê não pode mais selecionar kit!");
 					event.setCancelled(true);
@@ -81,7 +81,7 @@ public class KitListener implements Listener {
 			}
 		}
 
-		if (GameMain.DOUBLEKIT) {
+		if (GameMain.getInstance().isDoubleKit()) {
 			if (event.getKitType() == KitType.SECONDARY) {
 				if (!gamer.hasKit(kit.getName().toLowerCase())) {
 					event.setCancelled(true);
@@ -120,7 +120,7 @@ public class KitListener implements Listener {
 
 		ActionBarAPI.send(event.getDamager(),
 				"§7" + entity.getName() + " §8- §a"
-						+ (GameMain.DOUBLEKIT
+						+ (GameMain.getInstance().isDoubleKit()
 								? gamer.hasKit(KitType.SECONDARY)
 										? NameUtils.formatString(gamer.getKitName(KitType.PRIMARY)) + "/"
 												+ NameUtils.formatString(gamer.getKitName(KitType.SECONDARY))

@@ -3,6 +3,7 @@ package br.com.saintmc.hungergames.scheduler.types;
 import java.util.Arrays;
 import java.util.List;
 
+import br.com.saintmc.hungergames.utils.ServerConfig;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -30,6 +31,8 @@ public class InvincibilityScheduler implements GameSchedule {
 
 	@Override
 	public void pulse(int time, GameState gameState) {
+
+		ServerConfig.getInstance().execute(gameState, time);
 		
 		if (time <= 5) {
 			for (Player p : Bukkit.getOnlinePlayers()) {

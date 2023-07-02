@@ -13,11 +13,11 @@ import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 
 import lombok.AllArgsConstructor;
-import tk.yallandev.hologramapi.hologram.Hologram;
-import tk.yallandev.hologramapi.hologram.impl.SimpleHologram;
 import tk.yallandev.saintmc.bukkit.BukkitMain;
 import tk.yallandev.saintmc.bukkit.api.character.Character;
 import tk.yallandev.saintmc.bukkit.api.character.Character.Interact;
+import tk.yallandev.saintmc.bukkit.api.hologram.Hologram;
+import tk.yallandev.saintmc.bukkit.api.hologram.impl.CraftHologram;
 import tk.yallandev.saintmc.bukkit.event.server.ServerPlayerJoinEvent;
 import tk.yallandev.saintmc.bukkit.event.server.ServerPlayerLeaveEvent;
 import tk.yallandev.saintmc.common.server.ServerType;
@@ -27,102 +27,105 @@ import tk.yallandev.saintmc.lobby.menu.server.ServerInventory;
 
 public class CharacterListener implements Listener {
 
-	private List<HologramInfo> hologramList;
+    private List<HologramInfo> hologramList;
 
-	public CharacterListener() {
-		hologramList = new ArrayList<>();
-		ServerInventory.LOBBY_HG = false;
+    public CharacterListener() {
+        hologramList = new ArrayList<>();
+        ServerInventory.LOBBY_HG = false;
 
-		createCharacter("§bHungerGames", "CabecinhaDeKiwi", "npc-hg", new Interact() {
+        Hologram hologram = createCharacter("§bCompetitivo", "CabecinhaDeKiwi", "npc-hg", new Interact() {
 
-			@Override
-			public boolean onInteract(Player player, boolean right) {
-				if (right)
-					new HungergamesInventory(player);
-				else {
-					sendPlayer(player, "Hungergames");
-				}
+            @Override
+            public boolean onInteract(Player player, boolean right) {
+                if (right) {
+                    new HungergamesInventory(player);
+                } else {
+                    sendPlayer(player, "Hungergames");
+                }
 
-				return false;
-			}
-		}, ServerType.HUNGERGAMES);
+                return false;
+            }
+        }, ServerType.HUNGERGAMES);
 
-		createCharacter("§bEvento", "yandv", "npc-evento", new Interact() {
+        hologram.addLineAbove("");
+        hologram.addLineAbove("§e14:00 16:30h 19:00 21:30h");
 
-			@Override
-			public boolean onInteract(Player player, boolean right) {
-//				BukkitMain.getInstance().sendPlayerToEvent(player);
-				return false;
-			}
-		}, ServerType.EVENTO);
-	}
+        createCharacter("§bEvento", "yandv", "npc-evento", new Interact() {
 
-	@EventHandler
-	public void onServerPlayerJoin(ServerPlayerJoinEvent event) {
-		updateHologram(event.getServerType());
-	}
+            @Override
+            public boolean onInteract(Player player, boolean right) {
+                return false;
+            }
+        }, ServerType.EVENTO);
+    }
 
-	@EventHandler
-	public void onServerPlayerJoin(ServerPlayerLeaveEvent event) {
-		updateHologram(event.getServerType());
-	}
+    @EventHandler
+    public void onServerPlayerJoin(ServerPlayerJoinEvent event) {
+        updateHologram(event.getServerType());
+    }
 
-	public void createCharacter(String displayName, String skinName, String configName, Interact interact,
-			ServerType... serverType) {
-		new Character(displayName, skinName, BukkitMain.getInstance().getLocationFromConfig(configName), interact);
+    @EventHandler
+    public void onServerPlayerJoin(ServerPlayerLeaveEvent event) {
+        updateHologram(event.getServerType());
+    }
 
-		Hologram hologram = new SimpleHologram(displayName,
-				BukkitMain.getInstance().getLocationFromConfig(configName).add(0, 0.25, 0));
+    public Hologram createCharacter(String displayName, String skinName, String configName, Interact interact, ServerType... serverType) {
+        new Character(skinName, BukkitMain.getInstance().getLocationFromConfig(configName), interact);
 
-		int playerCount = 0;
+        Hologram hologram = new CraftHologram(displayName, BukkitMain.getInstance().getLocationFromConfig(configName)
+                                                                     .add(0, 0.25, 0));
 
-		for (int integer : Arrays.asList(serverType).stream()
-				.map(sT -> BukkitMain.getInstance().getServerManager().getBalancer(sT).getTotalNumber())
-				.collect(Collectors.toList())) {
-			playerCount += integer;
-		}
+        int playerCount = 0;
 
-		Hologram hologramLine = hologram.addLine(Arrays.asList(serverType).stream()
-				.map(sT -> BukkitMain.getInstance().getServerManager().getBalancer(sT).getTotalNumber())
-				.collect(Collectors.toList()).isEmpty() ? "§cNenhum servidor disponível!"
-						: "§e" + playerCount + " jogadores!");
+        for (int integer : Arrays.stream(serverType)
+                                 .map(sT -> BukkitMain.getInstance().getServerManager().getBalancer(sT)
+                                                      .getTotalNumber()).collect(Collectors.toList())) {
+            playerCount += integer;
+        }
 
-		hologramList.add(new HologramInfo(Arrays.asList(serverType), hologramLine));
-		hologram.spawn();
-		BukkitMain.getInstance().getHologramController().registerHologram(hologram);
-	}
+        Hologram hologramLine = hologram.addLineBelow(!Arrays.stream(serverType)
+                                                             .map(sT -> BukkitMain.getInstance().getServerManager()
+                                                                                  .getBalancer(sT).getTotalNumber())
+                                                             .findAny().isPresent() ? "§cNenhum servidor disponível!" :
+                                                      "§e" + playerCount + " jogadores!");
 
-	public void updateHologram(ServerType type) {
-		HologramInfo entry = hologramList.stream().filter(info -> info.typeList.contains(type)).findFirst()
-				.orElse(null);
+        hologramList.add(new HologramInfo(Arrays.asList(serverType), hologramLine));
+        BukkitMain.getInstance().getHologramController().loadHologram(hologram);
+        return hologram;
+    }
 
-		if (entry != null) {
-			if (BukkitMain.getInstance().getServerManager().getBalancer(type).getList().isEmpty())
-				entry.hologram.setDisplayName("§cNenhum servidor disponível!");
-			else {
-				int playerCount = 0;
+    public void updateHologram(ServerType type) {
+        HologramInfo entry = hologramList.stream().filter(info -> info.typeList.contains(type)).findFirst()
+                                         .orElse(null);
 
-				for (int integer : entry.typeList.stream().map(serverType -> BukkitMain.getInstance().getServerManager()
-						.getBalancer(serverType).getTotalNumber()).collect(Collectors.toList()))
-					playerCount += integer;
+        if (entry != null) {
+            if (BukkitMain.getInstance().getServerManager().getBalancer(type).getList().isEmpty()) {
+                entry.hologram.setDisplayName("§cNenhum servidor disponível!");
+            } else {
+                int playerCount = 0;
 
-				entry.hologram.setDisplayName("§e" + playerCount + " jogadores!");
-			}
-		}
-	}
+                for (int integer : entry.typeList.stream().map(serverType -> BukkitMain.getInstance().getServerManager()
+                                                                                       .getBalancer(serverType)
+                                                                                       .getTotalNumber())
+                                                 .collect(Collectors.toList()))
+                    playerCount += integer;
 
-	private void sendPlayer(Player player, String string) {
-		ByteArrayDataOutput out = ByteStreams.newDataOutput();
-		out.writeUTF(string);
-		player.sendPluginMessage(LobbyMain.getInstance(), "BungeeCord", out.toByteArray());
-		player.closeInventory();
-	}
+                entry.hologram.setDisplayName("§e" + playerCount + " jogadores!");
+            }
+        }
+    }
 
-	@AllArgsConstructor
-	public class HologramInfo {
+    private void sendPlayer(Player player, String string) {
+        ByteArrayDataOutput out = ByteStreams.newDataOutput();
+        out.writeUTF(string);
+        player.sendPluginMessage(LobbyMain.getInstance(), "BungeeCord", out.toByteArray());
+        player.closeInventory();
+    }
 
-		private List<ServerType> typeList;
-		private Hologram hologram;
+    @AllArgsConstructor
+    public class HologramInfo {
 
-	}
+        private List<ServerType> typeList;
+        private Hologram hologram;
+    }
 }

@@ -32,6 +32,7 @@ public class PreferencesInventory {
 						} catch (Exception ex) {
 							ex.printStackTrace();
 						}
+						return false;
 					});
 
 		menuInventory.open(player);
@@ -78,15 +79,17 @@ public class PreferencesInventory {
 		MenuClickHandler menuClickHandler = new MenuClickHandler() {
 
 			@Override
-			public void onClick(Player p, Inventory inv, ClickType type, ItemStack stack, int s) {
+			public boolean onClick(Player p, Inventory inv, ClickType type, ItemStack stack, int s) {
 				if (System.currentTimeMillis() > lastChange + 500) {
 					config.changeState(member, !state);
 					addItem(menuInventory, member, config, slot, preferenceName, lore);
-					menuInventory.updateSlot(p, slot);
-					menuInventory.updateSlot(p, slot + 9);
+//					menuInventory.updateSlot(p, slot);
+//					menuInventory.updateSlot(p, slot + 9);
 					lastChange = System.currentTimeMillis();
 				} else
 					p.sendMessage("§cVocê precisa esperar para executar essa ação novamente!");
+
+				return false;
 			}
 		};
 

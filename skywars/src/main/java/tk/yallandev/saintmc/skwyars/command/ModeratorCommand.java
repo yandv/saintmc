@@ -31,7 +31,7 @@ import tk.yallandev.saintmc.skwyars.game.chest.ChestType;
 
 public class ModeratorCommand implements CommandClass {
 
-	@Command(name = "setspawn", aliases = { "setlocation" }, groupToUse = Group.BUILDER)
+	@Command(name = "setspawn", aliases = { "setlocation" }, groupToUse = Group.MODPLUS)
 	public void setspawnCommand(CommandArgs cmdArgs) {
 		if (!cmdArgs.isPlayer())
 			return;

@@ -5,10 +5,12 @@ import java.util.UUID;
 import lombok.Getter;
 import lombok.Setter;
 import tk.yallandev.saintmc.CommonGeneral;
+import tk.yallandev.saintmc.common.ban.Category;
 
 @Getter
 public class Ban {
 
+	private Category category;
 	private UUID uniqueId;
 	private String playerName;
 	
@@ -28,7 +30,8 @@ public class Ban {
 	private UUID unbannedByUuid;
 	private UnbanReason unbanReason;
 
-	public Ban(UUID uniqueId, String playerName, String bannedBy, UUID bannedByUuid, String reason, long banExpire) {
+	public Ban(Category category, UUID uniqueId, String playerName, String bannedBy, UUID bannedByUuid, String reason, long banExpire) {
+		this.category = category;
 		this.uniqueId = uniqueId;
 		this.playerName = playerName;
 		this.bannedBy = bannedBy;

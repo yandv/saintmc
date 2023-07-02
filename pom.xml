@@ -21,7 +21,8 @@
 		<module>lobby-general</module>
 		<module>lobby-normal</module>
 		<module>lobby-hg</module>
-	</modules>
+        <module>shadow-1v1</module>
+    </modules>
 
 	<build>
 		<sourceDirectory>src</sourceDirectory>

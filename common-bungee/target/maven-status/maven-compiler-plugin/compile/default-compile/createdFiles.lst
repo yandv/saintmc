@@ -22,7 +22,6 @@ tk\yallandev\saintmc\bungee\command\register\ClanCommand.class
 tk\yallandev\saintmc\bungee\command\register\GroupCommand$1.class
 tk\yallandev\saintmc\bungee\command\register\ReportCommand.class
 tk\yallandev\saintmc\bungee\bungee\BotMember.class
-tk\yallandev\saintmc\bungee\listener\ScreenshareListener.class
 tk\yallandev\saintmc\bungee\networking\redis\BungeePubSubHandler$9.class
 tk\yallandev\saintmc\bungee\bungee\BungeeMember.class
 tk\yallandev\saintmc\bungee\command\register\StaffCommand.class

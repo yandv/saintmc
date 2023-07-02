@@ -82,7 +82,7 @@ public class WaitingListener implements Listener {
 			return;
 		}
 
-		if (!member.hasGroupPermission(Group.AJUDANTE))
+		if (!member.hasGroupPermission(Group.TRIAL))
 			if (GameGeneral.getInstance().getGamerController().count(g -> g.isPlaying()) >= GameMain.getInstance()
 					.getMaxPlayers())
 				event.disallow(PlayerLoginEvent.Result.KICK_OTHER, "§cO jogo está cheio!");
@@ -96,7 +96,7 @@ public class WaitingListener implements Listener {
 		Team team = GameGeneral.getInstance().getTeamController().findTeam(gamer);
 
 		if (team == null) {
-			if (Member.hasGroupPermission(event.getPlayer().getUniqueId(), Group.AJUDANTE)) {
+			if (Member.hasGroupPermission(event.getPlayer().getUniqueId(), Group.TRIAL)) {
 				player.sendMessage("§cVocê não tem time!");
 			} else
 				player.kickPlayer("§cO jogo está cheio!");

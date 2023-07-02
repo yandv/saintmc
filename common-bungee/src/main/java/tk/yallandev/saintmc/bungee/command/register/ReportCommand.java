@@ -154,7 +154,7 @@ public class ReportCommand implements CommandClass {
 					new ComponentBuilder("§aClique para se teletransportar!").create()));
 
 			CommonGeneral.getInstance().getMemberManager().getMembers().stream()
-					.filter(member -> member.hasGroupPermission(Group.AJUDANTE)
+					.filter(member -> member.hasGroupPermission(Group.TRIAL)
 							&& member.getAccountConfiguration().isReportEnabled())
 					.forEach(member -> {
 						member.sendMessage("§c§lREPORT");

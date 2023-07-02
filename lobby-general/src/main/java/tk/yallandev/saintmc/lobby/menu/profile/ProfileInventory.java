@@ -23,52 +23,54 @@ import tk.yallandev.saintmc.common.tag.Tag;
 
 public class ProfileInventory {
 
-	private static final DateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+    private static final DateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 
-	public ProfileInventory(Player player) {
-		Member member = CommonGeneral.getInstance().getMemberManager().getMember(player.getUniqueId());
+    public ProfileInventory(Player player) {
+        Member member = CommonGeneral.getInstance().getMemberManager().getMember(player.getUniqueId());
 
-		MenuInventory inv = new MenuInventory("§7§nMeu perfil", 5);
+        MenuInventory inv = new MenuInventory("§7§nMeu perfil", 5);
 
-		inv.setItem(13,
-				new ItemBuilder().type(Material.SKULL_ITEM).durability(3).skin(player.getName())
-						.name(member.getGroup() == Group.MEMBRO ? "§7" + player.getName()
-								: Tag.getByName(member.getGroup().toString()).getPrefix() + " " + player.getName())
-						.lore("", "§7Primeiro login: §f" + DATE_FORMAT.format(new Date(member.getFirstLogin())),
-								"§7Ultimo login: §f" + DATE_FORMAT.format(new Date(member.getFirstLogin())))
-						.build());
+        inv.setItem(13, new ItemBuilder().type(Material.SKULL_ITEM).durability(3).skin(player.getName())
+                                         .name(member.getGroup() == Group.MEMBRO ? "§7" + player.getName() :
+                                               Tag.getByName(member.getGroup().toString()).getPrefix() + " " +
+                                               player.getName()).lore("", "§7Primeiro login: §f" + DATE_FORMAT.format(
+                        new Date(member.getFirstLogin())), "§7Ultimo login: §f" +
+                                                           DATE_FORMAT.format(new Date(member.getFirstLogin())))
+                                         .build());
 
-		inv.setItem(29, new ItemBuilder().type(Material.PAPER).name("§aVer estatísticas")
-				.lore("\n§7Veja suas estatísticas de todos os minigames do servidor\n§aClique para visualizar").build(),
-				new MenuClickHandler() {
+        inv.setItem(29, new ItemBuilder().type(Material.PAPER).name("§aVer estatísticas")
+                                         .lore("\n§7Veja suas estatísticas de todos os minigames do servidor\n§aClique para visualizar")
+                                         .build(), new MenuClickHandler() {
 
-					@Override
-					public void onClick(Player player, Inventory inv, ClickType type, ItemStack stack, int slot) {
-						new StatusInventory(player);
-					}
-				});
+            @Override
+            public boolean onClick(Player player, Inventory inv, ClickType type, ItemStack stack, int slot) {
+                new StatusInventory(player);
+                return false;
+            }
+        });
 
-		inv.setItem(30, new ItemBuilder().type(Material.ITEM_FRAME).name("§aSua skin")
-				.lore("\n§7Altere sua skin atual\n§aClique para visualizar").build(), new MenuClickHandler() {
+        inv.setItem(30, new ItemBuilder().type(Material.ITEM_FRAME).name("§aSua skin")
+                                         .lore("\n§7Altere sua skin atual\n§aClique para visualizar").build(),
+                    new MenuClickHandler() {
 
-					@Override
-					public void onClick(Player player, Inventory inv, ClickType type, ItemStack stack, int slot) {
-						new SkinInventory(player, member, MenuType.GENERAL);
-					}
-				});
+                        @Override
+                        public boolean onClick(Player player, Inventory inv, ClickType type, ItemStack stack, int slot) {
+                            new SkinInventory(player, member, MenuType.GENERAL);
+                            return false;
+                        }
+                    });
 
-		inv.setItem(31,
-				new ItemBuilder().type(Material.REDSTONE_COMPARATOR).name("§aPreferências")
-						.lore("\n§7Altere suas prefêrencias.\n§aClique para visualizar").build(),
-				new MenuClickHandler() {
+        inv.setItem(31, new ItemBuilder().type(Material.REDSTONE_COMPARATOR).name("§aPreferências")
+                                         .lore("\n§7Altere suas prefêrencias.\n§aClique para visualizar").build(),
+                    new MenuClickHandler() {
 
-					@Override
-					public void onClick(Player player, Inventory inv, ClickType type, ItemStack stack, int slot) {
-						new PreferencesInventory(player, ProfileInventory.this.getClass());
-					}
-				});
+                        @Override
+                        public boolean onClick(Player player, Inventory inv, ClickType type, ItemStack stack, int slot) {
+                            new PreferencesInventory(player, ProfileInventory.this.getClass());
+                            return false;
+                        }
+                    });
 
-		inv.open(player);
-	}
-
+        inv.open(player);
+    }
 }

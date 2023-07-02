@@ -8,38 +8,52 @@ import tk.yallandev.saintmc.CommonConst;
 @AllArgsConstructor
 public enum ServerType {
 
-	LOGIN, LOBBY, LOBBY_HG, LOBBY_SKYWARS, LOBBY_BEDWARS,
+    LOGIN,
+    LOBBY,
+    LOBBY_HG,
+    LOBBY_SKYWARS,
+    LOBBY_BEDWARS,
 
-	FULLIRON, SIMULATOR, GLADIATOR,
+    FULLIRON,
+    SIMULATOR,
+    GLADIATOR,
+    ONEXONE,
 
-	EVENTO, HUNGERGAMES,
+    EVENTO,
+    HUNGERGAMES,
 
-	SW_SOLO, SW_TEAM, SW_SQUAD,
-	
-	SK_SOLO, SK_TEAM, SK_SQUAD,
+    SW_SOLO,
+    SW_TEAM,
+    SW_SQUAD,
 
-	BW_SOLO, BW_TEAM, BW_SQUAD,
+    SK_SOLO,
+    SK_TEAM,
+    SK_SQUAD,
 
-	CLANXCLAN, SCREENSHARE,
+    BW_SOLO,
+    BW_TEAM,
+    BW_SQUAD,
 
-	NETWORK, NONE;
+    CLANXCLAN,
 
-	public boolean isLobby() {
-		return this.name().contains("LOBBY");
-	}
+    NETWORK,
+    NONE;
 
-	public ServerType getServerLobby() {
-		switch (this) {
-		case HUNGERGAMES:
-		case EVENTO:
-			return CommonConst.LOBBY_HG ? LOBBY_HG : LOBBY;
-		default:
-			return LOBBY;
-		}
-	}
+    public boolean isLobby() {
+        return this.name().contains("LOBBY");
+    }
 
-	public boolean canSendData() {
-		return true;
-	}
+    public ServerType getServerLobby() {
+        switch (this) {
+        case HUNGERGAMES:
+        case EVENTO:
+            return CommonConst.LOBBY_HG ? LOBBY_HG : LOBBY;
+        default:
+            return LOBBY;
+        }
+    }
 
+    public boolean canSendData() {
+        return true;
+    }
 }

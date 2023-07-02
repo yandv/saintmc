@@ -50,6 +50,7 @@ public class BanListInventory extends ListInventory<Ban> {
 			getMenu().setItem(45, new ItemBuilder().name("§aVoltar!").type(Material.ARROW).build(),
 					(p, inv, type, stack, slot) -> {
 						new PunishmentInventory(player, member);
+						return false;
 					});
 
 		openInventory(player);

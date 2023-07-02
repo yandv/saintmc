@@ -13,11 +13,11 @@ import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 
 import lombok.AllArgsConstructor;
-import tk.yallandev.hologramapi.hologram.Hologram;
-import tk.yallandev.hologramapi.hologram.impl.SimpleHologram;
 import tk.yallandev.saintmc.bukkit.BukkitMain;
 import tk.yallandev.saintmc.bukkit.api.character.Character;
 import tk.yallandev.saintmc.bukkit.api.character.Character.Interact;
+import tk.yallandev.saintmc.bukkit.api.hologram.Hologram;
+import tk.yallandev.saintmc.bukkit.api.hologram.impl.CraftHologram;
 import tk.yallandev.saintmc.bukkit.event.server.ServerPlayerJoinEvent;
 import tk.yallandev.saintmc.bukkit.event.server.ServerPlayerLeaveEvent;
 import tk.yallandev.saintmc.common.server.ServerType;
@@ -30,144 +30,115 @@ import tk.yallandev.saintmc.lobby.menu.server.skywars.SkywarsInventory;
 
 public class CharacterListener implements Listener {
 
-	private List<HologramInfo> hologramList;
+    private List<HologramInfo> hologramList;
 
-	public CharacterListener() {
-		hologramList = new ArrayList<>();
+    public CharacterListener() {
+        hologramList = new ArrayList<>();
 
-		createCharacter("§bHungerGames", "JacksterPvP", "npc-hg", new Interact() {
+        createCharacter("§bCompetitivo", "JacksterPvP", "npc-hg", new Interact() {
 
-			@Override
-			public boolean onInteract(Player player, boolean right) {
+            @Override
+            public boolean onInteract(Player player, boolean right) {
 
-				if (ServerInventory.LOBBY_HG)
-					sendPlayer(player, "LobbyHG");
-				else {
-					if (right)
-						sendPlayer(player, "Hungergames");
-					else
-						new HungergamesInventory(player);
-				}
+                if (ServerInventory.LOBBY_HG) {
+                    sendPlayer(player, "LobbyHG");
+                } else {
+                    if (right) {
+                        sendPlayer(player, "Hungergames");
+                    } else {
+                        new HungergamesInventory(player);
+                    }
+                }
 
-				return false;
-			}
-		}, ServerType.HUNGERGAMES, ServerType.LOBBY_HG);
+                return false;
+            }
+        }, ServerType.HUNGERGAMES, ServerType.LOBBY_HG);
 
-		createCharacter("§bSkywars", "SpectroPlayer", "npc-skywars", new Interact() {
+        createCharacter("§bGladiator", "Blaaackoutz", "npc-gladiator", new Interact() {
 
-			@Override
-			public boolean onInteract(Player player, boolean right) {
-				new SkywarsInventory(player);
-				return false;
-			}
-		}, ServerType.LOBBY_SKYWARS, ServerType.SW_SOLO, ServerType.SW_SQUAD, ServerType.SW_TEAM);
+            @Override
+            public boolean onInteract(Player player, boolean right) {
+                sendPlayer(player, "Gladiator");
+                return false;
+            }
+        }, ServerType.GLADIATOR);
 
-		createCharacter("§bBedwars", "DoutorBiscoito", "npc-bedwars", new Interact() {
+        createCharacter("§b1v1", "Blaaackoutz", "npc-1v1", new Interact() {
 
-			@Override
-			public boolean onInteract(Player player, boolean right) {
-				sendPlayer(player, "LobbyBW");
-				return false;
-			}
-		}, ServerType.LOBBY_BEDWARS, ServerType.BW_SOLO, ServerType.BW_SQUAD, ServerType.BW_TEAM);
+            @Override
+            public boolean onInteract(Player player, boolean right) {
+                sendPlayer(player, "1v1");
+                return false;
+            }
+        }, ServerType.ONEXONE);
+    }
 
-		createCharacter("§bKitPvP", "cheatey", "npc-pvp", new Interact() {
+    @EventHandler
+    public void onServerPlayerJoin(ServerPlayerJoinEvent event) {
+        updateHologram(event.getServerType());
+    }
 
-			@Override
-			public boolean onInteract(Player player, boolean right) {
+    @EventHandler
+    public void onServerPlayerJoin(ServerPlayerLeaveEvent event) {
+        updateHologram(event.getServerType());
+    }
 
-				if (right) {
-					new KitpvpInventory(player);
-				} else {
-					sendPlayer(player, "PVP");
-				}
+    public void createCharacter(String displayName, String skinName, String configName, Interact interact, ServerType... serverType) {
+        new Character(skinName, BukkitMain.getInstance().getLocationFromConfig(configName), interact);
 
-				return false;
-			}
-		}, ServerType.FULLIRON, ServerType.SIMULATOR);
+        Hologram hologram = new CraftHologram(displayName, BukkitMain.getInstance().getLocationFromConfig(configName)
+                                                                     .add(0, 0.25, 0));
 
-		createCharacter("§bGladiator", "Blaaackoutz", "npc-gladiator", new Interact() {
+        int playerCount = 0;
 
-			@Override
-			public boolean onInteract(Player player, boolean right) {
-				if (right) {
-					new GladiatorInventory(player);
-				} else {
-					sendPlayer(player, "Gladiator");
-				}
-				return false;
-			}
+        for (int integer : Arrays.stream(serverType)
+                                 .map(sT -> BukkitMain.getInstance().getServerManager().getBalancer(sT)
+                                                      .getTotalNumber()).collect(Collectors.toList())) {
+            playerCount += integer;
+        }
 
-		}, ServerType.GLADIATOR);
+        Hologram hologramLine = hologram.addLineBelow(!Arrays.stream(serverType)
+                                                             .map(sT -> BukkitMain.getInstance().getServerManager()
+                                                                                  .getBalancer(sT).getTotalNumber())
+                                                             .findAny().isPresent() ? "§cNenhum servidor disponível!" :
+                                                      "§e" + playerCount + " jogadores!");
 
-	}
+        hologramList.add(new HologramInfo(Arrays.asList(serverType), hologramLine));
+        BukkitMain.getInstance().getHologramController().loadHologram(hologram);
+    }
 
-	@EventHandler
-	public void onServerPlayerJoin(ServerPlayerJoinEvent event) {
-		updateHologram(event.getServerType());
-	}
+    public void updateHologram(ServerType type) {
+        HologramInfo entry = hologramList.stream().filter(info -> info.typeList.contains(type)).findFirst()
+                                         .orElse(null);
 
-	@EventHandler
-	public void onServerPlayerJoin(ServerPlayerLeaveEvent event) {
-		updateHologram(event.getServerType());
-	}
+        if (entry != null) {
+            if (BukkitMain.getInstance().getServerManager().getBalancer(type).getList().isEmpty()) {
+                entry.hologram.setDisplayName("§cNenhum servidor disponível!");
+            } else {
+                int playerCount = 0;
 
-	public void createCharacter(String displayName, String skinName, String configName, Interact interact,
-			ServerType... serverType) {
-		new Character(displayName, skinName, BukkitMain.getInstance().getLocationFromConfig(configName), interact);
+                for (int integer : entry.typeList.stream().map(serverType -> BukkitMain.getInstance().getServerManager()
+                                                                                       .getBalancer(serverType)
+                                                                                       .getTotalNumber())
+                                                 .collect(Collectors.toList()))
+                    playerCount += integer;
 
-		Hologram hologram = new SimpleHologram(displayName,
-				BukkitMain.getInstance().getLocationFromConfig(configName).add(0, 0.25, 0));
+                entry.hologram.setDisplayName("§e" + playerCount + " jogadores!");
+            }
+        }
+    }
 
-		int playerCount = 0;
+    private void sendPlayer(Player player, String string) {
+        ByteArrayDataOutput out = ByteStreams.newDataOutput();
+        out.writeUTF(string);
+        player.sendPluginMessage(LobbyMain.getInstance(), "BungeeCord", out.toByteArray());
+        player.closeInventory();
+    }
 
-		for (int integer : Arrays.asList(serverType).stream()
-				.map(sT -> BukkitMain.getInstance().getServerManager().getBalancer(sT).getTotalNumber())
-				.collect(Collectors.toList())) {
-			playerCount += integer;
-		}
+    @AllArgsConstructor
+    public class HologramInfo {
 
-		Hologram hologramLine = hologram.addLine(Arrays.asList(serverType).stream()
-				.map(sT -> BukkitMain.getInstance().getServerManager().getBalancer(sT).getTotalNumber())
-				.collect(Collectors.toList()).isEmpty() ? "§cNenhum servidor disponível!"
-						: "§e" + playerCount + " jogadores!");
-
-		hologramList.add(new HologramInfo(Arrays.asList(serverType), hologramLine));
-		hologram.spawn();
-		BukkitMain.getInstance().getHologramController().registerHologram(hologram);
-	}
-
-	public void updateHologram(ServerType type) {
-		HologramInfo entry = hologramList.stream().filter(info -> info.typeList.contains(type)).findFirst()
-				.orElse(null);
-
-		if (entry != null) {
-			if (BukkitMain.getInstance().getServerManager().getBalancer(type).getList().isEmpty())
-				entry.hologram.setDisplayName("§cNenhum servidor disponível!");
-			else {
-				int playerCount = 0;
-
-				for (int integer : entry.typeList.stream().map(serverType -> BukkitMain.getInstance().getServerManager()
-						.getBalancer(serverType).getTotalNumber()).collect(Collectors.toList()))
-					playerCount += integer;
-
-				entry.hologram.setDisplayName("§e" + playerCount + " jogadores!");
-			}
-		}
-	}
-
-	private void sendPlayer(Player player, String string) {
-		ByteArrayDataOutput out = ByteStreams.newDataOutput();
-		out.writeUTF(string);
-		player.sendPluginMessage(LobbyMain.getInstance(), "BungeeCord", out.toByteArray());
-		player.closeInventory();
-	}
-
-	@AllArgsConstructor
-	public class HologramInfo {
-
-		private List<ServerType> typeList;
-		private Hologram hologram;
-
-	}
+        private List<ServerType> typeList;
+        private Hologram hologram;
+    }
 }

@@ -12,7 +12,7 @@ import tk.yallandev.saintmc.gladiator.challenge.Challenge;
 
 public class SpectatorCommand implements CommandClass {
 
-	@Command(name = "spectator", aliases = { "espectar", "spec" }, groupToUse = Group.PRO)
+	@Command(name = "spectator", aliases = { "espectar", "spec" }, groupToUse = Group.VIP)
 	public void spectatorCommand(BukkitCommandArgs cmdArgs) {
 		if (!cmdArgs.isPlayer())
 			return;

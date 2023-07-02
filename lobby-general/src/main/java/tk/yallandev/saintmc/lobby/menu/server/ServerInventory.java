@@ -1,11 +1,5 @@
 package tk.yallandev.saintmc.lobby.menu.server;
 
-import static tk.yallandev.saintmc.common.server.ServerType.EVENTO;
-import static tk.yallandev.saintmc.common.server.ServerType.FULLIRON;
-import static tk.yallandev.saintmc.common.server.ServerType.GLADIATOR;
-import static tk.yallandev.saintmc.common.server.ServerType.HUNGERGAMES;
-import static tk.yallandev.saintmc.common.server.ServerType.SIMULATOR;
-
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -21,154 +15,83 @@ import tk.yallandev.saintmc.bukkit.api.menu.click.MenuClickHandler;
 import tk.yallandev.saintmc.common.server.ServerType;
 import tk.yallandev.saintmc.lobby.menu.server.skywars.SkywarsInventory;
 
+import static tk.yallandev.saintmc.common.server.ServerType.*;
+
 public class ServerInventory {
 
-	public static boolean LOBBY_HG = true;
+    public static boolean LOBBY_HG = true;
 
-	public ServerInventory(Player player) {
-		MenuInventory menuInventory = new MenuInventory("§7§nSelecionar modo", 3);
+    public ServerInventory(Player player) {
+        MenuInventory menuInventory = new MenuInventory("§7§nSelecionar modo", 3);
 
-		createItens(player, menuInventory);
+        createItens(player, menuInventory);
 
-		menuInventory.setUpdateHandler(new MenuUpdateHandler() {
+        menuInventory.setUpdateHandler(new MenuUpdateHandler() {
 
-			@Override
-			public void onUpdate(Player player, MenuInventory menu) {
-				createItens(player, menuInventory);
-			}
-		});
+            @Override
+            public void onUpdate(Player player, MenuInventory menu) {
+                createItens(player, menuInventory);
+            }
+        });
 
-		menuInventory.open(player);
-	}
+        menuInventory.open(player);
+    }
 
-	public void createItens(Player player, MenuInventory menuInventory) {
-		menuInventory.setItem(10,
-				new ItemBuilder().name("§aKitPvP").type(Material.DIAMOND_SWORD)
-						.lore("", " §7Um servidor focado em treino de pvp", " §7com sopa, warps customizadas para",
-								" §7treinamento personalizado e kits do nosso HG!", "",
-								"§8" + getTotalNumber(FULLIRON, SIMULATOR, ServerType.LOBBY_HG)
-										+ " jogadores conectados",
-								"§aClique para conectar.")
-						.build(),
-				new MenuClickHandler() {
+    public void createItens(Player player, MenuInventory menuInventory) {
+        menuInventory.setItem(10, new ItemBuilder().name("§aCompetitivo").type(Material.MUSHROOM_SOUP).lore("§7" +
+                                                                                                            getTotalNumber(
+                                                                                                                    ServerType.LOBBY_HG,
+                                                                                                                    EVENTO,
+                                                                                                                    HUNGERGAMES) +
+                                                                                                            " jogando agora.")
+                                                   .build(), (p, inv, type, stack, slot) -> {
+            if (LOBBY_HG || type == ClickType.LEFT) {
+                BukkitMain.getInstance().sendServer(player, ServerType.HUNGERGAMES);
+                return false;
+            }
 
-					@Override
-					public void onClick(Player p, Inventory inv, ClickType type, ItemStack stack, int slot) {
-						if (type == ClickType.LEFT) {
-							new KitpvpInventory(p);
-							return;
-						}
+            new HungergamesInventory(p);
+            return false;
+        });
 
-						BukkitMain.getInstance().sendServer(player, ServerType.SIMULATOR, ServerType.FULLIRON);
-					}
-				});
+        menuInventory.setItem(11, new ItemBuilder().name("§aGladiator").type(Material.IRON_FENCE)
+                                                   .lore("§7" + getTotalNumber(GLADIATOR) + " jogando agora.").build(),
+                              (p, inv, type, stack, slot) -> {
+                                  if (type == ClickType.LEFT) {
+                                      new GladiatorInventory(p);
+                                      return false;
+                                  }
 
-		menuInventory.setItem(11, new ItemBuilder().name("§aHG").type(Material.MUSHROOM_SOUP)
-				.lore("", " §7Um servidor onde há uma batalha brutal", " §7com kits onde apenas um será o campeão", "",
-						"§8" + getTotalNumber(ServerType.LOBBY_HG, EVENTO, HUNGERGAMES) + " jogadores conectados",
-						"§aClique para conectar.")
-				.build(), (p, inv, type, stack, slot) -> {
-					if (LOBBY_HG || type == ClickType.LEFT) {
-						BukkitMain.getInstance().sendServer(player, ServerType.HUNGERGAMES);
-						return;
-					}
+                                  BukkitMain.getInstance().sendServer(player, ServerType.GLADIATOR);
+                                  return false;
+                              });
 
-					new HungergamesInventory(p);
-				});
+        menuInventory.setItem(12, new ItemBuilder().name("§a1v1").type(Material.BLAZE_ROD)
+                                                   .lore("§7" + getTotalNumber(ONEXONE) + " jogando agora.").build(),
+                              (p, inv, type, stack, slot) -> {
+                                  if (type == ClickType.LEFT) {
+                                      new GladiatorInventory(p);
+                                      return false;
+                                  }
 
-		menuInventory.setItem(12, new ItemBuilder().name("§aGladiator").type(Material.IRON_FENCE)
-				.lore("", " §7Um servidor onde há uma duelos individuais", " §7contra outros jogadores para saber quem",
-						" §7é o melhor gladiador", "", "§8" + getTotalNumber(GLADIATOR) + " jogadores conectados",
-						"§aClique para conectar.")
-				.build(), (p, inv, type, stack, slot) -> {
-					if (type == ClickType.LEFT) {
-						new GladiatorInventory(p);
-						return;
-					}
+                                  BukkitMain.getInstance().sendServer(player, ServerType.ONEXONE);
+                                  return false;
+        });
+    }
 
-					BukkitMain.getInstance().sendServer(player, ServerType.GLADIATOR);
-				});
+    public int getTotalNumber(ServerType... serverTypes) {
+        return BukkitMain.getInstance().getServerManager().getTotalNumber(serverTypes);
+    }
 
-		menuInventory.setItem(13,
-				new ItemBuilder().name("§aSkyWars").type(Material.EYE_OF_ENDER)
-						.lore("", " §7Um servidor onde há uma duelos individuais",
-								" §7contra outros jogadores para saber quem", " §7é o melhor gladiador", "",
-								"§8" + getTotalNumber(ServerType.SW_SOLO, ServerType.SW_TEAM, ServerType.SW_SQUAD)
-										+ " jogadores conectados",
-								"§aClique para conectar.")
-						.build(),
-				(p, inv, type, stack, slot) -> {
-					new SkywarsInventory(p);
-				});
+    @RequiredArgsConstructor
+    public static class SendClick implements MenuClickHandler {
 
-//		menuInventory.setItem(12,
-//				new ItemBuilder().name("§3§lGladiator").type(Material.IRON_FENCE).lore(StringLoreUtils.getLore(30,
-//						"\n§7Neste modo de jogo você pode desafiar seus amigos ou inimigos para uma batalha mortal!\n§f\n§a"
-//								+ (BukkitMain.getInstance().getServerManager().getBalancer(ServerType.GLADIATOR)
-//										.getTotalNumber())
-//								+ " jogadores online!"))
-//						.build(),
-//				new MenuClickHandler() {
-//
-//					@Override
-//					public void onClick(Player p, Inventory inv, ClickType type, ItemStack stack, int slot) {
-//						if (type == ClickType.LEFT) {
-//							new GladiatorInventory(p);
-//							return;
-//						}
-//
-//						sendServer(player, "Gladiator");
-//					}
-//				});
+        private final String serverId;
 
-//		if (Member.hasGroupPermission(player.getUniqueId(), Group.TRIAL) || BukkitMain.getInstance().getServerManager()
-//				.getBalancer(ServerType.EVENTO).getList().stream().filter(server -> server.isJoinEnabled()).count() > 0)
-//			menuInventory.setItem(13,
-//					new ItemBuilder().name("§3§lEvento").glow().type(Material.EMERALD).lore(StringLoreUtils.getLore(30,
-//							"\n§7Salas destinadas a eventos!\n§f\n§a" + (BukkitMain.getInstance().getServerManager()
-//									.getBalancer(ServerType.EVENTO).getTotalNumber()) + " jogadores online!"))
-//							.build(),
-//					new MenuClickHandler() {
-//
-//						@Override
-//						public void onClick(Player p, Inventory inv, ClickType type, ItemStack stack, int slot) {
-//							sendServer(player, "Event");
-//						}
-//					});
-//
-//		menuInventory.setItem(16,
-//				new ItemBuilder().name("§e§lSkyWars").type(Material.GRASS)
-//						.lore(StringLoreUtils.getLore(30, "\n§7Neste modo de jogo você batalhará nos céus!\n\n"
-//								+ "§7Este modo está em fase §1§lBETA§7 e poderá mudar a qualquer momento!\n§f\n§a"
-//								+ (getTotalNumber(SW_SOLO, SW_TEAM, SW_SQUAD)) + " jogadores online!"))
-//						.build(),
-//				new MenuClickHandler() {
-//
-//					@Override
-//					public void onClick(Player p, Inventory inv, ClickType type, ItemStack stack, int slot) {
-//						if (type == ClickType.RIGHT && Member.hasGroupPermission(p.getUniqueId(), Group.TRIAL)) {
-//							new SkywarsInventory(p);
-//							return;
-//						}
-//
-//						sendServer(player, "SWSolo");
-//					}
-//				});
-	}
-
-	public int getTotalNumber(ServerType... serverTypes) {
-		return BukkitMain.getInstance().getServerManager().getTotalNumber(serverTypes);
-	}
-
-	@RequiredArgsConstructor
-	public static class SendClick implements MenuClickHandler {
-
-		private final String serverId;
-
-		@Override
-		public void onClick(Player p, Inventory inv, ClickType type, ItemStack stack, int slot) {
-			BukkitMain.getInstance().sendPlayer(p, serverId);
-		}
-
-	}
+        @Override
+        public boolean onClick(Player p, Inventory inv, ClickType type, ItemStack stack, int slot) {
+            BukkitMain.getInstance().sendPlayer(p, serverId);
+            return false;
+        }
+    }
 }

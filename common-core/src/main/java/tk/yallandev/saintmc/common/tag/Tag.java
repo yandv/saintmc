@@ -13,166 +13,182 @@ import lombok.Getter;
 import net.md_5.bungee.api.ChatColor;
 import tk.yallandev.saintmc.CommonGeneral;
 import tk.yallandev.saintmc.common.permission.Group;
+import tk.yallandev.saintmc.common.utils.string.StringUtils;
 
 /**
- * 
  * Fake Enum class to can add Tags in server
- * 
- * @author yandv
  *
+ * @author yandv
  */
 
 public abstract class Tag {
 
-	public static final Tag DONO = TagWrapper.create("§4§lDONO§4", Group.DONO);
-	public static final Tag DEV = TagWrapper.create("§3§lDEVELOPER§3", Group.DONO);
-	public static final Tag ADMIN = TagWrapper.create("§c§lADMIN§c", Group.ADMIN);
-	public static final Tag MODPLUS = TagWrapper.create("§5§LMOD+§5", Group.MODPLUS);
-	public static final Tag MODGC = TagWrapper.create("§5§LMODGC§5", Group.MODGC);
-	public static final Tag MOD = TagWrapper.create("§5§lMOD§5", Group.MOD);
-	public static final Tag AJUDANTE = TagWrapper.create("§e§lAJUDANTE§e", Group.AJUDANTE);
-	public static final Tag BUILDER = TagWrapper.create("§2§lBUILDER§2", Group.BUILDER, true);
-	public static final Tag YOUTUBERPLUS = TagWrapper.create("§3§lYT+§3", Group.YOUTUBERPLUS, true);
-	public static final Tag YOUTUBER = TagWrapper.create("§b§lYT§b",
-			Arrays.asList(Group.YOUTUBER, Group.YOUTUBERPLUS), true);
-	public static final Tag PARTNER = TagWrapper.create("§b§lPARTNER§b",
-			Arrays.asList(Group.YOUTUBER, Group.YOUTUBERPLUS, Group.PARTNER), true);
-	public static final Tag STREAMER = TagWrapper.create("§3§lSTREAMER§3", Group.STREAMER, true);
-	public static final Tag BETA = TagWrapper.create("§1§lBETA§1", Group.BETA, true);
-	public static final Tag NORD = TagWrapper.create("§6§lNORD§6", Group.NORD);
-	public static final Tag ELITE = TagWrapper.create("§b§lELITE§b", Group.ELITE);
-	public static final Tag PRO = TagWrapper.create("§a§lPRO§a", Group.PRO);
+    public static final Tag ADMIN = TagWrapper.create("§4§lADMIN§4", Group.ADMIN);
 
-	public static final Tag COPA = TagWrapper.create("§e§lCOPA§e", null);
-	public static final Tag WARRIOR = TagWrapper.create("§7§lWARRIOR§7", null);
-	public static final Tag T2021 = TagWrapper.create("§b§l2021§b", null);
-	public static final Tag T2020 = TagWrapper.create("§b§l2020§b", null);
+    public static final Tag MODPLUS = TagWrapper.create("Mod+", "§5§lMOD+§5", Group.MODPLUS);
 
-	public static final Tag MEMBRO = TagWrapper.create("MEMBRO", "§7", Group.MEMBRO);
+    public static final Tag MOD = TagWrapper.create("Mod", "§5§lMOD§5", Group.MOD);
 
-	public int ordinal() {
-		return getId();
-	}
+    public static final Tag TRIAL = TagWrapper.create("Trial", "§5§lTRIAL§5", Group.TRIAL);
 
-	@Getter
-	private boolean custom;
+    public static final Tag YOUTUBERPLUS = TagWrapper.create("Plus", "§3§lPLUS§3", Group.YOUTUBERPLUS, true);
 
-	public abstract String getPrefix();
+    public static final Tag YOUTUBER = TagWrapper.create("§b§lYOUTUBER§b", Group.YOUTUBER, true);
 
-	public abstract List<Group> getGroupToUse();
+    public static final Tag STREAMER = TagWrapper.create("§b§lSTREAMERb", Group.STREAMER, true);
+    public static final Tag PARTNER = TagWrapper.create("§b§lPARTNER§b", Group.PARTNER, true);
 
-	public abstract boolean isExclusive();
+    public static final Tag CHAMPION = TagWrapper.create("§6§lCHAMPION§6", Group.ADMIN, true);
 
-	public abstract String getName();
+    public static final Tag BETA = TagWrapper.create("§1§lBETA§1", Group.BETA, true);
 
-	public abstract int getId();
+    public static final Tag T2023 = TagWrapper.create("2023", "§b§l2023§b", Group.ADMIN, true);
 
-	public abstract boolean isChroma();
+    public static final Tag NATAL = TagWrapper.create("Natal", "§c§lNATAL§c", Group.ADMIN, true);
 
-	public abstract Tag setChroma(boolean chroma);
+    public static final Tag FERIAS = TagWrapper.create("§a§lFERIAS§a", Group.ADMIN, true);
 
-	public abstract Tag clone();
+    public static final Tag PENTA = TagWrapper.create("§d§lPENTA§d", Group.PENTA);
 
-	public Tag setCustom(boolean custom) {
-		this.custom = custom;
-		return this;
-	}
+    public static final Tag VIP = TagWrapper.create("Vip", "§a§lVIP§a", Group.VIP);
 
-	public Group getDefaultGroup() {
-		return getGroupToUse().stream().findFirst().orElse(null);
-	}
+    public static final Tag MEMBRO = TagWrapper.create("Membro", "§7", Group.MEMBRO);
 
-	/*
-	 * Static
-	 */
+    public int ordinal() {
+        return getId();
+    }
 
-	private static final Map<String, Tag> TAG_MAP;
+    @Getter
+    private boolean custom;
 
-	static {
-		Map<String, Tag> map = new LinkedHashMap<>();
+    public String getStrippedTag() {
+        String lastColor = StringUtils.getLastColors(getPrefix());
+        String stripColor = StringUtils.formatString(ChatColor.stripColor(getPrefix()));
 
-		int ordinal = 0;
+        return lastColor + stripColor;
+    }
 
-		for (Field field : Tag.class.getFields()) {
-			if (field.getType() == Tag.class) {
-				try {
-					Tag tag = (Tag) field.get(null);
+    public abstract String getPrefix();
 
-					map.put(field.getName().toLowerCase(), tag);
-					map.put(tag.getName().toLowerCase(), tag);
+    public abstract List<Group> getGroupToUse();
 
-					String prefix = ChatColor.stripColor(tag.getPrefix());
+    public abstract boolean isExclusive();
 
-					if (!map.containsKey(prefix.toLowerCase()))
-						map.put(prefix.toLowerCase(), tag);
+    public abstract String getName();
 
-					if (tag instanceof TagWrapper)
-						((TagWrapper) tag).setId(ordinal);
+    public abstract int getId();
 
-					ordinal++;
-				} catch (IllegalArgumentException | IllegalAccessException e) {
-					e.printStackTrace();
-				}
-			}
-		}
+    public abstract boolean isChroma();
 
-		TAG_MAP = map;
-	}
+    public abstract Tag setChroma(boolean chroma);
 
-	/**
-	 *
-	 * @param name String
-	 * @return Tag
-	 */
-	public static Tag getByName(String name) {
-		Objects.requireNonNull(name, "Parameter 'name' is null.");
-		return TAG_MAP.get(name.toLowerCase());
-	}
+    public abstract Tag clone();
 
-	/**
-	 * 
-	 * Create and add tag to map To get the created tag use getByName method
-	 * 
-	 * @param tag
-	 */
+    public Tag setCustom(boolean custom) {
+        this.custom = custom;
+        return this;
+    }
 
-	public static void registerTag(Tag tag) {
-		if (TAG_MAP.containsKey(tag.getName().toLowerCase()))
-			throw new IllegalStateException("The tag " + tag.getName() + " already exist!");
+    public Group getDefaultGroup() {
+        return getGroupToUse().stream().findFirst().orElse(null);
+    }
 
-		if (TAG_MAP.containsValue(tag))
-			throw new IllegalStateException("The tag " + tag.getName() + " already exist!");
+    /*
+     * Static
+     */
 
-		TAG_MAP.put(tag.getName().toLowerCase(), tag);
-		CommonGeneral.getInstance().debug("The tag " + tag.getName() + " has been registered!");
-	}
+    private static final Map<String, Tag> TAG_MAP;
 
-	public static Collection<Tag> values() {
-		List<Tag> list = new ArrayList<>();
+    static {
+        Map<String, Tag> map = new LinkedHashMap<>();
 
-		for (Tag tag : TAG_MAP.values())
-			if (!list.contains(tag))
-				list.add(tag);
+        int ordinal = 0;
 
-		return list;
-	}
+        for (Field field : Tag.class.getFields()) {
+            if (field.getType() == Tag.class) {
+                try {
+                    Tag tag = (Tag) field.get(null);
 
-	public static Tag valueOf(String name) {
-		return TAG_MAP.containsKey(name.toLowerCase()) ? TAG_MAP.get(name.toLowerCase()) : null;
-	}
+                    map.put(field.getName().toLowerCase(), tag);
+                    map.put(tag.getName().toLowerCase(), tag);
 
-	@Override
-	public boolean equals(Object obj) {
-		if (obj == null)
-			return false;
+                    String prefix = ChatColor.stripColor(tag.getPrefix());
 
-		if (!(obj instanceof Tag))
-			return false;
+                    if (!map.containsKey(prefix.toLowerCase())) {
+                        map.put(prefix.toLowerCase(), tag);
+                    }
 
-		Tag tag = (Tag) obj;
+                    if (tag instanceof TagWrapper) {
+                        ((TagWrapper) tag).setId(ordinal);
+                    }
 
-		return tag.ordinal() == ordinal() && tag.getPrefix().equals(getPrefix())
-				&& tag.getDefaultGroup() == this.getDefaultGroup() && tag.isChroma() == this.isChroma();
-	}
+                    ordinal++;
+                } catch (IllegalArgumentException | IllegalAccessException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        TAG_MAP = map;
+    }
+
+    /**
+     * @param name String
+     * @return Tag
+     */
+    public static Tag getByName(String name) {
+        Objects.requireNonNull(name, "Parameter 'name' is null.");
+        return TAG_MAP.get(name.toLowerCase());
+    }
+
+    /**
+     * Create and add tag to map To get the created tag use getByName method
+     *
+     * @param tag
+     */
+
+    public static void registerTag(Tag tag) {
+        if (TAG_MAP.containsKey(tag.getName().toLowerCase())) {
+            throw new IllegalStateException("The tag " + tag.getName() + " already exist!");
+        }
+
+        if (TAG_MAP.containsValue(tag)) {
+            throw new IllegalStateException("The tag " + tag.getName() + " already exist!");
+        }
+
+        TAG_MAP.put(tag.getName().toLowerCase(), tag);
+        CommonGeneral.getInstance().debug("The tag " + tag.getName() + " has been registered!");
+    }
+
+    public static Collection<Tag> values() {
+        List<Tag> list = new ArrayList<>();
+
+        for (Tag tag : TAG_MAP.values())
+            if (!list.contains(tag)) {
+                list.add(tag);
+            }
+
+        return list;
+    }
+
+    public static Tag valueOf(String name) {
+        return TAG_MAP.containsKey(name.toLowerCase()) ? TAG_MAP.get(name.toLowerCase()) : null;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+
+        if (!(obj instanceof Tag)) {
+            return false;
+        }
+
+        Tag tag = (Tag) obj;
+
+        return tag.ordinal() == ordinal() && tag.getPrefix().equals(getPrefix())
+               && tag.getDefaultGroup() == this.getDefaultGroup() && tag.isChroma() == this.isChroma();
+    }
 
 }

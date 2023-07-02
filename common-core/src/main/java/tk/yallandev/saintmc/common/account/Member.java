@@ -28,736 +28,769 @@ import tk.yallandev.saintmc.common.tag.Tag;
 @Getter
 public abstract class Member implements CommandSender {
 
-	/*
-	 * Player Information
-	 * 
-	 */
+    /*
+     * Player Information
+     *
+     */
 
-	private String playerName;
-	private UUID uniqueId;
+    private String playerName;
+    private UUID uniqueId;
 
-	/*
-	 * Skin Information
-	 * 
-	 */
+    /*
+     * Skin Information
+     *
+     */
 
-	private Profile skinProfile;
+    private Profile skinProfile;
 
-	private String fakeName;
-	private Map<String, Long> cooldown;
+    private String fakeName;
+    private Map<String, Long> cooldown;
 
-	private String lastIpAddress;
+    private String lastIpAddress;
 
-	/*
-	 * Configuration
-	 * 
-	 */
+    /*
+     * Configuration
+     *
+     */
 
-	private AccountConfiguration accountConfiguration;
-	private LoginConfiguration loginConfiguration;
+    private AccountConfiguration accountConfiguration;
+    private LoginConfiguration loginConfiguration;
 
-	/*
-	 * History
-	 * 
-	 */
+    /*
+     * History
+     *
+     */
 
-	private PunishmentHistory punishmentHistory;
+    private PunishmentHistory punishmentHistory;
 
-	/*
-	 * Social Midia
-	 * 
-	 */
+    /*
+     * Social Midia
+     *
+     */
 
-	private long discordId;
-	private String discordName;
-	private DiscordType discordType;
+    private long discordId;
+    private String discordName;
+    private DiscordType discordType;
 
-	private UUID clanUniqueId;
-	private UUID partyId;
+    private UUID clanUniqueId;
+    private UUID partyId;
 
-	/*
-	 * Permission Information
-	 * 
-	 */
+    /*
+     * Permission Information
+     *
+     */
 
-	private Group group;
-	private Map<RankType, Long> ranks;
-	private Map<String, Long> permissions;
+    private Group group;
+    private Map<RankType, Long> ranks;
+    private Map<String, Long> permissions;
 
-	private Tag tag;
-	private boolean chroma;
+    private Tag tag;
+    private boolean chroma;
 
-	private List<Medal> medalList;
-	private Medal medal = Medal.NONE;
+    private List<Medal> medalList;
+    private Medal medal = Medal.NONE;
 
-	/*
-	 * Tournament
-	 * 
-	 */
+    /*
+     * Tournament
+     *
+     */
 
-	private TournamentGroup tournamentGroup;
+    private TournamentGroup tournamentGroup;
 
-	/*
-	 * Status Information
-	 * 
-	 */
+    /*
+     * Status Information
+     *
+     */
 
-	private int money;
-	private int cash;
-	private int xp;
-	private int position = -1;
-	private League league;
+    private int money;
+    private int cash;
+    private int xp;
+    private int position = -1;
+    private League league;
 
-	private int reputation;
+    private int reputation;
 
-	/*
-	 * Player time
-	 * 
-	 */
+    /*
+     * Player time
+     *
+     */
 
-	private long firstLogin;
-	private long lastLogin;
-	private long joinTime;
-	private long onlineTime;
+    private long firstLogin;
+    private long lastLogin;
+    private long joinTime;
+    private long onlineTime;
 
-	/*
-	 * Server Info
-	 * 
-	 */
+    /*
+     * Server Info
+     *
+     */
 
-	private String serverId;
-	private ServerType serverType;
+    private String serverId;
+    private ServerType serverType;
 
-	private String lastServerId;
-	private ServerType lastServerType;
+    private String lastServerId;
+    private ServerType lastServerType;
 
-	private boolean online;
+    private boolean online;
 
-	public Member(MemberModel memberModel) {
-		playerName = memberModel.getPlayerName();
-		uniqueId = memberModel.getUniqueId();
+    private String gladiatorInventory;
 
-		skinProfile = memberModel.getSkinProfile();
+    public Member(MemberModel memberModel) {
+        playerName = memberModel.getPlayerName();
+        uniqueId = memberModel.getUniqueId();
 
-		fakeName = memberModel.getFakeName();
-		cooldown = memberModel.getCooldown();
+        skinProfile = memberModel.getSkinProfile();
 
-		lastIpAddress = memberModel.getLastIpAddress();
+        fakeName = memberModel.getFakeName();
+        cooldown = memberModel.getCooldown();
 
-		accountConfiguration = memberModel.getAccountConfiguration();
-		loginConfiguration = memberModel.getLoginConfiguration();
+        lastIpAddress = memberModel.getLastIpAddress();
 
-		punishmentHistory = memberModel.getPunishmentHistory();
+        accountConfiguration = memberModel.getAccountConfiguration();
+        loginConfiguration = memberModel.getLoginConfiguration();
 
-		discordId = memberModel.getDiscordId();
-		discordName = memberModel.getDiscordName();
-		discordType = memberModel.getDiscordType();
+        punishmentHistory = memberModel.getPunishmentHistory();
 
-		clanUniqueId = memberModel.getClanUniqueId();
+        discordId = memberModel.getDiscordId();
+        discordName = memberModel.getDiscordName();
+        discordType = memberModel.getDiscordType();
 
-		group = memberModel.getGroup();
-		ranks = memberModel.getRanks();
-		permissions = memberModel.getPermissions();
+        clanUniqueId = memberModel.getClanUniqueId();
 
-		tag = memberModel.getTag();
-		chroma = memberModel.isChroma();
+        group = memberModel.getGroup();
+        ranks = memberModel.getRanks();
+        permissions = memberModel.getPermissions();
 
-		medalList = memberModel.getMedalList();
-		medal = memberModel.getMedal();
+        tag = memberModel.getTag();
+        chroma = memberModel.isChroma();
 
-		tournamentGroup = memberModel.getTournamentGroup();
+        medalList = memberModel.getMedalList();
+        medal = memberModel.getMedal();
 
-		money = memberModel.getMoney();
-		cash = memberModel.getCash();
-		xp = memberModel.getXp();
-		position = memberModel.getPosition();
-		league = memberModel.getLeague();
+        tournamentGroup = memberModel.getTournamentGroup();
 
-		reputation = memberModel.getReputation();
+        money = memberModel.getMoney();
+        cash = memberModel.getCash();
+        xp = memberModel.getXp();
+        position = memberModel.getPosition();
+        league = memberModel.getLeague();
 
-		firstLogin = memberModel.getFirstLogin();
-		lastLogin = memberModel.getLastLogin();
-		joinTime = memberModel.getJoinTime();
-		onlineTime = memberModel.getOnlineTime();
+        reputation = memberModel.getReputation();
 
-		serverId = memberModel.getServerId();
-		serverType = memberModel.getServerType();
+        firstLogin = memberModel.getFirstLogin();
+        lastLogin = memberModel.getLastLogin();
+        joinTime = memberModel.getJoinTime();
+        onlineTime = memberModel.getOnlineTime();
 
-		lastServerId = memberModel.getLastServerId();
-		lastServerType = memberModel.getLastServerType();
+        serverId = memberModel.getServerId();
+        serverType = memberModel.getServerType();
 
-		online = memberModel.isOnline();
-	}
+        lastServerId = memberModel.getLastServerId();
+        lastServerType = memberModel.getLastServerType();
 
-	public Member(String playerName, UUID uniqueId, AccountType accountType) {
-		this.playerName = playerName;
-		this.uniqueId = uniqueId;
+        online = memberModel.isOnline();
+        gladiatorInventory = memberModel.getGladiatorInventory();
+    }
 
-		this.skinProfile = new Profile(playerName, uniqueId);
+    public Member(String playerName, UUID uniqueId, AccountType accountType) {
+        this.playerName = playerName;
+        this.uniqueId = uniqueId;
 
-		this.fakeName = "";
-		this.cooldown = new HashMap<>();
+        this.skinProfile = new Profile(playerName, uniqueId);
 
-		this.accountConfiguration = new AccountConfiguration(this);
-		this.loginConfiguration = new LoginConfiguration(this, accountType);
+        this.fakeName = "";
+        this.cooldown = new HashMap<>();
 
-		this.punishmentHistory = new PunishmentHistory();
+        this.accountConfiguration = new AccountConfiguration(this);
+        this.loginConfiguration = new LoginConfiguration(this, accountType);
 
-		this.discordName = "";
-		this.discordId = 0l;
-		this.discordType = DiscordType.DELINKED;
+        this.punishmentHistory = new PunishmentHistory();
 
-		this.group = Group.MEMBRO;
-		this.permissions = new HashMap<>();
-		this.ranks = new HashMap<>();
+        this.discordName = "";
+        this.discordId = 0l;
+        this.discordType = DiscordType.DELINKED;
 
-		this.tag = Tag.MEMBRO;
+        this.group = Group.MEMBRO;
+        this.permissions = new HashMap<>();
+        this.ranks = new HashMap<>();
 
-		this.medalList = new ArrayList<>();
+        this.tag = Tag.MEMBRO;
 
-		this.league = League.values()[0];
-		this.reputation = 5;
+        this.medalList = new ArrayList<>();
 
-		this.firstLogin = System.currentTimeMillis();
-		this.lastLogin = -1l;
-		this.joinTime = System.currentTimeMillis();
-		this.onlineTime = 0l;
+        this.league = League.values()[0];
+        this.reputation = 5;
 
-		this.serverId = "";
-		this.serverType = ServerType.NONE;
+        this.firstLogin = System.currentTimeMillis();
+        this.lastLogin = -1l;
+        this.joinTime = System.currentTimeMillis();
+        this.onlineTime = 0l;
 
-		this.lastServerId = "";
-		this.lastServerType = ServerType.NONE;
-	}
+        this.serverId = "";
+        this.serverType = ServerType.NONE;
 
-	public void setUniqueId(UUID uniqueId) {
-		this.uniqueId = uniqueId;
-		save("uniqueId");
-	}
+        this.lastServerId = "";
+        this.lastServerType = ServerType.NONE;
+    }
 
-	public boolean hasParty() {
-		return this.partyId != null;
-	}
+    public void setGladiatorInventory(String gladiatorInventory) {
+        this.gladiatorInventory = gladiatorInventory;
+        save("gladiatorInventory");
+    }
 
-	public void setClanUniqueId(UUID clanUniqueId) {
-		this.clanUniqueId = clanUniqueId;
-		save("clanUniqueId");
-	}
+    public void setUniqueId(UUID uniqueId) {
+        this.uniqueId = uniqueId;
+        save("uniqueId");
+    }
 
-	public Clan getClan() {
-		if (this.clanUniqueId == null)
-			return null;
+    public boolean hasParty() {
+        return this.partyId != null;
+    }
 
-		return CommonGeneral.getInstance().getClanManager().getClan(clanUniqueId);
-	}
+    public void setClanUniqueId(UUID clanUniqueId) {
+        this.clanUniqueId = clanUniqueId;
+        save("clanUniqueId");
+    }
 
-	public boolean hasClan() {
-		return this.clanUniqueId != null;
-	}
+    public Clan getClan() {
+        if (this.clanUniqueId == null) {
+            return null;
+        }
 
-	public void setMedal(Medal medal) {
-		this.medal = medal;
-		save("medal");
-	}
+        return CommonGeneral.getInstance().getClanManager().getClan(clanUniqueId);
+    }
 
-	public void addMedal(Medal medal) {
-		if (!this.medalList.contains(medal)) {
-			this.medalList.add(medal);
-			save("medalList");
-		}
-	}
+    public boolean hasClan() {
+        return this.clanUniqueId != null;
+    }
 
-	public void removeMedal(Medal medal) {
-		if (this.medalList.contains(medal)) {
-			this.medalList.remove(medal);
-			save("medalList");
-		}
-	}
+    public void setMedal(Medal medal) {
+        this.medal = medal;
+        save("medal");
+    }
 
-	public Medal getMedal() {
-		if (medal == null)
-			return Medal.NONE;
+    public void addMedal(Medal medal) {
+        if (!this.medalList.contains(medal)) {
+            this.medalList.add(medal);
+            save("medalList");
+        }
+    }
 
-		return medal;
-	}
+    public void removeMedal(Medal medal) {
+        if (this.medalList.contains(medal)) {
+            this.medalList.remove(medal);
+            save("medalList");
+        }
+    }
 
-	/*
-	 * Fake
-	 */
+    public Medal getMedal() {
+        if (medal == null) {
+            return Medal.NONE;
+        }
 
-	public void setFakeName(String fakeName) {
-		this.fakeName = fakeName;
-		save("fakeName");
-	}
+        return medal;
+    }
 
-	public boolean isUsingFake() {
-		return fakeName != null && !fakeName.isEmpty() && !fakeName.equals(playerName);
-	}
+    /*
+     * Fake
+     */
 
-	public boolean isOnCooldown(String cooldownKey) {
-		cooldownKey = cooldownKey.toLowerCase();
+    public void setFakeName(String fakeName) {
+        this.fakeName = fakeName;
+        save("fakeName");
+    }
 
-		if (cooldown.containsKey(cooldownKey)) {
-			if (cooldown.get(cooldownKey) > System.currentTimeMillis()) {
-				return true;
-			}
+    public boolean isUsingFake() {
+        return fakeName != null && !fakeName.isEmpty() && !fakeName.equals(playerName);
+    }
 
-			cooldown.remove(cooldownKey);
-			save("cooldown");
-		}
+    public boolean isOnCooldown(String cooldownKey) {
+        cooldownKey = cooldownKey.toLowerCase();
 
-		return false;
-	}
+        if (cooldown.containsKey(cooldownKey)) {
+            if (cooldown.get(cooldownKey) > System.currentTimeMillis()) {
+                return true;
+            }
 
-	public void removeCooldown(String cooldownKey) {
-		cooldown.remove(cooldownKey.toLowerCase());
-	}
+            cooldown.remove(cooldownKey);
+            save("cooldown");
+        }
 
-	public long getCooldown(String cooldownKey) {
-		return cooldown.get(cooldownKey.toLowerCase());
-	}
+        return false;
+    }
 
-	public void setCooldown(String cooldownKey, long cooldownTime) {
-		cooldown.put(cooldownKey.toLowerCase(), cooldownTime);
-		save("cooldown");
-	}
+    public void removeCooldown(String cooldownKey) {
+        cooldown.remove(cooldownKey.toLowerCase());
+    }
 
-	public void setCooldown(String cooldownKey, int cooldownTime) {
-		cooldown.put(cooldownKey.toLowerCase(), System.currentTimeMillis() + (1000 * cooldownTime));
-		save("cooldown");
-	}
+    public long getCooldown(String cooldownKey) {
+        return cooldown.get(cooldownKey.toLowerCase());
+    }
 
-	public void setSkinProfile(Profile skinProfile) {
-		this.skinProfile = skinProfile;
-		save("skinProfile");
-	}
+    public void setCooldown(String cooldownKey, long cooldownTime) {
+        cooldown.put(cooldownKey.toLowerCase(), cooldownTime);
+        save("cooldown");
+    }
 
-	/*
-	 * Social Midia
-	 */
+    public void setCooldown(String cooldownKey, int cooldownTime) {
+        cooldown.put(cooldownKey.toLowerCase(), System.currentTimeMillis() + (1000 * cooldownTime));
+        save("cooldown");
+    }
 
-	public boolean hasDiscord() {
-		return discordId > 0;
-	}
+    public void setSkinProfile(Profile skinProfile) {
+        this.skinProfile = skinProfile;
+        save("skinProfile");
+    }
 
-	public void setDiscordId(Long discordId, String discordName) {
-		this.discordId = discordId;
-		this.discordName = discordName;
-		this.discordType = discordId == 0l ? DiscordType.DELINKED : DiscordType.NORMAL;
-		save("discordId", "discordName", "discordType");
-	}
-
-	public String getDiscordName() {
-		if (this.discordName.isEmpty() || this.discordName == null) {
-			return "Não vinculado";
-		}
-
-		return discordName;
-	}
-
-	public void setDiscordType(DiscordType discordType) {
-		this.discordType = discordType;
-		save("discordType");
-	}
-
-	@Override
-	public String getName() {
-		return this.playerName;
-	}
-
-	/*
-	 * Group
-	 */
-
-	public boolean setTag(Tag tag) {
-		this.tag = tag;
-
-		if (!tag.isCustom())
-			save("tag");
-		return true;
-	}
-
-	public void setChroma(boolean chroma) {
-		this.chroma = chroma;
-		save("chroma");
-	}
-
-	public void setPlayerName(String playerName) {
-		this.playerName = playerName;
-		save("playerName");
-	}
-
-	public boolean isLastServer(ServerType serverType) {
-		return this.serverType == serverType;
-	}
-
-	public Group getServerGroup() {
-		if (group == Group.MEMBRO) {
-			if (!getRanks().isEmpty()) {
-				RankType expire = null;
+    /*
+     * Social Midia
+     */
+
+    public boolean hasDiscord() {
+        return discordId > 0;
+    }
+
+    public void setDiscordId(Long discordId, String discordName) {
+        this.discordId = discordId;
+        this.discordName = discordName;
+        this.discordType = discordId == 0l ? DiscordType.DELINKED : DiscordType.NORMAL;
+        save("discordId", "discordName", "discordType");
+    }
+
+    public String getDiscordName() {
+        if (this.discordName.isEmpty() || this.discordName == null) {
+            return "Não vinculado";
+        }
+
+        return discordName;
+    }
+
+    public void setDiscordType(DiscordType discordType) {
+        this.discordType = discordType;
+        save("discordType");
+    }
+
+    @Override
+    public String getName() {
+        return this.playerName;
+    }
+
+    /*
+     * Group
+     */
+
+    public boolean setTag(Tag tag) {
+        this.tag = tag;
+
+        if (!tag.isCustom()) {
+            save("tag");
+        }
+        return true;
+    }
+
+    public void setChroma(boolean chroma) {
+        this.chroma = chroma;
+        save("chroma");
+    }
+
+    public void setPlayerName(String playerName) {
+        this.playerName = playerName;
+        save("playerName");
+    }
+
+    public boolean isLastServer(ServerType serverType) {
+        return this.serverType == serverType;
+    }
+
+    public Group getServerGroup() {
+        if (group == Group.MEMBRO) {
+            if (!getRanks().isEmpty()) {
+                RankType expire = null;
+
+                for (Entry<RankType, Long> expireRank : getRanks().entrySet()) {
+                    if (expire == null) {
+                        expire = expireRank.getKey();
+                    } else if (expireRank.getKey().ordinal() > expire.ordinal()) {
+                        expire = expireRank.getKey();
+                    }
+                }
+
+                if (expire != null) {
+                    group = Group.valueOf(expire.name());
+                }
+            }
+        }
 
-				for (Entry<RankType, Long> expireRank : getRanks().entrySet()) {
-					if (expire == null) {
-						expire = expireRank.getKey();
-					} else if (expireRank.getKey().ordinal() > expire.ordinal()) {
-						expire = expireRank.getKey();
-					}
-				}
+        return group;
+    }
+
+    public void setGroup(Group group) {
+        this.group = group;
+        save("group");
+        setChroma(false);
+    }
+
+    public boolean hasGroupPermission(Group groupToUse) {
+        if (getServerGroup() == Group.YOUTUBERPLUS) {
+            return Group.TRIAL.ordinal() >= groupToUse.ordinal();
+        }
+
+        return getServerGroup().ordinal() >= groupToUse.ordinal();
+    }
+
+    public boolean hasRank(Group group) {
+        RankType rankType = null;
 
-				if (expire != null)
-					group = Group.valueOf(expire.name());
-			}
-		}
-
-		return group;
-	}
-
-	public void setGroup(Group group) {
-		this.group = group;
-		save("group");
-		setChroma(false);
-	}
-
-	public boolean hasGroupPermission(Group groupToUse) {
-		if (getServerGroup() == Group.YOUTUBERPLUS)
-			return Group.AJUDANTE.ordinal() >= groupToUse.ordinal();
-		else if (getServerGroup() == Group.STREAMER)
-			return Group.MODPLUS.ordinal() >= groupToUse.ordinal();
-		return getServerGroup().ordinal() >= groupToUse.ordinal();
-	}
-
-	public boolean hasRank(Group group) {
-		RankType rankType = null;
-
-		try {
-			rankType = RankType.valueOf(group.name());
-		} catch (Exception ex) {
-			return false;
-		}
-
-		return getRanks().containsKey(rankType);
-	}
-
-	public boolean hasRank(List<Group> groupList) {
-		for (Group group : groupList) {
-			try {
-				if (getRanks().containsKey(RankType.valueOf(group.name())))
-					return true;
-			} catch (Exception ex) {
-			}
-		}
-
-		return false;
-	}
-
-	public boolean hasRank(RankType rankType) {
-		return getRanks().containsKey(rankType);
-	}
-
-	public boolean isGroup(Group groupToUse) {
-		return getServerGroup().ordinal() == groupToUse.ordinal();
-	}
-
-	public boolean hasSkin() {
-		return this.skinProfile != null && (!this.skinProfile.getPlayerName().equals(this.playerName)
-				&& !this.skinProfile.getUniqueId().equals(this.uniqueId));
-	}
-
-	public void saveRanks() {
-		save("ranks");
-	}
-
-	/*
-	 * Status Information
-	 */
-
-	public void setReputation(int reputation) {
-		this.reputation = reputation;
-
-		if (this.reputation < -15)
-			this.reputation = -15;
-
-		if (this.reputation > 30)
-			this.reputation = 30;
-
-		save("reputation");
-	}
-
-	public void setLeague(League league) {
-		this.league = league;
-		save("league");
-	}
-
-	public void setXp(int xp) {
-		this.xp = xp;
-
-		if (this.xp < 0)
-			this.xp = 0;
-
-		save("xp");
-	}
-
-	public int addXp(int xp) {
-		if (xp < 0)
-			xp = 0;
-
-		Clan clan = getClan();
-
-		if (clan != null)
-			clan.addXp(xp);
-
-		setXp(getXp() + xp);
-		return xp;
-	}
-
-	public int removeXp(int xp) {
-		if (xp < 0)
-			xp = 0;
-
-		Clan clan = getClan();
-
-		if (clan != null)
-			clan.removeXp(xp);
-
-		if (getXp() - xp < 0)
-			setXp(0);
-		else
-			setXp(getXp() - xp);
-		return xp;
-	}
-
-	public int addMoney(int money) {
-		if (money < 0)
-			money = 0;
-
-		setMoney(getMoney() + money);
-		return money;
-	}
-
-	public int removeCash(int cash) {
-		if (cash < 0)
-			cash = 0;
-
-		setCash(getCash() - cash);
-		return cash;
-	}
-
-	public int addCash(int cash) {
-		if (cash < 0)
-			cash = 0;
-
-		setCash(getCash() + cash);
-		return cash;
-	}
-
-	public void setCash(int cash) {
-		this.cash = cash;
-		save("cash");
-	}
-
-	public void setPosition(int position) {
-		this.position = position;
-		save("position");
-	}
-
-	public String getRanking() {
-		return this.position < 0 ? ">15000" : "" + position;
-	}
-
-	public int removeMoney(int money) {
-		if (money < 0)
-			money = 0;
-
-		setMoney(getMoney() - money);
-		return money;
-	}
-
-	public void setMoney(int money) {
-		this.money = money;
-
-		if (this.money <= 0)
-			this.money = 0;
-
-		save("money");
-	}
-
-	public boolean hasPermission(String string) {
-		if (permissions.containsKey(string.toLowerCase()))
-			if (permissions.get(string.toLowerCase()) == -1l)
-				return true;
-			else if (permissions.get(string.toLowerCase()) > System.currentTimeMillis())
-				return true;
-			else
-				return false;
-
-		return false;
-	}
-
-	public void addPermission(String string) {
-		if (permissions.containsKey(string.toLowerCase()))
-			return;
-
-		permissions.put(string.toLowerCase(), -1l);
-		save("permissions");
-	}
-
-	public void removePermission(String string) {
-		if (!permissions.containsKey(string.toLowerCase()))
-			return;
-
-		permissions.remove(string.toLowerCase());
-		save("permissions");
-	}
-
-	public void setTournamentGroup(TournamentGroup tournamentGroup) {
-		this.tournamentGroup = tournamentGroup;
-		save("tournamentGroup");
-	}
-
-	/*
-	 * Server Info
-	 */
-
-	public void setServerId(String serverId) {
-		this.lastServerId = this.serverId;
-		this.serverId = serverId;
-		save("serverId", "lastServerId");
-	}
-
-	public void setServerType(ServerType serverType) {
-		this.lastServerType = this.serverType;
-		this.serverType = serverType;
-		save("lastServerType");
-	}
-
-	/*
-	 * Player Info
-	 */
-
-	public void setOnline(boolean online) {
-		this.online = online;
-		save("online");
-	}
-
-	/*
-	 * Player Manager
-	 */
-
-	public long getSessionTime() {
-		if (isOnline())
-			return System.currentTimeMillis() - joinTime;
-		else
-			return 1500l;
-	}
-
-	public long getOnlineTime() {
-		return onlineTime;
-	}
-
-	public void updateTime() {
-		this.joinTime = System.currentTimeMillis();
-		this.lastLogin = System.currentTimeMillis();
-		save("joinTime", "lastLogin");
-	}
-
-	public void setJoinData(String playerName, String hostString) {
-		this.playerName = playerName;
-		this.lastIpAddress = hostString;
-
-		this.accountConfiguration.setPlayer(this);
-		this.loginConfiguration.setPlayer(this);
-		save("playerName", "lastIpAddress", "online");
-	}
-
-	public void connect(String serverId, ServerType type) {
-		checkRanks();
-
-		if (this.serverId != null && !this.serverId.isEmpty())
-			this.lastServerId = this.serverId + "";
-
-		if (this.serverType != null)
-			this.lastServerType = this.serverType;
-
-		this.serverId = serverId;
-		this.serverType = type;
-
-		save("serverId", "serverType", "lastServerId", "lastServerType");
-	}
-
-	public void setLeaveData() {
-		this.online = false;
-		this.onlineTime = onlineTime + (System.currentTimeMillis() - lastLogin);
-
-		save("online", "lastLogin", "onlineTime");
-	}
-
-	public void checkRanks() {
-		if (getRanks() != null && !getRanks().isEmpty()) {
-			Iterator<Entry<RankType, Long>> it = getRanks().entrySet().iterator();
-			boolean save = false;
-
-			while (it.hasNext()) {
-				Entry<RankType, Long> entry = it.next();
-
-				if (System.currentTimeMillis() > entry.getValue()) {
-					it.remove();
-
-					sendMessage("§c§l> §fO seu rank " + Tag.valueOf(entry.getKey().name()).getPrefix() + "§f expirou!");
-					sendMessage("§c§l> §fVocê pode comprar novamente em §b" + CommonConst.STORE + "§f!");
-					save = true;
-				}
-			}
-
-			if (save)
-				saveRanks();
-		}
-	}
-
-	public void save(String... fieldName) {
-		for (String field : fieldName)
-			CommonGeneral.getInstance().getPlayerData().updateMember(this, field);
-	}
-
-	@Override
-	public boolean isPlayer() {
-		return true;
-	}
-
-	public abstract void sendMessage(String message);
-
-	public abstract void sendMessage(BaseComponent message);
-
-	public abstract void sendMessage(BaseComponent[] message);
-
-	public static Member getMember(UUID uniqueId) {
-		return CommonGeneral.getInstance().getMemberManager().getMember(uniqueId);
-	}
-
-	public static boolean hasGroupPermission(UUID uniqueId, Group group) {
-		return CommonGeneral.getInstance().getMemberManager().getMember(uniqueId).hasGroupPermission(group);
-	}
-
-	public static boolean isGroup(UUID uniqueId, Group group) {
-		return CommonGeneral.getInstance().getMemberManager().getMember(uniqueId).isGroup(group);
-	}
-
-	public static boolean isLogged(UUID uniqueId) {
-		return CommonGeneral.getInstance().getMemberManager().getMember(uniqueId).getLoginConfiguration().isLogged();
-	}
-
-	public static Group getGroup(UUID uniqueId) {
-		return CommonGeneral.getInstance().getMemberManager().getMember(uniqueId).getGroup();
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (obj instanceof Member) {
-			Member member = (Member) obj;
-
-			return member.getPlayerName().equals(getPlayerName()) && member.getUniqueId().equals(getUniqueId());
-		}
-
-		return super.equals(obj);
-	}
-
+        try {
+            rankType = RankType.valueOf(group.name());
+        } catch (Exception ex) {
+            return false;
+        }
+
+        return getRanks().containsKey(rankType);
+    }
+
+    public boolean hasRank(List<Group> groupList) {
+        for (Group group : groupList) {
+            try {
+                if (getRanks().containsKey(RankType.valueOf(group.name()))) {
+                    return true;
+                }
+            } catch (Exception ex) {
+            }
+        }
+
+        return false;
+    }
+
+    public boolean hasRank(RankType rankType) {
+        return getRanks().containsKey(rankType);
+    }
+
+    public boolean isGroup(Group groupToUse) {
+        return getServerGroup().ordinal() == groupToUse.ordinal();
+    }
+
+    public boolean hasSkin() {
+        return this.skinProfile != null && (!this.skinProfile.getPlayerName().equals(this.playerName)
+                                            && !this.skinProfile.getUniqueId().equals(this.uniqueId));
+    }
+
+    public void saveRanks() {
+        save("ranks");
+    }
+
+    /*
+     * Status Information
+     */
+
+    public void setReputation(int reputation) {
+        this.reputation = reputation;
+
+        if (this.reputation < -15) {
+            this.reputation = -15;
+        }
+
+        if (this.reputation > 30) {
+            this.reputation = 30;
+        }
+
+        save("reputation");
+    }
+
+    public void setLeague(League league) {
+        this.league = league;
+        save("league");
+    }
+
+    public void setXp(int xp) {
+        this.xp = xp;
+
+        if (this.xp < 0) {
+            this.xp = 0;
+        }
+
+        save("xp");
+    }
+
+    public int addXp(int xp) {
+        if (xp < 0) {
+            xp = 0;
+        }
+
+        Clan clan = getClan();
+
+        if (clan != null) {
+            clan.addXp(xp);
+        }
+
+        setXp(getXp() + xp);
+        return xp;
+    }
+
+    public int removeXp(int xp) {
+        if (xp < 0) {
+            xp = 0;
+        }
+
+        Clan clan = getClan();
+
+        if (clan != null) {
+            clan.removeXp(xp);
+        }
+
+        if (getXp() - xp < 0) {
+            setXp(0);
+        } else {
+            setXp(getXp() - xp);
+        }
+        return xp;
+    }
+
+    public int addMoney(int money) {
+        if (money < 0) {
+            money = 0;
+        }
+
+        setMoney(getMoney() + money);
+        return money;
+    }
+
+    public int removeCash(int cash) {
+        if (cash < 0) {
+            cash = 0;
+        }
+
+        setCash(getCash() - cash);
+        return cash;
+    }
+
+    public int addCash(int cash) {
+        if (cash < 0) {
+            cash = 0;
+        }
+
+        setCash(getCash() + cash);
+        return cash;
+    }
+
+    public void setCash(int cash) {
+        this.cash = cash;
+        save("cash");
+    }
+
+    public void setPosition(int position) {
+        this.position = position;
+        save("position");
+    }
+
+    public String getRanking() {
+        return this.position < 0 ? ">15000" : "" + position;
+    }
+
+    public int removeMoney(int money) {
+        if (money < 0) {
+            money = 0;
+        }
+
+        setMoney(getMoney() - money);
+        return money;
+    }
+
+    public void setMoney(int money) {
+        this.money = money;
+
+        if (this.money <= 0) {
+            this.money = 0;
+        }
+
+        save("money");
+    }
+
+    public boolean hasPermission(String string) {
+        if (permissions.containsKey(string.toLowerCase())) {
+            if (permissions.get(string.toLowerCase()) == -1l) {
+                return true;
+            } else if (permissions.get(string.toLowerCase()) > System.currentTimeMillis()) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+        return false;
+    }
+
+    public void addPermission(String string) {
+        if (permissions.containsKey(string.toLowerCase())) {
+            return;
+        }
+
+        permissions.put(string.toLowerCase(), -1l);
+        save("permissions");
+    }
+
+    public void removePermission(String string) {
+        if (!permissions.containsKey(string.toLowerCase())) {
+            return;
+        }
+
+        permissions.remove(string.toLowerCase());
+        save("permissions");
+    }
+
+    public void setTournamentGroup(TournamentGroup tournamentGroup) {
+        this.tournamentGroup = tournamentGroup;
+        save("tournamentGroup");
+    }
+
+    /*
+     * Server Info
+     */
+
+    public void setServerId(String serverId) {
+        this.lastServerId = this.serverId;
+        this.serverId = serverId;
+        save("serverId", "lastServerId");
+    }
+
+    public void setServerType(ServerType serverType) {
+        this.lastServerType = this.serverType;
+        this.serverType = serverType;
+        save("lastServerType");
+    }
+
+    /*
+     * Player Info
+     */
+
+    public void setOnline(boolean online) {
+        this.online = online;
+        save("online");
+    }
+
+    /*
+     * Player Manager
+     */
+
+    public long getSessionTime() {
+        if (isOnline()) {
+            return System.currentTimeMillis() - joinTime;
+        } else {
+            return 1500l;
+        }
+    }
+
+    public long getOnlineTime() {
+        return onlineTime;
+    }
+
+    public void updateTime() {
+        this.joinTime = System.currentTimeMillis();
+        this.lastLogin = System.currentTimeMillis();
+        save("joinTime", "lastLogin");
+    }
+
+    public void setJoinData(String playerName, String hostString) {
+        this.playerName = playerName;
+        this.lastIpAddress = hostString;
+
+        this.accountConfiguration.setPlayer(this);
+        this.loginConfiguration.setPlayer(this);
+        save("playerName", "lastIpAddress", "online");
+    }
+
+    public void connect(String serverId, ServerType type) {
+        checkRanks();
+
+        if (this.serverId != null && !this.serverId.isEmpty()) {
+            this.lastServerId = this.serverId + "";
+        }
+
+        if (this.serverType != null) {
+            this.lastServerType = this.serverType;
+        }
+
+        this.serverId = serverId;
+        this.serverType = type;
+
+        save("serverId", "serverType", "lastServerId", "lastServerType");
+    }
+
+    public void setLeaveData() {
+        this.online = false;
+        this.onlineTime = onlineTime + (System.currentTimeMillis() - lastLogin);
+
+        save("online", "lastLogin", "onlineTime");
+    }
+
+    public void checkRanks() {
+        if (getRanks() != null && !getRanks().isEmpty()) {
+            Iterator<Entry<RankType, Long>> it = getRanks().entrySet().iterator();
+            boolean save = false;
+
+            while (it.hasNext()) {
+                Entry<RankType, Long> entry = it.next();
+
+                if (System.currentTimeMillis() > entry.getValue()) {
+                    it.remove();
+
+                    sendMessage("§c§l> §fO seu rank " + Tag.valueOf(entry.getKey().name()).getPrefix() + "§f expirou!");
+                    sendMessage("§c§l> §fVocê pode comprar novamente em §b" + CommonConst.STORE + "§f!");
+                    save = true;
+                }
+            }
+
+            if (save) {
+                saveRanks();
+            }
+        }
+    }
+
+    public void save(String... fieldName) {
+        for (String field : fieldName)
+            CommonGeneral.getInstance().getPlayerData().updateMember(this, field);
+    }
+
+    @Override
+    public boolean isPlayer() {
+        return true;
+    }
+
+    public abstract void sendMessage(String message);
+
+    public abstract void sendMessage(BaseComponent message);
+
+    public abstract void sendMessage(BaseComponent[] message);
+
+    public static Member getMember(UUID uniqueId) {
+        return CommonGeneral.getInstance().getMemberManager().getMember(uniqueId);
+    }
+
+    public static boolean hasGroupPermission(UUID uniqueId, Group group) {
+        return CommonGeneral.getInstance().getMemberManager().getMember(uniqueId).hasGroupPermission(group);
+    }
+
+    public static boolean isGroup(UUID uniqueId, Group group) {
+        return CommonGeneral.getInstance().getMemberManager().getMember(uniqueId).isGroup(group);
+    }
+
+    public static boolean isLogged(UUID uniqueId) {
+        return CommonGeneral.getInstance().getMemberManager().getMember(uniqueId).getLoginConfiguration().isLogged();
+    }
+
+    public static Group getGroup(UUID uniqueId) {
+        return CommonGeneral.getInstance().getMemberManager().getMember(uniqueId).getGroup();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof Member) {
+            Member member = (Member) obj;
+
+            return member.getPlayerName().equals(getPlayerName()) && member.getUniqueId().equals(getUniqueId());
+        }
+
+        return super.equals(obj);
+    }
 }

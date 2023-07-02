@@ -46,7 +46,7 @@ public class SurpriseAbility extends Ability {
 		List<Kit> list = new ArrayList<>(GameGeneral.getInstance().getKitController().getAllKits());
 
 		if (ServerConfig.getInstance().isSurpriseDisable()) {
-			if (GameMain.DOUBLEKIT)
+			if (GameMain.getInstance().isDoubleKit())
 				list.removeIf(kit -> gamer.hasKit(kitType == KitType.PRIMARY ? KitType.SECONDARY : KitType.PRIMARY)
 						&& gamer.getKit(kitType == KitType.PRIMARY ? KitType.SECONDARY : KitType.PRIMARY)
 								.isNotCompatible(kit.getClass()));

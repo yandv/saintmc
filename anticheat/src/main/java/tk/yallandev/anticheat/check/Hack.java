@@ -39,7 +39,7 @@ public class Hack implements Listener {
 //			return;
 //
 		broadcast(
-				member -> member.hasGroupPermission(Group.AJUDANTE)
+				member -> member.hasGroupPermission(Group.TRIAL)
 						&& member.getAccountConfiguration().isAnticheatEnabled(),
 				"§9Anticheat> §fO jogador §d" + player.getName() + "§f está usando §c" + getName()
 						+ (cps > 0 ? " §4(" + cps + " cps)" : "") + " §7(" + 1 + "/" + maxAlerts + ")!");

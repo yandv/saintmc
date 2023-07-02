@@ -83,7 +83,7 @@ public class StatusListener implements Listener {
 
 		int lostXp = CommonConst.RANDOM.nextInt(8) + 1;
 		int lostMoney = 20 * (CommonGeneral.getInstance().getMemberManager().getMember(killer.getUniqueId())
-				.hasGroupPermission(Group.PRO) ? 2 : 1);
+				.hasGroupPermission(Group.VIP) ? 2 : 1);
 
 		player.spigot()
 				.sendMessage(

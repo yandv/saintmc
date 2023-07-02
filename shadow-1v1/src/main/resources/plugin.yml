@@ -1,0 +1,6 @@
+name: Shadow
+version: 1.0
+main: tk.yallandev.saintmc.shadow.GameMain
+author: yandv
+softdepend: [BukkitCommon]
+load: POSTWORLD

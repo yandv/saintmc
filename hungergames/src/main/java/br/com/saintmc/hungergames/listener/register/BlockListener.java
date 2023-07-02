@@ -145,7 +145,7 @@ public class BlockListener extends GameListener {
 	public boolean breakPermission(Player player) {
 		BukkitMember member = ((BukkitMember) Member.getMember(player.getUniqueId()));
 
-		if (member.hasGroupPermission(Group.AJUDANTE))
+		if (member.hasGroupPermission(Group.TRIAL))
 			if (member.isBuildEnabled())
 				return true;
 

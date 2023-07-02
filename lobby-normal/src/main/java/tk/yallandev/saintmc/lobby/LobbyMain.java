@@ -20,7 +20,7 @@ public class LobbyMain extends LobbyPlatform {
 	@Override
 	public void onEnable() {
 		super.onEnable();
-		ServerInventory.LOBBY_HG = false;
+		ServerInventory.LOBBY_HG = true;
 		getServer().getPluginManager().registerEvents(new CharacterListener(), this);
 		getServer().getPluginManager().registerEvents(new PlayerListener(), this);
 		getServer().getPluginManager().registerEvents(new ScoreboardListener(), this);

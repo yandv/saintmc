@@ -156,7 +156,7 @@ public class YoutubeCommand implements CommandClass {
 			return;
 		}
 
-		if (!remove && !member.hasGroupPermission(Group.AJUDANTE) && member.isOnCooldown("changeskinCommand")) {
+		if (!remove && !member.hasGroupPermission(Group.TRIAL) && member.isOnCooldown("changeskinCommand")) {
 			player.sendMessage("§cVocê precisa esperar " + DateUtils.getTime(member.getCooldown("changeskinCommand"))
 					+ " para trocar de skin novamente!");
 			return;
@@ -190,7 +190,7 @@ public class YoutubeCommand implements CommandClass {
 
 				if (!remove)
 					member.setCooldown("changeskinCommand",
-							member.hasGroupPermission(Group.PRO) ? System.currentTimeMillis() + (1000 * 60 * 3)
+							member.hasGroupPermission(Group.VIP) ? System.currentTimeMillis() + (1000 * 60 * 3)
 									: System.currentTimeMillis() + (1000 * 60 * 10));
 			}
 

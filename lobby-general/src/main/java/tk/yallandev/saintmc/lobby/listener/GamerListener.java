@@ -26,13 +26,13 @@ public class GamerListener implements Listener {
 		BukkitMember member = (BukkitMember) CommonGeneral.getInstance().getMemberManager()
 				.getMember(event.getPlayer().getUniqueId());
 
-		if (member.hasGroupPermission(Group.PRO)) {
+		if (member.hasGroupPermission(Group.VIP)) {
 			player.setAllowFlight(true);
 			player.setFlying(true);
 
 			if (member.getGroup().ordinal() <= Group.YOUTUBER.ordinal()
-					&& member.getGroup().ordinal() >= Group.PRO.ordinal())
-//			if (member.getGroup().ordinal() >= Group.PRO.ordinal())
+					&& member.getGroup().ordinal() >= Group.VIP.ordinal())
+//			if (member.getGroup().ordinal() >= Group.VIP.ordinal())
 				Bukkit.broadcastMessage(Tag.valueOf(member.getGroup().name()).getPrefix() + " " + player.getName()
 						+ " §6entrou no lobby!");
 		} else {

@@ -3,7 +3,7 @@ serverAddress: '0.0.0.0'
 mongodb:
   hostname: '127.0.0.1'
   username: ''
-  database: 'nordmc'
+  database: 'pentamc'
   password: ''
   
 redis:

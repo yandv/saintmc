@@ -86,7 +86,7 @@ public class ModeratorCommand implements CommandClass {
 				player.setGameMode(gamemode);
 				player.sendMessage(" §a* §fVocê alterou seu gamemode para §a" + gamemodeName + "§f!");
 				staffLog("O §a" + player.getName() + " §fmudou seu gamemode para §a" + gamemodeName + "§f!",
-						Group.AJUDANTE);
+						Group.TRIAL);
 			} else {
 				player.sendMessage(" §c* §fVocê já está nesse gamemode!");
 			}
@@ -106,7 +106,7 @@ public class ModeratorCommand implements CommandClass {
 			player.sendMessage(
 					" §a* §fVocê alterou gamemode de §a" + target.getName() + "§f para §a" + gamemodeName + "§f!");
 			staffLog("O §a" + player.getName() + " §fmudou o gamemode de §e" + target.getName() + " §fpara §a"
-					+ gamemodeName + "§f!", Group.AJUDANTE);
+					+ gamemodeName + "§f!", Group.TRIAL);
 		} else {
 			player.sendMessage(" §d* §fO §a" + target.getName() + "§f já está nesse gamemode§f!");
 		}
@@ -147,7 +147,7 @@ public class ModeratorCommand implements CommandClass {
 			player.getActivePotionEffects().clear();
 			player.getInventory().setHeldItemSlot(0);
 			player.sendMessage("§aVocê limpou o seu inventário!");
-			staffLog("O §a" + player.getName() + " §flimpou o seu próprio inventário§f!", Group.AJUDANTE);
+			staffLog("O §a" + player.getName() + " §flimpou o seu próprio inventário§f!", Group.TRIAL);
 			return;
 		}
 
@@ -164,7 +164,7 @@ public class ModeratorCommand implements CommandClass {
 		target.getInventory().setHeldItemSlot(0);
 		target.sendMessage("§aO seu inventário foi limpo pelo " + player.getName() + "!");
 		player.sendMessage("§aVocê limpou o inventário de §a" + target.getName() + "!");
-		staffLog("O §a" + player.getName() + " §flimpou o inventário de " + target.getName() + "§f!", Group.AJUDANTE);
+		staffLog("O §a" + player.getName() + " §flimpou o inventário de " + target.getName() + "§f!", Group.TRIAL);
 	}
 
 	@Command(name = "enchant", usage = "/<command> <enchanment> <level>", groupToUse = Group.MOD)
@@ -222,7 +222,7 @@ public class ModeratorCommand implements CommandClass {
 		player.sendMessage(" §a* §fVocê aplicou o encantamento §a" + enchantment.getName() + "§f no nível §a" + level
 				+ "§f na sua §a" + item.getType().toString() + "§f!");
 		staffLog("O §a" + player.getName() + " §fencantou sua §a" + item.getType().toString() + "§f com §e"
-				+ enchantment.getName() + " level " + level + "§f!", Group.AJUDANTE);
+				+ enchantment.getName() + " level " + level + "§f!", Group.TRIAL);
 	}
 
 	@Command(name = "whitelist", groupToUse = Group.MODPLUS, runAsync = true)
@@ -503,14 +503,14 @@ public class ModeratorCommand implements CommandClass {
 			player.removePotionEffect(effect);
 			sender.sendMessage(" §a* §fO jogador §a" + player.getName() + "§f teve o efeito §a" + effect.getName()
 					+ "§f removido!");
-			staffLog("O §a" + player.getName() + " §flimpou todos os seus efeitos!", Group.AJUDANTE);
+			staffLog("O §a" + player.getName() + " §flimpou todos os seus efeitos!", Group.TRIAL);
 		} else {
 			PotionEffect applyEffect = new PotionEffect(effect, duration * 20, amplification);
 			player.addPotionEffect(applyEffect, true);
 			sender.sendMessage(" §a* §fO jogador §a" + player.getName() + "§f teve o efeito §a" + effect.getName()
 					+ "§f adicionado §e(" + duration + " segundos e nível " + amplification + ")");
 			staffLog("O §a" + player.getName() + " §faplicou o efeito §a" + effect.getName() + "§e(" + duration
-					+ " segundos e nível " + amplification + ")§f", Group.AJUDANTE);
+					+ " segundos e nível " + amplification + ")§f", Group.TRIAL);
 		}
 	}
 
@@ -561,7 +561,7 @@ public class ModeratorCommand implements CommandClass {
 		String[] args = cmdArgs.getArgs();
 		Member member = CommonGeneral.getInstance().getMemberManager().getMember(p.getUniqueId());
 
-		if (!member.hasGroupPermission(Group.AJUDANTE)) {
+		if (!member.hasGroupPermission(Group.TRIAL)) {
 			result = TeleportResult.NO_PERMISSION;
 		} else {
 			if (member.hasGroupPermission(Group.MOD)) {
@@ -715,7 +715,7 @@ public class ModeratorCommand implements CommandClass {
 		Bukkit.getPluginManager().callEvent(new TeleportAllEvent(target));
 		player.sendMessage("§aVocê levou todos os " + Bukkit.getOnlinePlayers().size() + " jogadores até "
 				+ target.getName() + "!");
-		staffLog("O §a" + player.getName() + " §ateletransportou todos até ", Group.AJUDANTE);
+		staffLog("O §a" + player.getName() + " §ateletransportou todos até ", Group.TRIAL);
 		return;
 	}
 
@@ -754,7 +754,7 @@ public class ModeratorCommand implements CommandClass {
 
 			player.sendMessage("§aVocê levou todos os " + Bukkit.getOnlinePlayers().size() + " jogadores até você!");
 
-			staffLog("O §a" + player.getName() + " §fteletransportou todos até §aele mesmo§f!", Group.AJUDANTE);
+			staffLog("O §a" + player.getName() + " §fteletransportou todos até §aele mesmo§f!", Group.TRIAL);
 			return;
 		}
 
@@ -790,11 +790,11 @@ public class ModeratorCommand implements CommandClass {
 		player.sendMessage("§aVocê levou todos os " + Bukkit.getOnlinePlayers().size() + " jogadores até "
 				+ target.getName() + "!");
 
-		staffLog("O §a" + player.getName() + " §fteletransportou todos até §a" + target.getName() + "§f!", Group.AJUDANTE);
+		staffLog("O §a" + player.getName() + " §fteletransportou todos até §a" + target.getName() + "§f!", Group.TRIAL);
 		return;
 	}
 
-	@Command(name = "kick", aliases = { "kickar" }, groupToUse = Group.AJUDANTE)
+	@Command(name = "kick", aliases = { "kickar" }, groupToUse = Group.TRIAL)
 	public void kick(CommandArgs cmdArgs) {
 		CommandSender sender = cmdArgs.getSender();
 		String[] args = cmdArgs.getArgs();

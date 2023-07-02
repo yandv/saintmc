@@ -106,7 +106,7 @@ public class ServerCommand implements CommandClass {
 		}
 	}
 
-	@Command(name = "serverconfig", aliases = { "sconfig" }, groupToUse = Group.DONO)
+	@Command(name = "serverconfig", aliases = { "sconfig" }, groupToUse = Group.ADMIN)
 	public void serverconfigCommand(BungeeCommandArgs cmdArgs) {
 		CommandSender sender = cmdArgs.getSender();
 		String[] args = cmdArgs.getArgs();

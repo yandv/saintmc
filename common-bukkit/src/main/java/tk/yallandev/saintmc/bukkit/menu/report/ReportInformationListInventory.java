@@ -43,8 +43,9 @@ public class ReportInformationListInventory {
 			menu.setItem(4, new ItemBuilder().type(Material.ARROW).name("§aVoltar").build(), new MenuClickHandler() {
 
 				@Override
-				public void onClick(Player p, Inventory inv, ClickType type, ItemStack stack, int slot) {
+				public boolean onClick(Player p, Inventory inv, ClickType type, ItemStack stack, int slot) {
 					topInventory.open(p);
+					return false;
 				}
 			});
 		}
@@ -67,8 +68,9 @@ public class ReportInformationListInventory {
 			menu.setItem(0, new ItemBuilder().type(Material.INK_SACK).durability(10).name("§aPágina anterior")
 					.lore("\n§7Clique para voltar de página").build(), new MenuClickHandler() {
 						@Override
-						public void onClick(Player p, Inventory inv, ClickType type, ItemStack stack, int slot) {
+						public boolean onClick(Player p, Inventory inv, ClickType type, ItemStack stack, int slot) {
 							new ReportInformationListInventory(player, report, topInventory, page - 1);
+							return false;
 						}
 					});
 		}
@@ -77,8 +79,9 @@ public class ReportInformationListInventory {
 			menu.setItem(8, new ItemBuilder().type(Material.INK_SACK).durability(10).name("§aPágina posterior")
 					.lore("\n§7Clique para avançar de página").build(), new MenuClickHandler() {
 						@Override
-						public void onClick(Player p, Inventory inv, ClickType type, ItemStack stack, int slot) {
+						public boolean onClick(Player p, Inventory inv, ClickType type, ItemStack stack, int slot) {
 							new ReportInformationListInventory(player, report, topInventory, page + 1);
+							return false;
 						}
 					});
 		} else {

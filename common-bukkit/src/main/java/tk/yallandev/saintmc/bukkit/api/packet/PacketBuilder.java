@@ -27,6 +27,11 @@ public class PacketBuilder {
 		packetContainer.getIntegers().write(fieldIndex, value);
 		return this;
 	}
+
+	public PacketBuilder writeIntegerArray(int fieldIndex, int[] value) {
+		packetContainer.getIntegerArrays().write(fieldIndex, value);
+		return this;
+	}
 	
 	public PacketContainer build() {
 		return packetContainer;

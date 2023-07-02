@@ -27,101 +27,94 @@ import tk.yallandev.saintmc.lobby.menu.server.ServerInventory;
 
 public class PlayerListener implements Listener {
 
-	private ActionItemStack compass;
-	private ActionItemStack lobbies;
-	private ActionItemStack collectable;
+    private ActionItemStack compass;
+    private ActionItemStack lobbies;
+    private ActionItemStack collectable;
 
-	public PlayerListener() {
-		compass = new ActionItemStack(new ItemBuilder().name("§aSelecionar jogo").type(Material.COMPASS).build(),
-				new ActionItemStack.Interact(InteractType.CLICK) {
+    public PlayerListener() {
+        compass = new ActionItemStack(new ItemBuilder().name("§aSelecionar jogo").type(Material.COMPASS).build(),
+                                      new ActionItemStack.Interact(InteractType.CLICK) {
 
-					@Override
-					public boolean onInteract(Player player, Entity entity, Block block, ItemStack item,
-							ActionType action) {
-						new ServerInventory(player);
-						return false;
-					}
-				});
+                                          @Override
+                                          public boolean onInteract(Player player, Entity entity, Block block, ItemStack item, ActionType action) {
+                                              new ServerInventory(player);
+                                              return false;
+                                          }
+                                      });
 
-		lobbies = new ActionItemStack(new ItemBuilder().name("§aSelecionar Lobby").type(Material.NETHER_STAR).build(),
-				new ActionItemStack.Interact(InteractType.CLICK) {
+        lobbies = new ActionItemStack(new ItemBuilder().name("§aSelecionar Lobby").type(Material.NETHER_STAR).build(),
+                                      new ActionItemStack.Interact(InteractType.CLICK) {
 
-					@Override
-					public boolean onInteract(Player player, Entity entity, Block block, ItemStack item,
-							ActionType action) {
-						new LobbyInventory(player);
-						return false;
-					}
-				});
+                                          @Override
+                                          public boolean onInteract(Player player, Entity entity, Block block, ItemStack item, ActionType action) {
+                                              new LobbyInventory(player);
+                                              return false;
+                                          }
+                                      });
 
-		collectable = new ActionItemStack(new ItemBuilder().name("§aColetáveis").type(Material.ENDER_CHEST).build(),
-				new ActionItemStack.Interact(InteractType.CLICK) {
+        collectable = new ActionItemStack(new ItemBuilder().name("§aColetáveis").type(Material.ENDER_CHEST).build(),
+                                          new ActionItemStack.Interact(InteractType.CLICK) {
 
-					@Override
-					public boolean onInteract(Player player, Entity entity, Block block, ItemStack item,
-							ActionType action) {
-						return false;
-					}
+                                              @Override
+                                              public boolean onInteract(Player player, Entity entity, Block block, ItemStack item, ActionType action) {
+                                                  return false;
+                                              }
+                                          });
+    }
 
-				});
-	}
-	
-	@EventHandler
-	public void onPlayerJoin(PlayerJoinEvent event) {
-		event.setJoinMessage(null);
-		addItem(event.getPlayer(), (BukkitMember) CommonGeneral.getInstance().getMemberManager()
-				.getMember(event.getPlayer().getUniqueId()));
-	}
+    @EventHandler
+    public void onPlayerJoin(PlayerJoinEvent event) {
+        event.setJoinMessage(null);
+        addItem(event.getPlayer(), (BukkitMember) CommonGeneral.getInstance().getMemberManager()
+                                                               .getMember(event.getPlayer().getUniqueId()));
+    }
 
-	@EventHandler
-	public void onPlayerChangeLoginStatus(PlayerChangeLoginStatusEvent event) {
-		if (event.isLogged() || event.getMember().getLoginConfiguration().getAccountType() == AccountType.ORIGINAL) {
-			event.getPlayer().teleport(BukkitMain.getInstance().getLocationFromConfig("spawn"));
-			addItem(event.getPlayer(), event.getMember());
-		}
-	}
+    @EventHandler
+    public void onPlayerChangeLoginStatus(PlayerChangeLoginStatusEvent event) {
+        if (event.isLogged() || event.getMember().getLoginConfiguration().getAccountType() == AccountType.ORIGINAL) {
+            event.getPlayer().teleport(BukkitMain.getInstance().getLocationFromConfig("spawn"));
+            addItem(event.getPlayer(), event.getMember());
+        }
+    }
 
-	@EventHandler
-	public void onRespawn(PlayerRespawnEvent event) {
-		addItem(event.getPlayer(),
-				CommonGeneral.getInstance().getMemberManager().getMember(event.getPlayer().getUniqueId()));
-		event.setRespawnLocation(BukkitMain.getInstance().getLocationFromConfig("spawn"));
-	}
+    @EventHandler
+    public void onRespawn(PlayerRespawnEvent event) {
+        addItem(event.getPlayer(),
+                CommonGeneral.getInstance().getMemberManager().getMember(event.getPlayer().getUniqueId()));
+        event.setRespawnLocation(BukkitMain.getInstance().getLocationFromConfig("spawn"));
+    }
 
-	public void addItem(Player player, Member member) {
-		player.getInventory().clear();
-		player.getInventory().setArmorContents(new ItemStack[4]);
+    public void addItem(Player player, Member member) {
+        player.getInventory().clear();
+        player.getInventory().setArmorContents(new ItemStack[4]);
 
-		player.setHealth(20D);
-		player.setFoodLevel(20);
-		player.setLevel(member.getXp());
+        player.setHealth(20D);
+        player.setFoodLevel(20);
+        player.setLevel(member.getXp());
 
-		float percentage = ((member.getXp() * 100) / member.getLeague().getMaxXp()) / (float) 100;
+        float percentage = ((member.getXp() * 100.0F) / member.getLeague().getMaxXp()) / 100.0F;
 
-		if (member.getLeague() == League.values()[League.values().length - 1])
-			player.setExp(1f);
-		else
-			player.setExp(percentage);
+        if (member.getLeague() == League.values()[League.values().length - 1]) {
+            player.setExp(1f);
+        } else {
+            player.setExp(percentage);
+        }
 
-		player.getInventory().setItem(0, compass.getItemStack());
-		player.getInventory()
-				.setItem(1,
-						new ActionItemStack(
-								new ItemBuilder().name("§aMeu perfil").skin(member.getPlayerName()).durability(3)
-										.type(Material.SKULL_ITEM).build(),
-								new ActionItemStack.Interact(InteractType.CLICK) {
+        player.getInventory().setItem(0, compass.getItemStack());
+        player.getInventory().setItem(1, new ActionItemStack(
+                new ItemBuilder().name("§aMeu perfil").skin(member.getPlayerName()).durability(3)
+                                 .type(Material.SKULL_ITEM).build(), new ActionItemStack.Interact(InteractType.CLICK) {
 
-									@Override
-									public boolean onInteract(Player player, Entity entity, Block block, ItemStack item,
-											ActionType action) {
-										new ProfileInventory(player);
-										return false;
-									}
-
-								}).getItemStack());
-		player.getInventory().setItem(7, collectable.getItemStack());
-		player.getInventory().setItem(8, lobbies.getItemStack());
-		player.updateInventory();
-	}
-
+            @Override
+            public boolean onInteract(Player player, Entity entity, Block block, ItemStack item, ActionType action) {
+                new ProfileInventory(player);
+                return false;
+            }
+        }).getItemStack());
+        player.getInventory().setItem(4, collectable.getItemStack());
+        player.getInventory().setItem(7, new ItemBuilder().name("§aJogadores visíveis").type(Material.INK_SACK)
+                                                          .durability(10).build());
+        player.getInventory().setItem(8, lobbies.getItemStack());
+        player.updateInventory();
+    }
 }

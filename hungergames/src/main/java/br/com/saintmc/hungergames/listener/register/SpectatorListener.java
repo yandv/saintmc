@@ -85,7 +85,7 @@ public class SpectatorListener extends GameListener {
 				if (!player.isOnline())
 					return;
 
-				VanishAPI.getInstance().setPlayerVanishToGroup(player, Group.BUILDER);
+				VanishAPI.getInstance().setPlayerVanishToGroup(player, Group.TRIAL);
 				player.setGameMode(GameMode.ADVENTURE);
 				player.setAllowFlight(true);
 				player.setFlying(true);

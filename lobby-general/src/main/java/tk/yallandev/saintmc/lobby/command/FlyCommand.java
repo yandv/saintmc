@@ -10,7 +10,7 @@ import tk.yallandev.saintmc.common.permission.Group;
 
 public class FlyCommand implements CommandClass {
 
-	@Command(name = "fly", groupToUse = Group.PRO)
+	@Command(name = "fly", groupToUse = Group.VIP)
 	public void flyCommand(CommandArgs cmdArgs) {
 		if (!cmdArgs.isPlayer())
 			return;

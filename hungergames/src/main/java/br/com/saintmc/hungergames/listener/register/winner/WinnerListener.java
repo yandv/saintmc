@@ -2,6 +2,7 @@ package br.com.saintmc.hungergames.listener.register.winner;
 
 import javax.swing.ImageIcon;
 
+import com.google.common.base.Joiner;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect.Type;
@@ -36,157 +37,176 @@ import tk.yallandev.saintmc.common.account.Member;
 import tk.yallandev.saintmc.common.permission.Group;
 import tk.yallandev.saintmc.common.server.ServerType;
 
+import java.util.Arrays;
+import java.util.Objects;
+import java.util.stream.Stream;
+
 public class WinnerListener implements Listener {
 
-	private Player winner;
-	private Location cakeLocation;
+    private Player[] winner;
+    private Location cakeLocation;
 
-	private String winnerName;
-	private Location winnerLocation;
+    private String winnerName;
+    private Location winnerLocation;
 
-	private int time;
+    private int time;
 
-	public WinnerListener(Player winner) {
-		this.winner = winner;
+    public WinnerListener(Player... winner) {
+        this.winner = winner;
 
-		if (this.winner == null) {
-			Bukkit.broadcastMessage("§aNenhum jogador ganhou!");
+        if (this.winner == null) {
+            Bukkit.broadcastMessage("§aNenhum jogador ganhou!");
 
-			new BukkitRunnable() {
+            new BukkitRunnable() {
 
-				@Override
-				public void run() {
-					Bukkit.getOnlinePlayers().forEach(player -> BukkitMain.getInstance().sendPlayerToLobby(player));
+                @Override
+                public void run() {
+                    Bukkit.getOnlinePlayers().forEach(player -> BukkitMain.getInstance().sendPlayerToLobby(player));
 
-					if (Bukkit.getOnlinePlayers().size() == 0)
-						Bukkit.shutdown();
-				}
-			}.runTaskTimer(GameMain.getInstance(), 60, 10);
-			return;
-		}
+                    if (Bukkit.getOnlinePlayers().size() == 0) {
+                        Bukkit.shutdown();
+                    }
+                }
+            }.runTaskTimer(GameMain.getInstance(), 60, 10);
+            return;
+        }
 
-		winnerName = this.winner.getName();
-		winnerLocation = winner.getLocation();
-		cakeLocation = winner.getLocation().clone().add(0, winner.getLocation().getY() > 70 ? 20 : 40, 0);
+        Player player = Arrays.stream(winner).filter(Objects::nonNull).findFirst().orElse(null);
 
-		int r = 4;
-		int rSquared = r * r;
+        if (player == null) {
+            Bukkit.shutdown();
+            return;
+        }
 
-		int cx = (int) cakeLocation.getX();
-		int cz = (int) cakeLocation.getZ();
-		World w = cakeLocation.getWorld();
+        winnerName = Joiner.on(", ").join(Stream.of(winner).filter(Objects::nonNull).map(Player::getName).toArray());
+        winnerLocation = player.getLocation();
+        cakeLocation = player.getLocation().clone().add(0, player.getLocation().getY() > 70 ? 20 : 40, 0);
 
-		for (int x = cx - r; x <= cx + r; x++) {
-			for (int z = cz - r; z <= cz + r; z++) {
-				if ((cx - x) * (cx - x) + (cz - z) * (cz - z) <= rSquared) {
-					w.getBlockAt(x, (int) cakeLocation.getY(), z).setType(Material.GLASS);
-					w.getBlockAt(x, (int) cakeLocation.getY() + 1, z).setType(Material.CAKE_BLOCK);
-				}
-			}
-		}
+        int r = 4;
+        int rSquared = r * r;
 
-		winner.getInventory().clear();
-		winner.teleport(cakeLocation.clone().add(0, 3.5, 0));
-		winner.getInventory().setItem(0, new ItemBuilder().type(Material.MAP).build());
-		winner.getInventory().setItem(1, new ItemStack(Material.WATER_BUCKET));
-		winner.updateInventory();
+        int cx = (int) cakeLocation.getX();
+        int cz = (int) cakeLocation.getZ();
+        World w = cakeLocation.getWorld();
 
-		Gamer gamer = GameGeneral.getInstance().getGamerController().getGamer(winner);
+        for (int x = cx - r; x <= cx + r; x++) {
+            for (int z = cz - r; z <= cz + r; z++) {
+                if ((cx - x) * (cx - x) + (cz - z) * (cz - z) <= rSquared) {
+                    w.getBlockAt(x, (int) cakeLocation.getY(), z).setType(Material.GLASS);
+                    w.getBlockAt(x, (int) cakeLocation.getY() + 1, z).setType(Material.CAKE_BLOCK);
+                }
+            }
+        }
 
-		gamer.getStatus().addWin();
+        for (Player winnerPlayer : winner) {
+            if (winnerPlayer == null) continue;
 
-		Member member = CommonGeneral.getInstance().getMemberManager().getMember(winner.getUniqueId());
+            winnerPlayer.getInventory().clear();
+            winnerPlayer.teleport(cakeLocation.clone().add(0, 3.5, 0));
+            winnerPlayer.getInventory().setItem(0, new ItemBuilder().type(Material.MAP).build());
+            winnerPlayer.getInventory().setItem(1, new ItemStack(Material.WATER_BUCKET));
+            winnerPlayer.updateInventory();
 
-		member.setTag(GameMain.WINNER);
-		member.addXp(CommonConst.RANDOM.nextInt(40) + 35);
-		member.addMoney(150);
-		member.addPermission(
-				CommonGeneral.getInstance().getServerType() == ServerType.EVENTO ? "tag.champion" : "tag.winner");
-	}
+            Gamer gamer = GameGeneral.getInstance().getGamerController().getGamer(winnerPlayer);
 
-	@EventHandler
-	public void onMapInitialize(MapInitializeEvent event) {
-		MapView map = event.getMap();
+            gamer.getStatus().addWin();
 
-		map.getRenderers().forEach(renderer -> map.removeRenderer(renderer));
+            Member member = CommonGeneral.getInstance().getMemberManager().getMember(winnerPlayer.getUniqueId());
 
-		map.addRenderer(new MapRenderer() {
+            member.setTag(GameMain.WINNER);
+            member.addXp(CommonConst.RANDOM.nextInt(10) + 7);
+            member.addMoney(150);
+            member.addPermission(
+                    CommonGeneral.getInstance().getServerType() == ServerType.EVENTO ? "tag.champion" : "tag.winner");
+        }
+    }
 
-			@Override
-			public void render(MapView mapView, MapCanvas mapCanvas, Player player) {
-				mapCanvas.drawText(38, 6, MinecraftFont.Font, "Parabens,");
-				mapCanvas.drawText(17, 15, MinecraftFont.Font, "voce venceu o HG");
-				mapCanvas.drawImage(14, 40,
-						new ImageIcon(GameMain.getInstance().getDataFolder().getPath() + "/cake.png").getImage());
-			}
+    @EventHandler
+    public void onMapInitialize(MapInitializeEvent event) {
+        MapView map = event.getMap();
 
-		});
-	}
+        map.getRenderers().forEach(map::removeRenderer);
 
-	@EventHandler(priority = EventPriority.HIGHEST)
-	public void onPlayerJoin(PlayerLoginEvent event) {
-		Member player = CommonGeneral.getInstance().getMemberManager().getMember(event.getPlayer().getUniqueId());
+        map.addRenderer(new MapRenderer() {
 
-		if (player == null) {
-			event.disallow(PlayerLoginEvent.Result.KICK_OTHER, "§cO servidor está sendo finalizado!");
-			return;
-		}
+            @Override
+            public void render(MapView mapView, MapCanvas mapCanvas, Player player) {
+                mapCanvas.drawText(38, 6, MinecraftFont.Font, "Parabens,");
+                mapCanvas.drawText(17, 15, MinecraftFont.Font, "voce venceu o HG");
+                mapCanvas.drawImage(14, 40, new ImageIcon(
+                        GameMain.getInstance().getDataFolder().getPath() + "/cake.png").getImage());
+            }
+        });
+    }
 
-		if (player.hasGroupPermission(Group.AJUDANTE)) {
-			event.allow();
-			return;
-		}
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onPlayerJoin(PlayerLoginEvent event) {
+        Member player = CommonGeneral.getInstance().getMemberManager().getMember(event.getPlayer().getUniqueId());
 
-		event.disallow(PlayerLoginEvent.Result.KICK_OTHER, "§cO servidor está sendo finalizado!");
-	}
+        if (player == null) {
+            event.disallow(PlayerLoginEvent.Result.KICK_OTHER, "§cO servidor está sendo finalizado!");
+            return;
+        }
 
-	@EventHandler
-	public void onEntityDamage(EntityDamageEvent event) {
-		event.setCancelled(true);
-	}
+        if (player.hasGroupPermission(Group.TRIAL)) {
+            event.allow();
+            return;
+        }
 
-	@EventHandler
-	public void onUpdate(UpdateEvent event) {
-		if (event.getType() == UpdateType.SECOND) {
-			time++;
+        event.disallow(PlayerLoginEvent.Result.KICK_OTHER, "§cO servidor está sendo finalizado!");
+    }
 
-			if (time == 15) {
-				new BukkitRunnable() {
-					int x = 0;
+    @EventHandler
+    public void onEntityDamage(EntityDamageEvent event) {
+        event.setCancelled(true);
+    }
 
-					@Override
-					public void run() {
-						x++;
+    @EventHandler
+    public void onUpdate(UpdateEvent event) {
+        if (event.getType() == UpdateType.SECOND) {
+            time++;
 
-						if (x == 10) {
-							Bukkit.shutdown();
-							return;
-						}
-						
-						Bukkit.getOnlinePlayers().forEach(player -> BukkitMain.getInstance().sendPlayerToLobby(player));
+            if (time == 15) {
+                new BukkitRunnable() {
 
-						if (Bukkit.getOnlinePlayers().size() == 0)
-							Bukkit.shutdown();
-					}
-				}.runTaskTimer(GameMain.getInstance(), 0, 5);
-				return;
-			}
+                    int x = 0;
 
-			if (winner != null && !winner.isOnline())
-				winnerLocation = winner.getLocation();
+                    @Override
+                    public void run() {
+                        x++;
 
-			FireworkAPI.spawn(winnerLocation.add(4, 0, 0), Color.GREEN, Color.GRAY, Type.BURST, true);
-			FireworkAPI.spawn(winnerLocation.add(-4, 0, 0), Color.GREEN, Color.GRAY, Type.BURST, true);
-			FireworkAPI.spawn(winnerLocation.add(0, 0, 4), Color.GREEN, Color.GRAY, Type.BURST, true);
-			FireworkAPI.spawn(winnerLocation.add(0, 0, -4), Color.GREEN, Color.GRAY, Type.BURST, true);
+                        if (x == 10) {
+                            Bukkit.shutdown();
+                            return;
+                        }
 
-			FireworkAPI.spawn(winnerLocation.add(6, 0, 0), Color.RED, Color.GRAY, Type.BURST, true);
-			FireworkAPI.spawn(winnerLocation.add(-6, 0, 0), Color.RED, Color.GRAY, Type.BURST, true);
-			FireworkAPI.spawn(winnerLocation.add(0, 0, 6), Color.RED, Color.GRAY, Type.BURST, true);
-			FireworkAPI.spawn(winnerLocation.add(0, 0, -6), Color.RED, Color.GRAY, Type.BURST, true);
+                        Bukkit.getOnlinePlayers().forEach(player -> BukkitMain.getInstance().sendPlayerToLobby(player));
 
-			Bukkit.broadcastMessage("§a" + winnerName + " ganhou a partida!");
-		}
-	}
+                        if (Bukkit.getOnlinePlayers().size() == 0) {
+                            Bukkit.shutdown();
+                        }
+                    }
+                }.runTaskTimer(GameMain.getInstance(), 0, 5);
+                return;
+            }
 
+            Player currentOnline = Arrays.stream(winner).filter(Objects::nonNull).findFirst().orElse(null);
+
+            if (currentOnline != null && !currentOnline.isOnline()) {
+                winnerLocation = currentOnline.getLocation();
+            }
+
+            FireworkAPI.spawn(winnerLocation.add(4, 0, 0), Color.GREEN, Color.GRAY, Type.BURST, true);
+            FireworkAPI.spawn(winnerLocation.add(-4, 0, 0), Color.GREEN, Color.GRAY, Type.BURST, true);
+            FireworkAPI.spawn(winnerLocation.add(0, 0, 4), Color.GREEN, Color.GRAY, Type.BURST, true);
+            FireworkAPI.spawn(winnerLocation.add(0, 0, -4), Color.GREEN, Color.GRAY, Type.BURST, true);
+
+            FireworkAPI.spawn(winnerLocation.add(6, 0, 0), Color.RED, Color.GRAY, Type.BURST, true);
+            FireworkAPI.spawn(winnerLocation.add(-6, 0, 0), Color.RED, Color.GRAY, Type.BURST, true);
+            FireworkAPI.spawn(winnerLocation.add(0, 0, 6), Color.RED, Color.GRAY, Type.BURST, true);
+            FireworkAPI.spawn(winnerLocation.add(0, 0, -6), Color.RED, Color.GRAY, Type.BURST, true);
+
+            Bukkit.broadcastMessage("§a" + winnerName + " ganhou a partida!");
+        }
+    }
 }

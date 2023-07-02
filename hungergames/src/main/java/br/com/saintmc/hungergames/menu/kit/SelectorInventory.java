@@ -28,191 +28,194 @@ import tk.yallandev.saintmc.common.utils.string.NameUtils;
 @AllArgsConstructor
 public class SelectorInventory {
 
-	private static int itemsPerPage = 21;
+    private static int itemsPerPage = 21;
 
-	public SelectorInventory(Player player, int page, KitType kitType, OrderType orderType) {
-		Gamer gamer = GameGeneral.getInstance().getGamerController().getGamer(player);
-		MenuInventory menu = new MenuInventory("§7Kit Selector", 6, true);
-		List<Kit> kits = new ArrayList<>(GameGeneral.getInstance().getKitController().getAllKits());
+    public SelectorInventory(Player player, int page, KitType kitType, OrderType orderType) {
+        Gamer gamer = GameGeneral.getInstance().getGamerController().getGamer(player);
+        MenuInventory menu = new MenuInventory("§7Kit Selector", 6, true);
+        List<Kit> kits = new ArrayList<>(GameGeneral.getInstance().getKitController().getAllKits());
 
-		Comparator<Kit> comparator = orderType.getComparator(gamer, kitType);
+        Comparator<Kit> comparator = orderType.getComparator(gamer, kitType);
 
-		Collections.sort(kits, comparator);
+        Collections.sort(kits, comparator);
 
-		List<MenuItem> items = new ArrayList<>();
+        List<MenuItem> items = new ArrayList<>();
 
-		for (Kit kit : kits) {
-			if (ServerConfig.getInstance().isDisabled(kit, kitType))
-				continue;
+        for (Kit kit : kits) {
+            if (ServerConfig.getInstance().isDisabled(kit, kitType)) {
+                continue;
+            }
 
-			boolean hasKit = GameMain.DOUBLEKIT ? kitType == KitType.PRIMARY ? true : gamer.hasKit(kit.getName())
-					: gamer.hasKit(kit.getName());
+            boolean hasKit = GameMain.getInstance().isDoubleKit() ? kitType == KitType.PRIMARY ? true : gamer.hasKit(kit.getName()) :
+                             gamer.hasKit(kit.getName());
 
-			if (hasKit) {
-				items.add(new MenuItem(
-						new ItemBuilder().lore("§7" + kit.getDescription() + "\n\n§eClique para selecionar!")
-								.type(kit.getKitIcon().getType()).durability(kit.getKitIcon().getDurability())
-								.name("§a" + NameUtils.formatString(kit.getName())).build(),
-						new OpenKitMenu(kit, kitType)));
-			} else {
-				ItemStack item = new ItemBuilder().type(Material.STAINED_GLASS_PANE).durability(14)
-						.name("§c" + NameUtils.formatString(kit.getName()))
-						.lore("\n§cVocê não possui este kit!\n§cCompre em: §e" + CommonConst.STORE + "\n\n§7"
-								+ kit.getDescription() + "\n\n§eClique para selecionar!")
-						.build();
-				items.add(new MenuItem(item, new StoreKitMenu(kit)));
-			}
-		}
+            if (hasKit) {
+                items.add(new MenuItem(
+                        new ItemBuilder().lore("§7" + kit.getDescription() + "\n\n§eClique para selecionar!")
+                                         .type(kit.getKitIcon().getType()).durability(kit.getKitIcon().getDurability())
+                                         .name("§a" + NameUtils.formatString(kit.getName())).build(),
+                        new OpenKitMenu(kit, kitType)));
+            } else {
+                ItemStack item = new ItemBuilder().type(Material.STAINED_GLASS_PANE).durability(14)
+                                                  .name("§c" + NameUtils.formatString(kit.getName()))
+                                                  .lore("\n§cVocê não possui este kit!\n§cCompre em: §e" +
+                                                        CommonConst.STORE + "\n\n§7" + kit.getDescription() +
+                                                        "\n\n§eClique para selecionar!").build();
+                items.add(new MenuItem(item, new StoreKitMenu(kit)));
+            }
+        }
 
-		int pageStart = 0;
-		int pageEnd = itemsPerPage;
+        int pageStart = 0;
+        int pageEnd = itemsPerPage;
 
-		if (page > 1) {
-			pageStart = ((page - 1) * itemsPerPage);
-			pageEnd = (page * itemsPerPage);
-		}
+        if (page > 1) {
+            pageStart = ((page - 1) * itemsPerPage);
+            pageEnd = (page * itemsPerPage);
+        }
 
-		if (pageEnd > items.size()) {
-			pageEnd = items.size();
-		}
+        if (pageEnd > items.size()) {
+            pageEnd = items.size();
+        }
 
-		int w = 10;
+        int w = 10;
 
-		for (int i = pageStart; i < pageEnd; i++) {
-			MenuItem item = items.get(i);
-			menu.setItem(item, w);
+        for (int i = pageStart; i < pageEnd; i++) {
+            MenuItem item = items.get(i);
+            menu.setItem(item, w);
 
-			if (w % 9 == 7) {
-				w += 3;
-				continue;
-			}
+            if (w % 9 == 7) {
+                w += 3;
+                continue;
+            }
 
-			w += 1;
-		}
+            w += 1;
+        }
 
-		if (page != 1) {
-			menu.setItem(new MenuItem(new ItemBuilder().type(Material.ARROW).name("§aPágina " + (page - 1)).build(),
-					new MenuClickHandler() {
+        if (page != 1) {
+            menu.setItem(new MenuItem(new ItemBuilder().type(Material.ARROW).name("§aPágina " + (page - 1)).build(),
+                                      new MenuClickHandler() {
 
-						@Override
-						public void onClick(Player arg0, Inventory arg1, ClickType arg2, ItemStack arg3, int arg4) {
-							new SelectorInventory(arg0, page - 1, kitType, orderType);
-						}
+                                          @Override
+                                          public boolean onClick(Player arg0, Inventory arg1, ClickType arg2, ItemStack arg3, int arg4) {
+                                              new SelectorInventory(arg0, page - 1, kitType, orderType);
+                                              return false;
+                                          }
+                                      }), 45);
+        }
 
-					}), 45);
-		}
+        if (Math.ceil(items.size() / itemsPerPage) + 1 > page) {
+            menu.setItem(new MenuItem(new ItemBuilder().type(Material.ARROW).name("§aPágina " + (page + 1)).build(),
+                                      (p, inventory, clickType, item, slot) -> {
+                                          new SelectorInventory(p, page + 1, kitType, orderType);
+                                          return false;
+                                      }), 53);
+        }
 
-		if (Math.ceil(items.size() / itemsPerPage) + 1 > page) {
-			menu.setItem(new MenuItem(new ItemBuilder().type(Material.ARROW).name("§aPágina " + (page + 1)).build(),
-					(p, inventory, clickType, item, slot) -> new SelectorInventory(p, page + 1, kitType, orderType)),
-					53);
-		}
+        if (gamer.hasKit(kitType)) {
+            Kit kit = gamer.getKit(kitType);
 
-		if (gamer.hasKit(kitType)) {
-			Kit kit = gamer.getKit(kitType);
+            menu.setItem(48, new ItemBuilder().name("§a" + NameUtils.formatString(kit.getName()))
+                                              .type(kit.getKitIcon().getType()).lore("\n§7" + kit.getDescription())
+                                              .durability(kit.getKitIcon().getDurability()).build(),
+                         new MenuClickHandler() {
 
-			menu.setItem(48,
-					new ItemBuilder().name("§a" + NameUtils.formatString(kit.getName()))
-							.type(kit.getKitIcon().getType()).lore("\n§7" + kit.getDescription())
-							.durability(kit.getKitIcon().getDurability()).build(),
-					new MenuClickHandler() {
+                             @Override
+                             public boolean onClick(Player p, Inventory inv, ClickType type, ItemStack stack, int slot) {
+                                 new InfoInventory(player, kit, kitType);
+                                 return false;
+                             }
+                         });
+        } else {
+            menu.setItem(48, new ItemBuilder().name("§eNenhum").type(Material.ITEM_FRAME).build());
+        }
 
-						@Override
-						public void onClick(Player p, Inventory inv, ClickType type, ItemStack stack, int slot) {
-							new InfoInventory(player, kit, kitType);
-						}
-					});
-		} else {
-			menu.setItem(48, new ItemBuilder().name("§eNenhum").type(Material.ITEM_FRAME).build());
-		}
+        menu.setItem(50, new ItemBuilder().name("§fOrdenar por: §7" + (orderType == OrderType.MINE ? "Meus kits" :
+                                                                       orderType == OrderType.ALPHABET ? "Alfabeto" :
+                                                                       "Alfabeto ao contrário"))
+                                          .type(Material.ITEM_FRAME).build(), new MenuClickHandler() {
 
-		menu.setItem(50,
-				new ItemBuilder()
-						.name("§fOrdenar por: §7" + (orderType == OrderType.MINE ? "Meus kits"
-								: orderType == OrderType.ALPHABET ? "Alfabeto" : "Alfabeto ao contrário"))
-						.type(Material.ITEM_FRAME).build(),
-				new MenuClickHandler() {
+            @Override
+            public boolean onClick(Player p, Inventory inv, ClickType type, ItemStack stack, int slot) {
+                new SelectorInventory(player, page, kitType,
+                                      orderType.ordinal() == OrderType.values().length - 1 ? OrderType.values()[0] :
+                                      OrderType.values()[orderType.ordinal() + 1]);
+                return false;
+            }
+        });
 
-					@Override
-					public void onClick(Player p, Inventory inv, ClickType type, ItemStack stack, int slot) {
-						new SelectorInventory(player, page, kitType,
-								orderType.ordinal() == OrderType.values().length - 1 ? OrderType.values()[0]
-										: OrderType.values()[orderType.ordinal() + 1]);
-					}
-				});
+        menu.open(player);
+    }
 
-		menu.open(player);
-	}
+    @AllArgsConstructor
+    public static class OpenKitMenu implements MenuClickHandler {
 
-	@AllArgsConstructor
-	public static class OpenKitMenu implements MenuClickHandler {
+        private Kit kit;
+        private KitType kitType;
 
-		private Kit kit;
-		private KitType kitType;
+        @Override
+        public boolean onClick(Player p, Inventory inv, ClickType type, ItemStack stack, int slot) {
+            if (type == ClickType.RIGHT) {
+                new InfoInventory(p, kit, kitType);
+                return false;
+            }
 
-		@Override
-		public void onClick(Player p, Inventory inv, ClickType type, ItemStack stack, int slot) {
-			if (type == ClickType.RIGHT) {
-				new InfoInventory(p, kit, kitType);
-				return;
-			}
+            GameGeneral.getInstance().getKitController().selectKit(p, kit, kitType);
+            p.closeInventory();
+            return false;
+        }
+    }
 
-			GameGeneral.getInstance().getKitController().selectKit(p, kit, kitType);
-			p.closeInventory();
-		}
+    @AllArgsConstructor
+    public static class StoreKitMenu implements MenuClickHandler {
 
-	}
+        private Kit kit;
 
-	@AllArgsConstructor
-	public static class StoreKitMenu implements MenuClickHandler {
+        @Override
+        public boolean onClick(Player p, Inventory inv, ClickType type, ItemStack stack, int slot) {
+            p.sendMessage(
+                    "§6§l> §fCompre o kit §a" + NameUtils.formatString(kit.getName()) + "§f em §a" + CommonConst.STORE +
+                    "§f!");
+            return false;
+        }
+    }
 
-		private Kit kit;
+    public enum OrderType {
 
-		@Override
-		public void onClick(Player p, Inventory inv, ClickType type, ItemStack stack, int slot) {
-			p.sendMessage("§6§l> §fCompre o kit §a" + NameUtils.formatString(kit.getName()) + "§f em §a"
-					+ CommonConst.STORE + "§f!");
-		}
+        MINE,
+        ALPHABET,
+        DE_ALPHABET;
 
-	}
+        Comparator<Kit> getComparator(Gamer gamer, KitType kitType) {
+            switch (this) {
+            case MINE: {
+                return new Comparator<Kit>() {
 
-	public enum OrderType {
+                    @Override
+                    public int compare(Kit o1, Kit o2) {
+                        boolean hasKitO1 =
+                                GameMain.getInstance().isDoubleKit() ? kitType == KitType.PRIMARY ? true : gamer.hasKit(o1.getName()) :
+                                gamer.hasKit(o1.getName());
+                        boolean hasKitO2 =
+                                GameMain.getInstance().isDoubleKit() ? kitType == KitType.PRIMARY ? true : gamer.hasKit(o2.getName()) :
+                                gamer.hasKit(o2.getName());
 
-		MINE, ALPHABET, DE_ALPHABET;
+                        int value1 = Boolean.valueOf(hasKitO2).compareTo(hasKitO1);
 
-		Comparator<Kit> getComparator(Gamer gamer, KitType kitType) {
-			switch (this) {
-			case MINE: {
-				return new Comparator<Kit>() {
+                        if (value1 == 0) {
+                            return o1.getName().compareTo(o2.getName());
+                        }
 
-					@Override
-					public int compare(Kit o1, Kit o2) {
-						boolean hasKitO1 = GameMain.DOUBLEKIT
-								? kitType == KitType.PRIMARY ? true : gamer.hasKit(o1.getName())
-								: gamer.hasKit(o1.getName());
-						boolean hasKitO2 = GameMain.DOUBLEKIT
-								? kitType == KitType.PRIMARY ? true : gamer.hasKit(o2.getName())
-								: gamer.hasKit(o2.getName());
-
-						int value1 = Boolean.valueOf(hasKitO2).compareTo(hasKitO1);
-
-						if (value1 == 0) {
-							return o1.getName().compareTo(o2.getName());
-						}
-
-						return value1;
-					}
-				};
-			}
-			case DE_ALPHABET: {
-				return (kit1, kit2) -> kit2.getName().compareTo(kit1.getName());
-			}
-			default: {
-				return Comparator.comparing(kit -> kit.getName());
-			}
-			}
-		}
-
-	}
-
+                        return value1;
+                    }
+                };
+            }
+            case DE_ALPHABET: {
+                return (kit1, kit2) -> kit2.getName().compareTo(kit1.getName());
+            }
+            default: {
+                return Comparator.comparing(kit -> kit.getName());
+            }
+            }
+        }
+    }
 }

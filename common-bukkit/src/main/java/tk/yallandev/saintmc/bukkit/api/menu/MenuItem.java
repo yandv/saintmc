@@ -3,7 +3,6 @@ package tk.yallandev.saintmc.bukkit.api.menu;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-
 import tk.yallandev.saintmc.bukkit.api.menu.click.ClickType;
 import tk.yallandev.saintmc.bukkit.api.menu.click.MenuClickHandler;
 
@@ -16,7 +15,8 @@ public class MenuItem {
 		this.stack = itemstack;
 		this.handler = new MenuClickHandler() {
 			@Override
-			public void onClick(Player p, Inventory inv, ClickType type, ItemStack stack, int slot) {
+			public boolean onClick(Player p, Inventory inv, ClickType type, ItemStack stack, int slot) {
+				return false;
 			}
 		};
 	}

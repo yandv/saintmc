@@ -28,15 +28,15 @@ public class Character {
 		registerCharacter(this);
 	}
 
-	public Character(String name, String skinName, Location location, Interact interactHandler) {
+	public Character(String skinName, Location location, Interact interactHandler) {
 		this.npc = new NPC(location, skinName);
 		this.npc.spawn();
 		this.interactHandler = interactHandler;
 		registerCharacter(this);
 	}
 
-	public static Character createCharacter(String name, String skinName, Location location) {
-		return new Character(name, skinName, location, new Interact() {
+	public static Character createCharacter(String skinName, Location location) {
+		return new Character(skinName, location, new Interact() {
 
 			@Override
 			public boolean onInteract(Player player, boolean right) {

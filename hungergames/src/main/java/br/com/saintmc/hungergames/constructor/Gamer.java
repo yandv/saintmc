@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+import br.com.saintmc.hungergames.game.Team;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -82,6 +83,9 @@ public class Gamer {
 
 	@Setter
 	private boolean winner;
+
+	@Setter
+	private transient Team team;
 
 	public Gamer(Player player) {
 		this.player = player;
@@ -190,17 +194,17 @@ public class Gamer {
 		if (player.hasPermission("kit." + kitName.toLowerCase()))
 			return true;
 
-		if (player.hasGroupPermission(Group.ELITE) || isWinner() || player.hasPermission("tag.torneioplus"))
+		if (player.hasGroupPermission(Group.PENTA) || isWinner() || player.hasPermission("tag.torneioplus"))
 			return true;
 
-		if (player.hasGroupPermission(Group.PRO))
-			if (GameMain.KITROTATE.containsKey(Group.PRO))
-				if (GameMain.KITROTATE.get(Group.PRO).contains(kitName))
+		if (player.hasGroupPermission(Group.VIP))
+			if (GameMain.KITROTATE.containsKey(Group.VIP))
+				if (GameMain.KITROTATE.get(Group.VIP).contains(kitName))
 					return true;
 
-		if (player.hasGroupPermission(Group.PRO))
-			if (GameMain.KITROTATE.containsKey(Group.PRO))
-				if (GameMain.KITROTATE.get(Group.PRO).contains(kitName))
+		if (player.hasGroupPermission(Group.VIP))
+			if (GameMain.KITROTATE.containsKey(Group.VIP))
+				if (GameMain.KITROTATE.get(Group.VIP).contains(kitName))
 					return true;
 
 		return GameMain.KITROTATE.get(Group.MEMBRO).contains(kitName);

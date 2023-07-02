@@ -183,14 +183,14 @@ public class WarpCommand implements CommandClass {
 				GameMain.getInstance().getWarpManager().getWarpByName("Spawn"), 5);
 	}
 
-	@Command(name = "setwarp", groupToUse = Group.AJUDANTE)
+	@Command(name = "setwarp", groupToUse = Group.TRIAL)
 	public void setwarpCommand(BukkitCommandArgs cmdArgs) {
 		if (!cmdArgs.isPlayer())
 			return;
 
 		Player p = cmdArgs.getPlayer();
 
-		if (!Member.hasGroupPermission(p.getUniqueId(), Group.ADMIN) && !Member.isGroup(p.getUniqueId(), Group.AJUDANTE)) {
+		if (!Member.hasGroupPermission(p.getUniqueId(), Group.ADMIN) && !Member.isGroup(p.getUniqueId(), Group.TRIAL)) {
 			p.sendMessage(" §c* §fVocê não tem §cpermissão§f para executar esse comando!");
 			return;
 		}
@@ -221,7 +221,7 @@ public class WarpCommand implements CommandClass {
 		p.sendMessage(" §a* §fVocê setou a warp §a" + configName + "§f!");
 	}
 
-	@Command(name = "setprotection", groupToUse = Group.AJUDANTE)
+	@Command(name = "setprotection", groupToUse = Group.TRIAL)
 	public void protectionCommand(BukkitCommandArgs cmdArgs) {
 		if (!cmdArgs.isPlayer())
 			return;
@@ -229,7 +229,7 @@ public class WarpCommand implements CommandClass {
 		Player player = cmdArgs.getPlayer();
 
 		if (!Member.hasGroupPermission(player.getUniqueId(), Group.ADMIN)
-				&& !Member.isGroup(player.getUniqueId(), Group.AJUDANTE)) {
+				&& !Member.isGroup(player.getUniqueId(), Group.TRIAL)) {
 			player.sendMessage(" §c* §fVocê não tem §cpermissão§f para executar esse comando!");
 			return;
 		}
@@ -268,7 +268,7 @@ public class WarpCommand implements CommandClass {
 		player.sendMessage(" §a* §fVocê alterou a proteção da warp §a" + configName + "§f para " + protection + "!");
 	}
 
-	@Command(name = "setposition", groupToUse = Group.BUILDER)
+	@Command(name = "setposition", groupToUse = Group.MODPLUS)
 	public void setpositionCommand(BukkitCommandArgs cmdArgs) {
 		if (!cmdArgs.isPlayer())
 			return;
@@ -277,7 +277,7 @@ public class WarpCommand implements CommandClass {
 		String[] args = cmdArgs.getArgs();
 
 		if (!Member.hasGroupPermission(player.getUniqueId(), Group.ADMIN)
-				&& !Member.isGroup(player.getUniqueId(), Group.AJUDANTE)) {
+				&& !Member.isGroup(player.getUniqueId(), Group.TRIAL)) {
 			player.sendMessage(" §c* §fVocê não tem §cpermissão§f para executar esse comando!");
 			return;
 		}

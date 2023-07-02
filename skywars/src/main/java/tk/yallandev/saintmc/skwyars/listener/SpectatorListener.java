@@ -153,7 +153,7 @@ public class SpectatorListener implements Listener {
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onPlayerInteract(PlayerInteractEvent event) {
 		if (isSpectator(event.getPlayer()) || AdminMode.getInstance().isAdmin(event.getPlayer())) {
-			if (!Member.hasGroupPermission(event.getPlayer().getUniqueId(), Group.DONO))
+			if (!Member.hasGroupPermission(event.getPlayer().getUniqueId(), Group.ADMIN))
 				event.setCancelled(true);
 
 			if (event.getItem() == null)

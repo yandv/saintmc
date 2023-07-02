@@ -14,7 +14,7 @@ public interface StatusData {
 
 	void updateStatus(Status status, String fieldName);
 
-	Collection<Object> ranking(StatusType statusType, String fieldName);
+	<T extends Status> Collection<T> ranking(StatusType statusType, String fieldName, Class<T> clazz);
 
 	void deleteStatus(UUID uniqueId, StatusType status);
 }

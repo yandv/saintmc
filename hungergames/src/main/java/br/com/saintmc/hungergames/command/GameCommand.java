@@ -1,9 +1,17 @@
 package br.com.saintmc.hungergames.command;
 
+import br.com.saintmc.hungergames.game.Color;
+import br.com.saintmc.hungergames.game.Team;
+import br.com.saintmc.hungergames.utils.ServerConfig;
+import com.google.common.collect.Maps;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import net.md_5.bungee.api.chat.ClickEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 
 import br.com.saintmc.hungergames.GameGeneral;
@@ -26,164 +34,295 @@ import tk.yallandev.saintmc.common.command.CommandFramework.Command;
 import tk.yallandev.saintmc.common.command.CommandSender;
 import tk.yallandev.saintmc.common.permission.Group;
 import tk.yallandev.saintmc.common.utils.DateUtils;
+import tk.yallandev.saintmc.common.utils.string.MessageBuilder;
 import tk.yallandev.saintmc.common.utils.string.NameUtils;
 import tk.yallandev.saintmc.common.utils.string.StringUtils;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+
 public class GameCommand implements CommandClass {
 
-	@Command(name = "tempo", groupToUse = Group.MOD)
-	public void tempoCommand(CommandArgs cmdArgs) {
-		CommandSender sender = cmdArgs.getSender();
-		String[] args = cmdArgs.getArgs();
+    private Map<UUID, Map<UUID, Request>> teamRequest = Maps.newHashMap();
 
-		if (args.length == 0) {
-			sender.sendMessage(" §e* §fUse §a/" + cmdArgs.getLabel() + " <tempo:stop>§f para alterar o tempo do jogo!");
-			return;
-		}
+    @AllArgsConstructor
+    @Getter
+    public abstract class Request {
 
-		if (args[0].equalsIgnoreCase("stop")) {
-			GameGeneral.getInstance().setCountTime(!GameGeneral.getInstance().isCountTime());
-			sender.sendMessage(" §a* §fVocê " + (GameGeneral.getInstance().isCountTime() ? "§aativou" : "§cdesativou")
-					+ "§f o timer!");
-			return;
-		}
+        private Player inviter;
+        private long createdAt;
 
-		long time;
+        public abstract void response(boolean accept);
+    }
 
-		try {
-			time = DateUtils.parseDateDiff(args[0], true);
-		} catch (Exception e) {
-			sender.sendMessage(" §c* §fO formato de tempo não é v§lido.");
-			return;
-		}
+    public GameCommand() {
+        Bukkit.getPluginManager().registerEvents(new Listener() {
 
-		int seconds = (int) Math.floor((time - System.currentTimeMillis()) / 1000);
 
-		if (seconds >= 60 * 120)
-			seconds = 60 * 120;
+        }, BukkitMain.getInstance());
+    }
 
-		sender.sendMessage(" §a* §fO tempo do jogo foi alterado para §a" + args[0] + "§f!");
-		GameGeneral.getInstance().setTime(seconds);
-	}
+    @Command(name = "grupo")
+    public void grupoCommand(BukkitCommandArgs cmdArgs) {
+        if (!cmdArgs.isPlayer()) return;
 
-	@Command(name = "reviver", groupToUse = Group.ADMIN)
-	public void reviverCommand(CommandArgs cmdArgs) {
-		CommandSender sender = cmdArgs.getSender();
-		String[] args = cmdArgs.getArgs();
+        if (!GameMain.getPlugin().isTeamEnabled()) {
+            cmdArgs.getPlayer().sendMessage("§cO modo de times não está ativado.");
+            return;
+        }
 
-		if (args.length == 0) {
-			sender.sendMessage("§cUso /" + cmdArgs.getLabel() + " <player> para executar esse comando.");
-			return;
-		}
+        Player player = cmdArgs.getPlayer();
+        Gamer gamer = GameGeneral.getInstance().getGamerController().getGamer(player);
+        String[] args = cmdArgs.getArgs();
 
-		Player player = Bukkit.getPlayer(args[0]);
+        if (args.length == 0) {
+            player.sendMessage("§cUso /" + cmdArgs.getLabel() + " <player> para executar esse comando.");
+            return;
+        }
 
-		if (player == null) {
-			sender.sendMessage("§cO jogador não existe.");
-			return;
-		}
+        Player target = Bukkit.getPlayer(args[0]);
 
-		Gamer gamer = GameGeneral.getInstance().getGamerController().getGamer(player);
+        if (target == null) {
+            player.sendMessage("§cO jogador não existe.");
+            return;
+        }
 
-		if (gamer == null) {
-			sender.sendMessage("§cO jogador não existe.");
-			return;
-		}
+        if (teamRequest.containsKey(target.getUniqueId()) &&
+            teamRequest.get(target.getUniqueId()).containsKey(player.getUniqueId())) {
+            player.sendMessage("§cVocê já convidou esse jogador para seu time.");
+            return;
+        }
 
-		gamer.setDeathCause(null);
-		gamer.setSpectator(false);
-		gamer.setGamemaker(false);
-		gamer.setTimeout(false);
-		AdminMode.getInstance().setPlayer(player,
-				CommonGeneral.getInstance().getMemberManager().getMember(player.getUniqueId()));
+        if (teamRequest.containsKey(player.getUniqueId()) &&
+            teamRequest.get(player.getUniqueId()).containsKey(target.getUniqueId())) {
+            if (teamRequest.get(player.getUniqueId()).get(target.getUniqueId()).createdAt + 120000L <
+                System.currentTimeMillis()) {
+                player.sendMessage("§cO convite expirou.");
+                teamRequest.get(player.getUniqueId()).remove(target.getUniqueId());
+                return;
+            }
 
-		player.getInventory().clear();
-		player.getInventory().addItem(new ItemStack(Material.COMPASS));
-		player.setGameMode(GameMode.SURVIVAL);
-		player.setAllowFlight(false);
-		player.setHealth(20d);
-		player.setFoodLevel(20);
-		player.setExhaustion(1f);
-	}
+            teamRequest.get(player.getUniqueId()).get(target.getUniqueId()).response(
+                    args.length == 1 || args[1].equalsIgnoreCase("aceitar") || args[1].equalsIgnoreCase("accept"));
+            return;
+        }
 
-	@Command(name = "start", aliases = { "comecar", "iniciar" }, groupToUse = Group.MODPLUS)
-	public void startCommand(CommandArgs args) {
-		if (GameState.isPregame(GameGeneral.getInstance().getGameState())) {
-			args.getSender().sendMessage(" §a* §fVocê iniciou o jogo!");
+        if (gamer.getTeam() != null && gamer.getTeam().isFull()) {
+            player.sendMessage("§cO seu time já está cheio.");
+            return;
+        }
 
-			GameGeneral.getInstance().setCountTime(true);
-			GameGeneral.getInstance().setGameState(GameState.INVINCIBILITY);
-			GameMain.getInstance().registerListener(new GameListener());
-			Bukkit.getPluginManager().callEvent(new GameStartEvent());
+        Gamer targetGamer = GameGeneral.getInstance().getGamerController().getGamer(target);
 
-			CommonGeneral.getInstance().getMemberManager()
-					.broadcast("§7[INFO] O " + args.getSender().getName() + " iniciou a partida", Group.AJUDANTE);
-		}
-	}
+        if (targetGamer.getTeam() == null || targetGamer.getTeam().isFull()) {
+            player.sendMessage("§cO jogador já está em um time.");
+            return;
+        }
 
-	@Command(name = "game", aliases = { "help" })
-	public void gameCommand(CommandArgs cmdArgs) {
-		CommandSender sender = cmdArgs.getSender();
+        target.sendMessage("§aVocê foi convidado para uma dupla pelo jogador " + player.getName() + ".");
+        target.spigot().sendMessage(new MessageBuilder("§aClique §lAQUI§a para aceitar.")
+                                            .setClickEvent(ClickEvent.Action.RUN_COMMAND,
+                                                           "/" + cmdArgs.getLabel() + " " + player.getName() +
+                                                           " aceitar").create());
+        player.sendMessage("§aVocê convidou o jogador " + target.getName() + " para seu time.");
+        teamRequest.computeIfAbsent(target.getUniqueId(), v -> new HashMap<>())
+                   .put(player.getUniqueId(), new Request(player, System.currentTimeMillis()) {
 
-		sender.sendMessage(" ");
-		sender.sendMessage("§7Tempo: §f" + StringUtils.format(GameGeneral.getInstance().getTime()));
-		sender.sendMessage("§7Estágio: §f" + GameGeneral.getInstance().getGameState().name());
-		sender.sendMessage(" ");
+                       @Override
+                       public void response(boolean accept) {
+                           if (accept) {
+                               if ((gamer.getTeam() == null || !gamer.getTeam().isFull())) {
+                                   Team team = gamer.getTeam() == null ? GameMain.getInstance().getTeamManager()
+                                           .getEmptyTeam() :
+                                               gamer.getTeam();
 
-		if (cmdArgs.isPlayer()) {
-			Gamer gamer = GameGeneral.getInstance().getGamerController().getGamer(sender.getUniqueId());
+                                   if (team == null) {
+                                       player.sendMessage("§cNão há mais vagas para esse time.");
+                                       teamRequest.remove(target.getUniqueId());
+                                       return;
+                                   }
 
-			if (GameMain.DOUBLEKIT) {
-				sender.sendMessage("§7Kit 1: §a" + NameUtils.formatString(gamer.getKitName(KitType.PRIMARY)));
-				sender.sendMessage("§7Kit 2: §a" + NameUtils.formatString(gamer.getKitName(KitType.SECONDARY)));
-			} else
-				sender.sendMessage("§7Kit: §a" + NameUtils.formatString(gamer.getKitName(KitType.PRIMARY)));
+                                   if (targetGamer.getTeam() != null) {
+                                       if (targetGamer.getTeam().getPlayerList().size() < 2) {
+                                           targetGamer.getTeam().forceRemoveGamer(targetGamer);
+                                       }
+                                   }
 
-			sender.sendMessage("§7Kills: §a" + gamer.getMatchKills());
-		}
+                                   team.addPlayer(gamer);
+                                   team.addPlayer(targetGamer);
+                               }
 
-		sender.sendMessage(" ");
-		sender.sendMessage("§7Sala: §b" + GameMain.getInstance().getRoomId());
-	}
+                               teamRequest.remove(target.getUniqueId());
+                           } else {
+                               player.sendMessage("§cO jogador " + target.getName() + " recusou o convite.");
+                               target.sendMessage("§cVocê recusou o convite do jogador " + player.getName() + ".");
+                               teamRequest.remove(target.getUniqueId());
+                           }
+                       }
+                   });
+    }
 
-	@Command(name = "feast")
-	public void feastCommand(BukkitCommandArgs cmdArgs) {
-		if (cmdArgs.isPlayer()) {
-			Player player = cmdArgs.getPlayer();
+    @Command(name = "tempo", groupToUse = Group.MOD)
+    public void tempoCommand(CommandArgs cmdArgs) {
+        CommandSender sender = cmdArgs.getSender();
+        String[] args = cmdArgs.getArgs();
 
-			if (GameScheduler.feastLocation == null)
-				player.sendMessage("§cO feast ainda não spawnou!");
-			else {
-				player.sendMessage("§aBussola apontando para o feast!");
-				player.setCompassTarget(GameScheduler.feastLocation);
-			}
-		}
-	}
+        if (args.length == 0) {
+            sender.sendMessage(" §e* §fUse §a/" + cmdArgs.getLabel() + " <tempo:stop>§f para alterar o tempo do jogo!");
+            return;
+        }
 
-	@Command(name = "spawn")
-	public void spawnCommand(CommandArgs cmdArgs) {
-		if (cmdArgs.isPlayer()) {
-			if (GameGeneral.getInstance().getGameState().isPregame()) {
-				Player player = ((BukkitMember) cmdArgs.getSender()).getPlayer();
+        if (args[0].equalsIgnoreCase("stop")) {
+            GameGeneral.getInstance().setCountTime(!GameGeneral.getInstance().isCountTime());
+            ServerConfig.getInstance().setTimeInWaiting(false);
 
-				player.teleport(BukkitMain.getInstance().getLocationFromConfig("spawn"));
-			}
-		}
-	}
+            if (GameGeneral.getInstance().getGameState() == GameState.WAITING)
+                GameGeneral.getInstance().setGameState(GameState.PREGAME);
 
-	@Command(name = "spectator", aliases = { "spec" }, groupToUse = Group.AJUDANTE)
-	public void spectatorCommand(BukkitCommandArgs cmdArgs) {
-		if (!cmdArgs.isPlayer())
-			return;
+            sender.sendMessage(" §a* §fVocê " + (GameGeneral.getInstance().isCountTime() ? "§aativou" : "§cdesativou") +
+                               "§f o timer!");
+            return;
+        }
 
-		Player player = ((BukkitMember) cmdArgs.getSender()).getPlayer();
+        long time;
 
-		Gamer gamer = GameGeneral.getInstance().getGamerController().getGamer(player);
+        try {
+            time = DateUtils.parseDateDiff(args[0], true);
+        } catch (Exception e) {
+            sender.sendMessage(" §c* §fO formato de tempo não é v§lido.");
+            return;
+        }
 
-		gamer.setSpectatorsEnabled(!gamer.isSpectatorsEnabled());
-		player.sendMessage(gamer.isSpectatorsEnabled() ? "§aVocê agora vê os jogadores no espectador!"
-				: "§cVocê agora não vê mais os jogadores no espectador!");
-		VanishAPI.getInstance().updateVanishToPlayer(player);
-	}
+        int seconds = (int) Math.floor((time - System.currentTimeMillis()) / 1000);
 
+        if (seconds >= 60 * 120) {
+            seconds = 60 * 120;
+        }
+
+        sender.sendMessage(" §a* §fO tempo do jogo foi alterado para §a" + args[0] + "§f!");
+        GameGeneral.getInstance().setTime(seconds);
+    }
+
+    @Command(name = "reviver", groupToUse = Group.ADMIN)
+    public void reviverCommand(CommandArgs cmdArgs) {
+        CommandSender sender = cmdArgs.getSender();
+        String[] args = cmdArgs.getArgs();
+
+        if (args.length == 0) {
+            sender.sendMessage("§cUso /" + cmdArgs.getLabel() + " <player> para executar esse comando.");
+            return;
+        }
+
+        Player player = Bukkit.getPlayer(args[0]);
+
+        if (player == null) {
+            sender.sendMessage("§cO jogador não existe.");
+            return;
+        }
+
+        Gamer gamer = GameGeneral.getInstance().getGamerController().getGamer(player);
+
+        if (gamer == null) {
+            sender.sendMessage("§cO jogador não existe.");
+            return;
+        }
+
+        gamer.setDeathCause(null);
+        gamer.setSpectator(false);
+        gamer.setGamemaker(false);
+        gamer.setTimeout(false);
+        AdminMode.getInstance()
+                 .setPlayer(player, CommonGeneral.getInstance().getMemberManager().getMember(player.getUniqueId()));
+
+        player.getInventory().clear();
+        player.getInventory().addItem(new ItemStack(Material.COMPASS));
+        player.setGameMode(GameMode.SURVIVAL);
+        player.setAllowFlight(false);
+        player.setHealth(20d);
+        player.setFoodLevel(20);
+        player.setExhaustion(1f);
+    }
+
+    @Command(name = "start", aliases = {"comecar", "iniciar"}, groupToUse = Group.MODPLUS)
+    public void startCommand(CommandArgs args) {
+        if (GameState.isPregame(GameGeneral.getInstance().getGameState())) {
+            args.getSender().sendMessage(" §a* §fVocê iniciou o jogo!");
+
+            GameGeneral.getInstance().setCountTime(true);
+            GameGeneral.getInstance().setGameState(GameState.INVINCIBILITY);
+            GameMain.getInstance().registerListener(new GameListener());
+            Bukkit.getPluginManager().callEvent(new GameStartEvent());
+
+            CommonGeneral.getInstance().getMemberManager()
+                         .broadcast("§7[INFO] O " + args.getSender().getName() + " iniciou a partida", Group.TRIAL);
+        }
+    }
+
+    @Command(name = "game", aliases = {"help"})
+    public void gameCommand(CommandArgs cmdArgs) {
+        CommandSender sender = cmdArgs.getSender();
+
+        sender.sendMessage(" ");
+        sender.sendMessage("§7Tempo: §f" + StringUtils.format(GameGeneral.getInstance().getTime()));
+        sender.sendMessage("§7Estágio: §f" + GameGeneral.getInstance().getGameState().name());
+        sender.sendMessage(" ");
+
+        if (cmdArgs.isPlayer()) {
+            Gamer gamer = GameGeneral.getInstance().getGamerController().getGamer(sender.getUniqueId());
+
+            if (GameMain.getInstance().isDoubleKit()) {
+                sender.sendMessage("§7Kit 1: §a" + NameUtils.formatString(gamer.getKitName(KitType.PRIMARY)));
+                sender.sendMessage("§7Kit 2: §a" + NameUtils.formatString(gamer.getKitName(KitType.SECONDARY)));
+            } else {
+                sender.sendMessage("§7Kit: §a" + NameUtils.formatString(gamer.getKitName(KitType.PRIMARY)));
+            }
+
+            sender.sendMessage("§7Kills: §a" + gamer.getMatchKills());
+        }
+
+        sender.sendMessage(" ");
+        sender.sendMessage("§7Sala: §b" + GameMain.getInstance().getRoomId());
+    }
+
+    @Command(name = "feast")
+    public void feastCommand(BukkitCommandArgs cmdArgs) {
+        if (cmdArgs.isPlayer()) {
+            Player player = cmdArgs.getPlayer();
+
+            if (GameScheduler.feastLocation == null) {
+                player.sendMessage("§cO feast ainda não spawnou!");
+            } else {
+                player.sendMessage("§aBussola apontando para o feast!");
+                player.setCompassTarget(GameScheduler.feastLocation);
+            }
+        }
+    }
+
+    @Command(name = "spawn")
+    public void spawnCommand(CommandArgs cmdArgs) {
+        if (cmdArgs.isPlayer()) {
+            if (GameGeneral.getInstance().getGameState().isPregame()) {
+                Player player = ((BukkitMember) cmdArgs.getSender()).getPlayer();
+
+                player.teleport(BukkitMain.getInstance().getLocationFromConfig("spawn"));
+            }
+        }
+    }
+
+    @Command(name = "spectator", aliases = {"spec"}, groupToUse = Group.TRIAL)
+    public void spectatorCommand(BukkitCommandArgs cmdArgs) {
+        if (!cmdArgs.isPlayer()) {
+            return;
+        }
+
+        Player player = ((BukkitMember) cmdArgs.getSender()).getPlayer();
+
+        Gamer gamer = GameGeneral.getInstance().getGamerController().getGamer(player);
+
+        gamer.setSpectatorsEnabled(!gamer.isSpectatorsEnabled());
+        player.sendMessage(gamer.isSpectatorsEnabled() ? "§aVocê agora vê os jogadores no espectador!" :
+                           "§cVocê agora não vê mais os jogadores no espectador!");
+        VanishAPI.getInstance().updateVanishToPlayer(player);
+    }
 }

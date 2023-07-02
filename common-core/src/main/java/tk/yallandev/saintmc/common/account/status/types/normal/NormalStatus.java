@@ -11,7 +11,7 @@ import tk.yallandev.saintmc.common.account.status.StatusType;
 public class NormalStatus implements Status {
 
 	private UUID uniqueId;
-	private StatusType statusType;
+	private final StatusType statusType;
 
 	private int kills;
 	private int deaths;

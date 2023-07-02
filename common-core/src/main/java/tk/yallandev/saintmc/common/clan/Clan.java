@@ -167,7 +167,7 @@ public abstract class Clan {
 			maxMembers = this.memberMap.size();
 		else {
 			long paymentMembers = this.memberMap.values().stream()
-					.filter(member -> member.getGroup().ordinal() >= Group.PRO.ordinal()).count();
+					.filter(member -> member.getGroup().ordinal() >= Group.VIP.ordinal()).count();
 
 			maxMembers = 16 + (int) paymentMembers;
 		}

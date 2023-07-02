@@ -27,7 +27,7 @@ import tk.yallandev.saintmc.common.utils.string.StringUtils;
 
 public class ServerCommand implements CommandClass {
 
-	@Command(name = "torneio", aliases = { "battlenord" })
+	@Command(name = "torneio", aliases = { "battlepenta" })
 	public void eventoCommand(CommandArgs cmdArgs) {
 		if (!cmdArgs.isPlayer())
 			return;
@@ -150,7 +150,7 @@ public class ServerCommand implements CommandClass {
 		}
 	}
 
-	@Command(name = "tps", aliases = { "ticks" }, groupToUse = Group.AJUDANTE)
+	@Command(name = "tps", aliases = { "ticks" }, groupToUse = Group.TRIAL)
 	public void tpsCommand(CommandArgs cmdArgs) {
 		CommandSender sender = cmdArgs.getSender();
 

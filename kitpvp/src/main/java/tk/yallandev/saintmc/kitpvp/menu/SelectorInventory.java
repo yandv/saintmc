@@ -86,8 +86,9 @@ public class SelectorInventory {
 					new MenuClickHandler() {
 
 						@Override
-						public void onClick(Player arg0, Inventory arg1, ClickType arg2, ItemStack arg3, int arg4) {
+						public boolean onClick(Player arg0, Inventory arg1, ClickType arg2, ItemStack arg3, int arg4) {
 							new SelectorInventory(arg0, page - 1, orderType);
+							return false;
 						}
 
 					}), 45);
@@ -96,7 +97,7 @@ public class SelectorInventory {
 		if (Math.ceil(items.size() / itemsPerPage) + 1 > page) {
 			menu.setItem(
 					new MenuItem(new ItemBuilder().type(Material.ARROW).name("§aPágina " + (page + 1)).build(),
-							(p, inventory, clickType, item, slot) -> new SelectorInventory(p, page + 1, orderType)),
+							(p, inventory, clickType, item, slot) -> {new SelectorInventory(p, page + 1, orderType);return false;}),
 					53);
 		}
 
@@ -108,10 +109,11 @@ public class SelectorInventory {
 				new MenuClickHandler() {
 
 					@Override
-					public void onClick(Player p, Inventory inv, ClickType type, ItemStack stack, int slot) {
+					public boolean onClick(Player p, Inventory inv, ClickType type, ItemStack stack, int slot) {
 						new SelectorInventory(player, page,
 								orderType.ordinal() == OrderType.values().length - 1 ? OrderType.values()[0]
 										: OrderType.values()[orderType.ordinal() + 1]);
+						return false;
 					}
 				});
 
@@ -124,10 +126,11 @@ public class SelectorInventory {
 		private Kit kit;
 
 		@Override
-		public void onClick(Player p, Inventory inv, ClickType type, ItemStack stack, int slot) {
+		public boolean onClick(Player p, Inventory inv, ClickType type, ItemStack stack, int slot) {
 			GameMain.getInstance().getGamerManager().getGamer(p.getUniqueId()).setKit(kit);
 			GameMain.getInstance().getKitManager().selectKit(p, kit);
 			p.closeInventory();
+			return false;
 		}
 
 	}
@@ -138,8 +141,9 @@ public class SelectorInventory {
 		private Kit kit;
 
 		@Override
-		public void onClick(Player p, Inventory inv, ClickType type, ItemStack stack, int slot) {
+		public boolean onClick(Player p, Inventory inv, ClickType type, ItemStack stack, int slot) {
 			p.sendMessage("§cVocê não possui o kit " + kit.getName() + "!");
+			return false;
 		}
 
 	}
@@ -169,7 +173,7 @@ public class SelectorInventory {
 				return (kit1, kit2) -> kit2.getName().compareTo(kit1.getName());
 			}
 			default: {
-				return Comparator.comparing(kit -> kit.getName());
+				return Comparator.comparing(Kit::getName);
 			}
 			}
 		}

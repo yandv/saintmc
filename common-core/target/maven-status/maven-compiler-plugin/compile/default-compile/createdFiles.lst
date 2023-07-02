@@ -82,6 +82,7 @@ tk\yallandev\saintmc\common\controller\GiftcodeController$ExecutionResponse.clas
 tk\yallandev\saintmc\common\account\status\types\challenge\ChallengeStatus.class
 tk\yallandev\saintmc\common\server\loadbalancer\server\ProxiedServer.class
 tk\yallandev\saintmc\common\clan\event\ClanEvent.class
+tk\yallandev\saintmc\common\ban\Category.class
 tk\yallandev\saintmc\common\controller\ClanManager.class
 tk\yallandev\saintmc\common\command\CommandClass.class
 tk\yallandev\saintmc\common\backend\database\mongodb\MongoQuery$3.class
@@ -169,6 +170,7 @@ tk\yallandev\saintmc\common\utils\reflection\Reflection$MethodInvoker.class
 tk\yallandev\saintmc\common\ban\PunishmentHistory.class
 tk\yallandev\saintmc\common\account\configuration\LoginConfiguration$AccountType.class
 tk\yallandev\saintmc\common\account\MemberVoid.class
+tk\yallandev\saintmc\common\account\status\types\combat\CombatStatus.class
 tk\yallandev\saintmc\common\data\payload\DataServerMessage$LeavePayload.class
 tk\yallandev\saintmc\common\data\payload\DataServerMessage$WhitelistAddPayload.class
 tk\yallandev\saintmc\common\utils\reflection\ReflectionUtils.class
@@ -185,6 +187,7 @@ tk\yallandev\saintmc\common\utils\mojang\MojangFetcher$3.class
 tk\yallandev\saintmc\common\command\CommandFramework$Command.class
 tk\yallandev\saintmc\common\account\League.class
 tk\yallandev\saintmc\CommonGeneral.class
+tk\yallandev\saintmc\common\account\status\types\combat\CombatModel.class
 tk\yallandev\saintmc\common\data\impl\PlayerDataImpl$1.class
 tk\yallandev\saintmc\common\account\configuration\AccountConfiguration.class
 tk\yallandev\saintmc\common\controller\PacketController.class

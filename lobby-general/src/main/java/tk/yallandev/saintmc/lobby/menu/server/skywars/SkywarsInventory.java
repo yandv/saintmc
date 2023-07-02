@@ -12,52 +12,57 @@ import tk.yallandev.saintmc.common.server.ServerType;
 
 public class SkywarsInventory {
 
-	public SkywarsInventory(Player player) {
-		MenuInventory menuInventory = new MenuInventory("§7§nSelecionar Skywars", 3);
+    public SkywarsInventory(Player player) {
+        MenuInventory menuInventory = new MenuInventory("§7§nSelecionar Skywars", 3);
 
-		menuInventory.setItem(11,
-				new ItemBuilder().name("§aSky Wars (Solo Normal)").type(Material.EYE_OF_ENDER)
-						.lore("§8" + BukkitMain.getInstance().getServerManager().getBalancer(ServerType.SW_SOLO)
-								.getTotalNumber() + " jogadores", "", "§aClique para conectar.")
-						.build(),
-				(p, inv, type, stack, slot) -> {
-					p.closeInventory();
-					BukkitMain.getInstance().sendServer(p, ServerType.SW_SOLO);
-				});
+        menuInventory.setItem(11, new ItemBuilder().name("§aSky Wars (Solo Normal)").type(Material.EYE_OF_ENDER)
+                                                   .lore("§8" + BukkitMain.getInstance().getServerManager()
+                                                                          .getBalancer(ServerType.SW_SOLO)
+                                                                          .getTotalNumber() + " jogadores", "",
+                                                         "§aClique para conectar.").build(),
+                              (p, inv, type, stack, slot) -> {
+                                  p.closeInventory();
+                                  BukkitMain.getInstance().sendServer(p, ServerType.SW_SOLO);
+                                  return false;
+                              });
 
-		menuInventory.setItem(12, new ItemBuilder().name("§aSelecionar mapa (Solo Normal)").type(Material.PAPER)
-				.lore("§7Escolha o mapa que você deseja", "§7jogar", "", "§cDisponível apenas para VIPs!").build(),
-				(p, inv, type, stack, slot) -> {
-					if (Member.hasGroupPermission(player.getUniqueId(), Group.PRO))
-						new SkywarsMapSelectionInventory(player, ServerType.SW_SOLO);
-					else {
-						player.sendMessage("§cSomente VIPs podem escolher o mapa do SkyWars!");
-						player.closeInventory();
-					}
-				});
+        menuInventory.setItem(12, new ItemBuilder().name("§aSelecionar mapa (Solo Normal)").type(Material.PAPER)
+                                                   .lore("§7Escolha o mapa que você deseja", "§7jogar", "",
+                                                         "§cDisponível apenas para VIPs!").build(),
+                              (p, inv, type, stack, slot) -> {
+                                  if (Member.hasGroupPermission(player.getUniqueId(), Group.VIP)) {
+                                      new SkywarsMapSelectionInventory(player, ServerType.SW_SOLO);
+                                  } else {
+                                      player.sendMessage("§cSomente VIPs podem escolher o mapa do SkyWars!");
+                                      player.closeInventory();
+                                  }
+                                  return false;
+                              });
 
-		menuInventory.setItem(14,
-				new ItemBuilder().name("§aSky Wars (Solo Lucky)").type(Material.EYE_OF_ENDER)
-						.lore("§8" + BukkitMain.getInstance().getServerManager().getBalancer(ServerType.SK_SOLO)
-								.getTotalNumber() + " jogadores", "", "§aClique para conectar.")
-						.build(),
-				(p, inv, type, stack, slot) -> {
-					p.closeInventory();
-					BukkitMain.getInstance().sendServer(p, ServerType.SK_SOLO);
-				});
+        menuInventory.setItem(14, new ItemBuilder().name("§aSky Wars (Solo Lucky)").type(Material.EYE_OF_ENDER)
+                                                   .lore("§8" + BukkitMain.getInstance().getServerManager()
+                                                                          .getBalancer(ServerType.SK_SOLO)
+                                                                          .getTotalNumber() + " jogadores", "",
+                                                         "§aClique para conectar.").build(),
+                              (p, inv, type, stack, slot) -> {
+                                  p.closeInventory();
+                                  BukkitMain.getInstance().sendServer(p, ServerType.SK_SOLO);
+                                  return false;
+                              });
 
-		menuInventory.setItem(15, new ItemBuilder().name("§aSelecionar mapa (Solo Lucky)").type(Material.PAPER)
-				.lore("§7Escolha o mapa que você deseja", "§7jogar", "", "§cDisponível apenas para VIPs!").build(),
-				(p, inv, type, stack, slot) -> {
-					if (Member.hasGroupPermission(player.getUniqueId(), Group.PRO))
-						new SkywarsMapSelectionInventory(player, ServerType.SK_SOLO);
-					else {
-						player.sendMessage("§cSomente VIPs podem escolher o mapa do SkyWars!");
-						player.closeInventory();
-					}
-				});
+        menuInventory.setItem(15, new ItemBuilder().name("§aSelecionar mapa (Solo Lucky)").type(Material.PAPER)
+                                                   .lore("§7Escolha o mapa que você deseja", "§7jogar", "",
+                                                         "§cDisponível apenas para VIPs!").build(),
+                              (p, inv, type, stack, slot) -> {
+                                  if (Member.hasGroupPermission(player.getUniqueId(), Group.VIP)) {
+                                      new SkywarsMapSelectionInventory(player, ServerType.SK_SOLO);
+                                  } else {
+                                      player.sendMessage("§cSomente VIPs podem escolher o mapa do SkyWars!");
+                                      player.closeInventory();
+                                  }
+                                  return false;
+                              });
 
-		menuInventory.open(player);
-	}
-
+        menuInventory.open(player);
+    }
 }
