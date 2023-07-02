@@ -12,9 +12,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
-import lombok.AllArgsConstructor;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -46,8 +44,6 @@ import tk.yallandev.saintmc.bukkit.api.character.Character;
 import tk.yallandev.saintmc.bukkit.api.character.CharacterListener;
 import tk.yallandev.saintmc.bukkit.api.cooldown.CooldownController;
 import tk.yallandev.saintmc.bukkit.api.hologram.Hologram;
-import tk.yallandev.saintmc.bukkit.api.hologram.impl.CraftHologram;
-import tk.yallandev.saintmc.bukkit.api.hologram.impl.TopRanking;
 import tk.yallandev.saintmc.bukkit.api.item.ActionItemListener;
 import tk.yallandev.saintmc.bukkit.api.menu.MenuListener;
 import tk.yallandev.saintmc.bukkit.api.protocol.ProtocolGetter;
@@ -408,6 +404,10 @@ public class BukkitMain extends JavaPlugin {
         out.writeUTF(Joiner.on('-').join(serverType));
         player.sendPluginMessage(getInstance(), "BungeeCord", out.toByteArray());
         player.closeInventory();
+    }
+
+    public Map<String, Location> getLocations() {
+        return this.location;
     }
 
     public Location getLocationFromConfig(String config) {

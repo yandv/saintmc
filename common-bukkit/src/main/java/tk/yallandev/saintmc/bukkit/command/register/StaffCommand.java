@@ -15,10 +15,14 @@ import tk.yallandev.saintmc.bukkit.bukkit.BukkitMember;
 import tk.yallandev.saintmc.common.account.Member;
 import tk.yallandev.saintmc.common.command.CommandArgs;
 import tk.yallandev.saintmc.common.command.CommandClass;
+import tk.yallandev.saintmc.common.command.CommandFramework;
 import tk.yallandev.saintmc.common.command.CommandFramework.Command;
 import tk.yallandev.saintmc.common.command.CommandSender;
 import tk.yallandev.saintmc.common.permission.Group;
 import tk.yallandev.saintmc.common.server.ServerType;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class StaffCommand implements CommandClass {
 
@@ -40,6 +44,13 @@ public class StaffCommand implements CommandClass {
 		msg = sb.toString();
 
 		Bukkit.broadcastMessage("§6§lPENTAMC §e> §f" + msg.replace("&", "§"));
+	}
+
+	@CommandFramework.Completer(name = "setspawn")
+	public List<String> setspawnCompleter(CommandArgs cmdArgs) {
+		return BukkitMain.getInstance().getLocations().keySet().stream().map(String::toLowerCase)
+				.filter(string -> cmdArgs.getArgs().length == 0 ? true : string.startsWith(cmdArgs.getArgs()[cmdArgs.getArgs().length - 1].toLowerCase()))
+				.collect(Collectors.toList());
 	}
 
 	@Command(name = "setspawn", groupToUse = Group.TRIAL)

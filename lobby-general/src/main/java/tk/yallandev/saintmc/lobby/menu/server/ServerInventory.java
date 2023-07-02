@@ -45,12 +45,7 @@ public class ServerInventory {
                                                                                                                     HUNGERGAMES) +
                                                                                                             " jogando agora.")
                                                    .build(), (p, inv, type, stack, slot) -> {
-            if (LOBBY_HG || type == ClickType.LEFT) {
-                BukkitMain.getInstance().sendServer(player, ServerType.HUNGERGAMES);
-                return false;
-            }
-
-            new HungergamesInventory(p);
+            BukkitMain.getInstance().sendServer(player, ServerType.LOBBY_HG);
             return false;
         });
 

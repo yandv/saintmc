@@ -23,7 +23,7 @@ public class TagSerializer implements JsonDeserializer<Tag>, JsonSerializer<Tag>
 
 	@Override
 	public Tag deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
-			throws JsonParseException {
+			throws JsonParseException {// abre o server ai pra euver se vai ocorrer tudo certinho
 
 		Tag tag = null;
 		boolean chroma = false;
