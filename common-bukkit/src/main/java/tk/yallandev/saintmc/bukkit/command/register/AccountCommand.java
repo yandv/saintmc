@@ -277,25 +277,12 @@ public class AccountCommand implements CommandClass {
 		player.setTag(player.getTag());
 	}
 
-	@Command(name = "rank", aliases = { "ranks", "liga", "ligas" })
+	@Command(name = "rank", aliases = { "ranks", "liga", "ligas", "ranking" })
 	public void rankCommand(CommandArgs cmdArgs) {
 		if (!cmdArgs.isPlayer())
 			return;
 
 		Member player = CommonGeneral.getInstance().getMemberManager().getMember(cmdArgs.getSender().getUniqueId());
-
-		List<League> leagues = Arrays.asList(League.values());
-		Collections.reverse(leagues);
-
-		for (League league : leagues) {
-			MessageBuilder messageBuilder = new MessageBuilder(
-					league.getColor() + league.getSymbol() + " " + league.getName());
-
-			if (player.getLeague() == league)
-				messageBuilder.setHoverEvent(HoverEvent.Action.SHOW_TEXT, "§aO seu rank é esse!");
-
-			player.sendMessage(messageBuilder.create());
-		}
 
 		player.sendMessage("");
 		player.sendMessage("§eSeu rank atual é " + player.getLeague().getColor() + player.getLeague().getSymbol() + " "

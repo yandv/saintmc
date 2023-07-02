@@ -22,10 +22,10 @@ public enum League {
     ELITE_II("§5", "✣", "Elite II", 35000),
     ELITE_III("§5", "✣", "Elite III", 44000),
 
-    MASTER("§6", "✥", "Master I", 55000),
-    MASTER_II("§6", "✥", "Master II", 67000),
-    MASTER_III("§6", "✥", "Master III", 80000),
-    MASTER_IV("§6", "✥", "Master III", 100000),
+    MASTER("§c", "✥", "Master I", 55000),
+    MASTER_II("§c", "✥", "Master II", 67000),
+    MASTER_III("§c", "✥", "Master III", 80000),
+    MASTER_IV("§c", "✥", "Master III", 100000),
 
 
     LEGENDARY("§4", "✪", "Legendary", Integer.MAX_VALUE);

@@ -11,6 +11,7 @@ import tk.yallandev.saintmc.bukkit.api.item.ItemBuilder;
 import tk.yallandev.saintmc.bukkit.api.menu.MenuInventory;
 import tk.yallandev.saintmc.common.account.Member;
 import tk.yallandev.saintmc.common.account.status.StatusType;
+import tk.yallandev.saintmc.common.account.status.types.combat.CombatStatus;
 import tk.yallandev.saintmc.common.account.status.types.game.GameStatus;
 import tk.yallandev.saintmc.common.account.status.types.normal.NormalStatus;
 import tk.yallandev.saintmc.common.permission.Group;
@@ -56,8 +57,8 @@ public class StatusInventory {
 			break;
 		}
 		case SHADOW: {
-			NormalStatus status = CommonGeneral.getInstance().getStatusManager().loadStatus(uuid, statusType,
-					NormalStatus.class);
+			CombatStatus status = CommonGeneral.getInstance().getStatusManager().loadStatus(uuid, statusType,
+					CombatStatus.class);
 
 			name = "§a1v1";
 			lore = "\n§fPartidas: §7" + (status.getKills() + status.getDeaths()) + "\n§fKills: §7" + status.getKills()
@@ -78,8 +79,8 @@ public class StatusInventory {
 			break;
 		}
 		case GLADIATOR: {
-			NormalStatus status = CommonGeneral.getInstance().getStatusManager().loadStatus(uuid, statusType,
-					NormalStatus.class);
+			CombatStatus status = CommonGeneral.getInstance().getStatusManager().loadStatus(uuid, statusType,
+					CombatStatus.class);
 
 			name = "§aGladiator";
 			lore = "\n§fPartidas: §7" + (status.getKills() + status.getDeaths()) + "\n§fWins: §7" + status.getKills()

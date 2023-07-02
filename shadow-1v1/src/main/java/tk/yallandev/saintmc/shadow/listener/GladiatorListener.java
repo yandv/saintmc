@@ -404,8 +404,8 @@ public class GladiatorListener implements Listener {
         player.getInventory().clear();
         player.getInventory().setArmorContents(new ItemStack[4]);
 
-        player.getInventory().setItem(3, queueJoin);
-        player.getInventory().setItem(5, normalItem.getItemStack());
+        player.getInventory().setItem(3, normalItem.getItemStack());
+        player.getInventory().setItem(5, queueJoin);
 
         for (PotionEffect potion : player.getActivePotionEffects())
             player.removePotionEffect(potion.getType());
