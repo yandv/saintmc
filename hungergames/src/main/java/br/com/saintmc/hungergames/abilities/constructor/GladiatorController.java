@@ -20,6 +20,7 @@ import org.bukkit.event.block.BlockDamageEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -29,7 +30,6 @@ import br.com.saintmc.hungergames.event.ability.GladiatorScapeEvent;
 import br.com.saintmc.hungergames.event.ability.PlayerStompedEvent;
 import br.com.saintmc.hungergames.event.player.PlayerDeathDropItemEvent;
 import tk.yallandev.saintmc.BukkitConst;
-import tk.yallandev.saintmc.bukkit.event.PlayerMoveUpdateEvent;
 import tk.yallandev.saintmc.bukkit.event.player.PlayerDamagePlayerEvent;
 import tk.yallandev.saintmc.bukkit.event.player.TeleportAllEvent;
 import tk.yallandev.saintmc.bukkit.event.update.UpdateEvent;
@@ -391,7 +391,7 @@ public class GladiatorController {
 		}
 
 		@EventHandler
-		public void onPlayerMoveUpdate(PlayerMoveUpdateEvent event) {
+		public void onPlayerMove(PlayerMoveEvent event) {
 			Player player = event.getPlayer();
 
 			if (isInFight(player)) {

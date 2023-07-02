@@ -4,11 +4,11 @@ import java.util.ArrayList;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import br.com.saintmc.hungergames.abilities.Ability;
-import tk.yallandev.saintmc.bukkit.event.PlayerMoveUpdateEvent;
 
 public class CamelAbility extends Ability {
 	
@@ -17,7 +17,7 @@ public class CamelAbility extends Ability {
 	}
 	
 	@EventHandler
-	public void onPlayerMoveUpdate(PlayerMoveUpdateEvent event) {
+	public void onPlayerMove(PlayerMoveEvent event) {
 		Player player = event.getPlayer();
 		
 		if (!hasAbility(player))

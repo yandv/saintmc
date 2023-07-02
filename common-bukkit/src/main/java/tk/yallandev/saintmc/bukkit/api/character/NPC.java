@@ -79,7 +79,7 @@ public class NPC {
 		this.entityPlayer.getBukkitEntity().setRemoveWhenFarAway(false);
 		this.entityPlayer.setLocation(location.getX(), location.getY(), location.getZ(), location.getYaw(),
 				location.getPitch());
-		Bukkit.getOnlinePlayers().forEach(player -> show(player));
+		Bukkit.getOnlinePlayers().forEach(this::show);
 	}
 
 	public void show(Player player) {
@@ -116,11 +116,6 @@ public class NPC {
 			try {
 				ProtocolLibrary.getProtocolManager().sendServerPacket(player,
 						buildSpawnBatPacket(batEntityId, location));
-
-				PacketPlayOutAttachEntity packet = new PacketPlayOutAttachEntity();
-				setFieldValue(packet, "a", 0);
-				setFieldValue(packet, "b", batEntityId);
-				setFieldValue(packet, "c", this.entityPlayer.getId());
 
 				playerConnection.sendPacket(buildAttachPacket(batEntityId, this.entityPlayer.getId()));
 			} catch (InvocationTargetException e) {

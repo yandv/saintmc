@@ -24,12 +24,12 @@ import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import tk.yallandev.saintmc.bukkit.api.item.ItemBuilder;
-import tk.yallandev.saintmc.bukkit.event.PlayerMoveUpdateEvent;
 import tk.yallandev.saintmc.bukkit.event.player.PlayerDamagePlayerEvent;
 import tk.yallandev.saintmc.bukkit.event.player.TeleportAllEvent;
 import tk.yallandev.saintmc.bukkit.event.update.UpdateEvent;
@@ -450,7 +450,7 @@ public class GladiatorKit extends Kit {
 			}
 
 			@EventHandler
-			public void onPlayerMoveUpdate(PlayerMoveUpdateEvent event) {
+			public void onPlayerMove(PlayerMoveEvent event) {
 				Player player = event.getPlayer();
 
 				if (isInFight(player)) {

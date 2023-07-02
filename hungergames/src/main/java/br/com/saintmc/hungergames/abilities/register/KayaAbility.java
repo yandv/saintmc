@@ -12,6 +12,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.inventory.PrepareItemCraftEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ShapelessRecipe;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -21,7 +22,6 @@ import br.com.saintmc.hungergames.GameGeneral;
 import br.com.saintmc.hungergames.GameMain;
 import br.com.saintmc.hungergames.abilities.Ability;
 import br.com.saintmc.hungergames.constructor.Gamer;
-import tk.yallandev.saintmc.bukkit.event.PlayerMoveUpdateEvent;
 
 public class KayaAbility extends Ability {
 
@@ -52,7 +52,7 @@ public class KayaAbility extends Ability {
 	}
 
 	@EventHandler
-	public void onPlayerMoveUpdate(PlayerMoveUpdateEvent event) {
+	public void onPlayerMove(PlayerMoveEvent event) {
 		Player player = event.getPlayer();
 
 		Gamer gamer = GameGeneral.getInstance().getGamerController().getGamer(player);

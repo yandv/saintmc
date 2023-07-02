@@ -8,8 +8,8 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 
+import org.bukkit.event.player.PlayerMoveEvent;
 import tk.yallandev.saintmc.bukkit.api.vanish.AdminMode;
-import tk.yallandev.saintmc.bukkit.event.PlayerMoveUpdateEvent;
 import tk.yallandev.saintmc.bukkit.event.player.PlayerDamagePlayerEvent;
 import tk.yallandev.saintmc.kitpvp.GameMain;
 import tk.yallandev.saintmc.kitpvp.event.warp.PlayerLostProtectionEvent;
@@ -64,7 +64,7 @@ public class ProtectionListener implements Listener {
 	}
 
 	@EventHandler
-	public void onPlayerMoveUpdate(PlayerMoveUpdateEvent event) {
+	public void onPlayerMove(PlayerMoveEvent event) {
 		Player player = event.getPlayer();
 
 		if (AdminMode.getInstance().isAdmin(player))

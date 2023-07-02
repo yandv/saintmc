@@ -14,7 +14,7 @@ package tk.yallandev.saintmc.bukkit.anticheat;
 //import org.bukkit.util.Vector;
 //
 //import tk.yallandev.saintmc.bukkit.anticheat.modules.Module;
-//import tk.yallandev.saintmc.bukkit.event.PlayerMoveUpdateEvent;
+//import tk.yallandev.saintmc.bukkit.event.PlayerMoveEvent;
 //
 //public class HitboxModule extends Module {
 //	
@@ -62,7 +62,7 @@ package tk.yallandev.saintmc.bukkit.anticheat;
 //	}
 //	
 //	@EventHandler
-//	public void onPlayerMoveUpdate(PlayerMoveUpdateEvent event) {
+//	public void onPlayerMove(PlayerMoveEvent event) {
 //		cooldownMap.put(event.getPlayer(), System.currentTimeMillis() + 500l);
 //	}
 //	

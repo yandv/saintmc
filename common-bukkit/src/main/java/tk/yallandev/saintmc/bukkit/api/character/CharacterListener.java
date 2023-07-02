@@ -4,6 +4,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import com.comphenix.protocol.PacketType;
@@ -13,7 +14,6 @@ import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.EnumWrappers.EntityUseAction;
 
 import tk.yallandev.saintmc.bukkit.BukkitMain;
-import tk.yallandev.saintmc.bukkit.event.PlayerMoveUpdateEvent;
 
 public class CharacterListener implements Listener {
 
@@ -55,7 +55,7 @@ public class CharacterListener implements Listener {
 	}
 
 	@EventHandler
-	public void onPlayerMoveUpdate(PlayerMoveUpdateEvent event) {
+	public void onPlayerMove(PlayerMoveEvent event) {
 		Character.getCharacters().forEach(character -> {
 			if (character.getNpc().isShowing(event.getPlayer().getUniqueId())) {
 				if (character.getNpc().getLocation().distance(event.getPlayer().getLocation()) > MAX_DISTANCE)

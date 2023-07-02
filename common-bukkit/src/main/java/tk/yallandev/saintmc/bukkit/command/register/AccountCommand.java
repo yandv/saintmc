@@ -282,8 +282,6 @@ public class AccountCommand implements CommandClass {
 		if (!cmdArgs.isPlayer())
 			return;
 
-		if (!CommonGeneral.getInstance().getServerType().name().contains("HG")) return;
-
 		Member player = CommonGeneral.getInstance().getMemberManager().getMember(cmdArgs.getSender().getUniqueId());
 
 		List<League> leagues = Arrays.asList(League.values());

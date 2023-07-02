@@ -12,6 +12,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerLoginEvent.Result;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import tk.yallandev.saintmc.CommonConst;
@@ -20,7 +21,6 @@ import tk.yallandev.saintmc.bukkit.BukkitMain;
 import tk.yallandev.saintmc.bukkit.api.title.Title;
 import tk.yallandev.saintmc.bukkit.api.title.types.SimpleTitle;
 import tk.yallandev.saintmc.bukkit.bukkit.BukkitMember;
-import tk.yallandev.saintmc.bukkit.event.PlayerMoveUpdateEvent;
 import tk.yallandev.saintmc.bukkit.event.login.PlayerChangeLoginStatusEvent;
 import tk.yallandev.saintmc.bukkit.event.update.UpdateEvent;
 import tk.yallandev.saintmc.bukkit.event.update.UpdateEvent.UpdateType;
@@ -84,7 +84,7 @@ public class LoginListener implements Listener {
 	}
 
 	@EventHandler
-	public void onPlayerMove(PlayerMoveUpdateEvent event) {
+	public void onPlayerMove(PlayerMoveEvent event) {
 		Member member = CommonGeneral.getInstance().getMemberManager().getMember(event.getPlayer().getUniqueId());
 
 		if (playerList.containsKey(member))
@@ -96,8 +96,7 @@ public class LoginListener implements Listener {
 		BukkitMember member = (BukkitMember) CommonGeneral.getInstance().getMemberManager()
 				.getMember(event.getPlayer().getUniqueId());
 
-		if (playerList.containsKey(member))
-			playerList.remove(member);
+		playerList.remove(member);
 	}
 
 	@EventHandler

@@ -6,15 +6,15 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.metadata.FixedMetadataValue;
 
-import tk.yallandev.saintmc.bukkit.event.PlayerMoveUpdateEvent;
 import tk.yallandev.saintmc.kitpvp.GameMain;
 
 public class LauncherListener implements Listener {
 
 	@EventHandler
-	public void onPlayerMoveUpdate(PlayerMoveUpdateEvent event) {
+	public void onPlayerMove(PlayerMoveEvent event) {
 		Player player = event.getPlayer();
 		Material type = event.getTo().getBlock().getRelative(BlockFace.DOWN).getType();
 

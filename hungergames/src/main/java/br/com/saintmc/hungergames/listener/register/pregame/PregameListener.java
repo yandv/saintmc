@@ -26,16 +26,7 @@ import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.player.PlayerDropItemEvent;
-import org.bukkit.event.player.PlayerExpChangeEvent;
-import org.bukkit.event.player.PlayerInteractEntityEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerPickupItemEvent;
-import org.bukkit.event.player.PlayerPortalEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.event.player.PlayerShearEntityEvent;
-import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.inventory.ItemStack;
 
@@ -58,7 +49,6 @@ import tk.yallandev.saintmc.bukkit.api.title.Title;
 import tk.yallandev.saintmc.bukkit.api.title.types.SimpleTitle;
 import tk.yallandev.saintmc.bukkit.api.vanish.AdminMode;
 import tk.yallandev.saintmc.bukkit.bukkit.BukkitMember;
-import tk.yallandev.saintmc.bukkit.event.PlayerMoveUpdateEvent;
 
 public class PregameListener extends GameListener {
 
@@ -187,7 +177,7 @@ public class PregameListener extends GameListener {
     }
 
     @EventHandler
-    public void onPlayerMove(PlayerMoveUpdateEvent event) {
+    public void onPlayerMove(PlayerMoveEvent event) {
         Location spawnLocation = BukkitMain.getInstance().getLocationFromConfig("spawn");
         Player player = event.getPlayer();
 

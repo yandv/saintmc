@@ -190,7 +190,7 @@ public class WaitingListener implements Listener {
 	}
 
 	@EventHandler
-	public void onPlayerMoveUpdate(PlayerMoveEvent event) {
+	public void onPlayerMove(PlayerMoveEvent event) {
 		if (event.getTo().getY() < 0)
 			event.getPlayer().teleport(GameMain.getInstance().getLocationFromConfig("spawn"));
 	}

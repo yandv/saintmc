@@ -5,19 +5,25 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 import com.comphenix.protocol.wrappers.WrappedWatchableObject;
+import com.mojang.authlib.GameProfile;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.server.v1_8_R3.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.craftbukkit.v1_8_R3.CraftServer;
 import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Villager;
+import tk.yallandev.saintmc.bukkit.BukkitMain;
 import tk.yallandev.saintmc.bukkit.api.hologram.Hologram;
 import tk.yallandev.saintmc.bukkit.api.hologram.TouchHandler;
 import tk.yallandev.saintmc.bukkit.api.hologram.ViewHandler;
 import tk.yallandev.saintmc.bukkit.api.packet.PacketBuilder;
+import tk.yallandev.saintmc.bukkit.listener.register.HologramListener;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
@@ -133,7 +139,8 @@ public class CraftSingleHologram implements Hologram {
 
         try {
             ProtocolLibrary.getProtocolManager().sendServerPacket(player, new PacketBuilder(
-                    PacketType.Play.Server.ENTITY_DESTROY).writeIntegerArray(0, new int[]{armorStand.getId()}).build());
+                    PacketType.Play.Server.ENTITY_DESTROY)
+                    .writeIntegerArray(0, new int[]{armorStand.getId()}).build());
         } catch (InvocationTargetException e) {
             throw new RuntimeException(e);
         }
@@ -157,6 +164,24 @@ public class CraftSingleHologram implements Hologram {
         }
 
         return this;
+    }
+
+    private static PacketPlayOutAttachEntity buildAttachPacket(int a, int b) {
+        PacketPlayOutAttachEntity packet = new PacketPlayOutAttachEntity();
+        setFieldValue(packet, "a", 0);
+        setFieldValue(packet, "b", a);
+        setFieldValue(packet, "c", b);
+        return packet;
+    }
+
+    private static void setFieldValue(Object instance, String fieldName, Object value) {
+        try {
+            Field f = instance.getClass().getDeclaredField(fieldName);
+            f.setAccessible(true);
+            f.set(instance, value);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public void block(Player player) {
@@ -201,6 +226,7 @@ public class CraftSingleHologram implements Hologram {
 
         armorStand.setLocation(location.getX(), location.getY(), location.getZ(), location.getYaw(),
                                location.getPitch());
+        HologramListener.HOLOGRAM_MAP.put(armorStand.getId(), this);
     }
 
     private void sendMetadataPacket(Player player, String displayName) {

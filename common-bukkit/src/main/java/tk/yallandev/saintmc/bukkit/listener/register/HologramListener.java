@@ -4,28 +4,29 @@ import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
-import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.EnumWrappers;
-import com.comphenix.protocol.wrappers.WrappedWatchableObject;
 import org.bukkit.Bukkit;
-import org.bukkit.entity.EntityType;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.player.*;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.util.Vector;
 import tk.yallandev.saintmc.bukkit.BukkitMain;
 import tk.yallandev.saintmc.bukkit.api.hologram.Hologram;
 import tk.yallandev.saintmc.bukkit.api.hologram.TouchHandler;
-import tk.yallandev.saintmc.bukkit.event.PlayerMoveUpdateEvent;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public class HologramListener implements Listener {
+
+    public static final Map<Integer, Hologram> HOLOGRAM_MAP = new HashMap<>();
 
     private static final double MAX_DISTANCE = 128;
 
@@ -35,7 +36,8 @@ public class HologramListener implements Listener {
         playerCooldown = new HashMap<>();
 
         ProtocolLibrary.getProtocolManager().addPacketListener(
-                new PacketAdapter(BukkitMain.getInstance(), ListenerPriority.LOWEST, PacketType.Play.Client.USE_ENTITY) {
+                new PacketAdapter(BukkitMain.getInstance(), ListenerPriority.LOWEST,
+                                  PacketType.Play.Client.USE_ENTITY) {
 
                     @Override
                     public void onPacketReceiving(PacketEvent event) {
@@ -44,19 +46,49 @@ public class HologramListener implements Listener {
                         }
 
                         int entityId = event.getPacket().getIntegers().read(0);
-                        Hologram hologram = BukkitMain.getInstance().getHologramController().getHologramById(entityId);
+                        Hologram hologram = Optional.ofNullable(HOLOGRAM_MAP.get(entityId))
+                                                    .orElse(BukkitMain.getInstance().getHologramController()
+                                                                      .getHologramById(entityId));
 
                         if (hologram == null) return;
 
                         if (hologram.getEntityId() == entityId) {
                             hologram.getTouchHandler().onTouch(hologram, event.getPlayer(),
                                                                event.getPacket().getEntityUseActions().read(0) ==
-                                                               EnumWrappers.EntityUseAction.INTERACT ? TouchHandler.TouchType.RIGHT : TouchHandler.TouchType.LEFT);
+                                                               EnumWrappers.EntityUseAction.INTERACT ?
+                                                               TouchHandler.TouchType.RIGHT :
+                                                               TouchHandler.TouchType.LEFT);
                             playerCooldown.put(event.getPlayer(), System.currentTimeMillis() + 200L);
                             event.setCancelled(true);
                         }
                     }
                 });
+    }
+
+    private boolean isLookingAt(Player player, Location location) {
+        Location eye = player.getEyeLocation();
+        Vector toEntity = location.toVector().subtract(eye.toVector());
+        double dot = toEntity.normalize().dot(eye.getDirection());
+
+        return dot > 0.95D;
+    }
+
+    @EventHandler
+    public void onPlayerInteract(PlayerInteractEvent event) {
+        Player player = event.getPlayer();
+        Hologram hologram = BukkitMain.getInstance().getHologramController().getHolograms().stream()
+                                      .filter(h -> h.getLocation().getWorld() == player.getLocation().getWorld())
+                                      .filter(h -> isLookingAt(player, h.getLocation()))
+                                      .filter(h -> player.getLocation().distance(h.getLocation()) < 3).findFirst()
+                                      .orElse(null);
+
+        if (hologram == null || hologram.isHiddenForPlayer(player)) return;
+
+        if (isLookingAt(player, hologram.getLocation())) {
+            hologram.getTouchHandler().onTouch(hologram, player, event.getAction().name().contains("RIGHT") ?
+                                                                 TouchHandler.TouchType.RIGHT :
+                                                                 TouchHandler.TouchType.LEFT);
+        }
     }
 
     @EventHandler
@@ -99,7 +131,7 @@ public class HologramListener implements Listener {
     }
 
     @EventHandler
-    public void onPlayerMoveUpdate(PlayerMoveUpdateEvent event) {
+    public void onPlayerMove(PlayerMoveEvent event) {
         handleHologramForPlayer(event.getPlayer());
     }
 
