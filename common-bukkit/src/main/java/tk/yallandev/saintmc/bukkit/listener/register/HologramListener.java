@@ -76,11 +76,11 @@ public class HologramListener implements Listener {
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
         Player player = event.getPlayer();
-        Hologram hologram = BukkitMain.getInstance().getHologramController().getHolograms().stream()
-                                      .filter(h -> h.getLocation().getWorld() == player.getLocation().getWorld())
-                                      .filter(h -> isLookingAt(player, h.getLocation()))
-                                      .filter(h -> player.getLocation().distance(h.getLocation()) < 3).findFirst()
-                                      .orElse(null);
+        Hologram hologram = HOLOGRAM_MAP.values().stream()
+                                        .filter(h -> h.getLocation().getWorld() == player.getLocation().getWorld())
+                                        .filter(h -> isLookingAt(player, h.getLocation()))
+                                        .filter(h -> player.getLocation().distance(h.getLocation()) < 3).findFirst()
+                                        .orElse(null);
 
         if (hologram == null || hologram.isHiddenForPlayer(player)) return;
 
