@@ -113,11 +113,11 @@ public class WinnerListener implements Listener {
 
             Member member = CommonGeneral.getInstance().getMemberManager().getMember(winnerPlayer.getUniqueId());
 
-            member.setTag(GameMain.WINNER);
+            //member.setTag(GameMain.WINNER);
             member.addXp(CommonConst.RANDOM.nextInt(10) + 7);
             member.addMoney(150);
-            member.addPermission(
-                    CommonGeneral.getInstance().getServerType() == ServerType.EVENTO ? "tag.champion" : "tag.winner");
+            //member.addPermission(
+            //        CommonGeneral.getInstance().getServerType() == ServerType.EVENTO ? "tag.champion" : "tag.winner");
         }
     }
 

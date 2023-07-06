@@ -36,8 +36,8 @@ public class CommonConst {
 	 * HOWEVER
 	 */
 
-	public static final String WEBSITE = "pentamc.com.br/";
-	public static final String SITE = "pentamc.com.br";
+	public static final String WEBSITE = "www.pentamc.com.br/";
+	public static final String SITE = "www.pentamc.com.br";
 	public static final String STORE = "loja.pentamc.com.br";
 	public static final String TWITTER = "twitter.pentamc.com.br";
 	public static final String DISCORD = "discord.pentamc.com.br";

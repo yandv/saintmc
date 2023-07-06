@@ -88,7 +88,7 @@ public class BungeeConst {
 			new MessageBuilder(
 					"§e§lDICA§f: §7Fique ligado no nosso twitter! ")
 							.addExtre(
-									new MessageBuilder("§b@SaintMC_")
+									new MessageBuilder("§b@RedePentaMc_")
 											.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
 													TextComponent
 															.fromLegacyText("§bClique aqui para acessar a twitter!")))

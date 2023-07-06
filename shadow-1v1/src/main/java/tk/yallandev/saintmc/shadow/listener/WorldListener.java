@@ -32,6 +32,8 @@ public class WorldListener implements Listener {
 			event.setCancelled(true);
 			return;
 		}
+
+		event.getItemDrop().remove();
 	}
 
 	@EventHandler

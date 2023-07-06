@@ -58,8 +58,8 @@ public class AccountListener extends Listener {
 
 		if (Bukkit.getPlayer(uniqueId) != null) {
 			event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
-			event.setKickMessage("§4§l" + CommonConst.KICK_PREFIX + "\n§f\n§fO jogador " + event.getName()
-					+ " já está online no servidor!");
+			event.setKickMessage("§4§l" + CommonConst.KICK_PREFIX + "\n§f\n§cO jogador " + event.getName()
+					+ " já está online no servidor.");
 			return;
 		}
 
@@ -118,7 +118,7 @@ public class AccountListener extends Listener {
 
 		if (CommonGeneral.getInstance().getMemberManager().getMember(event.getPlayer().getUniqueId()) == null) {
 			event.disallow(PlayerLoginEvent.Result.KICK_OTHER,
-					"§4§l" + CommonConst.KICK_PREFIX + "\n§f\n§fNão foi possível carregar sua conta!");
+					"§4§l" + CommonConst.KICK_PREFIX + "\n§f\n§cNão foi possível carregar sua conta.");
 			return;
 		}
 
@@ -150,7 +150,7 @@ public class AccountListener extends Listener {
 
 		if (member == null) {
 			event.disallow(PlayerLoginEvent.Result.KICK_OTHER,
-					"§4§l" + CommonConst.KICK_PREFIX + "\n§f\n§fNão foi possível carregar sua conta!");
+					"§4§l" + CommonConst.KICK_PREFIX + "\n§f\n§cNão foi possível carregar sua conta.");
 			return;
 		}
 
@@ -237,7 +237,7 @@ public class AccountListener extends Listener {
 					ClanModel clanModel = CommonGeneral.getInstance().getClanData().loadClan((UUID) event.getObject());
 
 					if (clanModel == null) {
-						player.sendMessage("§cNão foi possível carregar seu clan!");
+						player.sendMessage("§cNão foi possível carregar seu clan.");
 						return;
 					}
 

@@ -43,10 +43,10 @@ import tk.yallandev.saintmc.common.utils.string.StringUtils.TimeFormat;
 @SuppressWarnings("deprecation")
 public class ServerListener implements Listener {
 
-	private static final String MOTD_HEADER = StringCenter.centered("§b§lPENTAMC §f» §6www." + CommonConst.SITE, 127);
+	private static final String MOTD_HEADER = StringCenter.centered("§b§lPENTA §f» §awww." + CommonConst.SITE, 127);
 	private static final String SERVER_NOT_FOUND = StringCenter.centered("§4§nServidor não encontrado!", 127);
 
-	private static final String[] MOTD_LIST = new String[] { StringCenter.centered("§c§lVENHA TESTAR AGORA NOSSO HG!", 127) };
+	private static final String[] MOTD_LIST = new String[] { StringCenter.centered("§f§lOPEN §1§lBETA", 127) };
 
 	private ServerManager manager;
 
@@ -143,7 +143,7 @@ public class ServerListener implements Listener {
 		if (entry.getValue() == ServerType.HUNGERGAMES)
 			if (server == null || server.getServerInfo() == null) {
 				server = searchServer(event.getPlayer(), logged, false).getKey();
-				event.getPlayer().sendMessage("§cNenhum servidor de Hungergames disponível!");
+				event.getPlayer().sendMessage("§cNenhum servidor de Comp disponível!");
 			}
 
 		if (server == null || server.getServerInfo() == null) {
@@ -151,9 +151,9 @@ public class ServerListener implements Listener {
 			event.setCancelMessage("§4§l" + CommonConst.KICK_PREFIX
 					+ (event.getPlayer().getAccountType() == AccountType.CRACKED
 							? "§4§l" + "\n§f\n§fNenhum servidor de §alogin§f está disponível no momento!\n"
-									+ "§f\n§6Acesse nosso discord para mais informações:\n§b" + CommonConst.DISCORD
+									+ "§f\n§fAcesse nosso discord para mais informações:\n§b" + CommonConst.DISCORD
 							: "\n\n§fNenhum servidor de §alobby§f está disponível no momento!\n"
-									+ "§f\n§6Acesse nosso discord para mais informações:\n§b" + CommonConst.DISCORD));
+									+ "§f\n§fAcesse nosso discord para mais informações:\n§b" + CommonConst.DISCORD));
 
 			return;
 		}
@@ -162,7 +162,7 @@ public class ServerListener implements Listener {
 			event.setCancelled(true);
 			event.setCancelMessage("§4§l" + CommonConst.KICK_PREFIX
 					+ "\n§f\n§fO servidor no qual você foi redirecionado está cheio no momento!\n"
-					+ "§f\n§6Acesse nosso discord para mais informações:\n§b" + CommonConst.DISCORD);
+					+ "§f\n§fAcesse nosso discord para mais informações:\n§b" + CommonConst.DISCORD);
 			return;
 		}
 
@@ -313,9 +313,9 @@ public class ServerListener implements Listener {
 					String[] split = event.getProxiedServer().getServerId().split("\\.");
 					String serverId = split.length > 0 ? split[0] : event.getProxiedServer().getServerId();
 
-					String message = "§6§lPARTIDA: §eO §6HG-" + serverId.toUpperCase() + "§e irá iniciar em §6"
-							+ StringUtils.formatTime(time, TimeFormat.SHORT) + " §ecom mais de §b"
-							+ event.getProxiedServer().getOnlinePlayers() + " jogadores! §6Clique aqui§e para jogar!";
+					String message = "§a§lPARTIDA: §7O §bCOMP-" + serverId.toUpperCase() + "§7 irá iniciar em §b"
+							+ StringUtils.formatTime(time, TimeFormat.SHORT) + " §fcom mais de §b"
+							+ event.getProxiedServer().getOnlinePlayers() + " jogadores! §aClique aqui§e para jogar!";
 
 					CommonGeneral.getInstance().getMemberManager().broadcast(
 							new MessageBuilder(message).setClickEvent(ClickEvent.Action.RUN_COMMAND,

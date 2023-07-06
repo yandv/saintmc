@@ -59,8 +59,8 @@ public class AdminMode {
 			return;
 
 		Group group = VanishAPI.getInstance().hidePlayer(p);
-		p.sendMessage("\n §a* §fVocê entrou no modo §cadmin§f!");
-		p.sendMessage(" §a* §fVocê está invisivel para §a" + group.toString() + " e inferiores§f!\n§f");
+		p.sendMessage("\n §aVocê entrou no modo admin.");
+		p.sendMessage(" §aVocê está invisivel para " + group.toString() + " e inferiores§a!\n§a");
 		p.setGameMode(event.getGameMode());
 	}
 
@@ -73,7 +73,7 @@ public class AdminMode {
 			return;
 
 		if (admin.contains(p.getUniqueId())) {
-			p.sendMessage("\n §a* §fVocê entrou no modo §ajogador§f!");
+			p.sendMessage("\n §aVocê entrou no modo §ajogador.");
 			removeAdmin(p);
 		}
 
@@ -89,7 +89,7 @@ public class AdminMode {
 			}
 		}
 
-		p.sendMessage(" §a* §fVocê está visível para todos os jogadores!\n§f");
+		p.sendMessage(" §aVocê está visível para todos os jogadores.\n§a");
 		p.setGameMode(event.getGameMode());
 		VanishAPI.getInstance().showPlayer(p);
 	}

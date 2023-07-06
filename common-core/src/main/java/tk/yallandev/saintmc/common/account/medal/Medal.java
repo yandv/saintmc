@@ -14,23 +14,20 @@ import net.md_5.bungee.api.ChatColor;
 public enum Medal {
 
 	NONE,
-	EARLY_ACCESS("Acesso antecipado",
-			"Essa medalha foi distribuída para aqueles que entraram na primeira fase do servidor, não pode mais ser adquirida em nenhum lugar.",
-			MedalRarity.COMMON, ChatColor.GOLD, '⌚', new String[] { "early", "access", "antecipado" }),
-	BUG("Bug", "Medalha para jogadores que reportaram bugs no servidor", MedalRarity.RARE, ChatColor.YELLOW, '☭'),
-	BETA("Beta", "Medalha para jogadores que compraram BETA na fase inicial", MedalRarity.EPIC, ChatColor.BLUE, 'Ⓑ'),
-	BOOSTER("Booster", "Medalha para jogadores que ajudaram o discord doando BOOST", MedalRarity.VERY_RARE,
-			ChatColor.LIGHT_PURPLE, 'β'),
-	SUGGESTION("Sugestão", "Medalha para jogadores que deram uma sugestão para o servidor", MedalRarity.RARE,
-			ChatColor.DARK_BLUE, 'ⓢ'),
-	BDF("Bdf", "Medalha simbolica: Para jogadores que possuem BDF no nick!", MedalRarity.RARE, ChatColor.DARK_BLUE,
-			'\u2622'),
+	BUG_HUNTER("Bug HUnter", "blalalblad", MedalRarity.COMMON, ChatColor.DARK_BLUE,
+			'⚒'),
 
-	YING_YANG("Ying Yang", "Medalha simbolica: Ying Yang", MedalRarity.EPIC, ChatColor.DARK_AQUA, '☯',
-			new String[] { "ying", "yang", "ying-yang" }),
-	TOXIC("Tóxico", "Medalha simbolica: Tóxico", MedalRarity.EPIC, ChatColor.GREEN, '☣', new String[] { "toxico" }),
-	HEART("Coração", "Medalha simbolica: Coração", MedalRarity.EPIC, ChatColor.RED, '\u2764',
-			new String[] { "coracao" });
+	HEART("Coração do Amor", "asdkaoiweja", MedalRarity.RARE, ChatColor.DARK_RED,
+			'⚒'),// p atualizar as medalhas tem q buildar o common-core e dps o common-bungee e common-bukkit e atualizar os plugins
+
+	TOXIC("Tóxico", "blalalblad", MedalRarity.COMMON, ChatColor.YELLOW,
+			'☣'),// so mexer ai, além disso mais algo?
+
+	RAY("Raio Dourado", "blalalblad", MedalRarity.RARE, ChatColor.GOLD,
+			'⚡'),
+
+	TOP("TOP", "Medalha de TOP 1", MedalRarity.COMMON, ChatColor.AQUA,
+			'❂');
 
 	private String medalName;
 	private String medalDescription;

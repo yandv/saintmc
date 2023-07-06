@@ -29,13 +29,13 @@ public class GifcodeCommand implements CommandClass {
 		String[] args = cmdArgs.getArgs();
 
 		if (args.length == 0) {
-			sender.sendMessage(" §e* §fUse §a/" + cmdArgs.getLabel() + " <código>§f para resgatar um código!");
+			sender.sendMessage(" §cUse §c/" + cmdArgs.getLabel() + " <código>§c para resgatar um código.");
 
 			if (Member.hasGroupPermission(sender.getUniqueId(), Group.ADMIN)) {
-				sender.sendMessage(" §e* §fUse §a/" + cmdArgs.getLabel()
-						+ " criar rank <rank> <tempo>§f para criar um código de rank!");
-				sender.sendMessage(" §e* §fUse §a/" + cmdArgs.getLabel()
-						+ " criar kit <kit> <tempo>§f para criar um código de kit!");
+				sender.sendMessage(" §cUse §c/" + cmdArgs.getLabel()
+						+ " criar rank <rank> <tempo>§c para criar um código de rank.");
+				sender.sendMessage(" §cUse §c/" + cmdArgs.getLabel()
+						+ " criar kit <kit> <tempo>§c para criar um código de kit.");
 				return;
 			}
 			return;
@@ -65,7 +65,7 @@ public class GifcodeCommand implements CommandClass {
 							try {
 								rankType = RankType.valueOf(args[2].toUpperCase());
 							} catch (Exception ex) {
-								sender.sendMessage("§cO rank " + args[2] + " não existe!");
+								sender.sendMessage("§cO rank " + args[2] + " não existe.");
 								return;
 							}
 
@@ -84,15 +84,15 @@ public class GifcodeCommand implements CommandClass {
 												+ "!", Group.MODPLUS);
 							}
 						} else
-							sender.sendMessage(" §e* §fUse §a/" + cmdArgs.getLabel()
-									+ " criar rank <rank> <tempo>§f para criar um código de rank!");
+							sender.sendMessage(" §cUse §c/" + cmdArgs.getLabel()
+									+ " criar rank <rank> <tempo>§c para criar um código de rank.");
 					} else if (args[1].equalsIgnoreCase("kit")) {
 						if (args.length >= 3) {
 							long time = args.length >= 4 ? DateUtils.getTime(args[3]) : -1l;
 
 							if (BungeeMain.getInstance().getGiftcodeController().registerGiftcode(code,
 									new KitGiftcode(code, args[2], time))) {
-								sender.sendMessage(new MessageBuilder("§aO código " + code + " foi gerado!")
+								sender.sendMessage(new MessageBuilder("§aO código " + code + " foi gerado.")
 										.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
 												new ComponentBuilder("§aClique para copiar!").create()))
 										.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, code))
@@ -100,12 +100,12 @@ public class GifcodeCommand implements CommandClass {
 								CommonGeneral.getInstance().getMemberManager()
 										.broadcast(
 												"§7O " + sender.getName() + " criou um código de Kit " + args[2]
-														+ " com a duração de " + DateUtils.getTime(time) + "!",
+														+ " com a duração de " + DateUtils.getTime(time) + ".",
 												Group.MODPLUS);
 							}
 						} else
-							sender.sendMessage(" §e* §fUse §a/" + cmdArgs.getLabel()
-									+ " criar kit <kit> <tempo>§f para criar um código de kit!");
+							sender.sendMessage(" §cUse §c/" + cmdArgs.getLabel()
+									+ " criar kit <kit> <tempo>§c para criar um código de kit.");
 					}
 				}
 			}
@@ -122,7 +122,7 @@ public class GifcodeCommand implements CommandClass {
 						CommonGeneral.getInstance().getMemberManager().broadcast(
 								"§7O " + sender.getName() + " deletou o código " + code + "!", Group.MODPLUS);
 					} else
-						sender.sendMessage("§cO código " + code + " não existe!");
+						sender.sendMessage("§cO código " + code + " não existe.");
 				}
 				return;
 			}
@@ -136,7 +136,7 @@ public class GifcodeCommand implements CommandClass {
 
 		switch (response) {
 		case ALREADY_USED: {
-			member.sendMessage("§cO código " + code + " já foi utilizado!");
+			member.sendMessage("§cO código " + code + " já foi utilizado.");
 			break;
 		}
 		case SUCCESS: {

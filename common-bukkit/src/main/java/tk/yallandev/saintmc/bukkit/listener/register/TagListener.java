@@ -93,7 +93,9 @@ public class TagListener implements Listener {
 
                 String tag = BukkitMain.getInstance().isOldTag() ? ChatColor.getLastColors(bp.getTag().getPrefix())
                                                                  : bp.getTag().getPrefix();
-                String suffix = "";
+                String suffix = CommonGeneral.getInstance().getServerType() == ServerType.ONEXONE || CommonGeneral
+                        .getInstance()
+                        .getServerType().name().contains("HG") ? " " + bp.getLeague().getSimplifiedName() : "";
 
                 ScoreboardAPI.joinTeam(ScoreboardAPI.createTeamIfNotExistsToPlayer(p, id,
                                                                                    tag +
@@ -128,7 +130,9 @@ public class TagListener implements Listener {
 
         String tag = BukkitMain.getInstance().isOldTag() ? ChatColor.getLastColors(event.getNewTag().getPrefix())
                                                          : event.getNewTag().getPrefix();
-        String suffix = "";
+        String suffix = CommonGeneral.getInstance().getServerType() == ServerType.ONEXONE || CommonGeneral
+                .getInstance()
+                .getServerType().name().contains("HG") ? " " + player.getLeague().getSimplifiedName() : "";
 
         if (event.getOldTag().isChroma() || player.isChroma()) {
             listener.getChromaList().remove(new Chroma(id, tag, suffix));

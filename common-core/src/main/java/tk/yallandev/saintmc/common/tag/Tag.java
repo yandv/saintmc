@@ -35,7 +35,7 @@ public abstract class Tag {
 
     public static final Tag YOUTUBER = TagWrapper.create("§b§lYOUTUBER§b", Group.YOUTUBER, true);
 
-    public static final Tag STREAMER = TagWrapper.create("§b§lSTREAMERb", Group.STREAMER, true);
+    public static final Tag STREAMER = TagWrapper.create("§b§lSTREAMER§b", Group.STREAMER, true);
     public static final Tag PARTNER = TagWrapper.create("§b§lPARTNER§b", Group.PARTNER, true);
 
     public static final Tag CHAMPION = TagWrapper.create("§6§lCHAMPION§6", Group.ADMIN, true);

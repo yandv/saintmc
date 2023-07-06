@@ -302,6 +302,8 @@ public class ScoreboardListener extends GameListener {
     public void onScoreboardTitleChange(VarChangeEvent event) {
         if (event.getVarName().equals("scoreboard-name")) {
             SCOREBOARD.setDisplayName(event.getNewValue());
+        } else if (event.getVarName().equals("scoreboard-mode")) {
+            SCOREBOARD.updateScore(new Score("Modo: §e" + StringUtils.formatString(event.getNewValue()), "modo"));
         }
     }
 
@@ -323,7 +325,7 @@ public class ScoreboardListener extends GameListener {
                 SCOREBOARD.blankLine(4);
                 SCOREBOARD.setScore(3, new Score("Ranking: §7(§f-§7)", "ranking"));
                 SCOREBOARD.blankLine(2);
-                SCOREBOARD.setScore(1, new Score("§e" + CommonConst.SITE, "site"));
+                SCOREBOARD.setScore(1, new Score("§awww." + CommonConst.SITE, "site"));
             } else {
                 SCOREBOARD.blankLine(9);
                 SCOREBOARD.setScore(8, new Score("Iniciando em: §75:00", "time"));
@@ -336,21 +338,25 @@ public class ScoreboardListener extends GameListener {
             }
         } else {
             if (GameMain.getInstance().isDoubleKit()) {
-                SCOREBOARD.blankLine(9);
-                SCOREBOARD.setScore(8, new Score("Invencivel por: §7", "time"));
-                SCOREBOARD.setScore(7, new Score("Jogadores: §70/80", "players"));
-                SCOREBOARD.blankLine(6);
-                SCOREBOARD.setScore(5, new Score("Kit 1: §eNenhum", "kit1"));
-                SCOREBOARD.setScore(4, new Score("Kit 2: §eNenhum", "kit2"));
-                SCOREBOARD.setScore(3, new Score("Kills: §e0", "kills"));
+                SCOREBOARD.blankLine(11);
+                SCOREBOARD.setScore(10, new Score("Invencivel por: §7", "time"));
+                SCOREBOARD.setScore(9, new Score("Jogadores: §70/80", "players"));
+                SCOREBOARD.blankLine(8);
+                SCOREBOARD.setScore(7, new Score("Kit 1: §eNenhum", "kit1"));
+                SCOREBOARD.setScore(6, new Score("Kit 2: §eNenhum", "kit2"));
+                SCOREBOARD.setScore(5, new Score("Kills: §e0", "kills"));
+                SCOREBOARD.blankLine(4);
+                SCOREBOARD.setScore(3, new Score("Modo: §e" + StringUtils.formatString(GameMain.getInstance().getVarManager().getVar("scoreboard-mode", "Normal")), "modo"));
                 SCOREBOARD.blankLine(2);
             } else {
-                SCOREBOARD.blankLine(8);
-                SCOREBOARD.setScore(7, new Score("Invencivel por: §7", "time"));
-                SCOREBOARD.setScore(6, new Score("Jogadores: §780", "players"));
-                SCOREBOARD.blankLine(5);
-                SCOREBOARD.setScore(4, new Score("Kit: §eNenhum", "kit1"));
-                SCOREBOARD.setScore(3, new Score("Kills: §e0", "kills"));
+                SCOREBOARD.blankLine(10);
+                SCOREBOARD.setScore(9, new Score("Invencivel por: §7", "time"));
+                SCOREBOARD.setScore(8, new Score("Jogadores: §780", "players"));
+                SCOREBOARD.blankLine(7);
+                SCOREBOARD.setScore(6, new Score("Kit: §eNenhum", "kit1"));
+                SCOREBOARD.setScore(5, new Score("Kills: §e0", "kills"));
+                SCOREBOARD.blankLine(4);
+                SCOREBOARD.setScore(3, new Score("Modo: §e" + StringUtils.formatString(GameMain.getInstance().getVarManager().getVar("scoreboard-mode", "Normal")), "modo"));
                 SCOREBOARD.blankLine(2);
             }
         }

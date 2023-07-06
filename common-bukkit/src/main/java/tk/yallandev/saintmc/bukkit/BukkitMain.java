@@ -243,7 +243,7 @@ public class BukkitMain extends JavaPlugin {
                                                                                  player.getUniqueId(),
                                                                                  Group.YOUTUBERPLUS)) {
                                                                              player.sendMessage(
-                                                                                     "§c§l> §fVocê não tem §cpermissão§f para teletransportar!");
+                                                                                     "§cVocê não tem §cpermissão§f para teletransportar.");
                                                                              return;
                                                                          }
 

@@ -6,6 +6,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -140,12 +141,6 @@ public class Challenge {
             Bukkit.getPluginManager().callEvent(new GladiatorClearEvent(this));
         }
 
-        if (time == 300 + (witherTime * 180)) {
-            enimy.addPotionEffect(new PotionEffect(PotionEffectType.WITHER, 20 * 60, 4));
-            player.addPotionEffect(new PotionEffect(PotionEffectType.WITHER, 20 * 60, 4));
-            witherTime++;
-        }
-
         Bukkit.getPluginManager().callEvent(new GladiatorPulseEvent(this));
     }
 
@@ -181,15 +176,16 @@ public class Challenge {
         player.getInventory().clear();
         player.getInventory().setArmorContents(new ItemStack[4]);
 
-        player.getInventory().setItemInHand(new ItemBuilder().type(Material.DIAMOND_SWORD).build());
+        player.getInventory().setItemInHand(new ItemBuilder().type(Material.DIAMOND_SWORD)
+                .enchantment(Enchantment.DAMAGE_ALL).build());
 
         for (int x = 0; x < 8; x++)
             player.getInventory().setItem(1 + x, new ItemStack(Material.MUSHROOM_SOUP));
 
-        player.getInventory().setItem(9, new ItemStack(Material.IRON_HELMET));
-        player.getInventory().setItem(10, new ItemStack(Material.IRON_CHESTPLATE));
-        player.getInventory().setItem(11, new ItemStack(Material.IRON_LEGGINGS));
-        player.getInventory().setItem(12, new ItemStack(Material.IRON_BOOTS));
+        player.getInventory().setHelmet(new ItemStack(Material.IRON_HELMET));
+        player.getInventory().setChestplate(new ItemStack(Material.IRON_CHESTPLATE));
+        player.getInventory().setLeggings(new ItemStack(Material.IRON_LEGGINGS));
+        player.getInventory().setBoots(new ItemStack(Material.IRON_BOOTS));
 
         player.updateInventory();
     }

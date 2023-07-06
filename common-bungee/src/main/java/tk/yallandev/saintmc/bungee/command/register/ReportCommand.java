@@ -46,20 +46,20 @@ public class ReportCommand implements CommandClass {
 				if (args[0].equalsIgnoreCase("on")) {
 
 					if (member.getAccountConfiguration().isReportEnabled()) {
-						member.sendMessage("§cOs reports já estão ativados!");
+						member.sendMessage("§cOs reports já estão ativados.");
 					} else {
 						member.getAccountConfiguration().setReportEnabled(true);
-						member.sendMessage("§aVocê agora vê os reports!");
+						member.sendMessage("§aVocê agora vê os reports.");
 					}
 
 					return;
 				} else if (args[0].equalsIgnoreCase("off")) {
 
 					if (!member.getAccountConfiguration().isReportEnabled()) {
-						member.sendMessage("§cOs reports já estão desativados!");
+						member.sendMessage("§cOs reports já estão desativados.");
 					} else {
 						member.getAccountConfiguration().setReportEnabled(false);
-						member.sendMessage("§cVocê agora não vê mais os reports!");
+						member.sendMessage("§cVocê agora não vê mais os reports.");
 					}
 
 					return;
@@ -68,20 +68,20 @@ public class ReportCommand implements CommandClass {
 		}
 
 		if (args.length <= 1) {
-			sender.sendMessage(" §e* §fUse §a/report <player> <report>§f para reportar um jogador!");
+			sender.sendMessage(" §cUse /report <jogador> <motivo> para reportar um jogador.");
 			return;
 		}
 
 		if (player.isOnCooldown("report-command")) {
-			sender.sendMessage(" §c* §fVocê precisa esperar §e"
-					+ DateUtils.getTime(player.getCooldown("report-command")) + "§f para reportar novamente!");
+			sender.sendMessage(" §cVocê precisa esperar §c"
+					+ DateUtils.getTime(player.getCooldown("report-command")) + "§c para reportar novamente.");
 			return;
 		}
 
 		UUID uuid = CommonGeneral.getInstance().getUuid(args[0]);
 
 		if (uuid == null) {
-			sender.sendMessage(" §c* §fO jogador §a" + args[0] + "§f não existe!");
+			sender.sendMessage(" §cO jogador §c" + args[0] + "§c não existe.");
 			return;
 		}
 
@@ -95,28 +95,28 @@ public class ReportCommand implements CommandClass {
 					MemberModel loaded = CommonGeneral.getInstance().getPlayerData().loadMember(uuid);
 
 					if (loaded == null) {
-						sender.sendMessage(" §c* §fO jogador §a" + args[0] + "§f nunca entrou no servidor!");
+						sender.sendMessage(" §cO jogador §c" + args[0] + "§c nunca entrou no servidor.");
 						return;
 					}
 
 					m = new MemberVoid(loaded);
 				} catch (Exception e) {
 					e.printStackTrace();
-					sender.sendMessage(" §c* §fNão foi possível pegar as informações do jogador §a" + args[0] + "§f!");
+					sender.sendMessage(" §cNão foi possível pegar as informações do jogador §c" + args[0] + "§c.");
 					return;
 				}
 			}
 		}
 
 		if (sender.getUniqueId().equals(m.getUniqueId())) {
-			sender.sendMessage(" §c* §fVocê não pode se reportar!");
+			sender.sendMessage(" §cVocê não pode se reportar.");
 			return;
 		}
 
 		Member target = m;
 
 		if (ProxyServer.getInstance().getPlayer(target.getUniqueId()) == null) {
-			sender.sendMessage(" §c* §fO jogador §a" + args[0] + "§f não existe!");
+			sender.sendMessage(" §cO jogador §c" + args[0] + "§c não existe.");
 			return;
 		}
 
@@ -144,14 +144,14 @@ public class ReportCommand implements CommandClass {
 		if (report.addReport(sender.getUniqueId(), cmdArgs.getPlayer().getName(),
 				CommonGeneral.getInstance().getMemberManager().getMember(sender.getUniqueId()).getReputation(),
 				builder.toString())) {
-			sender.sendMessage(" §a* §fVocê reportou o jogador §a" + target.getPlayerName() + "§f por §a"
-					+ builder.toString().trim() + "§f!");
+			sender.sendMessage(" §aVocê denunciou o jogador §a" + target.getPlayerName() + "§a por §a"
+					+ builder.toString().trim() + "§a.");
 
 			TextComponent text = new TextComponent(TextComponent.fromLegacyText("§a(Clique para se conectar)"));
 
 			text.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/tp " + report.getPlayerName()));
 			text.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
-					new ComponentBuilder("§aClique para se teletransportar!").create()));
+					new ComponentBuilder("§aClique para se teletransportar.").create()));
 
 			CommonGeneral.getInstance().getMemberManager().getMembers().stream()
 					.filter(member -> member.hasGroupPermission(Group.TRIAL)
@@ -159,7 +159,7 @@ public class ReportCommand implements CommandClass {
 					.forEach(member -> {
 						member.sendMessage("§c§lREPORT");
 						member.sendMessage(" ");
-						member.sendMessage("§fSuspeito: §7" + report.getPlayerName());
+						member.sendMessage("§fSuspeito: §c" + report.getPlayerName());
 						member.sendMessage("§fReportado por: §7" + cmdArgs.getPlayer().getName());
 						member.sendMessage("§fMotivo: §7" + builder.toString().trim());
 						member.sendMessage("§fServidor: §a" + target.getServerId());
@@ -170,8 +170,8 @@ public class ReportCommand implements CommandClass {
 
 			player.setCooldown("report-command", System.currentTimeMillis() + 120000l);
 		} else {
-			sender.sendMessage(" §a* §fVocê reportou o jogador §a" + target.getPlayerName() + "§f por §a"
-					+ builder.toString().trim() + "§f!");
+			sender.sendMessage(" §aVocê denunciou o jogador §a" + target.getPlayerName() + "§a por §a"
+					+ builder.toString().trim() + "§a.");
 		}
 	}
 

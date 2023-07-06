@@ -366,7 +366,7 @@ public class LoginListener implements Listener {
 			if (!member.hasGroupPermission(Group.BETA)) {
 				event.setCancelled(true);
 				event.setCancelReason("§4§l" + CommonConst.KICK_PREFIX
-						+ "\n§f\n§cO servidor está em modo manutenção\n§f\n§6Mais informação em: §b"
+						+ "\n§f\n§cO servidor está em modo manutenção\n§f\n§fMais informação em: §b"
 						+ CommonConst.DISCORD);
 				return false;
 			}

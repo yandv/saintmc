@@ -105,7 +105,8 @@ public class PregameScheduler implements GameSchedule {
          */
 
         if (time <= 0) {
-            gameGeneral.setGameState(GameState.INVINCIBILITY);
+            gameGeneral.setGameState(GameState.INVINCIBILITY, false);
+            gameGeneral.setTime(GameMain.getInstance().getVarManager().getVar("invincibility-start-time", GameState.INVINCIBILITY.getDefaultTime()));
             GameMain.getInstance().registerListener(new GameListener());
             Bukkit.getPluginManager().callEvent(new GameStartEvent());
             unregisterListener();

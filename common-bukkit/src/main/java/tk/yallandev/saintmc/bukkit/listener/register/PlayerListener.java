@@ -93,7 +93,7 @@ public class PlayerListener extends Listener {
 
 			if (event.getNewLeague() == League.values()[League.values().length - 1]) {
 				Bukkit.broadcastMessage(" ");
-				Bukkit.broadcastMessage("§e" + event.getBukkitMember().getPlayerName() + "§f subiu para o rank "
+				Bukkit.broadcastMessage("§a" + event.getBukkitMember().getPlayerName() + "§a subiu para o rank "
 						+ League.values()[League.values().length - 1].getColor()
 						+ League.values()[League.values().length - 1].getName() + "§f!");
 				Bukkit.broadcastMessage(" ");
@@ -102,10 +102,10 @@ public class PlayerListener extends Listener {
 						.forEach(player -> player.playSound(player.getLocation(), Sound.ENDERDRAGON_GROWL, 1f, 0.1f));
 			}
 
-			event.getPlayer().sendMessage("§a§l> §fVocê subiu para o rank §a" + event.getNewLeague().getColor()
+			event.getPlayer().sendMessage("§aVocê subiu para o rank " + event.getNewLeague().getColor()
 					+ event.getNewLeague().getSymbol() + " " + event.getNewLeague().getName());
 		} else if (event.getNewLeague().ordinal() < event.getOldLeague().ordinal()) {
-			event.getPlayer().sendMessage("§c§l> §fVocê desceu para o rank §c" + event.getNewLeague().getColor()
+			event.getPlayer().sendMessage("§cVocê desceu para o rank " + event.getNewLeague().getColor()
 					+ event.getNewLeague().getSymbol() + " " + event.getNewLeague().getName());
 		}
 	}

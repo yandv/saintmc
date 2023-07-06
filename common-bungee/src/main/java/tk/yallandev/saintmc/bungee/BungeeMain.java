@@ -5,7 +5,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
@@ -62,6 +62,7 @@ import tk.yallandev.saintmc.common.server.ServerManager;
 import tk.yallandev.saintmc.common.server.ServerType;
 import tk.yallandev.saintmc.common.server.loadbalancer.server.MinigameServer;
 import tk.yallandev.saintmc.common.server.loadbalancer.server.ProxiedServer;
+import tk.yallandev.saintmc.common.utils.DateUtils;
 import tk.yallandev.saintmc.common.utils.string.MessageBuilder;
 
 @Getter
@@ -269,7 +270,140 @@ public class BungeeMain extends Plugin {
         System.setProperty("DEBUG.MONGO", "false");
         System.setProperty("DB.TRACE", "false");
 
+        next();
+
         registerListener();
+    }
+
+    public static int getDayNumberOld(Date date) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        return cal.get(Calendar.DAY_OF_WEEK);
+    }
+
+    public static int getDayFromString(String string) {
+        switch (string.toLowerCase()) {
+            case "sunday":
+                return 1;
+            case "monday":
+                return 2;
+            case "tuesday":
+                return 3;
+            case "wednesday":
+                return 4;
+            case "thursday":
+                return 5;
+            case "friday":
+                return 6;
+            case "saturday":
+                return 7;
+            default:
+                return 0;
+        }
+    }
+
+    public static String getDay(int day) {
+        switch (day) {
+            case 1:
+                return "sunday";
+            case 2:
+                return "monday";
+            case 3:
+                return "tuesday";
+            case 4:
+                return "wednesday";
+            case 5:
+                return "thursday";
+            case 6:
+                return "friday";
+            case 7:
+                return "saturday";
+            default:
+                return "unknown";
+        }
+    }
+
+    public void next() {
+        Map<Integer, List<String>> map = new HashMap<>();
+
+        for (String calendar : getConfig().getSection("calendar").getKeys()) {
+            if (getDayFromString(calendar) == 0) continue;
+
+            for (String key : getConfig().getSection("calendar." + calendar).getKeys()) {
+                map.computeIfAbsent(getDayFromString(calendar), k -> new ArrayList<>()).add(key);
+            }
+        }
+
+        Map.Entry<Long, String> entry = getTime(map, getDayNumberOld(new Date()), false);
+
+
+        long time = entry.getKey();
+
+        ProxyServer.getInstance().getScheduler().schedule(this, new Runnable() {
+            @Override
+            public void run() {
+                next();
+
+                for (int i = 0; i < 7; i++) {
+                    ProxyServer.getInstance()
+                            .getScheduler()
+                            .schedule(BungeeMain.this, () -> {
+                                String message = getConfig().getString("calendar." + entry.getValue()).replace('&', '§')
+                                        .replace("\\n", "\n");
+                                        if (message.contains("\n")) {
+                                            for (String msg : message.split("\n")) {
+                                                ProxyServer.getInstance().broadcast(msg);
+                                            }
+                                        } else {
+                                            ProxyServer.getInstance().broadcast(message);
+                                        }
+                                    },
+                                    15L * i, TimeUnit.SECONDS);
+                }
+            }
+        }, time - System.currentTimeMillis() + 1500L, TimeUnit.MILLISECONDS);
+
+        System.out.println(DateUtils.formatDifference((time - System.currentTimeMillis()) / 1000L));
+    }
+
+    private Map.Entry<Long, String> getTime(Map<Integer, List<String>> map, int day, boolean nextDay) {
+        Calendar calendar = new GregorianCalendar();
+
+        calendar.setTimeInMillis(System.currentTimeMillis() + (nextDay ? 86400000L : 0L));
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+
+        long next = 0L;
+        String total = "";
+        long currentTime = System.currentTimeMillis();
+
+        for (String time : map.get(day)) {
+            int hour = Integer.parseInt(time.split(":")[0]);
+            int minute = Integer.parseInt(time.split(":")[1]);
+            long current = calendar.getTimeInMillis() + (1000L * 60L * 60L * hour) + (1000L * 60L * minute);
+
+            if (current - currentTime < 0) {
+                continue;
+            }
+
+            if (next == 0L) {
+                next = current;
+                total = getDay(day).toUpperCase() + "." + time;
+                continue;
+            }
+
+            if (currentTime - current > currentTime - next) {
+                next = current;
+                total = getDay(day).toUpperCase() + "." + time;
+            }
+        }
+
+        if (next < System.currentTimeMillis()) {
+            return getTime(map, day + 1, true);
+        }
+
+        return new AbstractMap.SimpleEntry<>(next, total);
     }
 
     public void loadRedis(RedisDatabase redisDatabase) {

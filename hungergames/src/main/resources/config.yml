@@ -1,6 +1,68 @@
+calendar:
+  SUNDAY:
+    '02:26': openevento solo
+    '14:30': openevento solo
+    '16:30': openevento solo
+    '18:30': openevento solo
+    '20:30': openevento solo
+  MONDAY:
+    '14:30': openevento solo
+  TUESDAY:
+    '14:30': openevento solo
+  WEDNESDAY:
+    '14:30': openevento solo
+  THURSDAY:
+    '14:30': openevento panela
+  FRIDAY:
+    '14:30': openevento solo
+  SATURDAY:
+    '14:30': openevento dupla
 evento:
-  minimush:
-    force: 'chat off; clearchat; say &aOlá.'
+  solo:
+    force: chat off; clearchat; var team-hg-enabled false; tempo stop; tempo 240; skit default 1; var announce-time false
     commands:
-      - 'autocommand pregame 60 chat off; clearchat; say &aOlá, jogadores. O jogo começará em 60 segundos.'
-      - 'autocommand pregame 55 say &aParabéns aos tributos que sobreviveram ao treinamento.; togglekit'
+      - autocommand pregame 120 clearchat; say Sejam bem-vindos ao &eCOMP&f!
+      - autocommand pregame 118 say Todos irão iniciar a partida com um &ekit de itens&f.
+      - autocommand pregame 116 say O Torneio será &eSOLO&f, ou seja, duplas ou panelas serão &cdesclassificadas&f.
+      - autocommand pregame 114 say Jogadores que &eatrapalharem o PvP dos outros (forçar kick)&f, serão punidos.
+      - autocommand pregame 112 say Esperar a &efinalização de um combate&f para atacar os vencedores é proibido. (cleanar)
+      - autocommand pregame 110 say É proibido fazer &espawn trap&f.
+      - autocommand pregame 108 say Aos &e25 minutos de jogo&f, vocês serão puxados para uma arena com baldes e builds &cdesativados&f.
+      - autocommand pregame 106 say Boa sorte a todos!; say Começaremos em instantes.; tempo 90
+  dupla:
+    force: chat off; clearchat; var team-hg-enabled false; tempo stop; tempo 240; skit default pica; var announce-time false
+    commands:
+      - autocommand pregame 120 clearchat; say Sejam bem-vindos ao &eCOMP&f!
+      - autocommand pregame 118 say Todos irão iniciar a partida com um &ekit de itens&f.
+      - autocommand pregame 116 say O Torneio será &eSOLO&f, ou seja, duplas ou panelas serão &cdesclassificadas&f.
+      - autocommand pregame 114 say Jogadores que &eatrapalharem o PvP dos outros (forçar kick)&f, serão punidos.
+      - autocommand pregame 112 say Esperar a &efinalização de um combate&f para atacar os vencedores é proibido. (cleanar)
+      - autocommand pregame 110 say É proibido fazer &espawn trap&f.
+      - autocommand pregame 108 say Aos &e25 minutos de jogo&f, vocês serão puxados para uma arena com baldes e builds &cdesativados&f.
+      - autocommand pregame 106 say Boa sorte a todos!; say Começaremos em instantes.; tempo 90
+      - autocommand invincibility 110 spawnarena miniarena; spawnarena arena; togglekit all off
+      - autocommand gametime 1500 say A arena nascerá aos 30 minutos.
+      - autocommand gametime 1800 spawnarena vagabundo; say Nova arena gerada, uma nova nascerá aos 35 minutos.
+      - autocommand gametime 2100 spawnarena vagabundo 2; say Nova arena gerada, uma nova nascerá aos 40 minutos.
+      - autocommand gametime 2400 spawnarena vagabundo 3; say Nova arena gerada, uma nova nascerá aos 45 minutos.
+  panela:
+    force: chat off; clearchat; var team-hg-enabled false; tempo stop; tempo 240; skit default 1; var announce-time false
+    commands:
+      - autocommand pregame 120 clearchat; say Sejam bem-vindos ao &eCOMP&f!
+      - autocommand pregame 118 say Todos irão iniciar a partida com um &ekit de itens&f.
+      - autocommand pregame 116 say O Torneio será &eSOLO&f, ou seja, duplas ou panelas serão &cdesclassificadas&f.
+      - autocommand pregame 114 say Jogadores que &eatrapalharem o PvP dos outros (forçar kick)&f, serão punidos.
+      - autocommand pregame 112 say Esperar a &efinalização de um combate&f para atacar os vencedores é proibido. (cleanar)
+      - autocommand pregame 110 say É proibido fazer &espawn trap&f.
+      - autocommand pregame 108 say Aos &e25 minutos de jogo&f, vocês serão puxados para uma arena com baldes e builds &cdesativados&f.
+      - autocommand pregame 106 say Boa sorte a todos!; say Começaremos em instantes.; tempo 90
+      - autocommand gametime 1500 finalbattle; say area final spawnou; togglekit all off
+var:
+  scoreboard-name: §b§lCOMPETITIVO
+  team-hg-enabled: 'false'
+  max-server-teams: '-1'
+  team-hg-item-selector: 'false'
+  max-players-per-team: '2'
+  announce-time: 'true'
+skit:
+  '1': '{"kitName":"1","armorContents":{"0":{"type":"IRON_BOOTS"},"1":{"type":"IRON_LEGGINGS"},"2":{"type":"IRON_CHESTPLATE"},"3":{"type":"IRON_HELMET"}},"contents":{"0":{"type":"DIAMOND_SWORD"},"1":{"type":"AIR"},"2":{"type":"AIR"},"3":{"type":"AIR"},"4":{"type":"AIR"},"5":{"type":"AIR"},"6":{"type":"AIR"},"7":{"type":"AIR"},"8":{"type":"AIR"},"9":{"type":"AIR"},"10":{"type":"AIR"},"11":{"type":"AIR"},"12":{"type":"AIR"},"13":{"type":"AIR"},"14":{"type":"AIR"},"15":{"type":"AIR"},"16":{"type":"AIR"},"17":{"type":"AIR"},"18":{"type":"AIR"},"19":{"type":"AIR"},"20":{"type":"AIR"},"21":{"type":"AIR"},"22":{"type":"AIR"},"23":{"type":"AIR"},"24":{"type":"AIR"},"25":{"type":"AIR"},"26":{"type":"AIR"},"27":{"type":"AIR"},"28":{"type":"AIR"},"29":{"type":"AIR"},"30":{"type":"AIR"},"31":{"type":"AIR"},"32":{"type":"AIR"},"33":{"type":"AIR"},"34":{"type":"AIR"},"35":{"type":"AIR"}}}'

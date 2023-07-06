@@ -94,7 +94,7 @@ public class ReportListInventory {
                                                      .name((report.isOnline() ? "§a" : "§c") + report.getPlayerName())
                                                      .lore(report.isOnline() ?
                                                            "§aO jogador está online no momento!\n§aClique para teletransportar" :
-                                                           "§cO jogador está offline no momento!")
+                                                           "§cO jogador está offline no momento.")
                                                      .skin(report.getPlayerName()).build(),
                                  new ReportClickHandler(report, menu));
                 }
@@ -139,7 +139,7 @@ public class ReportListInventory {
         public boolean onClick(Player p, Inventory inv, ClickType type, ItemStack stack, int slot) {
             if (type == ClickType.RIGHT) {
                 if (!report.isOnline()) {
-                    p.sendMessage(" §c* §fO jogador §a" + report.getPlayerName() + "§f não está online!");
+                    p.sendMessage(" §cO jogador §c" + report.getPlayerName() + "§c não está online.");
                     return false;
                 }
 

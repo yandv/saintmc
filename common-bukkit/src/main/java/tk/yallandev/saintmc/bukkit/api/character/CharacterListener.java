@@ -58,11 +58,14 @@ public class CharacterListener implements Listener {
 	public void onPlayerMove(PlayerMoveEvent event) {
 		Character.getCharacters().forEach(character -> {
 			if (character.getNpc().isShowing(event.getPlayer().getUniqueId())) {
-				if (character.getNpc().getLocation().distance(event.getPlayer().getLocation()) > MAX_DISTANCE)
+				if (!character.getNpc().getLocation().getWorld().equals(event.getTo().getWorld())) {
+					character.hide(event.getPlayer());
+				} else if (character.getNpc().getLocation().distance(event.getPlayer().getLocation()) > MAX_DISTANCE)
 					character.hide(event.getPlayer());
 			} else {
-				if (character.getNpc().getLocation().distance(event.getPlayer().getLocation()) < MAX_DISTANCE)
+				if (character.getNpc().getLocation().getWorld().equals(event.getTo().getWorld()) && character.getNpc().getLocation().distance(event.getPlayer().getLocation()) < MAX_DISTANCE) {
 					character.show(event.getPlayer());
+				}
 			}
 		});
 	}

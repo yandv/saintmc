@@ -51,7 +51,7 @@ public class CommandListener implements Listener {
 	@EventHandler
 	public void onPlayerCommand(PlayerCommandEvent event) {
 		if (event.getCommandLabel().split(" ")[0].contains(":")) {
-			event.getPlayer().sendMessage(" §c* §fNão é permitido usar comandos com \":\"!");
+			event.getPlayer().sendMessage("§cComando não encontrado.");
 			event.setCancelled(true);
 			return;
 		}
@@ -62,7 +62,7 @@ public class CommandListener implements Listener {
     	String command = event.getCommandLabel().split(" ")[0].replace("/", "");
     	
     	if (!knownCommands.containsKey(command.toLowerCase())) {
-			event.getPlayer().sendMessage(" §c* §fO comando não existe!");
+			event.getPlayer().sendMessage("§cComando não encontrado.");
 			event.setCancelled(true);
     	}
 	}

@@ -33,7 +33,7 @@ public class GroupCommand implements CommandClass {
         String[] args = cmdArgs.getArgs();
 
         if (args.length != 2) {
-            sender.sendMessage("§ecUso /groupset <player> <group> para setar um grupo.");
+            sender.sendMessage("§cUso /groupset <player> <group> para setar um grupo.");
             return;
         }
 
@@ -42,7 +42,7 @@ public class GroupCommand implements CommandClass {
         try {
             grupo = Group.valueOf(args[1].toUpperCase());
         } catch (Exception e) {
-            sender.sendMessage("§cO grupo " + args[1].toUpperCase() + " não existe!");
+            sender.sendMessage("§cO grupo " + args[1].toUpperCase() + " não existe.");
             return;
         }
 
@@ -58,7 +58,7 @@ public class GroupCommand implements CommandClass {
         }
 
         if (group.ordinal() < Group.YOUTUBER.ordinal() && group.ordinal() >= Group.VIP.ordinal()) {
-            sender.sendMessage("§cO grupo " + group.name() + " pode ser setado, somente, temporariamente.");
+            sender.sendMessage("§cO grupo " + group.name() + " pode ser setado somente temporariamente.");
             return;
         }
 
@@ -66,7 +66,7 @@ public class GroupCommand implements CommandClass {
             switch (playerGroup) {
             case ADMIN: {
                 if (group.ordinal() > Group.ADMIN.ordinal()) {
-                    sender.sendMessage("§cVocê só pode manejar o grupo " + Tag.ADMIN.getPrefix() + "§c ou inferior!");
+                    sender.sendMessage("§cVocê só pode manejar o grupo " + Tag.ADMIN.getPrefix() + "§c ou inferior.");
                     return;
                 }
                 break;
@@ -79,7 +79,7 @@ public class GroupCommand implements CommandClass {
         UUID uuid = CommonGeneral.getInstance().getUuid(args[0]);
 
         if (uuid == null) {
-            sender.sendMessage("§cO jogador " + args[0] + " não existe!");
+            sender.sendMessage("§cO jogador " + args[0] + " não existe.");
             return;
         }
 
@@ -90,21 +90,21 @@ public class GroupCommand implements CommandClass {
                 MemberModel loaded = CommonGeneral.getInstance().getPlayerData().loadMember(uuid);
 
                 if (loaded == null) {
-                    sender.sendMessage("§cO jogador " + args[0] + " nunca entrou no servidor!");
+                    sender.sendMessage("§cO jogador " + args[0] + " nunca entrou no servidor.");
                     return;
                 }
 
                 player = new MemberVoid(loaded);
             } catch (Exception e) {
                 e.printStackTrace();
-                sender.sendMessage("§cNão foi possível pegar as informações do jogador " + args[0] + "!");
+                sender.sendMessage("§cNão foi possível pegar as informações do jogador " + args[0] + ".");
                 return;
             }
         }
 
         if (cmdArgs.isPlayer()) {
             if (playerGroup.ordinal() < player.getGroup().ordinal()) {
-                sender.sendMessage("§cVocê não pode majenar o grupo desse jogador!");
+                sender.sendMessage("§cVocê não pode majenar o grupo desse jogador.");
                 return;
             }
         }
@@ -112,13 +112,13 @@ public class GroupCommand implements CommandClass {
         Group actualGroup = player.getGroup();
 
         if (actualGroup == group) {
-            sender.sendMessage("§cO jogador " + player.getPlayerName() + " já está nesse grupo!");
+            sender.sendMessage("§cO jogador " + player.getPlayerName() + " já está nesse grupo.");
             return;
         }
 
         player.setGroup(group);
         sender.sendMessage("§aVocê alterou o grupo do " + player.getPlayerName() + "(" +
-                           player.getUniqueId().toString().replace("-", "") + ")" + " para " + group.name() + "!");
+                           player.getUniqueId().toString().replace("-", "") + ")" + " para " + group.name() + ".");
     }
 
     @Command(name = "permission", usage = "/<command> <player> <group>", groupToUse = Group.ADMIN, runAsync = true)
@@ -127,15 +127,15 @@ public class GroupCommand implements CommandClass {
         String[] args = cmdArgs.getArgs();
 
         if (args.length <= 2) {
-            sender.sendMessage(" §e* §fUse §a/" + cmdArgs.getLabel() +
-                               " <playerName> <add/remove> <permission>§f para adicionar ou remover um grupo.");
+            sender.sendMessage(" §cUse §c/" + cmdArgs.getLabel() +
+                               " <playerName> <add/remove> <permission>§c para adicionar ou remover um grupo.");
             return;
         }
 
         UUID uuid = CommonGeneral.getInstance().getUuid(args[0]);
 
         if (uuid == null) {
-            sender.sendMessage(" §c* §fO jogador §a" + args[0] + "§f não existe!");
+            sender.sendMessage(" §cO jogador §c" + args[0] + "§c não existe.");
             return;
         }
 
@@ -146,14 +146,14 @@ public class GroupCommand implements CommandClass {
                 MemberModel loaded = CommonGeneral.getInstance().getPlayerData().loadMember(uuid);
 
                 if (loaded == null) {
-                    sender.sendMessage(" §c* §fO jogador §a" + args[0] + "§f nunca entrou no servidor!");
+                    sender.sendMessage(" §cO jogador §c" + args[0] + "§c nunca entrou no servidor.");
                     return;
                 }
 
                 player = new MemberVoid(loaded);
             } catch (Exception e) {
                 e.printStackTrace();
-                sender.sendMessage(" §c* §fNão foi possível pegar as informações do jogador §a" + args[0] + "§f!");
+                sender.sendMessage(" §cNão foi possível pegar as informações do jogador §c" + args[0] + "§c.");
                 return;
             }
         }
@@ -174,15 +174,15 @@ public class GroupCommand implements CommandClass {
 
         if (args.length == 0) {
             sender.sendMessage(
-                    " §e* §fUse §a/" + cmdArgs.getLabel() + " <player> <medalha>§f para dar medalha para alguém!");
+                    " §cUse §c/" + cmdArgs.getLabel() + " <player> <medalha>§c para dar medalha para alguém.");
 
-            TextComponent textComponent = new MessageBuilder(" §e* §fMedalhas disponíveis: ").create();
+            TextComponent textComponent = new MessageBuilder(" §aMedalhas disponíveis: ").create();
 
             for (TextComponent txt : Arrays.asList(Medal.values()).stream().filter(medal -> medal != Medal.NONE)
                                            .map(medal -> new MessageBuilder(
-                                                   medal.getChatColor() + medal.getMedalName() + ", ").setHoverEvent(
+                                                   "" + medal.getChatColor() + medal.getMedalIcon() + ", ").setHoverEvent(
                                                                                                               new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(
-                                                                                                                      "" + medal.getChatColor() + medal.getMedalIcon()).create()))
+                                                                                                                      "" + medal.getChatColor() + medal.getMedalName()).create()))
                                                                                                       .setClickEvent(
                                                                                                               new ClickEvent(
                                                                                                                       ClickEvent.Action.RUN_COMMAND,
@@ -199,10 +199,15 @@ public class GroupCommand implements CommandClass {
 
         Medal medal = Medal.getMedalByName(args[1]);
 
+        if (medal == null) {
+            sender.sendMessage("§cEssa medalha não existe.");
+            return;
+        }
+
         UUID uuid = CommonGeneral.getInstance().getUuid(args[0]);
 
         if (uuid == null) {
-            sender.sendMessage(" §c* §fO jogador §a" + args[0] + "§f não existe!");
+            sender.sendMessage(" §cO jogador " + args[0] + "§c não existe.");
             return;
         }
 
@@ -213,14 +218,14 @@ public class GroupCommand implements CommandClass {
                 MemberModel loaded = CommonGeneral.getInstance().getPlayerData().loadMember(uuid);
 
                 if (loaded == null) {
-                    sender.sendMessage(" §c* §fO jogador §a" + args[0] + "§f nunca entrou no servidor!");
+                    sender.sendMessage(" §cO jogador §c" + args[0] + "§c nunca entrou no servidor.");
                     return;
                 }
 
                 player = new MemberVoid(loaded);
             } catch (Exception e) {
                 e.printStackTrace();
-                sender.sendMessage(" §c* §fNão foi possível pegar as informações do jogador §a" + args[0] + "§f!");
+                sender.sendMessage(" §cNão foi possível pegar as informações do jogador " + args[0] + "§c.");
                 return;
             }
         }
@@ -230,7 +235,7 @@ public class GroupCommand implements CommandClass {
         } else {
             player.addMedal(medal);
             player.sendMessage("§aVocê ganhou a medalha " + medal.getMedalName() + "!");
-            sender.sendMessage("§aVocê deu a medalha " + medal.getMedalName() + " para o " + player.getName() + "!");
+            sender.sendMessage("§aVocê deu a medalha " + medal.getMedalName() + " para o " + player.getName() + ".");
         }
     }
 
@@ -242,14 +247,14 @@ public class GroupCommand implements CommandClass {
 
         if (args.length != 3) {
             sender.sendMessage(
-                    " §e* §fUse §a/tempgroup <player> <tempo> <group>§f para setar um grupo temporariamente.");
+                    " §aUse /tempgroup <player> <tempo> <group> para setar um grupo temporariamente.");
             return;
         }
 
         UUID uuid = CommonGeneral.getInstance().getUuid(args[0]);
 
         if (uuid == null) {
-            sender.sendMessage(" §c* §fO jogador §a" + args[0] + "§f não existe!");
+            sender.sendMessage(" §cO jogador §c" + args[0] + "§c não existe.");
             return;
         }
 
@@ -260,14 +265,14 @@ public class GroupCommand implements CommandClass {
                 MemberModel loaded = CommonGeneral.getInstance().getPlayerData().loadMember(uuid);
 
                 if (loaded == null) {
-                    sender.sendMessage(" §c* §fO jogador §a" + args[0] + "§f nunca entrou no servidor!");
+                    sender.sendMessage(" §cO jogador §c" + args[0] + "§c nunca entrou no servidor.");
                     return;
                 }
 
                 player = new MemberVoid(loaded);
             } catch (Exception e) {
                 e.printStackTrace();
-                sender.sendMessage(" §c* §fNão foi possível pegar as informações do jogador §a" + args[0] + "§f!");
+                sender.sendMessage(" §cNão foi possível pegar as informações do jogador §c" + args[0] + "§c.");
                 return;
             }
         }
@@ -277,7 +282,7 @@ public class GroupCommand implements CommandClass {
         try {
             expiresCheck = DateUtils.parseDateDiff(args[1], true);
         } catch (Exception e1) {
-            sender.sendMessage(" §c* §fFormato de tempo invalido");
+            sender.sendMessage(" §cFormato de tempo invalido.");
             return;
         }
 
@@ -287,8 +292,8 @@ public class GroupCommand implements CommandClass {
         try {
             rank = RankType.valueOf(args[2].toUpperCase());
         } catch (Exception e) {
-            sender.sendMessage(" §c* §fO grupo §c" + args[2].toUpperCase() +
-                               "§f não existe ou não pode ser setado como temporario.");
+            sender.sendMessage(" §cO grupo §c" + args[2].toUpperCase() +
+                               "§c não existe ou não pode ser setado como temporario.");
             return;
         }
 
@@ -317,14 +322,14 @@ public class GroupCommand implements CommandClass {
         final String[] args = cmdArgs.getArgs();
 
         if (args.length != 2) {
-            sender.sendMessage(" §e* §fUse §a/removevip <player> <group>§f para.");
+            sender.sendMessage(" §cUse /removevip <player> <group>.");
             return;
         }
 
         UUID uuid = CommonGeneral.getInstance().getUuid(args[0]);
 
         if (uuid == null) {
-            sender.sendMessage(" §c* §fO jogador §a" + args[0] + "§f não existe!");
+            sender.sendMessage(" §cO jogador §c" + args[0] + "§c não existe.");
             return;
         }
 
@@ -335,14 +340,14 @@ public class GroupCommand implements CommandClass {
                 MemberModel loaded = CommonGeneral.getInstance().getPlayerData().loadMember(uuid);
 
                 if (loaded == null) {
-                    sender.sendMessage(" §c* §fO jogador §a" + args[0] + "§f nunca entrou no servidor!");
+                    sender.sendMessage(" §cO jogador §c" + args[0] + "§c nunca entrou no servidor.");
                     return;
                 }
 
                 player = new MemberVoid(loaded);
             } catch (Exception e) {
                 e.printStackTrace();
-                sender.sendMessage(" §c* §fNão foi possível pegar as informações do jogador §a" + args[0] + "§f!");
+                sender.sendMessage(" §cNão foi possível pegar as informações do jogador §c" + args[0] + "§c.");
                 return;
             }
         }
@@ -352,8 +357,8 @@ public class GroupCommand implements CommandClass {
         try {
             rank = RankType.valueOf(args[1].toUpperCase());
         } catch (Exception e) {
-            sender.sendMessage(" §c* §fO grupo §c" + args[1].toUpperCase() +
-                               "§f não existe ou não pode ser setado como temporario.");
+            sender.sendMessage(" §cO grupo §c" + args[1].toUpperCase() +
+                               "§c não existe ou não pode ser setado como temporario.");
             return;
         }
 
@@ -361,8 +366,8 @@ public class GroupCommand implements CommandClass {
         player.saveRanks();
 
         sender.sendMessage(
-                " §a* §fVocê removeu o grupo §a§l" + rank.name() + "§f de §a" + player.getPlayerName() + "(" +
-                player.getUniqueId().toString().replace("-", "") + ")§f!");
+                " §aVocê removeu o grupo §a§l" + rank.name() + "§a de §a" + player.getPlayerName() + "(" +
+                player.getUniqueId().toString().replace("-", "") + ")§a.");
 //		BungeeMain.getPlugin().getDiscordManager().sendMessage(
 //				new EmbedBuilder()
 //						.setTitle("LonneMC - " + (cmdArgs.isPlayer() ? cmdArgs.getPlayer().getName() : "CONSOLE"))

@@ -3,4 +3,4 @@ version: 1.0.11
 main: br.com.saintmc.hungergames.GameMain
 author: yandv
 website: https://github.com/yandv/hungergames/
-depend: [BukkitCommon]
+depend: [BukkitCommon, WorldEdit]

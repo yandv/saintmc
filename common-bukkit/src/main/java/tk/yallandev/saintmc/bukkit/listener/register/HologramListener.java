@@ -92,7 +92,7 @@ public class HologramListener implements Listener {
         BukkitMain.getInstance().getHologramController().getHolograms().forEach(hologram -> {
             if (hologram.isBlocked(event.getPlayer())) return;
 
-            if (hologram.getLocation().getWorld() == event.getPlayer().getLocation().getWorld()) {
+            if (hologram.getLocation().getWorld().equals(event.getPlayer().getLocation().getWorld())) {
                 if (hologram.getLocation().distance(event.getPlayer().getLocation()) < MAX_DISTANCE) {
                     hologram.show(event.getPlayer());
                 }
@@ -107,7 +107,7 @@ public class HologramListener implements Listener {
             @Override
             public void run() {
                 BukkitMain.getInstance().getHologramController().getHolograms().forEach(hologram -> {
-                    if (hologram.getLocation().getWorld() == event.getPlayer().getLocation().getWorld()) {
+                    if (hologram.getLocation().getWorld().equals(event.getPlayer().getLocation().getWorld())) {
                         if (hologram.isBlocked(event.getPlayer())) return;
 
                         if (hologram.isShowingForPlayer(event.getPlayer()) &&
@@ -144,13 +144,13 @@ public class HologramListener implements Listener {
             if (hologram.isBlocked(player)) return;
 
             if (hologram.isShowingForPlayer(player)) {
-                if (hologram.getLocation().getWorld() != player.getLocation().getWorld()) {
+                if (!hologram.getLocation().getWorld().equals(player.getLocation().getWorld())) {
                     hologram.hide(player);
                 } else if (hologram.getLocation().distance(player.getLocation()) > MAX_DISTANCE) {
                     hologram.hide(player);
                 }
             } else {
-                if (hologram.getLocation().getWorld() == player.getLocation().getWorld() &&
+                if (hologram.getLocation().getWorld().equals(player.getLocation().getWorld()) &&
                         hologram.getLocation().distance(player.getLocation()) < MAX_DISTANCE) {
                     hologram.show(player);
                 }

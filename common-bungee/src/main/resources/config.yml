@@ -1,3 +1,23 @@
+calendar:
+  SUNDAY:
+    '02:26': pentamc mesnagem slo
+    '14:30': pentamc mesnagem dupla
+    '16:30': openevento solo
+    '18:30': openevento solo
+    '20:30': openevento solo
+  MONDAY:
+    '14:30': openevento solo
+  TUESDAY:
+    '14:30': openevento solo
+  WEDNESDAY:
+    '14:30': openevento solo
+  THURSDAY:
+    '14:30': openevento solo
+  FRIDAY:
+    '14:30': openevento solo
+  SATURDAY:
+    '14:30': openevento solo
+
 serverAddress: '0.0.0.0'
 
 mongodb:

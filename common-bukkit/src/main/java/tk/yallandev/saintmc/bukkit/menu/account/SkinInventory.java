@@ -24,12 +24,10 @@ public class SkinInventory {
     static {
         SKIN_MAP = new HashMap<>();
 
-        SKIN_MAP.put("yandv",
-                     new Skin("yandv", new Profile("yandv", UUID.fromString("fa1a1461-8e39-4536-89ba-6a54143ddaeb"))));
-        SKIN_MAP.put("CabecinhaDeKiwi", new Skin("CabecinhaDeKiwi", new Profile("CabecinhaDeKiwi", UUID.fromString(
-                "6560284e-863b-48f6-901f-8cebdcee404f"))));
-        SKIN_MAP.put("HugPvP", new Skin("HugPvP", new Profile("HugPvP", UUID.fromString(
-                "673daeda-5464-42e5-9ad8-7a0d917b276b"))));
+        SKIN_MAP.put("Charlotte",
+                     new Skin("Charlotte", new Profile("Charlotte", UUID.fromString("c90f8018-9a94-4ce3-959e-e57eac48f074"))));
+        SKIN_MAP.put("Coquetel", new Skin("Coquetel", new Profile("Coquetel", UUID.fromString(
+                "0c92ae64-73a2-4d6b-8727-ab875ea4f3a0"))));
     }
 
     public SkinInventory(Player player, Member member, MenuType menuType) {
@@ -123,7 +121,7 @@ public class SkinInventory {
             break;
         }
         case CUSTOMIZE: {
-            player.sendMessage("§aPara alterar sua skin para uma customizada utilize /skin <skin>!");
+            player.sendMessage("§cPara alterar sua skin para uma customizada utilize /skin <skin>.");
             player.closeInventory();
         }
         }

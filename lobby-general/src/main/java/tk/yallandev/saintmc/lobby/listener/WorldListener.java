@@ -32,11 +32,6 @@ public class WorldListener implements Listener {
 	}
 
 	@EventHandler
-	public void onEntityDamage(EntityDamageEvent e) {
-		e.setCancelled(true);
-	}
-
-	@EventHandler
 	public void onCreatureSpawn(CreatureSpawnEvent e) {
 		if (e.getSpawnReason() == SpawnReason.CUSTOM)
 			return;
@@ -45,6 +40,11 @@ public class WorldListener implements Listener {
 			return;
 
 		e.setCancelled(true);
+	}
+
+	@EventHandler
+	public void onEntityDamage(EntityDamageEvent event) {
+		event.setCancelled(true);
 	}
 
 	@EventHandler

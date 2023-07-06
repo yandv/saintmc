@@ -32,7 +32,6 @@ import tk.yallandev.saintmc.common.utils.string.StringUtils;
 public class GameScheduler implements GameSchedule {
 
     public static Location feastLocation;
-    public static final int FEAST_TIME = 720;
 
     private GameGeneral gameGeneral;
     private List<Listener> listenerList;
@@ -54,60 +53,67 @@ public class GameScheduler implements GameSchedule {
 
         ServerConfig.getInstance().execute(gameState, time);
 
-        if (time % 360 == 0) {
-            MinifeastStructure minifest = new MinifeastStructure();
-            Location place = minifest.findPlace();
-            minifest.spawn(place);
 
-            Bukkit.broadcastMessage("§cUm minifeast spawnou entre §c(X: " + ((int) place.getX() + 100) + ", " +
-                                    ((int) place.getX() - 100) + ") e §c(Z:" + ((int) place.getZ() + 100) + ", " +
-                                    ((int) place.getZ() - 100) + ")!");
+        if (GameMain.getInstance().getVarManager().getVar("minifeast-enabled", true)) {
+            if (time % 360 == 0) {
+                MinifeastStructure minifest = new MinifeastStructure();
+                Location place = minifest.findPlace();
+                minifest.spawn(place);
+
+                Bukkit.broadcastMessage("§cUm minifeast spawnou entre §c(X: " + ((int) place.getX() + 100) + ", " +
+                        ((int) place.getX() - 100) + ") e §c(Z:" + ((int) place.getZ() + 100) + ", " +
+                        ((int) place.getZ() - 100) + ")!");
+            }
         }
 
-        if (feastStructure == null) {
-            if (time == FEAST_TIME) {
-                feastStructure = new FeastStructure();
-                feastLocation = feastStructure.findPlace();
-                feastStructure.spawn(feastLocation);
+        if (GameMain.getInstance().getVarManager().getVar("feast-enabled", true)) {
+            if (feastStructure == null) {
+                if (time == GameMain.getInstance().getVarManager().getVar("feast-time", 720)) {
+                    feastStructure = new FeastStructure();
+                    feastLocation = feastStructure.findPlace();
+                    feastStructure.spawn(feastLocation);
 
-                feastTimer = 300;
-                Bukkit.broadcastMessage(
-                        "§cO feast irá spawnar em " + (int) feastLocation.getX() + ", " + (int) feastLocation.getY() +
-                        ", " + (int) feastLocation.getZ() + " em " + StringUtils.formatTime(feastTimer));
-            }
-        } else {
-            int feastTime = time - FEAST_TIME;
+                    feastTimer = GameMain.getInstance().getVarManager().getVar("feast-time-to-spawn", 300);
+                    Bukkit.broadcastMessage(
+                            "§cO feast irá spawnar em " + (int) feastLocation.getX() + ", " + (int) feastLocation.getY() +
+                                    ", " + (int) feastLocation.getZ() + " em " + StringUtils.formatTime(feastTimer));
+                }
+            } else {
+                int feastTime = time - GameMain.getInstance().getVarManager().getVar("feast-time", 720);
 
-            if (feastTime >= 300) {
-                feastStructure.spawnChest(feastLocation);
-                Bukkit.broadcastMessage(
-                        "§cO feast spawnou em " + (int) feastLocation.getX() + ", " + (int) feastLocation.getY() +
-                        ", " + (int) feastLocation.getZ() + "!");
+                if (feastTime >= GameMain.getInstance().getVarManager().getVar("feast-time-to-spawn", 300)) {
+                    feastStructure.spawnChest(feastLocation);
+                    Bukkit.broadcastMessage(
+                            "§cO feast spawnou em " + (int) feastLocation.getX() + ", " + (int) feastLocation.getY() +
+                                    ", " + (int) feastLocation.getZ() + "!");
 
-                feastStructure = null;
-            } else if ((feastTime % 60 == 0 ||
+                    feastStructure = null;
+                } else if ((feastTime % 60 == 0 ||
                         (feastTime > 240 && (feastTime % 15 == 0 || feastTime == 290 || feastTime >= 295)))) {
-                Bukkit.broadcastMessage(
-                        "§cO feast irá spawnar em " + (int) feastLocation.getX() + ", " + (int) feastLocation.getY() +
-                        ", " + (int) feastLocation.getZ() + " em " + StringUtils.formatTime(300 - feastTime));
+                    Bukkit.broadcastMessage(
+                            "§cO feast irá spawnar em " + (int) feastLocation.getX() + ", " + (int) feastLocation.getY() +
+                                    ", " + (int) feastLocation.getZ() + " em " + StringUtils.formatTime(300 - feastTime));
+                }
             }
         }
 
-        if (time == 60 * 35) {
-            FeastStructure feast = new FeastStructure(25, 450);
-            Location location = feast.findPlace();
+        if (GameMain.getInstance().getVarManager().getVar("bonus-feast-enabled", true)) {
+            if (time == 60 * GameMain.getInstance().getVarManager().getVar("final-battle-time", 35)) {
+                FeastStructure feast = new FeastStructure(25, 450);
+                Location location = feast.findPlace();
 
-            feast.spawn(location);
-            feast.spawnChest(location);
-            Bukkit.broadcastMessage("§cO bonus feast spawnou em algum lugar do mapa!");
+                feast.spawn(location);
+                feast.spawnChest(location);
+                Bukkit.broadcastMessage("§cO bonus feast spawnou em algum lugar do mapa!");
+            }
         }
 
-        if (ServerConfig.getInstance().isFinalBattle()) {
-            if (time == 60 * 40) {
+        if (GameMain.getInstance().getVarManager().getVar("final-battle-enabled", true)) {
+            if (time == 60 * (GameMain.getInstance().getVarManager().getVar("final-battle-time", 40) - 5)) {
                 Bukkit.broadcastMessage("§cA arena final vai spawnar em 5 minutos!");
             }
 
-            if (time == 60 * 45) {
+            if (time == 60 * GameMain.getInstance().getVarManager().getVar("final-battle-time", 40)) {
                 Bukkit.broadcastMessage("§cA arena final foi gerada!");
 
                 Location location = new Location(Bukkit.getWorlds().stream().findFirst().orElse(null), 0, 90, 0);
@@ -146,12 +152,12 @@ public class GameScheduler implements GameSchedule {
             }
         }
 
-        if (ServerConfig.getInstance().isForceWin()) {
-            if (time == 60 * 50) {
+        if (GameMain.getInstance().getVarManager().getVar("force-win-enabled", true)) {
+            if (time == 60 * (GameMain.getInstance().getVarManager().getVar("force-win-time", 60) - 5)) {
                 Bukkit.broadcastMessage("§cEm 5 minutos o jogador com a maior quantidade de kills irá vencer!");
             }
 
-            if (time == 60 * 55) {
+            if (time == 60 * GameMain.getInstance().getVarManager().getVar("force-win-time", 60)) {
                 if (checkWin()) {
                     return;
                 }

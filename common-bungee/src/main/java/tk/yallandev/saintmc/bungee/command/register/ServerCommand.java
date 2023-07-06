@@ -269,6 +269,33 @@ public class ServerCommand implements CommandClass {
 		sender.setCooldown("connect-command", 4);
 	}
 
+	@Command(name = "competitivo", aliases = { "comp" }, usage = "/<command> <player> <server>")
+	public void competitivoCommand(BungeeCommandArgs cmdArgs) {
+		if (!cmdArgs.isPlayer())
+			return;
+
+		BungeeMember sender = (BungeeMember) CommonGeneral.getInstance().getMemberManager()
+				.getMember(cmdArgs.getSender().getUniqueId());
+
+		if (sender.isOnCooldown("connect-command")) {
+			sender.sendMessage("§cVocê precisa esperar mais "
+					+ DateUtils.formatTime(sender.getCooldown("connect-command"), DECIMAL_FORMAT)
+					+ "s para se conectar novamente.");
+			return;
+		}
+
+		ProxiedServer server = BungeeMain.getInstance().getServerManager()
+				.getBalancer(ServerType.HUNGERGAMES).next();
+
+		if (server == null || server.getServerInfo() == null) {
+			sender.sendMessage("§cNenhum servidor de lobby disponivel.");
+			return;
+		}
+
+		cmdArgs.getPlayer().connect(server.getServerInfo());
+		sender.setCooldown("connect-command", 4);
+	}
+
 	@Command(name = "clanxclan", aliases = { "cxc" }, usage = "/evento")
 	public void clanCommand(BungeeCommandArgs cmdArgs) {
 		if (!cmdArgs.isPlayer())
@@ -279,14 +306,14 @@ public class ServerCommand implements CommandClass {
 		if (sender.isOnCooldown("connect-command")) {
 			sender.sendMessage("§cVocê precisa esperar mais "
 					+ DateUtils.formatTime(sender.getCooldown("connect-command"), DECIMAL_FORMAT)
-					+ "s para se conectar novamente!");
+					+ "s para se conectar novamente.");
 			return;
 		}
 
 		ProxiedServer server = BungeeMain.getInstance().getServerManager().getBalancer(ServerType.CLANXCLAN).next();
 
 		if (server == null || server.getServerInfo() == null) {
-			sender.sendMessage("§cNenhum servidor de Clan x Clan disponivel!");
+			sender.sendMessage("§cNenhum servidor de Clan x Clan disponivel.");
 			return;
 		}
 
@@ -297,7 +324,7 @@ public class ServerCommand implements CommandClass {
 	@Command(name = "server", usage = "/<command> <player> <server>", aliases = { "go", "connect", "ir" })
 	public void serverCommand(BungeeCommandArgs cmdArgs) {
 		if (!cmdArgs.isPlayer()) {
-			cmdArgs.getSender().sendMessage(" §c §fVocê precisa ser um §ajogador §fpara executar este comando!");
+			cmdArgs.getSender().sendMessage(" §cVocê precisa ser um jogador para executar este comando.");
 			return;
 		}
 
@@ -306,14 +333,14 @@ public class ServerCommand implements CommandClass {
 		if (sender.isOnCooldown("connect-command")) {
 			sender.sendMessage("§cVocê precisa esperar mais "
 					+ DateUtils.formatTime(sender.getCooldown("connect-command"), DECIMAL_FORMAT)
-					+ "s para se conectar novamente!");
+					+ "s para se conectar novamente.");
 			return;
 		}
 
 		String[] args = cmdArgs.getArgs();
 
 		if (args.length == 0) {
-			sender.sendMessage("§cUso /" + cmdArgs.getLabel() + " <server> para conectar-se a algum servidor.");
+			sender.sendMessage("§cUse /" + cmdArgs.getLabel() + " <server> para conectar-se a algum servidor.");
 			return;
 		}
 
@@ -321,7 +348,7 @@ public class ServerCommand implements CommandClass {
 		ProxiedServer server = BungeeMain.getInstance().getServerManager().getServerByName(serverId);
 
 		if (server == null || server.getServerInfo() == null) {
-			sender.sendMessage("§cO servidor " + serverId + " não existe!");
+			sender.sendMessage("§cO servidor " + serverId + " não existe.");
 			return;
 		}
 
@@ -339,19 +366,19 @@ public class ServerCommand implements CommandClass {
 		if (sender.isOnCooldown("connect-command")) {
 			sender.sendMessage("§cVocê precisa esperar mais "
 					+ DateUtils.formatTime(sender.getCooldown("connect-command"), DECIMAL_FORMAT)
-					+ "s para se conectar novamente!");
+					+ "s para se conectar novamente.");
 			return;
 		}
 
 		String[] args = cmdArgs.getArgs();
 
 		if (!cmdArgs.isPlayer()) {
-			sender.sendMessage(" §c §fVocê precisa ser um §ajogador §fpara executar este comando!");
+			sender.sendMessage(" §cVocê precisa ser um jogador para executar este comando.");
 			return;
 		}
 
 		if (args.length == 0) {
-			sender.sendMessage(" §e* §fUse §a/" + cmdArgs.getLabel() + " <type>§f para entrar em algum servidor.");
+			sender.sendMessage(" §cUse /" + cmdArgs.getLabel() + " <type> para entrar em algum servidor.");
 			return;
 		}
 
@@ -364,7 +391,7 @@ public class ServerCommand implements CommandClass {
 					.next();
 
 			if (server == null || server.getServerInfo() == null) {
-				sender.sendMessage("§cNenhum servidor de Hungergames disponivel!");
+				sender.sendMessage("§cNenhum servidor de Comp disponivel.");
 				return;
 			}
 
@@ -375,7 +402,7 @@ public class ServerCommand implements CommandClass {
 			ProxiedServer server = BungeeMain.getInstance().getServerManager().getBalancer(ServerType.LOBBY).next();
 
 			if (server == null || server.getServerInfo() == null) {
-				sender.sendMessage("§cNenhum servidor de Lobby disponivel!");
+				sender.sendMessage("§cNenhum servidor de Lobby disponivel.");
 				return;
 			}
 
@@ -386,7 +413,7 @@ public class ServerCommand implements CommandClass {
 			ProxiedServer server = BungeeMain.getInstance().getServerManager().getBalancer(ServerType.GLADIATOR).next();
 
 			if (server == null || server.getServerInfo() == null) {
-				sender.sendMessage("§cNenhum servidor de Gladiator disponivel!");
+				sender.sendMessage("§cNenhum servidor de Gladiator disponivel.");
 				return;
 			}
 
@@ -398,7 +425,7 @@ public class ServerCommand implements CommandClass {
 			ProxiedServer server = BungeeMain.getInstance().getServerManager().getBalancer(ServerType.CLANXCLAN).next();
 
 			if (server == null || server.getServerInfo() == null) {
-				sender.sendMessage("§cNenhum servidor de Clan x Clan disponivel!");
+				sender.sendMessage("§cNenhum servidor de Clan x Clan disponivel.");
 				return;
 			}
 
@@ -411,7 +438,7 @@ public class ServerCommand implements CommandClass {
 			ProxiedServer server = BungeeMain.getInstance().getServerManager().getBalancer(ServerType.SW_SOLO).next();
 
 			if (server == null || server.getServerInfo() == null) {
-				sender.sendMessage("§cNenhum servidor de Skywars disponivel!");
+				sender.sendMessage("§cNenhum servidor de Skywars disponivel.");
 				return;
 			}
 
@@ -423,7 +450,7 @@ public class ServerCommand implements CommandClass {
 			ProxiedServer server = BungeeMain.getInstance().getServerManager().getBalancer(ServerType.SW_TEAM).next();
 
 			if (server == null || server.getServerInfo() == null) {
-				sender.sendMessage("§cNenhum servidor de Skywars Team disponivel!");
+				sender.sendMessage("§cNenhum servidor de Skywars Team disponivel.");
 				return;
 			}
 
@@ -435,7 +462,7 @@ public class ServerCommand implements CommandClass {
 			ProxiedServer server = BungeeMain.getInstance().getServerManager().getBalancer(ServerType.SW_SQUAD).next();
 
 			if (server == null || server.getServerInfo() == null) {
-				sender.sendMessage("§cNenhum servidor de Skywars Squad disponivel!");
+				sender.sendMessage("§cNenhum servidor de Skywars Squad disponivel.");
 				return;
 			}
 
@@ -449,7 +476,7 @@ public class ServerCommand implements CommandClass {
 				server = BungeeMain.getInstance().getServerManager().getBalancer(ServerType.FULLIRON).next();
 
 				if (server == null || server.getServerInfo() == null) {
-					sender.sendMessage("§cNenhum servidor de KitPvP disponivel!");
+					sender.sendMessage("§cNenhum servidor de PvP disponivel.");
 					return;
 				}
 			}
@@ -462,7 +489,7 @@ public class ServerCommand implements CommandClass {
 			ProxiedServer server = BungeeMain.getInstance().getServerManager().getBalancer(ServerType.FULLIRON).next();
 
 			if (server == null || server.getServerInfo() == null) {
-				sender.sendMessage("§cNenhum servidor de KitPvP disponivel!");
+				sender.sendMessage("§cNenhum servidor de PvP disponivel.");
 				return;
 			}
 
@@ -473,7 +500,7 @@ public class ServerCommand implements CommandClass {
 			ProxiedServer server = BungeeMain.getInstance().getServerManager().getBalancer(ServerType.SIMULATOR).next();
 
 			if (server == null || server.getServerInfo() == null) {
-				sender.sendMessage("§cNenhum servidor de KitPvP disponivel!");
+				sender.sendMessage("§cNenhum servidor de PvP disponivel.");
 				return;
 			}
 
@@ -486,7 +513,7 @@ public class ServerCommand implements CommandClass {
 			try {
 				serverType = ServerType.valueOf(args[0]);
 			} catch (Exception ex) {
-				cmdArgs.getPlayer().sendMessage("§cO servidor " + args[0] + " não existe!");
+				cmdArgs.getPlayer().sendMessage("§cO servidor " + args[0] + " não existe.");
 				return;
 			}
 
@@ -494,7 +521,7 @@ public class ServerCommand implements CommandClass {
 
 			if (server == null || server.getServerInfo() == null) {
 				sender.sendMessage("§cNenhum servidor de " + NameUtils.formatString(serverType.name().replace("_", " "))
-						+ " disponivel!");
+						+ " disponivel.");
 				return;
 			}
 

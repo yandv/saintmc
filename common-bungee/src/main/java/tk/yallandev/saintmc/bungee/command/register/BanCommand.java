@@ -34,14 +34,14 @@ public class BanCommand implements CommandClass {
         String[] args = cmdArgs.getArgs();
 
         if (args.length < 4) {
-            sender.sendMessage(" §c* §fUse §a/p <ban:mute> <player> <motivo> <tempo>§f para punir um jogador!");
+            sender.sendMessage(" §cUse /p <ban:mute> <player> <motivo> <tempo> para punir um jogador.");
             return;
         }
 
         UUID uuid = CommonGeneral.getInstance().getUuid(args[1]);
 
         if (uuid == null) {
-            sender.sendMessage("§cO jogador " + args[1] + " não existe!");
+            sender.sendMessage("§cO jogador " + args[1] + " não existe.");
             return;
         }
 
@@ -52,14 +52,14 @@ public class BanCommand implements CommandClass {
                 MemberModel loaded = CommonGeneral.getInstance().getPlayerData().loadMember(uuid);
 
                 if (loaded == null) {
-                    sender.sendMessage("§cO jogador " + args[1] + " nunca entrou no servidor!");
+                    sender.sendMessage("§cO jogador " + args[1] + " nunca entrou no servidor.");
                     return;
                 }
 
                 player = new MemberVoid(loaded);
             } catch (Exception e) {
                 e.printStackTrace();
-                sender.sendMessage("§cNão foi possível pegar as informações do jogador " + args[0] + "!");
+                sender.sendMessage("§cNão foi possível pegar as informações do jogador " + args[0] + ".");
                 return;
             }
         }
@@ -74,7 +74,7 @@ public class BanCommand implements CommandClass {
 
         if (cmdArgs.isPlayer()) {
             if (playerGroup.ordinal() < player.getGroup().ordinal()) {
-                sender.sendMessage("§cVocê não pode banir esse jogador!");
+                sender.sendMessage("§cVocê não pode banir esse jogador.");
                 return;
             }
         }
@@ -84,7 +84,7 @@ public class BanCommand implements CommandClass {
         try {
             category = Category.valueOf(args[2].toUpperCase());
         } catch (Exception e) {
-            sender.sendMessage(" §c* §fCategoria invalida!");
+            sender.sendMessage(" §cCategoria invalida.");
             return;
         }
 
@@ -93,7 +93,7 @@ public class BanCommand implements CommandClass {
         try {
             expiresCheck = args[3].equalsIgnoreCase("0") ? -1L : DateUtils.parseDateDiff(args[3], true);
         } catch (Exception e1) {
-            sender.sendMessage(" §c* §fFormato de tempo invalido");
+            sender.sendMessage(" §cFormato de tempo invalido.");
             return;
         }
 
@@ -104,10 +104,10 @@ public class BanCommand implements CommandClass {
 
             if (BungeeMain.getInstance().getPunishManager().ban(player, ban)) {
                 sender.sendMessage(
-                        " §a* §fVocê baniu o jogador §a" + player.getPlayerName() + "§f por §a" + ban.getReason() +
-                        "§f!");
+                        " §aVocê baniu o jogador §a" + player.getPlayerName() + "§a por §a" + ban.getReason() +
+                        "§a.");
             } else {
-                sender.sendMessage("§cO jogador já está banido!");
+                sender.sendMessage("§cO jogador já está banido.");
             }
         } else if (args[0].equalsIgnoreCase("mute")) {
             Mute mute = new Mute(category, player.getUniqueId(),
@@ -116,13 +116,13 @@ public class BanCommand implements CommandClass {
 
             if (BungeeMain.getInstance().getPunishManager().mute(player, mute)) {
                 sender.sendMessage(
-                        " §a* §fVocê mutou o jogador §a" + player.getPlayerName() + "§f por §a" + mute.getReason() +
-                        "§f!");
+                        " §aVocê mutou o jogador §a" + player.getPlayerName() + "§a por §a" + mute.getReason() +
+                        "§a.");
             } else {
-                sender.sendMessage(" §c* §fNão foi possível mutar o jogador!");
+                sender.sendMessage(" §cNão foi possível mutar o jogador.");
             }
         } else {
-            sender.sendMessage(" §c* §fUse §a/p <ban:mute:warn> <player> <tempo> <motivo>§f para punir um jogador!");
+            sender.sendMessage(" §cUse /p <ban:mute:warn> <player> <tempo> <motivo> para punir um jogador.");
         }
     }
 
@@ -132,14 +132,14 @@ public class BanCommand implements CommandClass {
         String[] args = cmdArgs.getArgs();
 
         if (args.length == 0) {
-            sender.sendMessage(" §c* §fUse §a/unban <player> <unbanReason>§f para desbanir um jogador!");
+            sender.sendMessage(" §cUse /unban <player> <unbanReason> para desbanir um jogador.");
             return;
         }
 
         UUID uuid = CommonGeneral.getInstance().getUuid(args[0]);
 
         if (uuid == null) {
-            sender.sendMessage(" §c* §fO jogador §a" + args[0] + "§f não existe!");
+            sender.sendMessage(" §cO jogador " + args[0] + "§c não existe.");
             return;
         }
 
@@ -150,14 +150,14 @@ public class BanCommand implements CommandClass {
                 MemberModel loaded = CommonGeneral.getInstance().getPlayerData().loadMember(uuid);
 
                 if (loaded == null) {
-                    sender.sendMessage(" §c* §fO jogador §a" + args[0] + "§f nunca entrou no servidor!");
+                    sender.sendMessage(" §cO jogador " + args[0] + "§c nunca entrou no servidor!");
                     return;
                 }
 
                 player = new MemberVoid(loaded);
             } catch (Exception e) {
                 e.printStackTrace();
-                sender.sendMessage(" §c* §fNão foi possível pegar as informações do jogador §a" + args[0] + "§f!");
+                sender.sendMessage(" §cNão foi possível pegar as informações do jogador §c" + args[0] + "§f!");
                 return;
             }
         }
@@ -173,9 +173,9 @@ public class BanCommand implements CommandClass {
         if (BungeeMain.getInstance().getPunishManager().unban(player, sender.getUniqueId(),
                                                               cmdArgs.isPlayer() ? cmdArgs.getPlayer().getName() :
                                                               "CONSOLE", unbanReason)) {
-            sender.sendMessage(" §a* §fVocê desbaniu o jogador §a" + player.getPlayerName() + "§f!");
+            sender.sendMessage(" §aVocê desbaniu o jogador §a" + player.getPlayerName() + "§a.");
         } else {
-            sender.sendMessage(" §c* §fNão foi possível banir o jogador!");
+            sender.sendMessage(" §cNão foi possível banir o jogador.");
         }
     }
 
@@ -185,14 +185,14 @@ public class BanCommand implements CommandClass {
         String[] args = cmdArgs.getArgs();
 
         if (args.length == 0) {
-            sender.sendMessage(" §c* §fUse §a/unmute <player>§f para desmutar um jogador!");
+            sender.sendMessage(" §cUse /unmute <player> para desmutar um jogador.");
             return;
         }
 
         UUID uuid = CommonGeneral.getInstance().getUuid(args[0]);
 
         if (uuid == null) {
-            sender.sendMessage(" §c* §fO jogador §a" + args[0] + "§f não existe!");
+            sender.sendMessage(" §cO jogador " + args[0] + "§c não existe.");
             return;
         }
 
@@ -203,14 +203,14 @@ public class BanCommand implements CommandClass {
                 MemberModel loaded = CommonGeneral.getInstance().getPlayerData().loadMember(uuid);
 
                 if (loaded == null) {
-                    sender.sendMessage(" §c* §fO jogador §a" + args[0] + "§f nunca entrou no servidor!");
+                    sender.sendMessage(" §cO jogador " + args[0] + " nunca entrou no servidor.");
                     return;
                 }
 
                 player = new MemberVoid(loaded);
             } catch (Exception e) {
                 e.printStackTrace();
-                sender.sendMessage(" §c* §fNão foi possível pegar as informações do jogador §a" + args[0] + "§f!");
+                sender.sendMessage(" §cNão foi possível pegar as informações do jogador " + args[0] + "§c.");
                 return;
             }
         }
@@ -218,9 +218,9 @@ public class BanCommand implements CommandClass {
         if (BungeeMain.getInstance().getPunishManager().unmute(player, sender.getUniqueId(),
                                                                cmdArgs.isPlayer() ? cmdArgs.getPlayer().getName() :
                                                                "CONSOLE")) {
-            sender.sendMessage(" §a* §fVocê desmutar o jogador §a" + player.getPlayerName() + "§f!");
+            sender.sendMessage(" §aVocê desmutou o jogador §a" + player.getPlayerName() + "§a.");
         } else {
-            sender.sendMessage(" §c* §fNão foi possível desmutar o jogador!");
+            sender.sendMessage(" §cNão foi possível desmutar o jogador!");
         }
     }
 
@@ -230,14 +230,14 @@ public class BanCommand implements CommandClass {
         String[] args = cmdArgs.getArgs();
 
         if (args.length == 0) {
-            sender.sendMessage(" §c* §fUse §a/warn <player> <motivo>§f para avisar um jogador!");
+            sender.sendMessage(" §cUse /warn <player> <motivo> para avisar um jogador.");
             return;
         }
 
         UUID uuid = CommonGeneral.getInstance().getUuid(args[0]);
 
         if (uuid == null) {
-            sender.sendMessage(" §c* §fO jogador §a" + args[0] + "§f não existe!");
+            sender.sendMessage(" §cO jogador §c" + args[0] + "§c não existe.");
             return;
         }
 
@@ -248,14 +248,14 @@ public class BanCommand implements CommandClass {
                 MemberModel loaded = CommonGeneral.getInstance().getPlayerData().loadMember(uuid);
 
                 if (loaded == null) {
-                    sender.sendMessage(" §c* §fO jogador §a" + args[0] + "§f nunca entrou no servidor!");
+                    sender.sendMessage(" §cO jogador §c" + args[0] + "§c nunca entrou no servidor.");
                     return;
                 }
 
                 player = new MemberVoid(loaded);
             } catch (Exception e) {
                 e.printStackTrace();
-                sender.sendMessage(" §c* §fNão foi possível pegar as informações do jogador §a" + args[0] + "§f!");
+                sender.sendMessage(" §cNão foi possível pegar as informações do jogador §c" + args[0] + "§c.");
                 return;
             }
         }
@@ -270,7 +270,7 @@ public class BanCommand implements CommandClass {
 
         if (cmdArgs.isPlayer()) {
             if (playerGroup.ordinal() < player.getGroup().ordinal()) {
-                sender.sendMessage(" §c* §fVocê não pode majenar o grupo desse jogador!");
+                sender.sendMessage(" §cVocê não pode majenar o grupo desse jogador.");
                 return;
             }
         }
@@ -288,10 +288,10 @@ public class BanCommand implements CommandClass {
 
         if (BungeeMain.getInstance().getPunishManager().warn(player, warn)) {
             sender.sendMessage(
-                    " §a* §fVocê alertou o jogador §a" + player.getPlayerName() + "§f por §a" + warn.getReason() +
-                    "§f!");
+                    " §aVocê alertou o jogador §a" + player.getPlayerName() + "§a por §a" + warn.getReason() +
+                    "§a.");
         } else {
-            sender.sendMessage(" §c* §fNão foi possível alertar o jogador!");
+            sender.sendMessage(" §cNão foi possível alertar o jogador.");
         }
     }
 
@@ -302,14 +302,14 @@ public class BanCommand implements CommandClass {
 
         if (args.length == 0) {
             sender.sendMessage(
-                    " §c* §fUse §a/" + cmdArgs.getLabel() + " <player>§f para ver os jogadores com o mesmo ip!");
+                    " §cUse §c/" + cmdArgs.getLabel() + " <player>cf para ver os jogadores com o mesmo ip.");
             return;
         }
 
         UUID uuid = CommonGeneral.getInstance().getUuid(args[0]);
 
         if (uuid == null) {
-            sender.sendMessage("§cO jogador " + args[0] + " não existe!");
+            sender.sendMessage("§cO jogador " + args[0] + " não existe.");
             return;
         }
 
@@ -320,14 +320,14 @@ public class BanCommand implements CommandClass {
                 MemberModel loaded = CommonGeneral.getInstance().getPlayerData().loadMember(uuid);
 
                 if (loaded == null) {
-                    sender.sendMessage("§cO jogador " + args[0] + " nunca entrou no servidor!");
+                    sender.sendMessage("§cO jogador " + args[0] + " nunca entrou no servidor.");
                     return;
                 }
 
                 player = new MemberVoid(loaded);
             } catch (Exception e) {
                 e.printStackTrace();
-                sender.sendMessage("§cNão foi possível pegar as informações do jogador " + args[0] + "!");
+                sender.sendMessage("§cNão foi possível pegar as informações do jogador " + args[0] + ".");
                 return;
             }
         }

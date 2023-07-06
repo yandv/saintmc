@@ -42,6 +42,10 @@ public enum League {
         this.maxXp = maxXp;
     }
 
+    public String getSimplifiedName() {
+        return getColor() + (getName().contains(" ") ? getName().split(" ")[1] : "") + getSymbol();
+    }
+
     public League getNextLeague() {
         return ordinal() + 1 <= values()[values().length - 1].ordinal() ? League.values()[ordinal() + 1]
                                                                         : values()[values().length - 1];

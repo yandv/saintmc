@@ -154,10 +154,10 @@ public class Report {
 						memberModel = null;
 					}
 
-					member.sendMessage("§a§l> §fO jogador §a" + getPlayerName() + "§f foi punido do servidor!");
+					member.sendMessage("§aO jogador §a" + getPlayerName() + "§a foi punido do servidor.");
 					member.sendMessage(
-							"§a§l> §fVocê ganhou §a20 xp§f, §a50 money§f e §d1 ponto de reputação§f por ter reportado ele!");
-					member.sendMessage("§a§l> §fObrigado por ajudar a comunidade do §aSaintMC§f!");
+							"§aVocê ganhou 50 coins e 1 ponto de reputação por ter reportado ele.");
+					member.sendMessage("§aObrigado por ajudar a comunidade do servidor.");
 					member.setReputation(member.getReputation() + 1);
 					member = null;
 				}

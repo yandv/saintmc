@@ -59,7 +59,6 @@ public abstract class LobbyPlatform extends JavaPlugin {
 		getServer().getPluginManager().registerEvents(new TabListener(), this);
 		getServer().getPluginManager().registerEvents(new PlayerListener(), this);
 		getServer().getPluginManager().registerEvents(new WorldListener(), this);
-		getServer().getPluginManager().registerEvents(new WorldListener(), this);
 		getServer().getPluginManager().registerEvents(new HologramListener(), this);
 		getServer().getPluginManager().registerEvents(new GamerListener(), this);
 

@@ -192,7 +192,7 @@ public class ChatListener extends Listener {
         if (CommonGeneral.getInstance().getServerType() == ServerType.ONEXONE || CommonGeneral
                 .getInstance()
                 .getServerType().name().contains("HG")) {
-            textComponent.addExtra(new MessageBuilder(player.getLeague().getColor() + player.getLeague().getName() + "")
+            textComponent.addExtra(new MessageBuilder(player.getLeague().getColor() + player.getLeague().getSymbol() + " ")
                     .create());
         }
 

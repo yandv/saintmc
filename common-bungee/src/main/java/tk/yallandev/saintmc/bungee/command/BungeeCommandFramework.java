@@ -53,9 +53,7 @@ public class BungeeCommandFramework implements CommandFramework {
 					}
 
 					if (!member.hasGroupPermission(command.groupToUse())) {
-						member.sendMessage("");
-						member.sendMessage("§c* §fVocê não tem §cpermissão§f para executar esse comando!");
-						member.sendMessage("");
+						member.sendMessage("§cVocê não possui permissão para usar este comando.");
 						return true;
 					}
 				}

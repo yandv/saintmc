@@ -1,5 +1,8 @@
 package br.com.saintmc.hungergames.command;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -9,7 +12,26 @@ import java.util.stream.Collectors;
 import br.com.saintmc.hungergames.GameMain;
 import br.com.saintmc.hungergames.controller.VarManager;
 import br.com.saintmc.hungergames.game.GameState;
+import com.boydti.fawe.regions.general.plot.PlotSquaredFeature;
+import com.boydti.fawe.util.EditSessionBuilder;
+import com.sk89q.worldedit.EditSession;
+import com.sk89q.worldedit.MaxChangedBlocksException;
+import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.WorldEditException;
+import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.bukkit.BukkitUtil;
+import com.sk89q.worldedit.extent.clipboard.Clipboard;
+import com.sk89q.worldedit.extent.clipboard.ClipboardFormats;
+import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormat;
+import com.sk89q.worldedit.extent.clipboard.io.ClipboardReader;
+import com.sk89q.worldedit.function.operation.Operation;
+import com.sk89q.worldedit.function.operation.Operations;
+import com.sk89q.worldedit.patterns.ClipboardPattern;
+import com.sk89q.worldedit.patterns.Pattern;
+import com.sk89q.worldedit.regions.CuboidRegion;
+import com.sk89q.worldedit.session.ClipboardHolder;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.entity.Item;
@@ -42,10 +64,72 @@ public class ModeratorCommand implements CommandClass {
         cmdArgs.getSender().sendMessage("§aComandos removidos com sucesso.");
     }
 
+    @Command(name = "spawnarena", aliases = { "arena" }, groupToUse = Group.MODPLUS)
+    public void spawnarena(CommandArgs cmdArgs) {
+
+        if (cmdArgs.getArgs().length == 0) {
+            cmdArgs.getSender().sendMessage("§cEspecifique qual schematic deverá ser spawnado. Use /" + cmdArgs.getLabel() + " <schematic> para spawnar um schematic.");
+            return;
+        }
+
+        // /spawnarena miniarena
+        // /spawnarena arena-final
+        // /spawnarena tetano 2
+
+        String schematicName = Joiner.on(' ').join(Arrays.copyOfRange(cmdArgs.getArgs(), 0, cmdArgs.getArgs().length));
+
+        Location location = new Location(Bukkit.getWorlds().stream().findFirst().orElse(null), 0, 2, 0);
+
+        File file = new File(GameMain.getInstance().getDataFolder(), schematicName + ".schematic");
+
+        if (!file.exists()) {
+            cmdArgs.getSender().sendMessage("§cO schematic " + schematicName + " não existe.");
+            return;
+        }
+
+        EditSession session = new EditSessionBuilder(BukkitUtil.getLocalWorld(location.getWorld())).fastmode(true).build();
+
+        ClipboardFormat format = ClipboardFormats.findByFile(file);
+        ClipboardReader reader = null;
+
+        try {
+            reader = format.getReader(new FileInputStream(file));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        Clipboard clipboard = null;
+
+        try {
+            clipboard = reader.read(session.getWorld().getWorldData());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            Operation operation = new ClipboardHolder(clipboard, session.getWorld().getWorldData())
+                    .createPaste(session, session.getWorld().getWorldData())
+                    .to(BukkitUtil.toVector(location))
+                    .ignoreAirBlocks(false)
+                    .build();
+
+            Operations.complete(operation);
+        } catch (WorldEditException e) {
+            throw new RuntimeException(e);
+        }
+
+        session.flushQueue();
+
+        final Location teleportLocation = location.add(0, 3, 0);
+        Bukkit.getOnlinePlayers().forEach(player -> player.teleport(teleportLocation));
+    }
+
     @Command(name = "openevento", groupToUse = Group.MODPLUS)
     public void openeventoCommand(CommandArgs cmdArgs) {
         CommandSender sender = cmdArgs.getSender();
         String[] args = cmdArgs.getArgs();
+
+
 
         if (args.length == 0) {
             sender.sendMessage(" §e* §fUse §a/" + cmdArgs.getLabel() + " <evento>§f para abrir um evento");

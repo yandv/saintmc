@@ -44,7 +44,7 @@ public class StaffCommand implements CommandClass {
 		String[] args = cmdArgs.getArgs();
 
 		if (args.length == 0) {
-			sender.sendMessage("§eUso /" + cmdArgs.getLabel() + " <mensagem> para mandar uma mensagem para todos.");
+			sender.sendMessage("§aUso /" + cmdArgs.getLabel() + " <mensagem> para mandar uma mensagem para todos.");
 			return;
 		}
 
@@ -66,13 +66,13 @@ public class StaffCommand implements CommandClass {
 	public void maintenceCommand(CommandArgs cmdArgs) {
 		BungeeMain.getInstance().setMaintenceMode(!BungeeMain.getInstance().isMaintenceMode());
 		ProxyServer.getInstance()
-				.broadcast(BungeeMain.getInstance().isMaintenceMode() ? "§aO servidor entrou em modo manutenção!"
-						: "§cO servidor saiu do modo manutenção!");
+				.broadcast(BungeeMain.getInstance().isMaintenceMode() ? "§aO servidor entrou em modo manutenção."
+						: "§cO servidor saiu do modo manutenção.");
 
 		if (BungeeMain.getInstance().isMaintenceMode()) {
 			for (Member member : CommonGeneral.getInstance().getMemberManager().getMembers().stream()
 					.filter(member -> !member.hasGroupPermission(Group.YOUTUBER)).collect(Collectors.toList())) {
-				((BungeeMember) member).getProxiedPlayer().disconnect("§cO servidor entrou em modo manutenção!");
+				((BungeeMember) member).getProxiedPlayer().disconnect("§cO servidor entrou em modo manutenção.");
 			}
 		}
 	}
@@ -109,8 +109,8 @@ public class StaffCommand implements CommandClass {
 
 		member.getAccountConfiguration().setStaffChatEnabled(!member.getAccountConfiguration().isStaffChatEnabled());
 		sender.sendMessage(
-				" §a* §fVocê " + (member.getAccountConfiguration().isStaffChatEnabled() ? "entrou no" : "saiu do")
-						+ " §astaff-chat§f!");
+				" §aVocê " + (member.getAccountConfiguration().isStaffChatEnabled() ? "entrou no" : "saiu do")
+						+ " §astaff-chat§a.");
 
 		if (member.getAccountConfiguration().isStaffChatEnabled())
 			if (!member.getAccountConfiguration().isSeeingStaffchat())
@@ -127,8 +127,8 @@ public class StaffCommand implements CommandClass {
 		if (cmdArgs.getArgs().length == 0) {
 			member.getAccountConfiguration().setSeeingStafflog(!member.getAccountConfiguration().isSeeingStafflog());
 			member.sendMessage(
-					" §a* §fAgora você " + (member.getAccountConfiguration().isSeeingStafflog() ? "vê" : "não vê mais")
-							+ " §aas logs dos staffs§f!");
+					" §aAgora você " + (member.getAccountConfiguration().isSeeingStafflog() ? "vê" : "não vê mais")
+							+ " §aas logs dos staffs§a.");
 			return;
 		}
 	}
@@ -141,8 +141,8 @@ public class StaffCommand implements CommandClass {
 		sender.sendMessage(" ");
 
 		CommonGeneral.getInstance().getMemberManager().getMembers().stream().filter(member -> member.isUsingFake())
-				.forEach(member -> sender.sendMessage(" §a* §fO jogador §a" + member.getPlayerName()
-						+ "§f está usando o fake §e" + member.getFakeName() + "§f!"));
+				.forEach(member -> sender.sendMessage(" §fO jogador §a" + member.getPlayerName()
+						+ "§f está usando o fake §e" + member.getFakeName() + "§f."));
 	}
 
 	@Command(name = "stafflist", runAsync = true, groupToUse = Group.MOD, usage = "/<command> <player> <server>")
@@ -155,7 +155,7 @@ public class StaffCommand implements CommandClass {
 		CommonGeneral.getInstance().getMemberManager().getMembers().stream()
 				.filter(member -> member.hasGroupPermission(Group.TRIAL))
 				.sorted((o1, o2) -> o1.getServerGroup().compareTo(o2.getServerGroup()))
-				.forEach(member -> sender.sendMessage("§7" + member.getPlayerName() + " §8- §f"
+				.forEach(member -> sender.sendMessage("§a" + member.getPlayerName() + " §8- §f"
 						+ Tag.valueOf(member.getServerGroup().name()).getPrefix()));
 	}
 
@@ -165,23 +165,23 @@ public class StaffCommand implements CommandClass {
 		String[] args = cmdArgs.getArgs();
 
 		if (args.length == 0) {
-			sender.sendMessage(" §e* §fUse §a/find <player>§f para localizar algum jogador.");
+			sender.sendMessage(" §cUse /find <player> para localizar algum jogador.");
 			return;
 		}
 
 		ProxiedPlayer target = ProxyServer.getInstance().getPlayer(args[0]);
 
 		if (target == null) {
-			sender.sendMessage(" §c* §fO jogador §a" + args[0] + "§f está offline!");
+			sender.sendMessage(" §cO jogador §c" + args[0] + "§c está offline.");
 			return;
 		}
 
-		TextComponent txt = new TextComponent(" §a* §fO jogador §a" + target.getName() + " §festá no servidor §a"
-				+ target.getServer().getInfo().getName().toUpperCase() + "§f!");
+		TextComponent txt = new TextComponent(" §aO jogador §a" + target.getName() + " §aestá no servidor §a"
+				+ target.getServer().getInfo().getName().toUpperCase() + "§a.");
 		TextComponent text = new TextComponent(" §7(Clique aqui para teletransportar-se)");
 
 		text.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/tp " + target.getName()));
-		text.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText("§aClique aqui!")));
+		text.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText("§aClique aqui.")));
 
 		sender.sendMessage(new BaseComponent[] { txt, text });
 	}

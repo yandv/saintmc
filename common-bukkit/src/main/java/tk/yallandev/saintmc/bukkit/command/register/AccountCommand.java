@@ -203,10 +203,10 @@ public class AccountCommand implements CommandClass {
 
 					textComponent
 							.addExtra(
-									new MessageBuilder(medal.getChatColor() + medal.getMedalName())
+									new MessageBuilder("" + medal.getChatColor() + medal.getMedalIcon())
 											.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
 													new ComponentBuilder(
-															"" + medal.getChatColor() + medal.getMedalIcon()).create()))
+															"" + medal.getChatColor() + medal.getMedalName()).create()))
 											.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND,
 													"/medal " + medal.name()))
 											.create());
