@@ -169,8 +169,10 @@ public class ScoreboardListener implements Listener {
         SCOREBOARD.updateScore(killer, new Score("Vitórias: §7" + killerStatus.getKills(), "wins"));
         SCOREBOARD.updateScore(killer, new Score("Derrotas: §7" + killerStatus.getDeaths(), "loses"));
         SCOREBOARD.updateScore(killer, new Score("Winstreak: §a" + killerStatus.getKillstreak(), "winstreak"));
+        FIGHT_SCOREBOARD.updateScore(killer, new Score("Winstreak: §a" + killerStatus.getKillstreak(), "winstreak"));
 
         SCOREBOARD.updateScore(killer, new Score("Elo: §a" + killerStatus.getElo(), "elo"));
+        FIGHT_SCOREBOARD.updateScore(killer, new Score("Elo: §a" + killerStatus.getElo(), "elo"));
     }
 
     public void loadScoreboard(Player player) {

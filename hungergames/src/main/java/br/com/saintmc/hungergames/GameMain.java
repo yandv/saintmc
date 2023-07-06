@@ -281,14 +281,23 @@ public class GameMain extends JavaPlugin {
 
         Map.Entry<Long, String> entry = getTime(map, getDayNumberOld(new Date()), false);
 
+
         long time = entry.getKey();
 
         new BukkitRunnable() {
 
             @Override
             public void run() {
-                Bukkit.dispatchCommand(Bukkit.getConsoleSender(),
-                                       getConfig().getString("calendar." + entry.getValue()));
+                String command = getConfig().getString("calendar." + entry.getValue());
+
+                if (command.contains(";")) {
+                    for (String cmd : command.split("; *"))
+                        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd);
+                } else {
+                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
+                }
+
+                BukkitMain.getInstance().getServerConfig().setWhitelist(false);
             }
         }.runTaskLater(this, (time - System.currentTimeMillis()) / 50L);
 

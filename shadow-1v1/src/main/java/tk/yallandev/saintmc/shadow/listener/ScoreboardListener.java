@@ -16,6 +16,7 @@ import tk.yallandev.saintmc.bukkit.api.scoreboard.Scoreboard;
 import tk.yallandev.saintmc.bukkit.api.scoreboard.impl.SimpleScoreboard;
 import tk.yallandev.saintmc.bukkit.bukkit.BukkitMember;
 import tk.yallandev.saintmc.bukkit.event.player.PlayerScoreboardStateEvent;
+import tk.yallandev.saintmc.common.account.League;
 import tk.yallandev.saintmc.common.account.Member;
 import tk.yallandev.saintmc.common.account.status.StatusType;
 import tk.yallandev.saintmc.common.account.status.types.combat.CombatStatus;
@@ -38,7 +39,7 @@ public class ScoreboardListener implements Listener {
         SCOREBOARD.setScore(7, new Score("Vitórias: 0", "wins"));
         SCOREBOARD.setScore(6, new Score("Derrotas: 0", "loses"));
         SCOREBOARD.setScore(5, new Score("Winstreak: 0", "winstreak"));
-        SCOREBOARD.setScore(4, new Score("Ranking: ", "ranking"));
+        SCOREBOARD.setScore(4, new Score("Ranking: " + League.values()[0].getColor() + League.values()[0].getName(), "ranking"));
         SCOREBOARD.blankLine(3);
         SCOREBOARD.setScore(2, new Score("Jogadores: 0", "players"));
         SCOREBOARD.blankLine(1);
@@ -52,7 +53,7 @@ public class ScoreboardListener implements Listener {
         FIGHT_SCOREBOARD.setScore(5, new Score("§cNinguém: §e0ms", "secondPing"));
         FIGHT_SCOREBOARD.blankLine(4);
         FIGHT_SCOREBOARD.setScore(3, new Score("Modo: §a1v1 Solo", "modo"));
-        FIGHT_SCOREBOARD.setScore(2, new Score("Ranking: 1000", "elo"));
+        FIGHT_SCOREBOARD.setScore(2, new Score("Ranking: " + League.values()[0].getColor() + League.values()[0].getName(), "elo"));
         FIGHT_SCOREBOARD.blankLine(1);
         FIGHT_SCOREBOARD.setScore(0, new Score("§e" + CommonConst.SITE, "site"));
     }
@@ -170,6 +171,12 @@ public class ScoreboardListener implements Listener {
         SCOREBOARD.updateScore(killer,
                                new Score("Ranking: §a" + member.getLeague().getColor() + member.getLeague().getName(),
                                          "ranking"));
+
+        FIGHT_SCOREBOARD.updateScore(killer, new Score("Winstreak: §a" + killerStatus.getKillstreak(), "winstreak"));
+        FIGHT_SCOREBOARD.updateScore(killer,
+                               new Score("Ranking: §a" + member.getLeague().getColor() + member.getLeague().getName(),
+                                         "ranking"));
+
     }
 
     public void loadScoreboard(Player player) {

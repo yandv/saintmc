@@ -41,13 +41,14 @@ public class StatusListener implements Listener {
         killerStatus.addKillstreak();
 
         if (event.getChallenge().isRanked()) {
-            int eloReward = 10, eloLost = 10;
+            int xpReward = 10, xpLost = 10;
 
-            killerStatus.addElo(eloReward);
-            playerStatus.removeElo(eloLost);
 
-            killer.sendMessage("§b+" + eloReward + " elo");
-            player.sendMessage("§b-" + eloLost + " elo");
+            CommonGeneral.getInstance().getMemberManager().getMember(killer.getUniqueId()).addXp(xpReward);
+            CommonGeneral.getInstance().getMemberManager().getMember(player.getUniqueId()).removeXp(xpLost);
+
+            killer.sendMessage("§b+" + xpReward + " XP");
+            player.sendMessage("§b-" + xpLost + " XP");
         }
     }
 }
