@@ -37,7 +37,7 @@ public class ScoreboardListener implements Listener {
         DEFAULT_SCOREBOARD.setScore(4, new Score("Lobby: §7#1", "lobby"));
         DEFAULT_SCOREBOARD.setScore(3, new Score("Jogadores: §b0", "online"));
         DEFAULT_SCOREBOARD.blankLine(2);
-        DEFAULT_SCOREBOARD.setScore(1, new Score("§awww." + CommonConst.SITE, "site"));
+        DEFAULT_SCOREBOARD.setScore(1, new Score("§a" + CommonConst.SITE, "site"));
     }
 
     @EventHandler(priority = EventPriority.MONITOR)

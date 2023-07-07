@@ -26,6 +26,7 @@ import tk.yallandev.saintmc.bukkit.api.item.ActionItemStack.ActionType;
 import tk.yallandev.saintmc.bukkit.api.item.ActionItemStack.Interact;
 import tk.yallandev.saintmc.bukkit.api.item.ActionItemStack.InteractType;
 import tk.yallandev.saintmc.bukkit.api.item.ItemBuilder;
+import tk.yallandev.saintmc.bukkit.api.vanish.AdminMode;
 import tk.yallandev.saintmc.bukkit.event.update.UpdateEvent;
 import tk.yallandev.saintmc.bukkit.event.update.UpdateEvent.UpdateType;
 import tk.yallandev.saintmc.bukkit.event.vanish.PlayerHideToPlayerEvent;
@@ -172,6 +173,11 @@ public class GladiatorListener implements Listener {
         }
 
         if (player.getItemInHand().getType() == Material.INK_SACK) {
+            if (AdminMode.getInstance().isAdmin(player)) {
+                player.sendMessage("§cSaia do modo vanish para entrar na fila.");
+                return;
+            }
+
             if (oldQueue.contains(player)) {
                 return;
             }
@@ -193,7 +199,7 @@ public class GladiatorListener implements Listener {
                     if (challenger.getUniqueId().equals(player.getUniqueId())) {
                         player.sendMessage("§aVocê entrou na fila da 1v1 Rápido!");
                     } else {
-                        new Challenge(player, challenger, false).start();
+                        new Challenge(player, challenger, true).start();
 
                         challenger.sendMessage("§aO jogador " + player.getName() + " irá batalhar com você!");
                         player.sendMessage("§aO jogador " + challenger.getName() + " irá batalhar com você!");

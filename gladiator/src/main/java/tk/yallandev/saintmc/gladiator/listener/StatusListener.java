@@ -40,17 +40,17 @@ public class StatusListener implements Listener {
         killer.sendMessage("§c" + player.getName() + " §efoi morto por §9" + killer.getName() + "§e.");
         killer.sendMessage("§9" + killer.getName() + " §evenceu.");
 
-        playerStatus.addDeath();
-        playerStatus.resetKillstreak();
-
-        killerStatus.addKill();
-        killerStatus.addKillstreak();
-
         if (event.getChallenge().isRanked()) {
             int eloReward = 10, eloLost = 10;
 
             killerStatus.addElo(eloReward);
             playerStatus.removeElo(eloLost);
+
+            playerStatus.addDeath();
+            playerStatus.resetKillstreak();
+
+            killerStatus.addKill();
+            killerStatus.addKillstreak();
 
             killer.sendMessage("§b+" + eloReward + " elo");
             player.sendMessage("§b-" + eloLost + " elo");

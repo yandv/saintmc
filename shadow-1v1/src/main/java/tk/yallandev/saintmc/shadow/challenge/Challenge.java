@@ -17,8 +17,6 @@ import tk.yallandev.saintmc.bukkit.api.vanish.AdminMode;
 import tk.yallandev.saintmc.bukkit.api.vanish.VanishAPI;
 import tk.yallandev.saintmc.shadow.event.*;
 import tk.yallandev.saintmc.shadow.event.GladiatorSpectatorEvent.Action;
-import tk.yallandev.saintmc.shadow.menu.EditInventory;
-import tk.yallandev.saintmc.shadow.event.*;
 
 import java.util.*;
 import java.util.stream.Stream;
@@ -176,7 +174,8 @@ public class Challenge {
         player.getInventory().clear();
         player.getInventory().setArmorContents(new ItemStack[4]);
 
-        player.getInventory().setItemInHand(new ItemBuilder().type(Material.DIAMOND_SWORD)
+        player.getInventory().setHeldItemSlot(0);
+        player.getInventory().setItem(0, new ItemBuilder().type(Material.DIAMOND_SWORD)
                 .enchantment(Enchantment.DAMAGE_ALL).build());
 
         for (int x = 0; x < 8; x++)

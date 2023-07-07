@@ -196,10 +196,10 @@ public class Challenge {
         for (int x = 0; x < 32; x++)
             player.getInventory().addItem(new ItemStack(Material.MUSHROOM_SOUP));
 
-        player.getInventory().setItem(9, new ItemStack(Material.IRON_HELMET));
-        player.getInventory().setItem(10, new ItemStack(Material.IRON_CHESTPLATE));
-        player.getInventory().setItem(11, new ItemStack(Material.IRON_LEGGINGS));
-        player.getInventory().setItem(12, new ItemStack(Material.IRON_BOOTS));
+        player.getInventory().setHelmet(new ItemStack(Material.IRON_HELMET));
+        player.getInventory().setChestplate(new ItemStack(Material.IRON_CHESTPLATE));
+        player.getInventory().setLeggings(new ItemStack(Material.IRON_LEGGINGS));
+        player.getInventory().setBoots(new ItemStack(Material.IRON_BOOTS));
 
         player.updateInventory();
     }

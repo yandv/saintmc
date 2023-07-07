@@ -41,6 +41,7 @@ import tk.yallandev.saintmc.bukkit.api.item.ActionItemStack.ActionType;
 import tk.yallandev.saintmc.bukkit.api.item.ActionItemStack.Interact;
 import tk.yallandev.saintmc.bukkit.api.item.ActionItemStack.InteractType;
 import tk.yallandev.saintmc.bukkit.api.item.ItemBuilder;
+import tk.yallandev.saintmc.bukkit.api.vanish.AdminMode;
 import tk.yallandev.saintmc.bukkit.event.update.UpdateEvent;
 import tk.yallandev.saintmc.bukkit.event.update.UpdateEvent.UpdateType;
 import tk.yallandev.saintmc.bukkit.event.vanish.PlayerHideToPlayerEvent;
@@ -189,6 +190,12 @@ public class GladiatorListener implements Listener {
         }
 
         if (player.getItemInHand().getType() == Material.INK_SACK) {
+
+            if (AdminMode.getInstance().isAdmin(player)) {
+                player.sendMessage("§cSaia do modo vanish para entrar na fila.");
+                return;
+            }
+
             if (oldQueue.contains(player)) {
                 return;
             }
@@ -218,6 +225,11 @@ public class GladiatorListener implements Listener {
                 }
             }
         } else if (player.getItemInHand().getType() == Material.ARROW) {
+            if (AdminMode.getInstance().isAdmin(player)) {
+                player.sendMessage("§cSaia do modo vanish para entrar na fila.");
+                return;
+            }
+
             if (normalQueue.contains(player)) {
                 return;
             }

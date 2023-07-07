@@ -22,7 +22,6 @@ import tk.yallandev.saintmc.shadow.command.DefaultCommand;
 import tk.yallandev.saintmc.shadow.command.SpectatorCommand;
 import tk.yallandev.saintmc.shadow.controller.GamerManager;
 import tk.yallandev.saintmc.shadow.listener.*;
-import tk.yallandev.saintmc.shadow.menu.EditInventory;
 
 import java.util.ArrayList;
 import java.util.Collection;

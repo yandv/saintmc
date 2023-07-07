@@ -53,7 +53,7 @@ public class ScoreboardListener implements Listener {
         FIGHT_SCOREBOARD.setScore(5, new Score("§cNinguém: §e0ms", "secondPing"));
         FIGHT_SCOREBOARD.blankLine(4);
         FIGHT_SCOREBOARD.setScore(3, new Score("Modo: §a1v1 Solo", "modo"));
-        FIGHT_SCOREBOARD.setScore(2, new Score("Ranking: " + League.values()[0].getColor() + League.values()[0].getName(), "elo"));
+        FIGHT_SCOREBOARD.setScore(2, new Score("Ranking: " + League.values()[0].getColor() + League.values()[0].getName(), "ranking"));
         FIGHT_SCOREBOARD.blankLine(1);
         FIGHT_SCOREBOARD.setScore(0, new Score("§e" + CommonConst.SITE, "site"));
     }
@@ -207,5 +207,7 @@ public class ScoreboardListener implements Listener {
                                                        (((CraftPlayer) enimy).getHandle().ping >= 1000 ? "1000+" :
                                                         ((CraftPlayer) enimy).getHandle().ping) + "ms", "secondPing"));
         FIGHT_SCOREBOARD.updateScore(player, new Score("Tempo: §a" + StringUtils.format(challenge.getTime()), "time"));
+
+        updateState(player);
     }
 }

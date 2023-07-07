@@ -13,7 +13,7 @@ public enum StatusType {
 
     LOBBY("lobby-combat", NormalStatus.class),
 
-    GLADIATOR("gladiator", CombatStatus.class),
+    GLADIATOR("gladiator", CombatStatus.class), // gladiator
     SHADOW("shadow", CombatStatus.class), // 1v1
 
     PVP("pvp", NormalStatus.class),

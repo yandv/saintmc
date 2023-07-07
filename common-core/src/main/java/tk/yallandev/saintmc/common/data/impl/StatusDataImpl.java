@@ -21,6 +21,8 @@ import tk.yallandev.saintmc.common.account.status.Status;
 import tk.yallandev.saintmc.common.account.status.StatusType;
 import tk.yallandev.saintmc.common.account.status.types.challenge.ChallengeModel;
 import tk.yallandev.saintmc.common.account.status.types.challenge.ChallengeStatus;
+import tk.yallandev.saintmc.common.account.status.types.combat.CombatModel;
+import tk.yallandev.saintmc.common.account.status.types.combat.CombatStatus;
 import tk.yallandev.saintmc.common.account.status.types.game.GameModel;
 import tk.yallandev.saintmc.common.account.status.types.game.GameStatus;
 import tk.yallandev.saintmc.common.account.status.types.normal.NormalModel;
@@ -70,7 +72,14 @@ public class StatusDataImpl implements StatusData {
             if (collection.find(Filters.eq("uniqueId", challengeModel.getUniqueId().toString())).first() == null) {
                 collection.insertOne(Document.parse(CommonConst.GSON.toJson(challengeModel)));
             }
-        } else {
+        } else if (status instanceof CombatStatus) {
+            CombatModel combatModel = new CombatModel((CombatStatus) status);
+
+
+            if (collection.find(Filters.eq("uniqueId", combatModel.getUniqueId().toString())).first() == null) {
+                collection.insertOne(Document.parse(CommonConst.GSON.toJson(combatModel)));
+            }
+        }else {
             new NoSuchElementException("Cannot define the type of StatusModel");
         }
     }
@@ -114,6 +123,19 @@ public class StatusDataImpl implements StatusData {
                     Object value = elementToBson(object.get(fieldName));
                     collection.updateOne(Filters.eq("uniqueId", challenegModel.getUniqueId().toString()),
                                          new Document("$set", new Document(fieldName, value)));
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }  else if (status instanceof CombatStatus) {
+            try {
+                CombatModel combatModel = new CombatModel((CombatStatus) status);
+                JsonObject object = jsonTree(combatModel);
+
+                if (object.has(fieldName)) {
+                    Object value = elementToBson(object.get(fieldName));
+                    collection.updateOne(Filters.eq("uniqueId", combatModel.getUniqueId().toString()),
+                            new Document("$set", new Document(fieldName, value)));
                 }
             } catch (Exception e) {
                 e.printStackTrace();

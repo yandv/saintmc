@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import com.google.gson.JsonObject;
 import lombok.Getter;
 import tk.yallandev.saintmc.common.account.configuration.AccountConfiguration;
 import tk.yallandev.saintmc.common.account.configuration.LoginConfiguration;
@@ -123,7 +124,7 @@ public class MemberModel {
     private ServerType lastServerType;
 
     private boolean online;
-    private String gladiatorInventory;
+    private JsonObject gladiatorInventory;
 
     public MemberModel(Member member) {
         playerName = member.getPlayerName();

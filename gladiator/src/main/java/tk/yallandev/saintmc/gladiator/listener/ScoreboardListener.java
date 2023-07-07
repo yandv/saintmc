@@ -42,7 +42,7 @@ public class ScoreboardListener implements Listener {
         SCOREBOARD.setScore(7, new Score("Derrotas: 0", "loses"));
         SCOREBOARD.blankLine(6);
         SCOREBOARD.setScore(5, new Score("Winstreak: 0", "winstreak"));
-        SCOREBOARD.setScore(4, new Score("Elo: 1000", "elo"));
+        SCOREBOARD.setScore(4, new Score("Elo: §a1000", "elo"));
         SCOREBOARD.blankLine(3);
         SCOREBOARD.setScore(2, new Score("Jogadores: 0", "players"));
         SCOREBOARD.blankLine(1);
@@ -56,7 +56,7 @@ public class ScoreboardListener implements Listener {
         FIGHT_SCOREBOARD.setScore(5, new Score("§cNinguém: §e0ms", "secondPing"));
         FIGHT_SCOREBOARD.blankLine(4);
         FIGHT_SCOREBOARD.setScore(3, new Score("Modo: §aGladiator", "modo"));
-        FIGHT_SCOREBOARD.setScore(2, new Score("Elo: 1000", "elo"));
+        FIGHT_SCOREBOARD.setScore(2, new Score("Elo: §a1000", "elo"));
         FIGHT_SCOREBOARD.blankLine(1);
         FIGHT_SCOREBOARD.setScore(0, new Score("§e" + CommonConst.SITE, "site"));
     }
@@ -169,9 +169,10 @@ public class ScoreboardListener implements Listener {
         SCOREBOARD.updateScore(killer, new Score("Vitórias: §7" + killerStatus.getKills(), "wins"));
         SCOREBOARD.updateScore(killer, new Score("Derrotas: §7" + killerStatus.getDeaths(), "loses"));
         SCOREBOARD.updateScore(killer, new Score("Winstreak: §a" + killerStatus.getKillstreak(), "winstreak"));
-        FIGHT_SCOREBOARD.updateScore(killer, new Score("Winstreak: §a" + killerStatus.getKillstreak(), "winstreak"));
 
         SCOREBOARD.updateScore(killer, new Score("Elo: §a" + killerStatus.getElo(), "elo"));
+
+        FIGHT_SCOREBOARD.updateScore(killer, new Score("Winstreak: §a" + killerStatus.getKillstreak(), "winstreak"));
         FIGHT_SCOREBOARD.updateScore(killer, new Score("Elo: §a" + killerStatus.getElo(), "elo"));
     }
 
@@ -204,5 +205,7 @@ public class ScoreboardListener implements Listener {
                                                        (((CraftPlayer) enimy).getHandle().ping >= 1000 ? "1000+" :
                                                         ((CraftPlayer) enimy).getHandle().ping) + "ms", "secondPing"));
         FIGHT_SCOREBOARD.updateScore(player, new Score("Tempo: §a" + StringUtils.format(challenge.getTime()), "time"));
+
+        updateState(player);
     }
 }

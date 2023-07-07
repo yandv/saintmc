@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
 
+import com.google.gson.JsonObject;
 import lombok.Getter;
 import net.md_5.bungee.api.chat.BaseComponent;
 import tk.yallandev.saintmc.CommonConst;
@@ -133,7 +134,7 @@ public abstract class Member implements CommandSender {
 
     private boolean online;
 
-    private String gladiatorInventory;
+    private JsonObject gladiatorInventory;
 
     public Member(MemberModel memberModel) {
         playerName = memberModel.getPlayerName();
@@ -233,7 +234,7 @@ public abstract class Member implements CommandSender {
         this.lastServerType = ServerType.NONE;
     }
 
-    public void setGladiatorInventory(String gladiatorInventory) {
+    public void setGladiatorInventory(JsonObject gladiatorInventory) {
         this.gladiatorInventory = gladiatorInventory;
         save("gladiatorInventory");
     }

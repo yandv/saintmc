@@ -8,6 +8,7 @@ import org.bukkit.World;
 import org.bukkit.WorldCreator;
 import org.bukkit.WorldType;
 import org.bukkit.block.Block;
+import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -45,9 +46,10 @@ public class ArenaListener implements Listener {
 		worldCreator.generateStructures(false);
 
 		gladiatorWorld = BukkitMain.getInstance().getServer().createWorld(worldCreator);
-		gladiatorWorld.setAutoSave(false);
 		gladiatorWorld.setGameRuleValue("doDaylightCycle", "false");
 		gladiatorWorld.setGameRuleValue("naturalRegeneration", "false");
+		gladiatorWorld.setAutoSave(false);
+		((CraftWorld) gladiatorWorld).getHandle().savingDisabled = true;
 	}
 
 	@EventHandler
@@ -58,15 +60,11 @@ public class ArenaListener implements Listener {
 		firstLocation.setYaw(135.0F);
 
 		event.getChallenge().getEnimy().teleport(firstLocation);
-		event.getChallenge().getEnimy()
-				.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 20 * 5, 5));
 
 		Location secondLocation = location[1];
 		secondLocation.setYaw(315.0F);
 
 		event.getChallenge().getPlayer().teleport(secondLocation);
-		event.getChallenge().getPlayer()
-				.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 20 * 5, 5));
 
 		Location mainLocation = location[2];
 

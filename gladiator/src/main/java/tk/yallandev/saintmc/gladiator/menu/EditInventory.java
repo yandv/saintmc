@@ -1,5 +1,7 @@
 package tk.yallandev.saintmc.gladiator.menu;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
@@ -12,12 +14,11 @@ import tk.yallandev.saintmc.bukkit.api.menu.MenuInventory;
 import tk.yallandev.saintmc.bukkit.api.menu.click.ClickType;
 import tk.yallandev.saintmc.bukkit.api.menu.click.MenuClickHandler;
 import tk.yallandev.saintmc.common.account.Member;
+import tk.yallandev.saintmc.common.utils.json.JsonBuilder;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 public class EditInventory extends MenuInventory {
 
@@ -54,6 +55,10 @@ public class EditInventory extends MenuInventory {
         setItem(48, new ItemBuilder().name("§cCancelar operação.").type(Material.BARRIER)
                                      .lore("§7Clique para cancelar sem salvar as alterações feitas.").build(),
                 (p, inv, type, stack, slot) -> {
+                    if (p.getItemOnCursor() != null && p.getItemOnCursor().getType() != Material.AIR) {
+                        player.setItemOnCursor(null);
+                    }
+
                     p.closeInventory();
                     return false;
                 });
@@ -143,38 +148,59 @@ public class EditInventory extends MenuInventory {
         return contents;
     }
 
-    public static String translate(ItemStack[] contents) {
-        StringBuilder stringBuilder = new StringBuilder();
+    public static JsonObject translate(ItemStack[] contents) {
+        JsonObject jsonObject = new JsonObject();
 
-        for (ItemStack itemStack : contents) {
-            if (itemStack == null) {
-                stringBuilder.append("0");
-            } else {
-                stringBuilder.append(itemStack.getTypeId()).append(',').append(itemStack.getAmount()).append(',')
-                             .append(itemStack.getDurability());
-            }
-
-            stringBuilder.append(";");
+        for (int i = 0; i < contents.length; i++) {
+            jsonObject.add(Integer.toString(i), toJson(contents[i]));
         }
 
 
-        return stringBuilder.toString();
+        return jsonObject;
     }
 
-    public static ItemStack[] translate(String contents) {
-        String[] split = contents.split(";");
+    public static JsonObject toJson(ItemStack itemStack) {
+        if (itemStack == null) {
+            return new JsonBuilder().addProperty("type", "AIR").addProperty("amount", 1)
+                    .addProperty("durability", 0)
+                    .add("enchantments", new JsonObject())
+                    .build();
+        }
 
-        ItemStack[] itemStacks = new ItemStack[split.length];
+        JsonObject enchantments = new JsonObject();
 
-        for (int i = 0; i < split.length; i++) {
-            String[] itemSplit = split[i].split(",");
+        for (Map.Entry<Enchantment, Integer> entry : itemStack.getEnchantments().entrySet()) {
+            enchantments.addProperty(Integer.toString(entry.getKey().getId()), entry.getValue());
+        }
 
-            int id = Integer.parseInt(itemSplit[0]);
-            int amount = itemSplit.length >= 2 ? Integer.parseInt(itemSplit[1]) : 1;
-            short durability = itemSplit.length >= 2 ? Short.parseShort(itemSplit[2]) : 1;
+        return new JsonBuilder()
+                .addProperty("type", itemStack.getType().name())
+                .addProperty("amount", itemStack.getAmount())
+                .addProperty("durability", itemStack.getDurability())
+                .add("enchantments", enchantments)
+                .build();
+    }
 
+    public static ItemStack fromJson(JsonObject jsonObject) {
+        Material material = jsonObject.has("type") ? Material.valueOf(jsonObject.get("type").getAsString()) : Material.AIR;
+        int amount = jsonObject.has("amount") ? jsonObject.get("amount").getAsInt() : 0;
+        short durability = jsonObject.has("durability") ? jsonObject.get("durability").getAsShort() : 0;
+        JsonObject enchantments = jsonObject.getAsJsonObject("enchantments");
+        Map<Enchantment, Integer> enchantmentMap = new HashMap<>();
 
-            itemStacks[i] = new ItemStack(id, amount, durability);
+        for (Map.Entry<String, JsonElement> entry : enchantments.entrySet()) {
+            enchantmentMap.put(Enchantment.getById(Integer.parseInt(entry.getKey())), entry.getValue().getAsInt());
+        }
+        
+
+        return new ItemBuilder().type(material).amount(amount).durability(durability).enchantment(enchantmentMap).build();
+    }
+
+    public static ItemStack[] translate(JsonObject jsonObject) {
+        ItemStack[] itemStacks = new ItemStack[jsonObject.size()];
+
+        for (int i = 0; i < jsonObject.size(); i++) {
+            itemStacks[i] = fromJson(jsonObject.getAsJsonObject(Integer.toString(i)));
         }
 
         return itemStacks;

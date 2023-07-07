@@ -60,7 +60,7 @@ public class ModeratorCommand implements CommandClass {
 		String[] args = cmdArgs.getArgs();
 
 		if (args.length == 0) {
-			player.sendMessage(" §e* §fUse §a/gamemode <gamemode>§f para alterar seu gamemode!");
+			player.sendMessage("§cUse /gamemode <gamemode> para alterar seu gamemode.");
 			return;
 		}
 
@@ -72,7 +72,7 @@ public class ModeratorCommand implements CommandClass {
 			try {
 				gamemode = GameMode.getByValue(Integer.parseInt(args[0]));
 			} catch (Exception ex) {
-				player.sendMessage(" §c* §fO gamemode §c\"" + args[0] + "\"§f não foi encontrado!");
+				player.sendMessage(" §cO gamemode §c\"" + args[0] + "\"§c não foi encontrado.");
 				return;
 			}
 		}
@@ -84,11 +84,11 @@ public class ModeratorCommand implements CommandClass {
 		if (args.length == 1) {
 			if (player.getGameMode() != gamemode) {
 				player.setGameMode(gamemode);
-				player.sendMessage(" §a* §fVocê alterou seu gamemode para §a" + gamemodeName + "§f!");
-				staffLog("O §a" + player.getName() + " §fmudou seu gamemode para §a" + gamemodeName + "§f!",
+				player.sendMessage(" §aVocê alterou seu gamemode para §a" + gamemodeName + "§a.");
+				staffLog("§aO §a" + player.getName() + " §amudou seu gamemode para §a" + gamemodeName + "§a.",
 						Group.TRIAL);
 			} else {
-				player.sendMessage(" §c* §fVocê já está nesse gamemode!");
+				player.sendMessage("§cVocê já está nesse gamemode.");
 			}
 
 			return;
@@ -97,18 +97,18 @@ public class ModeratorCommand implements CommandClass {
 		Player target = Bukkit.getPlayer(args[1]);
 
 		if (target == null) {
-			player.sendMessage(" §c* §fO jogador §a\"" + args[1] + "\"§f não existe!");
+			player.sendMessage(" §cO jogador §c\"" + args[1] + "\"§c não existe.");
 			return;
 		}
 
 		if (target.getGameMode() != gamemode) {
 			target.setGameMode(gamemode);
 			player.sendMessage(
-					" §a* §fVocê alterou gamemode de §a" + target.getName() + "§f para §a" + gamemodeName + "§f!");
-			staffLog("O §a" + player.getName() + " §fmudou o gamemode de §e" + target.getName() + " §fpara §a"
-					+ gamemodeName + "§f!", Group.TRIAL);
+					" §aVocê alterou gamemode de §a" + target.getName() + "§a para §a" + gamemodeName + "§a.");
+			staffLog("§aO §a" + player.getName() + " §amudou o gamemode de §a" + target.getName() + " §apara §a"
+					+ gamemodeName + "§a.", Group.TRIAL);
 		} else {
-			player.sendMessage(" §d* §fO §a" + target.getName() + "§f já está nesse gamemode§f!");
+			player.sendMessage("§cO §c" + target.getName() + "§c já está nesse gamemode§c.");
 		}
 	}
 
@@ -147,14 +147,14 @@ public class ModeratorCommand implements CommandClass {
 			player.getActivePotionEffects().clear();
 			player.getInventory().setHeldItemSlot(0);
 			player.sendMessage("§aVocê limpou o seu inventário!");
-			staffLog("O §a" + player.getName() + " §flimpou o seu próprio inventário§f!", Group.TRIAL);
+			staffLog("O §a" + player.getName() + " §flimpou o seu próprio inventário§f.", Group.TRIAL);
 			return;
 		}
 
 		Player target = Bukkit.getPlayer(args[0]);
 
 		if (target == null) {
-			player.sendMessage(" §c* §fO jogador §a\"" + args[0] + "\"§f não existe!");
+			player.sendMessage(" §cO jogador §c\"" + args[0] + "\"§c não existe.");
 			return;
 		}
 
@@ -162,9 +162,9 @@ public class ModeratorCommand implements CommandClass {
 		target.getInventory().setArmorContents(new ItemStack[4]);
 		target.getActivePotionEffects().clear();
 		target.getInventory().setHeldItemSlot(0);
-		target.sendMessage("§aO seu inventário foi limpo pelo " + player.getName() + "!");
-		player.sendMessage("§aVocê limpou o inventário de §a" + target.getName() + "!");
-		staffLog("O §a" + player.getName() + " §flimpou o inventário de " + target.getName() + "§f!", Group.TRIAL);
+		target.sendMessage("§aO seu inventário foi limpo pelo " + player.getName() + ".");
+		player.sendMessage("§aVocê limpou o inventário de §a" + target.getName() + ".");
+		staffLog("§aO §a" + player.getName() + " §alimpou o inventário de " + target.getName() + "§a.", Group.TRIAL);
 	}
 
 	@Command(name = "enchant", usage = "/<command> <enchanment> <level>", groupToUse = Group.MOD)
@@ -178,14 +178,14 @@ public class ModeratorCommand implements CommandClass {
 		String[] args = cmdArgs.getArgs();
 
 		if (args.length == 0) {
-			player.sendMessage(" §e* §fUtilize §a/enchant <encantamento> <level>§f para encantar algum item!");
+			player.sendMessage(" §cUtilize §c/enchant <encantamento> <level>§c para encantar algum item.");
 			return;
 		}
 
 		ItemStack item = player.getItemInHand();
 
 		if (item == null || item.getType() == Material.AIR) {
-			player.sendMessage(" §c* §fVocê não está com nada na sua mão para encantar!");
+			player.sendMessage(" §cVocê não está com nada na sua mão para encantar.");
 			return;
 		}
 
@@ -197,7 +197,7 @@ public class ModeratorCommand implements CommandClass {
 			try {
 				id = Integer.valueOf(args[0]);
 			} catch (NumberFormatException e) {
-				player.sendMessage(" §c* §fO formato de numero é inválido!");
+				player.sendMessage(" §cO formato de numero é inválido.");
 				return;
 			}
 
@@ -213,16 +213,16 @@ public class ModeratorCommand implements CommandClass {
 			}
 
 			if (level < 1) {
-				player.sendMessage(" §c* §fO nível de encantamento é muito baixo!");
+				player.sendMessage(" §cO nível de encantamento é muito baixo.");
 				return;
 			}
 		}
 
 		item.addUnsafeEnchantment(enchantment, level);
-		player.sendMessage(" §a* §fVocê aplicou o encantamento §a" + enchantment.getName() + "§f no nível §a" + level
-				+ "§f na sua §a" + item.getType().toString() + "§f!");
-		staffLog("O §a" + player.getName() + " §fencantou sua §a" + item.getType().toString() + "§f com §e"
-				+ enchantment.getName() + " level " + level + "§f!", Group.TRIAL);
+		player.sendMessage(" §aVocê aplicou o encantamento §a" + enchantment.getName() + "§a no nível §a" + level
+				+ "§a na sua §a" + item.getType().toString() + "§a.");
+		staffLog("O §a" + player.getName() + " §aencantou sua §a" + item.getType().toString() + "§a com §a"
+				+ enchantment.getName() + " level " + level + "§a.", Group.TRIAL);
 	}
 
 	@Command(name = "whitelist", groupToUse = Group.MODPLUS, runAsync = true)
@@ -243,10 +243,10 @@ public class ModeratorCommand implements CommandClass {
 		case "on": {
 
 			if (BukkitMain.getInstance().getServerConfig().isWhitelist()) {
-				sender.sendMessage("§cO servidor já está com a whitelist ativada!");
+				sender.sendMessage("§cO servidor já está com a whitelist ativada.");
 			} else {
 				BukkitMain.getInstance().getServerConfig().setWhitelist(true);
-				sender.sendMessage("§aVocê ativou a whitelist!");
+				sender.sendMessage("§aVocê ativou a whitelist.");
 
 				new BukkitRunnable() {
 					@Override
@@ -278,7 +278,7 @@ public class ModeratorCommand implements CommandClass {
 		case "add":
 		case "remove": {
 			if (args.length == 1) {
-				sender.sendMessage(" §e*Use §f §a/whitelist <on:off:list:add:remove>§f ");
+				sender.sendMessage("§eUse /whitelist <on:off:list:add:remove>.");
 				break;
 			}
 
@@ -369,7 +369,7 @@ public class ModeratorCommand implements CommandClass {
 			break;
 		}
 		default: {
-			sender.sendMessage(" §e* §fUse §a/whitelist <on:off:list:add:remove>§f ");
+			sender.sendMessage(" §eUse §a/whitelist <on:off:list:add:remove>§e. ");
 			break;
 		}
 		}
@@ -383,7 +383,7 @@ public class ModeratorCommand implements CommandClass {
 
 		if (args.length == 0) {
 			sender.sendMessage(
-					" §e* §fUse §a/blacklist <add:remove>§f para um jogador não consegui mais entrar nesse servidor");
+					" §eUse /blacklist <add:remove> para um jogador não consegui mais entrar nesse servidor.");
 			return;
 		}
 
@@ -393,7 +393,7 @@ public class ModeratorCommand implements CommandClass {
 		case "add":
 		case "remove": {
 			if (args.length == 1) {
-				sender.sendMessage(" §e*Use §f §a/whitelist <on:off:list:add:remove>§f ");
+				sender.sendMessage("§eUse /whitelist <on:off:list:add:remove>. ");
 				break;
 			}
 
@@ -418,7 +418,7 @@ public class ModeratorCommand implements CommandClass {
 		}
 		default: {
 			sender.sendMessage(
-					" §e* §fUse §a/blacklist <add:remove>§f para um jogador não consegui mais entrar nesse servidor");
+					" §eUse /blacklist <add:remove> para um jogador não consegui mais entrar nesse servidor.");
 			break;
 		}
 		}
@@ -436,14 +436,14 @@ public class ModeratorCommand implements CommandClass {
 
 		if (args.length < 2) {
 			sender.sendMessage(
-					" §e* §fUtilize §a/effect <player> <efeito> <duração> <intensidade>§f para aplicar um efeito em alguém!");
+					"§eUtilize /effect <player> <efeito> <duração> <intensidade> para aplicar um efeito em alguém.");
 			return;
 		}
 
 		Player player = sender.getServer().getPlayer(args[0]);
 
 		if (player == null) {
-			sender.sendMessage(" §c* §fO jogador §a\"" + args[0] + "\"§f não existe!");
+			sender.sendMessage("§cO jogador §c\"" + args[0] + "\"§c não existe.");
 			return;
 		}
 
@@ -452,7 +452,7 @@ public class ModeratorCommand implements CommandClass {
 				player.removePotionEffect(effect.getType());
 			}
 
-			sender.sendMessage(" §a* §fO jogador §a" + player.getName() + "§f teve seus efeitos removidos!");
+			sender.sendMessage(" §aO jogador §a" + player.getName() + "§a teve seus efeitos removidos.");
 			return;
 		}
 
@@ -464,7 +464,7 @@ public class ModeratorCommand implements CommandClass {
 			try {
 				potionId = Integer.valueOf(args[1]);
 			} catch (NumberFormatException e) {
-				sender.sendMessage(" §c* §fO efeito §a\"" + args[1] + "\"§f não existe!");
+				sender.sendMessage("§cO efeito §c\"" + args[1] + "\"§c não existe.");
 				return;
 			}
 
@@ -472,7 +472,7 @@ public class ModeratorCommand implements CommandClass {
 		}
 
 		if (effect == null) {
-			sender.sendMessage(" §c* §fO efeito §a\"" + args[1] + "\"§f não existe!");
+			sender.sendMessage("§cO efeito §c\"" + args[1] + "\"§c não existe.");
 			return;
 		}
 
@@ -481,7 +481,7 @@ public class ModeratorCommand implements CommandClass {
 		try {
 			duration = Integer.valueOf(args[2]);
 		} catch (NumberFormatException e) {
-			sender.sendMessage(" §c* §fO formato de numero é inválido!");
+			sender.sendMessage(" §cO formato de numero é inválido.");
 			return;
 		}
 
@@ -490,27 +490,27 @@ public class ModeratorCommand implements CommandClass {
 		try {
 			amplification = Integer.valueOf(args[3]);
 		} catch (NumberFormatException e) {
-			sender.sendMessage(" §c* §fO formato de numero é inválido!");
+			sender.sendMessage(" §cO formato de numero é inválido.");
 			return;
 		}
 
 		if (duration == 0) {
 			if (!player.hasPotionEffect(effect)) {
-				sender.sendMessage(" §c* §fO jogador não tem o efeito para ele ser removido!");
+				sender.sendMessage(" §cO jogador não tem o efeito para ele ser removido.");
 				return;
 			}
 
 			player.removePotionEffect(effect);
-			sender.sendMessage(" §a* §fO jogador §a" + player.getName() + "§f teve o efeito §a" + effect.getName()
-					+ "§f removido!");
-			staffLog("O §a" + player.getName() + " §flimpou todos os seus efeitos!", Group.TRIAL);
+			sender.sendMessage("§aO jogador §a" + player.getName() + "§a teve o efeito §a" + effect.getName()
+					+ "§a removido.");
+			staffLog("§aO §a" + player.getName() + " §alimpou todos os seus efeitos!", Group.TRIAL);
 		} else {
 			PotionEffect applyEffect = new PotionEffect(effect, duration * 20, amplification);
 			player.addPotionEffect(applyEffect, true);
-			sender.sendMessage(" §a* §fO jogador §a" + player.getName() + "§f teve o efeito §a" + effect.getName()
-					+ "§f adicionado §e(" + duration + " segundos e nível " + amplification + ")");
-			staffLog("O §a" + player.getName() + " §faplicou o efeito §a" + effect.getName() + "§e(" + duration
-					+ " segundos e nível " + amplification + ")§f", Group.TRIAL);
+			sender.sendMessage("§aO jogador §a" + player.getName() + "§a teve o efeito §a" + effect.getName()
+					+ "§a adicionado §a(" + duration + " segundos e nível " + amplification + ")");
+			staffLog("§aO §a" + player.getName() + " §aaplicou o efeito §a" + effect.getName() + "§a(" + duration
+					+ " segundos e nível " + amplification + ")§a", Group.TRIAL);
 		}
 	}
 
@@ -520,14 +520,14 @@ public class ModeratorCommand implements CommandClass {
 			return;
 
 		if (cmdArgs.getArgs().length == 0) {
-			cmdArgs.getSender().sendMessage(" §e* §fUtilize §a/tpworld <world>§f para mudar de mundo!");
+			cmdArgs.getSender().sendMessage("§eUtilize /tpworld <world> para mudar de mundo.");
 			return;
 		}
 
 		World world = Bukkit.getWorld(cmdArgs.getArgs()[0]);
 
 		if (world == null) {
-			cmdArgs.getSender().sendMessage(" §e* §fO mundo está sendo carregado, aguarde!");
+			cmdArgs.getSender().sendMessage("§eO mundo está sendo carregado, aguarde.");
 
 			WorldCreator worldCreator = new WorldCreator(cmdArgs.getArgs()[0].toLowerCase());
 
@@ -546,7 +546,7 @@ public class ModeratorCommand implements CommandClass {
 		}
 
 		((BukkitMember) cmdArgs.getSender()).getPlayer().teleport(new Location(world, 0, 10, 0));
-		cmdArgs.getSender().sendMessage(" §a* §fTeletransportado com sucesso!");
+		cmdArgs.getSender().sendMessage(" §aTeletransportado com sucesso.");
 	}
 
 	@Command(name = "teleport", aliases = { "tp", "teleportar" }, runAsync = false)
@@ -576,13 +576,13 @@ public class ModeratorCommand implements CommandClass {
 
 		if (event.getResult() == TeleportResult.NO_PERMISSION || event.isCancelled()) {
 			p.sendMessage(" ");
-			p.sendMessage(" §c* §fVocê não tem §cpermissão§f para executar esse comando!");
+			p.sendMessage(" §cVocê não tem permissão para isso.");
 			p.sendMessage(" ");
 			return;
 		}
 
 		if (args.length == 0) {
-			p.sendMessage(" §e* §fUtilize §a/tp <player> <player>§f para teletransportar jogadores!");
+			p.sendMessage(" §eUtilize /tp <player> <player> para teletransportar jogadores.");
 			return;
 		}
 
@@ -590,12 +590,12 @@ public class ModeratorCommand implements CommandClass {
 			Player t = Bukkit.getPlayer(args[0]);
 
 			if (t == null) {
-				p.sendMessage(" §c* §fO jogador §a\"" + args[0] + "\"§f não existe!");
+				p.sendMessage("§cjogador §a\"" + args[0] + "\"§a não existe.");
 				return;
 			}
 
 			p.teleport(t.getLocation());
-			p.sendMessage(" §a* §fVocê se teletransportou até o §a" + t.getName() + "§f!");
+			p.sendMessage("§aVocê se teletransportou até o §a" + t.getName() + "§a.");
 			return;
 		}
 
@@ -603,19 +603,19 @@ public class ModeratorCommand implements CommandClass {
 			Player player = Bukkit.getPlayer(args[0]);
 
 			if (player == null) {
-				p.sendMessage(" §c* §fO jogador §a\"" + args[0] + "\"§f não existe!");
+				p.sendMessage(" §cO jogador §c\"" + args[0] + "\"§c não existe.");
 				return;
 			}
 
 			Player target = Bukkit.getPlayer(args[1]);
 
 			if (target == null) {
-				p.sendMessage(" §c* §fO jogador §a\"" + args[1] + "\"§f não existe!");
+				p.sendMessage(" §cO jogador §c\"" + args[1] + "\"§c não existe.");
 				return;
 			}
 
 			player.teleport(target);
-			p.sendMessage(" §a* §fVocê teletransportou §a" + player.getName() + "§f até §a" + target.getName() + "§f!");
+			p.sendMessage(" §aVocê teletransportou §a" + player.getName() + "§a até §a" + target.getName() + "§a.");
 			return;
 		}
 
@@ -625,12 +625,12 @@ public class ModeratorCommand implements CommandClass {
 				Location loc = getLocationBased(p.getLocation(), args[0], args[1], args[2]);
 
 				if (loc == null) {
-					p.sendMessage(" §c* §fLocalização inválida!");
+					p.sendMessage("§cLocalização inválida.");
 					return;
 				}
 
 				p.teleport(loc);
-				p.sendMessage(" §a* §fVocê se teletransportou até §a%x%§f, §a%y%§f, §a%z%§f!"
+				p.sendMessage(" §aVocê se teletransportou até §a%x%§f, §a%y%§f, §a%z%§."
 						.replace("%x%", locationFormater.format(loc.getX()))
 						.replace("%y%", locationFormater.format(loc.getY()))
 						.replace("%z%", locationFormater.format(loc.getZ())));
@@ -640,19 +640,19 @@ public class ModeratorCommand implements CommandClass {
 			Player target = Bukkit.getPlayer(args[1]);
 
 			if (target == null) {
-				p.sendMessage(" §c* §fO jogador §a\"" + args[1] + "\"§f não existe!");
+				p.sendMessage(" §cO jogador §c\"" + args[1] + "\"§c não existe.");
 				return;
 			}
 
 			Location loc = getLocationBased(target.getLocation(), args[1], args[2], args[3]);
 
 			if (loc == null) {
-				p.sendMessage(" §c* §fLocalização inválida!");
+				p.sendMessage(" §cLocalização inválida!");
 				return;
 			}
 
 			target.teleport(loc);
-			p.sendMessage(" §a* §fVocê se teletransportou até §a%x%§f, §a%y%§f, §a%z%§f!"
+			p.sendMessage("§aVocê se teletransportou até §a%x%§f, §a%y%§f, §a%z%§a."
 					.replace("%x%", locationFormater.format(loc.getX()))
 					.replace("%y%", locationFormater.format(loc.getY()))
 					.replace("%z%", locationFormater.format(loc.getZ())).replace("%target%", target.getName()));
@@ -676,13 +676,13 @@ public class ModeratorCommand implements CommandClass {
 				if (on != null && on.isOnline() && on.getUniqueId() != player.getUniqueId()) {
 					on.teleport(player.getLocation());
 					on.setFallDistance(0.0F);
-					on.sendMessage("§aVocê foi levado até o §a" + player.getName() + "!");
+					on.sendMessage("§aVocê foi levado até o §a" + player.getName() + ".");
 					i++;
 				}
 			}
 
 			Bukkit.getPluginManager().callEvent(new TeleportAllEvent(player));
-			player.sendMessage("§aVocê puxou todos os " + i + " jogadores até você!");
+			player.sendMessage("§aVocê puxou todos os " + i + " jogadores até você.");
 			return;
 		}
 
@@ -704,7 +704,7 @@ public class ModeratorCommand implements CommandClass {
 
 					on.teleport(target.getLocation());
 					on.setFallDistance(0.0F);
-					on.sendMessage(" §a* §fVocê foi teletransportado até o §a" + target.getName() + "§f!");
+					on.sendMessage(" §aVocê foi teletransportado até o §a" + target.getName() + "§a.");
 				} else {
 					cancel();
 				}
@@ -714,7 +714,7 @@ public class ModeratorCommand implements CommandClass {
 
 		Bukkit.getPluginManager().callEvent(new TeleportAllEvent(target));
 		player.sendMessage("§aVocê levou todos os " + Bukkit.getOnlinePlayers().size() + " jogadores até "
-				+ target.getName() + "!");
+				+ target.getName() + ".");
 		staffLog("O §a" + player.getName() + " §ateletransportou todos até ", Group.TRIAL);
 		return;
 	}
@@ -742,7 +742,7 @@ public class ModeratorCommand implements CommandClass {
 
 							on.teleport(location);
 							on.setFallDistance(0.0F);
-							on.sendMessage("§aVocê foi levado até o §a" + player.getName() + "§f!");
+							on.sendMessage("§aVocê foi levado até o §a" + player.getName() + "§a.");
 						}
 					} else
 						cancel();
@@ -752,16 +752,16 @@ public class ModeratorCommand implements CommandClass {
 
 			Bukkit.getPluginManager().callEvent(new TeleportAllEvent(player));
 
-			player.sendMessage("§aVocê levou todos os " + Bukkit.getOnlinePlayers().size() + " jogadores até você!");
+			player.sendMessage("§aVocê levou todos os " + Bukkit.getOnlinePlayers().size() + " jogadores até você.");
 
-			staffLog("O §a" + player.getName() + " §fteletransportou todos até §aele mesmo§f!", Group.TRIAL);
+			staffLog("§aO §a" + player.getName() + " §ateletransportou todos até ele mesmo§a!", Group.TRIAL);
 			return;
 		}
 
 		Player target = Bukkit.getPlayer(args[0]);
 
 		if (target == null) {
-			player.sendMessage("§cO jogador \"" + args[0] + "\" não existe!");
+			player.sendMessage("§cO jogador \"" + args[0] + "\" não existe.");
 			return;
 		}
 
@@ -790,7 +790,7 @@ public class ModeratorCommand implements CommandClass {
 		player.sendMessage("§aVocê levou todos os " + Bukkit.getOnlinePlayers().size() + " jogadores até "
 				+ target.getName() + "!");
 
-		staffLog("O §a" + player.getName() + " §fteletransportou todos até §a" + target.getName() + "§f!", Group.TRIAL);
+		staffLog("O §a" + player.getName() + " §ateletransportou todos até §a" + target.getName() + "§a!", Group.TRIAL);
 		return;
 	}
 
@@ -800,7 +800,7 @@ public class ModeratorCommand implements CommandClass {
 		String[] args = cmdArgs.getArgs();
 
 		if (args.length < 1) {
-			sender.sendMessage("§cUso /" + cmdArgs.getLabel() + " <player> <motivo> para kickar alguém!");
+			sender.sendMessage("§cUso /" + cmdArgs.getLabel() + " <player> <motivo> para kickar alguém.");
 			return;
 		}
 

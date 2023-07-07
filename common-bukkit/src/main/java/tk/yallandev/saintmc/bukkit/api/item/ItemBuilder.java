@@ -4,13 +4,8 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Base64;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.UUID;
 
 import org.bukkit.Color;
 import org.bukkit.Material;
@@ -86,6 +81,15 @@ public class ItemBuilder {
 			useMeta = true;
 		}
 		this.displayName = text.replace("&", "§");
+		return this;
+	}
+
+	public ItemBuilder enchantment(Map<Enchantment, Integer> enchantments) {
+		if (this.enchantments == null) {
+			this.enchantments = new HashMap<>();
+		}
+
+		this.enchantments.putAll(enchantments);
 		return this;
 	}
 
